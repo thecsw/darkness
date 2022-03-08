@@ -97,7 +97,6 @@ var headerCounter = 0
 
 func addHeader(content *Content) string {
 	start := ``
-	fmt.Println(content.Header, headerCounter)
 	if headerCounter > 0 {
 		start = `</div>` + "\n" + `</div>`
 	}
