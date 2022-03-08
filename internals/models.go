@@ -12,6 +12,7 @@ const (
 	TypeYoutube
 	TypeSpotifyTrack
 	TypeSpotifyPlaylist
+	TypeSourceCode
 )
 
 type Page struct {
@@ -49,4 +50,6 @@ type Content struct {
 	Youtube         string
 	SpotifyTrack    string
 	SpotifyPlaylist string
+	SourceCode      string
+	SourceCodeLang  string
 }

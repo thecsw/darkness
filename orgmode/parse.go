@@ -2,14 +2,7 @@ package orgmode
 
 import (
 	"darkness/internals"
-	"regexp"
 	"strings"
-)
-
-var (
-	LinkRegexp = regexp.MustCompile(`\[\[([^][]+)\]\[([^][]+)\]\]`)
-	BoldText   = regexp.MustCompile(`(^| )\*([^* ][^*]+[^* ]|[^*])\*([^\w.]|$)`)
-	ItalicText = regexp.MustCompile(`(^| )/([^/ ][^/]+[^/ ]|[^/])/([^\w.])`)
 )
 
 func Parse(lines []string) *internals.Page {
@@ -21,11 +14,15 @@ func Parse(lines []string) *internals.Page {
 	currentList := make([]string, 0, 8)
 	for i, rawLine := range lines {
 		line := strings.TrimSpace(rawLine)
+		if isComment(line) {
+			continue
+		}
+		previousContext := currentContext
 		currentContext = currentContext + line
 		// If it's an empty line, then process current text
 		if line == "" {
 			// Empty context
-			if currentContext == "" {
+			if previousContext == "" {
 				continue
 			}
 			// Let's see if our context is a standalone link
@@ -43,26 +40,34 @@ func Parse(lines []string) *internals.Page {
 			}
 			currentContext = ""
 		}
-		// We are in a list now
+		// We are in a list now and it's not the first line (reserved for title)
 		if isList(line) && i != 0 {
-			// If we were not in a list, save the current context
-			if !inList && len(currentContext) != len(line)+1 {
+			// If we were not in a list context before, save what we have
+			if !inList && len(previousContext) > 0 {
 				page.Contents = append(
 					page.Contents,
-					*formParagraph(strings.TrimSpace(currentContext[:len(currentContext)-len(line)])))
+					*formParagraph(strings.TrimSpace(previousContext)))
 				currentContext = ""
 			}
+			// Mark that we entered a list context
 			inList = true
+			// Trim the bullet points with [2:]
 			currentList = append(currentList, line[2:])
 		} else if inList {
+			// We are not in a list anymore right now but we were right
+			// before this, it means we have to save the list we just read
 			page.Contents = append(page.Contents, internals.Content{
 				Type: internals.TypeList,
 				List: currentList,
 			})
+			// Empty the tracker
 			currentList = []string{}
+			// Mark that we left the list context
 			inList = false
-			currentContext = currentContext[len(currentContext)-len(line):]
+			// Restore the context
+			currentContext = ""
 		}
+		// Check if we are in a source block
 		// Find whether the current line is a part of a list
 		// A header is found, append and continue
 		if header := isHeader(line); header != nil &&
@@ -101,6 +106,10 @@ func isHeader(line string) *internals.Content {
 	}
 }
 
+func isComment(line string) bool {
+	return strings.HasPrefix(line, "# ")
+}
+
 func isLink(line string) *internals.Content {
 	line = strings.TrimSpace(line)
 	// Not a link
@@ -117,7 +126,7 @@ func isLink(line string) *internals.Content {
 	text := strings.TrimSpace(submatches[0][2])
 	// Check if this is a standalone link (just by itself on a line)
 	// If it's not, then it's a simple link in a paragraph, deal with
-	// it in a different way
+	// it later in `htmlize`
 	if len(match) != len(line) {
 		return nil
 	}
@@ -161,10 +170,6 @@ func formParagraph(text string) *internals.Content {
 	}
 }
 
-var (
-	listPrefixes = []string{"* ", "- ", "+ "}
-)
-
 func isList(line string) bool {
 	for _, prefix := range listPrefixes {
 		if strings.HasPrefix(line, prefix) {
@@ -172,4 +177,8 @@ func isList(line string) bool {
 		}
 	}
 	return false
+}
+
+func isSourceCode(line string) bool {
+	return strings.HasPrefix(line, `#+begin_src`)
 }
