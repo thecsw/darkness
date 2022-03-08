@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	workDir      = "sandyuraz/blogs/go-emacs"
+	workDir      = "sandyuraz"
 	darknessToml = "darkness.toml"
 	sourceExt    = ".org"
 	targetExt    = ".html"
@@ -27,7 +27,9 @@ func main() {
 		panic(err)
 	}
 	//litter.Dump(orgfiles)
+	fmt.Printf("Found %d files\n", len(orgfiles))
 
+	fmt.Println("Working on them...")
 	for _, file := range orgfiles {
 		data, err := ioutil.ReadFile(file)
 		if err != nil {
@@ -35,12 +37,14 @@ func main() {
 		}
 		lines := strings.Split(string(data), "\n")
 		page := orgmode.Parse(lines)
+		//		litter.Dump(page)
 		page.URL = emilia.Config.URL + strings.TrimPrefix(filepath.Dir(file), workDir) + "/"
 		targetFile := filepath.Join(filepath.Dir(file),
 			strings.Replace(filepath.Base(file), sourceExt, targetExt, 1))
 		//fmt.Println(targetFile)
 		ioutil.WriteFile(targetFile, []byte(html.ExportPage(page)), 0644)
 	}
+	fmt.Println("done")
 }
 
 func findFilesByExt(dir, ext string) ([]string, error) {

@@ -2,7 +2,6 @@ package orgmode
 
 import (
 	"darkness/internals"
-	"fmt"
 	"strings"
 )
 
@@ -68,7 +67,6 @@ func Parse(lines []string) *internals.Page {
 		// Check if we are currently in a source code, special treatment
 		if inSourceCode {
 			currentContext += "\n"
-			fmt.Println("CONTEXT:", currentContext)
 			continue
 		}
 		// Entering the source code block
