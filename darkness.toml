@@ -1,0 +1,26 @@
+title = "Sandy's Website"
+
+[website]
+locale = "en_GB"
+color = "#fffff4"
+twitter = "@sandyuraz"
+styles = [
+      "https://sandyuraz.com/css/asciidoctor.css",
+      "https://sandyuraz.com/css/web.css"     
+]
+
+[author]
+header = "/small.png"
+name = "email"
+email = "ctu [at] ku [dot] edu"
+
+[navigation]
+        [navigation.1]
+        link = "/about"
+        title = "About"
+        [navigation.2]
+        link = "/books"
+        title= "Bookshelf"
+        [navigation.3]
+        link = "/fortunes"
+        title = "Fortunes"

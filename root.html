@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        {{ range .MetaTags }}
+        <meta name={{ .Name }} content={{ .Content }} property={{ .Property }}>
+        {{ end }}
+
+        {{ range .Links }}
+        <link rel={{ .Rel }} type={{ .Type }} href={{ .Href }}>
+        {{ end }}
+        
+        <title>
+            {{ .Title }}
+        </title>
+        
+    </head>
+    
+    <body class="article">
+
+        {{ range .Contents }}
+
+        {{ .Paragraph }}
+        
+        {{ if .isHeader }}
+        <h{{ .HeaderLevel }}>{{ .Header }}</h{{ .HeaderLevel }}>
+        {{ end }}
+        
+        {{ if .IsParagraph }}
+        <div class="paragraph">
+            <p>
+                {{ .Paragraph }}
+            </p>
+        </div>
+        {{ end }}
+        
+        {{ if .IsImage }}
+        <div class="imageblock">
+            <div class="content">
+                <a class="image" href={{ .ImageSource }}><img src={{ .ImageSource }} alt={{ .ImageCaption }}></a>
+            </div>
+        </div>
+        {{ end }}
+            
+        {{ end }}
+        
+    </body>
+</html>
