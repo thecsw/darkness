@@ -1,6 +1,7 @@
 package html
 
 import (
+	"darkness/emilia"
 	"darkness/internals"
 	"fmt"
 )
@@ -27,12 +28,12 @@ func linkTags(page *internals.Page) string {
 		},
 		{
 			Rel:  "shortcut icon",
-			Href: "/favicon.ico",
+			Href: emilia.JoinPath("favicon.ico"),
 			Type: "image/x-icon",
 		},
 		{
 			Rel:  "icon",
-			Href: "/favicon.ico",
+			Href: emilia.JoinPath("favicon.ico"),
 			Type: "",
 		},
 	}
