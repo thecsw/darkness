@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	workDir      = "sandyuraz"
+	workDir      = "sandyuraz/blogs/go-emacs"
 	darknessToml = "darkness.toml"
 	sourceExt    = ".org"
 	targetExt    = ".html"
@@ -37,7 +37,7 @@ func main() {
 		page := orgmode.Parse(lines)
 		page.URL = emilia.Config.URL + strings.TrimPrefix(filepath.Dir(file), workDir) + "/"
 		targetFile := filepath.Join(filepath.Dir(file),
-			strings.ReplaceAll(filepath.Base(file), sourceExt, targetExt))
+			strings.Replace(filepath.Base(file), sourceExt, targetExt, 1))
 		//fmt.Println(targetFile)
 		ioutil.WriteFile(targetFile, []byte(html.ExportPage(page)), 0644)
 	}

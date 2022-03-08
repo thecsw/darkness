@@ -2,6 +2,7 @@ package orgmode
 
 import (
 	"darkness/internals"
+	"fmt"
 	"strings"
 )
 
@@ -11,6 +12,8 @@ func Parse(lines []string) *internals.Page {
 
 	currentContext := ""
 	inList := false
+	inSourceCode := false
+	sourceCodeLang := ""
 	currentList := make([]string, 0, 8)
 	for i, rawLine := range lines {
 		line := strings.TrimSpace(rawLine)
@@ -21,6 +24,12 @@ func Parse(lines []string) *internals.Page {
 		currentContext = currentContext + line
 		// If it's an empty line, then process current text
 		if line == "" {
+			// If we are in a code block, record that empty line
+			// and go to the next line, it's an exception
+			if inSourceCode {
+				currentContext += "\n"
+				continue
+			}
 			// Empty context
 			if previousContext == "" {
 				continue
@@ -39,6 +48,45 @@ func Parse(lines []string) *internals.Page {
 					*formParagraph(strings.TrimSpace(currentContext)))
 			}
 			currentContext = ""
+			continue
+		}
+		// Check if we are currently leaving the source code
+		if isSourceCodeEnd(line) {
+			// Leaving the source code block, save the content and reset
+			page.Contents = append(page.Contents, internals.Content{
+				Type:           internals.TypeSourceCode,
+				SourceCode:     previousContext[:len(previousContext)-1], // remove newline
+				SourceCodeLang: sourceCodeLang,
+			})
+			// Reset contexts
+			currentContext = ""
+			sourceCodeLang = ""
+			inSourceCode = false
+			// Go to the next line
+			continue
+		}
+		// Check if we are currently in a source code, special treatment
+		if inSourceCode {
+			currentContext += "\n"
+			fmt.Println("CONTEXT:", currentContext)
+			continue
+		}
+		// Entering the source code block
+		if isSourceCodeBegin(line) {
+			// Stash and save whatever we have
+			if !inSourceCode && len(previousContext) > 0 {
+				page.Contents = append(
+					page.Contents,
+					*formParagraph(strings.TrimSpace(previousContext)))
+				currentContext = ""
+			}
+			// We ignore the '#+begin_src' but need to extract the language
+			sourceCodeLang = sourceExtractLang(line)
+			// Mark that we are reading source code now
+			inSourceCode = true
+			// Remove that begin_src from the context
+			currentContext = previousContext
+			continue
 		}
 		// We are in a list now and it's not the first line (reserved for title)
 		if isList(line) && i != 0 {
@@ -53,6 +101,7 @@ func Parse(lines []string) *internals.Page {
 			inList = true
 			// Trim the bullet points with [2:]
 			currentList = append(currentList, line[2:])
+			continue
 		} else if inList {
 			// We are not in a list anymore right now but we were right
 			// before this, it means we have to save the list we just read
@@ -66,8 +115,8 @@ func Parse(lines []string) *internals.Page {
 			inList = false
 			// Restore the context
 			currentContext = ""
+			continue
 		}
-		// Check if we are in a source block
 		// Find whether the current line is a part of a list
 		// A header is found, append and continue
 		if header := isHeader(line); header != nil &&
@@ -179,6 +228,14 @@ func isList(line string) bool {
 	return false
 }
 
-func isSourceCode(line string) bool {
-	return strings.HasPrefix(line, `#+begin_src`)
+func isSourceCodeBegin(line string) bool {
+	return strings.HasPrefix(strings.ToLower(line), `#+begin_src`)
+}
+
+func isSourceCodeEnd(line string) bool {
+	return strings.HasPrefix(strings.ToLower(line), `#+end_src`)
+}
+
+func sourceExtractLang(line string) string {
+	return SourceCodeRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
 }

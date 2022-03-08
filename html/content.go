@@ -10,7 +10,7 @@ var (
 	contentFunctions = []func(*internals.Content) string{
 		headings, paragraph, list, listNumbered,
 		link, image, youtube, spotifyTrack,
-		spotifyPlaylist,
+		spotifyPlaylist, sourceCode,
 	}
 )
 
@@ -97,4 +97,16 @@ func spotifyPlaylist(content *internals.Content) string {
 	return fmt.Sprintf(`
 <iframe src="https://open.spotify.com/embed/playlist/%s" width="79%%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 <hr>`, content.SpotifyPlaylist)
+}
+
+func sourceCode(content *internals.Content) string {
+	return fmt.Sprintf(`
+<div class="listingblock">
+<div class="content">
+<pre class="highlight">
+<code class="language-%s" data-lang="%s">%s</code>
+</pre>
+</div>
+</div>
+`, content.SourceCodeLang, content.SourceCodeLang, content.SourceCode)
 }
