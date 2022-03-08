@@ -71,6 +71,12 @@ func authorHeader(page *internals.Page) string {
 	content += `<span id="revdate">` + "\n"
 	for i := 1; i <= len(emilia.Config.Navigation); i++ {
 		v := emilia.Config.Navigation[fmt.Sprintf("%d", i)]
+		homeIsOnHome := page.URL == emilia.Config.URL && v.Link == ""
+		if homeIsOnHome {
+			// Remove the extra pipe character
+			content = content[:len(content)-2]
+			continue
+		}
 		content += fmt.Sprintf(
 			`<a href="%s">%s</a>`,
 			emilia.JoinPath(v.Link), v.Title,
