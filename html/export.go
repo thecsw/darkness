@@ -43,7 +43,7 @@ func styleTags() string {
 	for _, style := range emilia.Config.Website.Styles {
 		content += fmt.Sprintf(
 			`<link rel="stylesheet" type="text/css" href="%s">`+"\n",
-			style,
+			emilia.JoinPath(style),
 		)
 	}
 	return content
@@ -64,7 +64,7 @@ func authorHeader(page *internals.Page) string {
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
 `,
-		emilia.Config.Author.Header, html.EscapeString(page.Title),
+		emilia.JoinPath(emilia.Config.Author.Header), html.EscapeString(page.Title),
 		emilia.Config.Author.Name, emilia.Config.Author.Email,
 	)
 
@@ -73,7 +73,7 @@ func authorHeader(page *internals.Page) string {
 		v := emilia.Config.Navigation[fmt.Sprintf("%d", i)]
 		content += fmt.Sprintf(
 			`<a href="%s">%s</a>`,
-			v.Link, v.Title,
+			emilia.JoinPath(v.Link), v.Title,
 		)
 		if i < len(emilia.Config.Navigation) {
 			content += ` | `
