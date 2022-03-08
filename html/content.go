@@ -46,26 +46,32 @@ func paragraph(content *internals.Content) string {
 }
 
 func list(content *internals.Content) string {
-	start := `<div class="ulist">
-<ul>`
+	elements := ""
 	for _, item := range content.List {
-		start += `
+		elements += fmt.Sprintf(`
 <li>
 <p>
-` + htmlize(item) + `
+%s
 </p>
-</li>`
+</li>
+`, htmlize(item))
 	}
-	start += `</ul>
-</div>`
-	return start
+	return fmt.Sprintf(`
+<div class="ulist">
+<ul>
+%s
+</ul>
+</div>
+`, elements)
 }
 
 func listNumbered(content *internals.Content) string {
+	// TODO
 	return ""
 }
 
 func link(content *internals.Content) string {
+	// TODO
 	return ""
 }
 
