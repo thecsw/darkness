@@ -66,7 +66,7 @@ func Parse(lines []string) *internals.Page {
 		}
 		// Check if we are currently in a source code, special treatment
 		if inSourceCode {
-			currentContext += "\n"
+			currentContext = previousContext + rawLine + "\n"
 			continue
 		}
 		// Entering the source code block

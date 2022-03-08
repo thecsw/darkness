@@ -20,6 +20,7 @@ const (
 )
 
 func main() {
+	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 	emilia.InitDarkness(darknessToml)
 
 	orgfiles, err := findFilesByExt(workDir, sourceExt)
@@ -41,11 +42,9 @@ func main() {
 		page.URL = emilia.Config.URL + strings.TrimPrefix(filepath.Dir(file), workDir) + "/"
 		targetFile := filepath.Join(filepath.Dir(file),
 			strings.Replace(filepath.Base(file), sourceExt, targetExt, 1))
-		//fmt.Println(targetFile)
 
 		finalPage := html.ExportPage(page)
 		finalPage = emilia.AddHolosceneTitles(file, finalPage)
-
 		ioutil.WriteFile(targetFile, []byte(finalPage), 0644)
 	}
 	fmt.Println("done")
