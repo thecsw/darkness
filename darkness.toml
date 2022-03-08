@@ -1,4 +1,4 @@
-title = "Sandy's Website"
+title = "Sandy's Website 🚀"
 url = "https://sandyuraz.com"
 
 [website]
@@ -25,3 +25,7 @@ title = "Bookshelf 📖"
 [navigation.3]
 link = "fortunes"
 title = "Fortunes 🥠"
+
+[navigation.4]
+link = ""
+title = "Home 🏠"

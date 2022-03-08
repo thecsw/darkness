@@ -3,6 +3,7 @@ package html
 import (
 	"darkness/internals"
 	"html"
+	"strings"
 )
 
 func htmlize(text string) string {
@@ -12,5 +13,10 @@ func htmlize(text string) string {
 	text = internals.ItalicText.ReplaceAllString(text, `$1<em>$2</em>$3`)
 	text = internals.VerbatimText.ReplaceAllString(text, `$1<code>$2</code>$3`)
 	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
+	return text
+}
+
+func humanize(text string) string {
+	text = strings.ReplaceAll(text, "'s", "’s")
 	return text
 }

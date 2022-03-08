@@ -34,7 +34,7 @@ func ExportPage(page *internals.Page) string {
 </html>
 `,
 		linkTags(page), metaTags(page), scriptTags(page),
-		page.Title, styleTags(), authorHeader(page), content,
+		htmlize(page.Title), styleTags(), authorHeader(page), content,
 	)
 }
 
@@ -64,7 +64,7 @@ func authorHeader(page *internals.Page) string {
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
 `,
-		emilia.JoinPath(emilia.Config.Author.Header), html.EscapeString(page.Title),
+		emilia.JoinPath(emilia.Config.Author.Header), html.EscapeString(humanize(page.Title)),
 		emilia.Config.Author.Name, emilia.Config.Author.Email,
 	)
 
@@ -87,5 +87,4 @@ func authorHeader(page *internals.Page) string {
 </div>`
 
 	return content
-
 }
