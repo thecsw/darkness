@@ -36,10 +36,9 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		lines := strings.Split(string(data), "\n")
-		page := orgmode.Parse(lines)
+		page := orgmode.Parse(string(data))
 		//		litter.Dump(page)
-		page.URL = emilia.Config.URL + strings.TrimPrefix(filepath.Dir(file), workDir) + "/"
+		page.URL = emilia.JoinPath(strings.TrimPrefix(filepath.Dir(file), workDir))
 		targetFile := filepath.Join(filepath.Dir(file),
 			strings.Replace(filepath.Base(file), sourceExt, targetExt, 1))
 

@@ -5,7 +5,8 @@ import (
 	"strings"
 )
 
-func Parse(lines []string) *internals.Page {
+func Parse(data string) *internals.Page {
+	lines := strings.Split(data, "\n")
 	page := &internals.Page{}
 	page.Contents = make([]internals.Content, 0, 16)
 
