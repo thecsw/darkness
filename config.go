@@ -2,6 +2,7 @@ package main
 
 type DarknessConfig struct {
 	Title      string
+	URL        string
 	Website    WebsiteConfig
 	Author     AuthorConfig
 	Navigation map[string]NavigationConfig

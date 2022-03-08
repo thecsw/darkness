@@ -1,4 +1,5 @@
 title = "Sandy's Website"
+url = "https://sandyuraz.com"
 
 [website]
 locale = "en_GB"
@@ -17,10 +18,10 @@ email = "ctu [at] ku [dot] edu"
 [navigation]
         [navigation.1]
         link = "/about"
-        title = "About"
+        title = "About 🤔"
         [navigation.2]
         link = "/books"
-        title= "Bookshelf"
+        title= "Bookshelf 📖"
         [navigation.3]
         link = "/fortunes"
-        title = "Fortunes"
+        title = "Fortunes 🥠"

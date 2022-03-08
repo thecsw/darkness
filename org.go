@@ -64,7 +64,8 @@ func Parse(lines []string) *Page {
 		}
 		// Find whether the current line is a part of a list
 		// A header is found, append and continue
-		if header := isHeader(line); header != nil && i == 0 {
+		if header := isHeader(line); header != nil &&
+			(((i == 0) && header.HeaderLevel == 1) || header.HeaderLevel > 1) {
 			currentContext = ""
 			// Level 1 is the page title
 			if header.HeaderLevel == 1 {
@@ -88,7 +89,7 @@ func isHeader(line string) *Content {
 		level++
 	}
 	// Not a header
-	if level == 0 {
+	if level < 1 {
 		return nil
 	}
 	// Is a header
