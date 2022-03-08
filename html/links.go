@@ -1,6 +1,9 @@
-package main
+package html
 
-import "fmt"
+import (
+	"darkness/internals"
+	"fmt"
+)
 
 type rel struct {
 	Rel  string
@@ -15,7 +18,7 @@ func linkTag(val rel) string {
 	)
 }
 
-func addRelTags(page *Page) string {
+func linkTags(page *internals.Page) string {
 	toAdd := []rel{
 		{
 			Rel:  "canonical",

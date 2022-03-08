@@ -1,19 +1,20 @@
-package main
+package orgmode
 
 import (
+	"darkness/internals"
 	"regexp"
 	"strings"
 )
 
 var (
-	OrgLinkRegexp = regexp.MustCompile(`\[\[([^][]+)\]\[([^][]+)\]\]`)
-	OrgBoldText   = regexp.MustCompile(` \*([^* ][^*]+[^* ]|[^*])\*([^\w.])`)
-	OrgItalicText = regexp.MustCompile(` /([^/ ][^/]+[^/ ]|[^/])/([^\w.])`)
+	LinkRegexp = regexp.MustCompile(`\[\[([^][]+)\]\[([^][]+)\]\]`)
+	BoldText   = regexp.MustCompile(`(^| )\*([^* ][^*]+[^* ]|[^*])\*([^\w.]|$)`)
+	ItalicText = regexp.MustCompile(`(^| )/([^/ ][^/]+[^/ ]|[^/])/([^\w.])`)
 )
 
-func Parse(lines []string) *Page {
-	page := &Page{}
-	page.Contents = make([]Content, 0, 16)
+func Parse(lines []string) *internals.Page {
+	page := &internals.Page{}
+	page.Contents = make([]internals.Content, 0, 16)
 
 	currentContext := ""
 	inList := false
@@ -54,8 +55,8 @@ func Parse(lines []string) *Page {
 			inList = true
 			currentList = append(currentList, line[2:])
 		} else if inList {
-			page.Contents = append(page.Contents, Content{
-				Type: TypeList,
+			page.Contents = append(page.Contents, internals.Content{
+				Type: internals.TypeList,
 				List: currentList,
 			})
 			currentList = []string{}
@@ -80,7 +81,7 @@ func Parse(lines []string) *Page {
 	return page
 }
 
-func isHeader(line string) *Content {
+func isHeader(line string) *internals.Content {
 	level := 0
 	for _, c := range line {
 		if c != '*' {
@@ -93,20 +94,20 @@ func isHeader(line string) *Content {
 		return nil
 	}
 	// Is a header
-	return &Content{
-		Type:        TypeHeader,
+	return &internals.Content{
+		Type:        internals.TypeHeader,
 		HeaderLevel: level,
 		Header:      line[level+1:],
 	}
 }
 
-func isLink(line string) *Content {
+func isLink(line string) *internals.Content {
 	line = strings.TrimSpace(line)
 	// Not a link
-	if !OrgLinkRegexp.MatchString(line) {
+	if !LinkRegexp.MatchString(line) {
 		return nil
 	}
-	submatches := OrgLinkRegexp.FindAllStringSubmatch(line, 1)
+	submatches := LinkRegexp.FindAllStringSubmatch(line, 1)
 	// Sanity check
 	if len(submatches) < 1 {
 		return nil
@@ -120,42 +121,42 @@ func isLink(line string) *Content {
 	if len(match) != len(line) {
 		return nil
 	}
-	content := &Content{
-		Type:      TypeLink,
+	content := &internals.Content{
+		Type:      internals.TypeLink,
 		Link:      link,
 		LinkTitle: text,
 	}
 	// Our link is standalone. Check if it's an image
 	if strings.HasSuffix(link, ".png") {
-		content.Type = TypeImage
+		content.Type = internals.TypeImage
 		content.ImageSource = link
 		content.ImageCaption = text
 		return content
 	}
 	// Check if it's a youtube video embed
 	if strings.HasPrefix(link, "https://youtu.be/") {
-		content.Type = TypeYoutube
+		content.Type = internals.TypeYoutube
 		content.Youtube = link[17:]
 		return content
 	}
 	// Check if it's a spotify track link
 	if strings.HasPrefix(link, "https://open.spotify.com/track/") {
-		content.Type = TypeSpotifyTrack
+		content.Type = internals.TypeSpotifyTrack
 		content.SpotifyTrack = link[31:]
 		return content
 	}
 	// Check if it's a spotify playlist link
 	if strings.HasPrefix(link, "https://open.spotify.com/playlist/") {
-		content.Type = TypeSpotifyPlaylist
+		content.Type = internals.TypeSpotifyPlaylist
 		content.SpotifyPlaylist = link[34:]
 		return content
 	}
 	return nil
 }
 
-func formParagraph(text string) *Content {
-	return &Content{
-		Type:      TypeParagraph,
+func formParagraph(text string) *internals.Content {
+	return &internals.Content{
+		Type:      internals.TypeParagraph,
 		Paragraph: text,
 	}
 }

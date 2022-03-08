@@ -1,4 +1,4 @@
-package main
+package internals
 
 type TypeContent uint8
 

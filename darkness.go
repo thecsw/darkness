@@ -7,26 +7,22 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/BurntSushi/toml"
+	"darkness/emilia"
+	"darkness/html"
+	"darkness/orgmode"
 )
 
 const (
-	workDir = "sandyuraz"
-)
-
-var (
-	conf DarknessConfig
+	workDir      = "sandyuraz"
+	darknessToml = "darkness.toml"
+	sourceExt    = ".org"
+	targetExt    = ".html"
 )
 
 func main() {
+	emilia.InitDarkness(darknessToml)
 
-	confData, _ := ioutil.ReadFile("darkness.toml")
-	_, err := toml.Decode(string(confData), &conf)
-	if err != nil {
-		panic(err)
-	}
-
-	orgfiles, err := findOrgFiles(workDir)
+	orgfiles, err := findFilesByExt(workDir, sourceExt)
 	if err != nil {
 		panic(err)
 	}
@@ -38,21 +34,23 @@ func main() {
 			panic(err)
 		}
 		lines := strings.Split(string(data), "\n")
-		page := Parse(lines)
-		page.URL = conf.URL + strings.TrimPrefix(filepath.Dir(file), workDir) + "/"
-		//fmt.Println("Processed", file, ":", page.URL)
-		ioutil.WriteFile(filepath.Dir(file)+"/index.html", []byte(buildHTML(page)), 0644)
+		page := orgmode.Parse(lines)
+		page.URL = emilia.Config.URL + strings.TrimPrefix(filepath.Dir(file), workDir) + "/"
+		targetFile := filepath.Join(filepath.Dir(file),
+			strings.ReplaceAll(filepath.Base(file), sourceExt, targetExt))
+		//fmt.Println(targetFile)
+		ioutil.WriteFile(targetFile, []byte(html.ExportPage(page)), 0644)
 	}
 }
 
-func findOrgFiles(dir string) ([]string, error) {
+func findFilesByExt(dir, ext string) ([]string, error) {
 	files := make([]string, 0, 32)
 	err := filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			fmt.Println(err)
 			return err
 		}
-		if !info.IsDir() && filepath.Ext(path) == ".org" {
+		if !info.IsDir() && filepath.Ext(path) == ext {
 			files = append(files, path)
 		}
 		return nil

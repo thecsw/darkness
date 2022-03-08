@@ -1,6 +1,8 @@
-package main
+package html
 
 import (
+	"darkness/emilia"
+	"darkness/internals"
 	"fmt"
 	"html"
 	"strings"
@@ -10,17 +12,17 @@ const (
 	DescriptionLength = 100
 )
 
-func addMetaTags(page *Page) string {
+func metaTags(page *internals.Page) string {
 	// Find the first paragraph for description
 	description := ""
 	for _, content := range page.Contents {
 		// We are only looking for paragraphs
-		if content.Type != TypeParagraph {
+		if content.Type != internals.TypeParagraph {
 			continue
 		}
 		// Skip holoscene times
 		paragraph := strings.TrimSpace(content.Paragraph)
-		if paragraph == "" || HEregex.MatchString(paragraph) {
+		if paragraph == "" || emilia.HEregex.MatchString(paragraph) {
 			continue
 		}
 		description = paragraph[:min(len(paragraph), DescriptionLength)] + "..."
@@ -47,7 +49,7 @@ func metaTag(val meta) string {
 	)
 }
 
-func addBasic(page *Page, description string) string {
+func addBasic(page *internals.Page, description string) string {
 	toAdd := []meta{
 		{
 			Name:     "viewport",
@@ -62,12 +64,12 @@ func addBasic(page *Page, description string) string {
 		{
 			Name:     "author",
 			Property: "author",
-			Content:  conf.Author.Name,
+			Content:  emilia.Config.Author.Name,
 		},
 		{
 			Name:     "theme-color",
 			Property: "theme-color",
-			Content:  conf.Website.Color,
+			Content:  emilia.Config.Website.Color,
 		},
 		{
 			Name:     "description",
@@ -84,7 +86,7 @@ func addBasic(page *Page, description string) string {
 	return content
 }
 
-func addOpenGraph(page *Page, description string) string {
+func addOpenGraph(page *internals.Page, description string) string {
 	toAdd := []meta{
 		{
 			Name:     "og:title",
@@ -94,7 +96,7 @@ func addOpenGraph(page *Page, description string) string {
 		{
 			Name:     "og:site_name",
 			Property: "og:site_name",
-			Content:  html.EscapeString(conf.Title),
+			Content:  html.EscapeString(emilia.Config.Title),
 		},
 		{
 			Name:     "og:url",
@@ -104,7 +106,7 @@ func addOpenGraph(page *Page, description string) string {
 		{
 			Name:     "og:locale",
 			Property: "og:locale",
-			Content:  conf.Website.Locale,
+			Content:  emilia.Config.Website.Locale,
 		},
 		{
 			Name:     "og:type",
@@ -114,7 +116,7 @@ func addOpenGraph(page *Page, description string) string {
 		{
 			Name:     "og:image",
 			Property: "og:image",
-			Content:  page.URL + "preview.png",
+			Content:  emilia.JoinPath("preview.png"),
 		},
 		{
 			Name:     "og:image:alt",
@@ -149,7 +151,7 @@ func addOpenGraph(page *Page, description string) string {
 	return content
 }
 
-func addTwitterMeta(page *Page, description string) string {
+func addTwitterMeta(page *internals.Page, description string) string {
 	toAdd := []meta{
 		{
 			Name:     "twitter:card",
@@ -159,17 +161,17 @@ func addTwitterMeta(page *Page, description string) string {
 		{
 			Name:     "twitter:site",
 			Property: "twitter:site",
-			Content:  html.EscapeString(conf.Title),
+			Content:  html.EscapeString(emilia.Config.Title),
 		},
 		{
 			Name:     "twitter:creator",
 			Property: "twitter:creator",
-			Content:  conf.Website.Twitter,
+			Content:  emilia.Config.Website.Twitter,
 		},
 		{
 			Name:     "twitter:image:src",
 			Property: "twitter:image:src",
-			Content:  page.URL + "preview.png",
+			Content:  emilia.JoinPath("preview.png"),
 		},
 		{
 			Name:     "twitter:url",
