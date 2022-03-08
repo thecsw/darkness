@@ -42,7 +42,11 @@ func main() {
 		targetFile := filepath.Join(filepath.Dir(file),
 			strings.Replace(filepath.Base(file), sourceExt, targetExt, 1))
 		//fmt.Println(targetFile)
-		ioutil.WriteFile(targetFile, []byte(html.ExportPage(page)), 0644)
+
+		finalPage := html.ExportPage(page)
+		finalPage = emilia.AddHolosceneTitles(file, finalPage)
+
+		ioutil.WriteFile(targetFile, []byte(finalPage), 0644)
 	}
 	fmt.Println("done")
 }

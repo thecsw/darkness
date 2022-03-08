@@ -1,7 +1,6 @@
 package emilia
 
 import (
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -17,8 +16,8 @@ var (
 	HEParagraphRegex = regexp.MustCompile(`>(\d+;\s*\d+\s*H.E.)`)
 )
 
-// convertHoloscene takes a Holoscene time (127; 12022 H.E.) to a time struct.
-func convertHoloscene(HEtime string) *time.Time {
+// ConvertHoloscene takes a Holoscene time (127; 12022 H.E.) to a time struct.
+func ConvertHoloscene(HEtime string) *time.Time {
 	matches := HEregex.FindAllStringSubmatch(HEtime, 1)
 	// Not a good match, nothing found
 	if len(matches) < 1 {
@@ -35,7 +34,7 @@ func convertHoloscene(HEtime string) *time.Time {
 	return &tt
 }
 
-func addHolosceneTitles(file, data string) string {
+func AddHolosceneTitles(file, data string) string {
 	// Match all paragraphs with holoscene time
 	matches := HEParagraphRegex.FindAllStringSubmatch(data, -1)
 	// No matches found, skip this file
@@ -45,14 +44,14 @@ func addHolosceneTitles(file, data string) string {
 	}
 	for _, match := range matches {
 		HEtime := match[1]
-		tt := convertHoloscene(HEtime)
+		tt := ConvertHoloscene(HEtime)
 		// Add the title to the paragraph
 		data = strings.ReplaceAll(data,
 			`>`+HEtime,
 			` title="`+tt.Format(RFC_EMILY)+`">`+HEtime,
 		)
 	}
-	fmt.Printf("[HETIME] %s: replaced %d \n", file, len(matches))
+	//fmt.Printf("[HETIME] %s: replaced %d \n", file, len(matches))
 	return data
 
 }
