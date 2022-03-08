@@ -137,15 +137,29 @@ func addAuthorHeader(page *Page) string {
 
 }
 
+var headerCounter = 0
+
 func addHeader(content *Content) string {
-	return fmt.Sprintf(`<h%d>%s</h%d>`,
-		content.HeaderLevel, content.Header, content.HeaderLevel,
+	start := ``
+	if headerCounter > 0 {
+		start = `</div>` + "\n" + `</div>`
+	}
+	headerCounter++
+	return fmt.Sprintf(start+`
+<div class="sect%d>"
+<h%d id="%s">%s</h%d>
+<div class="sectionbody">
+`,
+		content.HeaderLevel,
+		content.HeaderLevel, content.Header, content.Header, content.HeaderLevel,
 	)
 }
 
 func addParagraph(content *Content) string {
 	text := html.EscapeString(content.Paragraph)
 	text = OrgLinkRegexp.ReplaceAllString(text, `<a href="$1">$2</a>`)
+	text = OrgBoldText.ReplaceAllString(text, ` <strong>$1</strong>$2`)
+	text = OrgItalicText.ReplaceAllString(text, ` <em>$1</em>$2`)
 
 	return fmt.Sprintf(
 		`

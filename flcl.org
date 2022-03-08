@@ -2,9 +2,9 @@
 
 52; 12022 H.E.
 
-1) One
-2) Two
-3) Three
++ One
++ Two
++ Three
 
 One time I heard someone describe FLCL as a fever dream of an anime. I think
 this reaction is justified, yet doesn't do it the full honor it deserves. FLCL
@@ -76,6 +76,9 @@ wrote falling asleep. It is my wish that people could enjoy FLCL for what it is,
 embrace all the drugs it’s on, and truly become a [[https://www.urbandictionary.com/define.php?term=Fooly+Cooly][Fooly Cooly connoisseur]].  
 
  * One
+   text hello
+   
  * Two
+   two text
  * Three
  * Four

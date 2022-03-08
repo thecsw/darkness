@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/sanity-io/litter"
 )
 
 var conf DarknessConfig
@@ -19,7 +19,7 @@ func main() {
 	lines := strings.Split(string(data), "\n")
 	page := Parse(lines)
 
-	//litter.Dump(page)
+	litter.Dump(page)
 
 	confData, _ := ioutil.ReadFile("darkness.toml")
 	_, err = toml.Decode(string(confData), &conf)
@@ -28,5 +28,5 @@ func main() {
 	}
 	//litter.Dump(conf)
 
-	fmt.Println(buildHTML(page))
+	//fmt.Println(buildHTML(page))
 }

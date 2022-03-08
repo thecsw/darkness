@@ -7,6 +7,8 @@ import (
 
 var (
 	OrgLinkRegexp = regexp.MustCompile(`\[\[([^][]+)\]\[([^][]+)\]\]`)
+	OrgBoldText   = regexp.MustCompile(` \*([^* ][^*]+[^* ]|[^*])\*([^\w.])`)
+	OrgItalicText = regexp.MustCompile(` /([^/ ][^/]+[^/ ]|[^/])/([^\w.])`)
 )
 
 func Parse(lines []string) *Page {
@@ -32,16 +34,18 @@ func Parse(lines []string) *Page {
 				continue
 			}
 			// New line break means we have to save the paragraph
-			// we just read
-			page.Contents = append(
-				page.Contents,
-				*formParagraph(strings.TrimSpace(currentContext)))
+			// we just read if we're not currently reading a list
+			if !inList {
+				page.Contents = append(
+					page.Contents,
+					*formParagraph(strings.TrimSpace(currentContext)))
+			}
 			currentContext = ""
 		}
 		// We are in a list now
 		if isList(line) && i != 0 {
 			// If we were not in a list, save the current context
-			if !inList {
+			if !inList && len(currentContext) != len(line)+1 {
 				page.Contents = append(
 					page.Contents,
 					*formParagraph(strings.TrimSpace(currentContext[:len(currentContext)-len(line)])))
@@ -56,6 +60,7 @@ func Parse(lines []string) *Page {
 			})
 			currentList = []string{}
 			inList = false
+			currentContext = currentContext[len(currentContext)-len(line):]
 		}
 		// Find whether the current line is a part of a list
 		// A header is found, append and continue
