@@ -8,9 +8,9 @@ type rel struct {
 	Type string
 }
 
-func relTag(val rel) string {
+func linkTag(val rel) string {
 	return fmt.Sprintf(
-		`<rel rel="%s" href="%s" type="%s">`+"\n",
+		`<link rel="%s" href="%s" type="%s"/>`+"\n",
 		val.Rel, val.Href, val.Type,
 	)
 }
@@ -35,7 +35,7 @@ func addRelTags(page *Page) string {
 	}
 	content := ""
 	for _, add := range toAdd {
-		content += relTag(add)
+		content += linkTag(add)
 	}
 	return content
 }

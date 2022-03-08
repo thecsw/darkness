@@ -14,6 +14,7 @@ var (
 )
 
 func buildHTML(page *Page) string {
+	headerCounter = 0
 	finalContents := `
 <!DOCTYPE html>
 <html lang="en">
@@ -96,6 +97,7 @@ var headerCounter = 0
 
 func addHeader(content *Content) string {
 	start := ``
+	fmt.Println(content.Header, headerCounter)
 	if headerCounter > 0 {
 		start = `</div>` + "\n" + `</div>`
 	}
@@ -105,7 +107,7 @@ func addHeader(content *Content) string {
 <h%d id="%s">%s</h%d>
 <div class="sectionbody">`,
 		content.HeaderLevel,
-		content.HeaderLevel, content.Header, content.Header, content.HeaderLevel,
+		content.HeaderLevel, html.EscapeString(content.Header), orgToHTML(content.Header), content.HeaderLevel,
 	)
 }
 

@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
-	"github.com/sanity-io/litter"
 )
 
 const (
@@ -31,7 +30,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	litter.Dump(orgfiles)
+	//litter.Dump(orgfiles)
 
 	for _, file := range orgfiles {
 		data, err := ioutil.ReadFile(file)
@@ -41,7 +40,7 @@ func main() {
 		lines := strings.Split(string(data), "\n")
 		page := Parse(lines)
 		page.URL = conf.URL + strings.TrimPrefix(filepath.Dir(file), workDir) + "/"
-		fmt.Println("Processed", file, ":", page.URL)
+		//fmt.Println("Processed", file, ":", page.URL)
 		ioutil.WriteFile(filepath.Dir(file)+"/index.html", []byte(buildHTML(page)), 0644)
 	}
 }
