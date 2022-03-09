@@ -19,6 +19,9 @@ func ParseFile(workDir, file string) *internals.Page {
 }
 
 func Parse(data string) *internals.Page {
+	// Pad a newline so that last elements can be processed
+	// properly before an EOF is encountered during parsing
+	data += "\n"
 	lines := strings.Split(data, "\n")
 	page := &internals.Page{}
 	page.Contents = make([]internals.Content, 0, 16)
