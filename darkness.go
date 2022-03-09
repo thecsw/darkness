@@ -22,6 +22,7 @@ const (
 func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 	emilia.InitDarkness(darknessToml)
+	html.InitConstantTags()
 
 	orgfiles, err := findFilesByExt(workDir, sourceExt)
 	if err != nil {
@@ -32,19 +33,12 @@ func main() {
 
 	fmt.Println("Working on them...")
 	for _, file := range orgfiles {
-		data, err := ioutil.ReadFile(file)
-		if err != nil {
-			panic(err)
-		}
-		page := orgmode.Parse(string(data))
-		//		litter.Dump(page)
-		page.URL = emilia.JoinPath(strings.TrimPrefix(filepath.Dir(file), workDir))
+		page := orgmode.ParseFile(workDir, file)
 		targetFile := filepath.Join(filepath.Dir(file),
 			strings.Replace(filepath.Base(file), sourceExt, targetExt, 1))
-
-		finalPage := html.ExportPage(page)
-		finalPage = emilia.AddHolosceneTitles(file, finalPage)
-		ioutil.WriteFile(targetFile, []byte(finalPage), 0644)
+		htmlPage := html.ExportPage(page)
+		htmlPage = emilia.AddHolosceneTitles(file, htmlPage)
+		ioutil.WriteFile(targetFile, []byte(htmlPage), 0644)
 	}
 	fmt.Println("done")
 }

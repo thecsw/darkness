@@ -1,9 +1,22 @@
 package orgmode
 
 import (
+	"darkness/emilia"
 	"darkness/internals"
+	"io/ioutil"
+	"path/filepath"
 	"strings"
 )
+
+func ParseFile(workDir, file string) *internals.Page {
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		panic(err)
+	}
+	page := Parse(string(data))
+	page.URL = emilia.JoinPath(strings.TrimPrefix(filepath.Dir(file), workDir))
+	return page
+}
 
 func Parse(data string) *internals.Page {
 	lines := strings.Split(data, "\n")
@@ -13,6 +26,7 @@ func Parse(data string) *internals.Page {
 	currentContext := ""
 	inList := false
 	inSourceCode := false
+	inRawHTML := false
 	sourceCodeLang := ""
 	currentList := make([]string, 0, 8)
 	for i, rawLine := range lines {
@@ -26,7 +40,7 @@ func Parse(data string) *internals.Page {
 		if line == "" {
 			// If we are in a code block, record that empty line
 			// and go to the next line, it's an exception
-			if inSourceCode {
+			if inSourceCode || inRawHTML {
 				currentContext += "\n"
 				continue
 			}
@@ -48,6 +62,22 @@ func Parse(data string) *internals.Page {
 					*formParagraph(strings.TrimSpace(currentContext)))
 			}
 			currentContext = ""
+			continue
+		}
+		// We can also add raw html lines by surround it with "++++"
+		if isRawHTML(line) {
+			// If we just entered, mark that we're in the raw html now
+			if !inRawHTML {
+				currentContext = ""
+				inRawHTML = true
+			} else {
+				// Otherwise, we are at the end of it, save it
+				page.Contents = append(page.Contents, internals.Content{
+					Type:    internals.TypeRawHTML,
+					RawHTML: previousContext,
+				})
+				inRawHTML = false
+			}
 			continue
 		}
 		// Check if we are currently leaving the source code
@@ -237,4 +267,8 @@ func isSourceCodeEnd(line string) bool {
 
 func sourceExtractLang(line string) string {
 	return SourceCodeRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
+}
+
+func isRawHTML(line string) bool {
+	return line == "++++"
 }

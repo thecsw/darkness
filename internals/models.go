@@ -13,6 +13,7 @@ const (
 	TypeSpotifyTrack
 	TypeSpotifyPlaylist
 	TypeSourceCode
+	TypeRawHTML
 )
 
 type Page struct {
@@ -52,4 +53,5 @@ type Content struct {
 	SpotifyPlaylist string
 	SourceCode      string
 	SourceCodeLang  string
+	RawHTML         string
 }

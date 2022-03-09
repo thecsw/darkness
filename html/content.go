@@ -29,13 +29,13 @@ func headings(content *internals.Content) string {
 		content.HeaderLevel,
 		content.HeaderLevel,
 		html.EscapeString(content.Header),
-		htmlize(content.Header),
+		processText(content.Header),
 		content.HeaderLevel,
 	)
 }
 
 func paragraph(content *internals.Content) string {
-	text := htmlize(content.Paragraph)
+	text := processText(content.Paragraph)
 	return fmt.Sprintf(
 		`
 <div class="paragraph">
@@ -54,7 +54,7 @@ func list(content *internals.Content) string {
 %s
 </p>
 </li>
-`, htmlize(item))
+`, processText(item))
 	}
 	return fmt.Sprintf(`
 <div class="ulist">
@@ -115,4 +115,8 @@ func sourceCode(content *internals.Content) string {
 </div>
 </div>
 `, content.SourceCodeLang, content.SourceCodeLang, content.SourceCode)
+}
+
+func rawHTML(content *internals.Content) string {
+	return content.RawHTML
 }

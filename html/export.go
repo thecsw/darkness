@@ -5,14 +5,18 @@ import (
 	"darkness/internals"
 	"fmt"
 	"html"
+	"strings"
 )
 
 func ExportPage(page *internals.Page) string {
 	headerCounter = 0
 
-	content := ""
+	// Add the red tomb to the last paragraph
+	addTomb(page)
+
+	content := make([]string, 0, len(page.Contents))
 	for _, v := range page.Contents {
-		content += contentFunctions[v.Type](&v)
+		content = append(content, contentFunctions[v.Type](&v))
 	}
 
 	return fmt.Sprintf(`
@@ -34,19 +38,19 @@ func ExportPage(page *internals.Page) string {
 </html>
 `,
 		linkTags(page), metaTags(page), scriptTags(page),
-		htmlize(page.Title), styleTags(), authorHeader(page), content,
+		processTitle(page.Title), styleTagsProcessed, authorHeader(page), strings.Join(content, ""),
 	)
 }
 
 func styleTags() string {
-	content := ""
+	content := make([]string, 0, len(emilia.Config.Website.Styles))
 	for _, style := range emilia.Config.Website.Styles {
-		content += fmt.Sprintf(
+		content = append(content, fmt.Sprintf(
 			`<link rel="stylesheet" type="text/css" href="%s">`+"\n",
 			emilia.JoinPath(style),
-		)
+		))
 	}
-	return content
+	return strings.Join(content, "")
 }
 
 func scriptTags(page *internals.Page) string {
@@ -64,7 +68,7 @@ func authorHeader(page *internals.Page) string {
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
 `,
-		emilia.JoinPath(emilia.Config.Author.Header), html.EscapeString(humanize(page.Title)),
+		emilia.JoinPath(emilia.Config.Author.Header), html.EscapeString(processTitle(page.Title)),
 		emilia.Config.Author.Name, emilia.Config.Author.Email,
 	)
 
@@ -93,4 +97,17 @@ func authorHeader(page *internals.Page) string {
 </div>`
 
 	return content
+}
+
+func addTomb(page *internals.Page) {
+	// Empty???
+	if len(page.Contents) < 1 {
+		return
+	}
+	last := &page.Contents[len(page.Contents)-1]
+	// Onnly add it to paragraphs
+	if last.Type != internals.TypeParagraph {
+		return
+	}
+	last.Paragraph += " ◼"
 }
