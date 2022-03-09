@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	workDir      = "sandyuraz"
+	workDir      = "."
 	darknessToml = "darkness.toml"
 	sourceExt    = ".org"
 	targetExt    = ".html"

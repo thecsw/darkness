@@ -29,6 +29,7 @@ func Parse(data string) *internals.Page {
 	inRawHTML := false
 	sourceCodeLang := ""
 	currentList := make([]string, 0, 8)
+
 	for i, rawLine := range lines {
 		line := strings.TrimSpace(rawLine)
 		if isComment(line) {
@@ -36,6 +37,7 @@ func Parse(data string) *internals.Page {
 		}
 		previousContext := currentContext
 		currentContext = currentContext + line
+
 		// If it's an empty line, then process current text
 		if line == "" {
 			// If we are in a code block, record that empty line
@@ -56,7 +58,7 @@ func Parse(data string) *internals.Page {
 			}
 			// New line break means we have to save the paragraph
 			// we just read if we're not currently reading a list
-			if !inList {
+			if !inList && len(strings.TrimSpace(currentContext)) > 0 {
 				page.Contents = append(
 					page.Contents,
 					*formParagraph(strings.TrimSpace(currentContext)))
@@ -131,7 +133,8 @@ func Parse(data string) *internals.Page {
 			// Trim the bullet points with [2:]
 			currentList = append(currentList, line[2:])
 			continue
-		} else if inList {
+		}
+		if inList {
 			// We are not in a list anymore right now but we were right
 			// before this, it means we have to save the list we just read
 			page.Contents = append(page.Contents, internals.Content{
@@ -144,7 +147,6 @@ func Parse(data string) *internals.Page {
 			inList = false
 			// Restore the context
 			currentContext = ""
-			continue
 		}
 		// Find whether the current line is a part of a list
 		// A header is found, append and continue
