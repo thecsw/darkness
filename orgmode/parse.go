@@ -41,6 +41,10 @@ func Parse(data string) *internals.Page {
 		previousContext := currentContext
 		currentContext = currentContext + line
 
+		// fmt.Println("LINE:", line)
+		// fmt.Println("CONTEXT:", currentContext)
+		// fmt.Println(inList, inSourceCode, inRawHTML)
+
 		// If it's an empty line, then process current text
 		if line == "" {
 			// If we are in a code block, record that empty line
@@ -65,6 +69,21 @@ func Parse(data string) *internals.Page {
 				page.Contents = append(
 					page.Contents,
 					*formParagraph(strings.TrimSpace(currentContext)))
+			}
+			// Time to end the list
+			if inList {
+				// We are not in a list anymore right now but we were right
+				// before this, it means we have to save the list we just read
+				page.Contents = append(page.Contents, internals.Content{
+					Type: internals.TypeList,
+					List: currentList,
+				})
+				// Empty the tracker
+				currentList = []string{}
+				// Mark that we left the list context
+				inList = false
+				// Restore the context
+				currentContext = ""
 			}
 			currentContext = ""
 			continue
