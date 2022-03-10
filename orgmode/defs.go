@@ -1,15 +1,18 @@
 package orgmode
 
-import "regexp"
+import (
+	"darkness/internals"
+	"regexp"
+)
 
 var (
 	listPrefixes = []string{"* ", "- ", "+ "}
 
-	LinkRegexp     = regexp.MustCompile(`\[\[([^][]+)\]\[([^][]+)\]\]`)
-	BoldText       = regexp.MustCompile(`(^| )\*([^* ][^*]+[^* ]|[^*])\*([^\w]|$)`)
-	ItalicText     = regexp.MustCompile(`(^| )/([^/ ][^/]+[^/ ]|[^/])/([^\w]|$)`)
-	VerbatimText   = regexp.MustCompile(`(^| )=([^= ][^=]+[^= ]|[^=])=([^\w]|$)`)
-	KeyboardRegexp = regexp.MustCompile(`kbd:\[([^][]+)\]`)
+	LinkRegexp     = internals.LinkRegexp
+	BoldText       = internals.BoldText
+	ItalicText     = internals.ItalicText
+	VerbatimText   = internals.VerbatimText
+	KeyboardRegexp = internals.KeyboardRegexp
 
 	SourceCodeRegexp = regexp.MustCompile(`(?s)#\+begin_src ?([[:print:]]+)?`)
 )
