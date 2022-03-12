@@ -14,14 +14,16 @@ const (
 	TypeSpotifyPlaylist
 	TypeSourceCode
 	TypeRawHTML
+	TypeHorizontalLine
 )
 
 type Page struct {
-	Title    string
-	URL      string
-	MetaTags []MetaTag
-	Links    []Link
-	Contents []Content
+	Title     string
+	URL       string
+	MetaTags  []MetaTag
+	Links     []Link
+	Contents  []Content
+	Footnotes []string
 }
 
 type MetaTag struct {
@@ -40,6 +42,8 @@ type Content struct {
 	Type TypeContent
 
 	HeaderLevel     int
+	HeaderChild     bool
+	HeaderFirst     bool
 	Header          string
 	Paragraph       string
 	List            []string

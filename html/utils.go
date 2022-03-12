@@ -14,6 +14,11 @@ func processText(text string) string {
 	text = internals.VerbatimText.ReplaceAllString(text, `$1<code>$2</code>$3`)
 	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
+
+	text = internals.FootnotePostProcessingRegexp.ReplaceAllString(text, `
+<sup class="footnote">[<a id="_footnoteref_$1" class="footnote" href="#_footnotedef_$1" title="View footnote.">$1</a>]</sup>
+`)
+
 	return text
 }
 

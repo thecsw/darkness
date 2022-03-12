@@ -38,6 +38,10 @@ func Parse(data string) *internals.Page {
 		if isComment(line) {
 			continue
 		}
+		if isHorizonalLine(line) {
+			page.Contents = append(page.Contents, internals.Content{Type: internals.TypeHorizontalLine})
+			continue
+		}
 		previousContext := currentContext
 		currentContext = currentContext + line
 
@@ -174,6 +178,12 @@ func Parse(data string) *internals.Page {
 		// A header is found, append and continue
 		if header := isHeader(line); header != nil &&
 			(((i == 0) && header.HeaderLevel == 1) || header.HeaderLevel > 1) {
+			if !inList && len(previousContext) > 0 {
+				page.Contents = append(
+					page.Contents,
+					*formParagraph(strings.TrimSpace(previousContext)))
+				currentContext = ""
+			}
 			currentContext = ""
 			// Level 1 is the page title
 			if header.HeaderLevel == 1 {
@@ -295,4 +305,8 @@ func sourceExtractLang(line string) string {
 
 func isRawHTML(line string) bool {
 	return line == "++++"
+}
+
+func isHorizonalLine(line string) bool {
+	return line == "---"
 }

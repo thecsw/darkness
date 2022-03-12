@@ -9,8 +9,6 @@ import (
 )
 
 func ExportPage(page *internals.Page) string {
-	headerCounter = 0
-
 	// Add the red tomb to the last paragraph
 	addTomb(page)
 
@@ -34,11 +32,13 @@ func ExportPage(page *internals.Page) string {
 <div id="content">
 %s
 </div>
+%s
 </body>
 </html>
 `,
 		linkTags(page), metaTags(page), scriptTags(page),
 		processTitle(page.Title), styleTagsProcessed, authorHeader(page), strings.Join(content, ""),
+		addFootnotes(page),
 	)
 }
 
@@ -110,4 +110,26 @@ func addTomb(page *internals.Page) {
 		return
 	}
 	last.Paragraph += " ◼"
+}
+
+func addFootnotes(page *internals.Page) string {
+	if len(page.Footnotes) < 1 {
+		return ""
+	}
+	footnotes := make([]string, 0, len(page.Footnotes))
+	for i, footnote := range page.Footnotes {
+		footnotes = append(footnotes, fmt.Sprintf(`
+<div class="footnote" id="_footnotedef_%d">
+<a href="#_footnotedef_%d">%d</a>
+%s
+</div>
+`,
+			i+1, i+1, i+1, footnote))
+	}
+	return fmt.Sprintf(`
+<div id="footnotes">
+<hr>
+%s
+</div>
+`, strings.Join(footnotes, ""))
 }

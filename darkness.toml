@@ -8,7 +8,7 @@ twitter = "@sandyuraz"
 styles = ["css/asciidoctor.css", "css/web.css"]
 
 [author]
-header = "small.png"
+header = "najimi.png"
 name = "email"
 email = "ctu [at] ku [dot] edu"
 

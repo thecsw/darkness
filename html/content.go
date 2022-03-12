@@ -10,23 +10,24 @@ var (
 	contentFunctions = []func(*internals.Content) string{
 		headings, paragraph, list, listNumbered,
 		link, image, youtube, spotifyTrack,
-		spotifyPlaylist, sourceCode,
+		spotifyPlaylist, sourceCode, rawHTML, horizontalLine,
 	}
 )
 
-var headerCounter = 0
-
 func headings(content *internals.Content) string {
 	start := ``
-	if headerCounter > 0 {
+	// if !content.HeaderFirst {
+	// 	start = `</div>` + "\n" + `</div>`
+	// }
+	start = ``
+	if !content.HeaderChild {
 		start = `</div>` + "\n" + `</div>`
 	}
-	headerCounter++
 	return fmt.Sprintf(start+`
 <div class="sect%d">
 <h%d id="%s">%s</h%d>
 <div class="sectionbody">`,
-		content.HeaderLevel,
+		content.HeaderLevel-1,
 		content.HeaderLevel,
 		html.EscapeString(content.Header),
 		processText(content.Header),
@@ -119,4 +120,8 @@ func sourceCode(content *internals.Content) string {
 
 func rawHTML(content *internals.Content) string {
 	return content.RawHTML
+}
+
+func horizontalLine(content *internals.Content) string {
+	return `<hr>`
 }

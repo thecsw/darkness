@@ -46,6 +46,9 @@ func build() {
 	toSave := make(map[string]string)
 	for _, file := range orgfiles {
 		page := orgmode.ParseFile(workDir, file)
+		// Ask emilia to work over the page a little
+		emilia.EnrichHeadings(page)
+		emilia.ResolveFootnotes(page)
 		htmlFilename := strings.Replace(filepath.Base(file), sourceExt, targetExt, 1)
 		targetFile := filepath.Join(filepath.Dir(file), htmlFilename)
 		htmlPage := html.ExportPage(page)
