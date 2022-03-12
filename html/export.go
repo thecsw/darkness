@@ -124,7 +124,7 @@ func addFootnotes(page *internals.Page) string {
 %s
 </div>
 `,
-			i+1, i+1, i+1, footnote))
+			i+1, i+1, i+1, processText(footnote)))
 	}
 	return fmt.Sprintf(`
 <div id="footnotes">
