@@ -16,10 +16,6 @@ var (
 
 func headings(content *internals.Content) string {
 	start := ``
-	// if !content.HeaderFirst {
-	// 	start = `</div>` + "\n" + `</div>`
-	// }
-	start = ``
 	if !content.HeaderChild {
 		start = `</div>` + "\n" + `</div>`
 	}
