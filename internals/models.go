@@ -43,6 +43,8 @@ type Content struct {
 
 	HeaderLevel     int
 	HeaderChild     bool
+	HeaderFirst     bool
+	HeaderLast      bool
 	Header          string
 	Paragraph       string
 	List            []string

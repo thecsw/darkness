@@ -32,6 +32,7 @@ func ExportPage(page *internals.Page) string {
 <div id="content">
 %s
 </div>
+</div>
 %s
 </body>
 </html>

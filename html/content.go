@@ -16,10 +16,13 @@ var (
 
 func headings(content *internals.Content) string {
 	start := ``
-	if !content.HeaderChild {
+	if !content.HeaderChild && !content.HeaderFirst {
 		start = `</div>` + "\n" + `</div>`
 	}
-	return fmt.Sprintf(start+`
+	if content.HeaderChild && !content.HeaderFirst {
+		start = `</div>`
+	}
+	toReturn := fmt.Sprintf(start+`
 <div class="sect%d">
 <h%d id="%s">%s</h%d>
 <div class="sectionbody">`,
@@ -29,6 +32,10 @@ func headings(content *internals.Content) string {
 		processText(content.Header),
 		content.HeaderLevel,
 	)
+	if content.HeaderLast {
+		toReturn += "\n" + `</div>`
+	}
+	return toReturn
 }
 
 func paragraph(content *internals.Content) string {
