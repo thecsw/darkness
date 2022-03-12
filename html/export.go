@@ -63,7 +63,7 @@ func scriptTags(page *internals.Page) string {
 func authorHeader(page *internals.Page) string {
 	content := fmt.Sprintf(`
 <div id="header">
-<h1><img id="myface" src="%s" width="100">%s</h1>
+<h1><img id="myface" src="%s" width="112">%s</h1>
 <div class="details">
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
