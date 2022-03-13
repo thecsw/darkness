@@ -70,6 +70,8 @@ func build() {
 
 func orgToHTML(file string) string {
 	page := orgmode.ParseFile(workDir, file)
+	// Debug line to show the current page
+	//litter.Dump(page)
 	// Ask emilia to work over the page a little
 	emilia.EnrichHeadings(page)
 	emilia.ResolveFootnotes(page)

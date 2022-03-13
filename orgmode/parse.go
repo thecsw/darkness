@@ -39,7 +39,10 @@ func Parse(data string) *internals.Page {
 	}
 
 	for _, rawLine := range lines {
+		// Trimp the line from whitespaces
 		line := strings.TrimSpace(rawLine)
+		// Save the previous state and update the current
+		// one with the newly read line
 		previousContext := currentContext
 		currentContext = currentContext + line
 
@@ -76,7 +79,7 @@ func Parse(data string) *internals.Page {
 				addContent(internals.Content{
 					Type:           internals.TypeSourceCode,
 					SourceCodeLang: sourceCodeLang,
-					SourceCode:     strings.TrimRight(previousContext, "\n"),
+					SourceCode:     previousContext,
 				})
 				continue
 			}
@@ -91,18 +94,17 @@ func Parse(data string) *internals.Page {
 			currentContext = ""
 			continue
 		}
+		// Ignore orgmode comments and options, where source code blocks
+		// and export block options are exceptions to this rule
 		if isComment(line) || isOption(line) {
 			currentContext = previousContext
 			continue
 		}
+		// Add a horizontal line divider
 		if isHorizonalLine(line) {
-			page.Contents = append(page.Contents, internals.Content{
-				Type: internals.TypeHorizontalLine,
-			})
-			currentContext = previousContext
+			addContent(internals.Content{Type: internals.TypeHorizontalLine})
 			continue
 		}
-
 		// Now, we need to parse headings here
 		if header := isHeader(line); header != nil {
 			if header.HeaderLevel == 1 {
@@ -126,6 +128,7 @@ func Parse(data string) *internals.Page {
 				for _, match := range matches {
 					currentList = append(currentList, match[1])
 				}
+				// Add the list
 				addContent(internals.Content{
 					Type: internals.TypeList,
 					List: currentList,
@@ -136,15 +139,21 @@ func Parse(data string) *internals.Page {
 			if len(previousContext) < 1 {
 				continue
 			}
+			// Let's see if our context is a standalone link
+			if link := isLink(currentContext); link != nil {
+				addContent(*link)
+				continue
+			}
+			// By default, save whatever we have as a paragraph
 			addContent(*formParagraph(previousContext))
 			continue
 		}
 		currentContext += " "
 		// Mark if the current line is a list
 		inList = isList(line)
-		// Add a delimeter
+		// Add a delimeter so we can later regex out each item
 		if inList {
-			currentContext += "∆"
+			currentContext += "∆ "
 		}
 	}
 	return page
