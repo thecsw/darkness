@@ -26,185 +26,145 @@ func Parse(data string) *internals.Page {
 	page := &internals.Page{}
 	page.Contents = make([]internals.Content, 0, 16)
 
-	currentContext := ""
 	inList := false
 	inSourceCode := false
 	inRawHTML := false
 	sourceCodeLang := ""
-	currentList := make([]string, 0, 8)
 
-	for i, rawLine := range lines {
+	// Our context is a parody of a state machine
+	currentContext := ""
+	addContent := func(content internals.Content) {
+		page.Contents = append(page.Contents, content)
+		currentContext = ""
+	}
+
+	for _, rawLine := range lines {
 		line := strings.TrimSpace(rawLine)
-		if isComment(line) {
-			continue
-		}
-		if isHorizonalLine(line) {
-			page.Contents = append(page.Contents, internals.Content{Type: internals.TypeHorizontalLine})
-			continue
-		}
 		previousContext := currentContext
 		currentContext = currentContext + line
 
-		// fmt.Println("LINE:", line)
-		// fmt.Println("CONTEXT:", currentContext)
-		// fmt.Println(inList, inSourceCode, inRawHTML)
-
-		// If it's an empty line, then process current text
-		if line == "" {
-			// If we are in a code block, record that empty line
-			// and go to the next line, it's an exception
-			if inSourceCode || inRawHTML {
-				currentContext += "\n"
-				continue
-			}
-			// Empty context
-			if previousContext == "" {
-				continue
-			}
-			// Let's see if our context is a standalone link
-			if link := isLink(currentContext); link != nil {
-				page.Contents = append(page.Contents, *link)
-				currentContext = ""
-				continue
-			}
-			// New line break means we have to save the paragraph
-			// we just read if we're not currently reading a list
-			if !inList && len(strings.TrimSpace(currentContext)) > 0 {
-				page.Contents = append(
-					page.Contents,
-					*formParagraph(strings.TrimSpace(currentContext)))
-			}
-			// Time to end the list
-			if inList {
-				// We are not in a list anymore right now but we were right
-				// before this, it means we have to save the list we just read
-				page.Contents = append(page.Contents, internals.Content{
-					Type: internals.TypeList,
-					List: currentList,
-				})
-				// Empty the tracker
-				currentList = []string{}
-				// Mark that we left the list context
-				inList = false
-				// Restore the context
-				currentContext = ""
-			}
-			currentContext = ""
-			continue
-		}
-		// We can also add raw html lines by surround it with "++++"
-		if isRawHTML(line) {
-			// If we just entered, mark that we're in the raw html now
-			if !inRawHTML {
-				currentContext = ""
-				inRawHTML = true
-			} else {
-				// Otherwise, we are at the end of it, save it
-				page.Contents = append(page.Contents, internals.Content{
+		// If we are in a raw html envoronment
+		if inRawHTML {
+			// Maybe it's time to leave it?
+			if isHTMLExportEnd(line) {
+				// Mark the leave
+				inRawHTML = false
+				// Save the raw html
+				addContent(internals.Content{
 					Type:    internals.TypeRawHTML,
 					RawHTML: previousContext,
 				})
-				inRawHTML = false
+				continue
 			}
-			continue
-		}
-		// Check if we are currently leaving the source code
-		if isSourceCodeEnd(line) {
-			// Leaving the source code block, save the content and reset
-			page.Contents = append(page.Contents, internals.Content{
-				Type:           internals.TypeSourceCode,
-				SourceCode:     previousContext[:len(previousContext)-1], // remove newline
-				SourceCodeLang: sourceCodeLang,
-			})
-			// Reset contexts
-			currentContext = ""
-			sourceCodeLang = ""
-			inSourceCode = false
-			// Go to the next line
-			continue
-		}
-		// Check if we are currently in a source code, special treatment
-		if inSourceCode {
+			// Otherwise, continue saving the context
 			currentContext = previousContext + rawLine + "\n"
 			continue
 		}
-		// Entering the source code block
-		if isSourceCodeBegin(line) {
-			// Stash and save whatever we have
-			if !inSourceCode && len(previousContext) > 0 {
-				page.Contents = append(
-					page.Contents,
-					*formParagraph(strings.TrimSpace(previousContext)))
-				currentContext = ""
-			}
-			// We ignore the '#+begin_src' but need to extract the language
-			sourceCodeLang = sourceExtractLang(line)
-			// Mark that we are reading source code now
-			inSourceCode = true
-			// Remove that begin_src from the context
+		// Now, check if we can enter a raw html environment
+		if isHTMLExportBegin(line) {
+			inRawHTML = true
 			currentContext = previousContext
 			continue
 		}
-		// We are in a list now and it's not the first line (reserved for title)
-		if isList(line) && i != 0 {
-			// If we were not in a list context before, save what we have
-			if !inList && len(previousContext) > 0 {
-				page.Contents = append(
-					page.Contents,
-					*formParagraph(strings.TrimSpace(previousContext)))
-				currentContext = ""
-			}
-			// Mark that we entered a list context
-			inList = true
-			// Trim the bullet points with [2:]
-			currentList = append(currentList, line[2:])
-			continue
-		}
-		if inList {
-			// We are not in a list anymore right now but we were right
-			// before this, it means we have to save the list we just read
-			page.Contents = append(page.Contents, internals.Content{
-				Type: internals.TypeList,
-				List: currentList,
-			})
-			// Empty the tracker
-			currentList = []string{}
-			// Mark that we left the list context
-			inList = false
-			// Restore the context
-			currentContext = ""
-		}
-		// Find whether the current line is a part of a list
-		// A header is found, append and continue
-		if header := isHeader(line); header != nil &&
-			(((i == 0) && header.HeaderLevel == 1) || header.HeaderLevel > 1) {
-			if !inList && len(previousContext) > 0 {
-				page.Contents = append(
-					page.Contents,
-					*formParagraph(strings.TrimSpace(previousContext)))
-				currentContext = ""
-			}
-			currentContext = ""
-			// Level 1 is the page title
-			if header.HeaderLevel == 1 {
-				page.Title = header.Header
+		// If we are in a source code block?
+		if inSourceCode {
+			// Check if it's time to leave
+			if isSourceCodeEnd(line) {
+				// Mark the leave
+				inSourceCode = false
+				// Save the source code
+				addContent(internals.Content{
+					Type:           internals.TypeSourceCode,
+					SourceCodeLang: sourceCodeLang,
+					SourceCode:     strings.TrimRight(previousContext, "\n"),
+				})
 				continue
 			}
-			page.Contents = append(page.Contents, *header)
+			// Save the context and continue
+			currentContext = previousContext + rawLine + "\n"
+			continue
+		}
+		// Should we enter a source code environment?
+		if isSourceCodeBegin(line) {
+			sourceCodeLang = sourceExtractLang(line)
+			inSourceCode = true
+			currentContext = ""
+			continue
+		}
+		if isComment(line) || isOption(line) {
+			currentContext = previousContext
+			continue
+		}
+		if isHorizonalLine(line) {
+			page.Contents = append(page.Contents, internals.Content{
+				Type: internals.TypeHorizontalLine,
+			})
+			currentContext = previousContext
+			continue
+		}
+
+		// Now, we need to parse headings here
+		if header := isHeader(line); header != nil {
+			if header.HeaderLevel == 1 {
+				page.Title = header.Header
+				currentContext = ""
+				continue
+			}
+			addContent(*header)
+			continue
+		}
+		// If we hit an empty line, end the whatever context we had
+		if line == "" {
+			// If we were in a list, save it as a list
+			if inList {
+				matches := UnorderedListRegexp.FindAllStringSubmatch(previousContext, -1)
+				// Shouldn't happen, continue as a failure
+				if len(matches) < 1 {
+					continue
+				}
+				currentList := make([]string, 0, len(matches))
+				for _, match := range matches {
+					currentList = append(currentList, match[1])
+				}
+				addContent(internals.Content{
+					Type: internals.TypeList,
+					List: currentList,
+				})
+				continue
+			}
+			// Otherwise, save as a paragraph if not empty
+			if len(previousContext) < 1 {
+				continue
+			}
+			addContent(*formParagraph(previousContext))
 			continue
 		}
 		currentContext += " "
+		// Mark if the current line is a list
+		inList = isList(line)
+		// Add a delimeter
+		if inList {
+			currentContext += "∆"
+		}
 	}
 	return page
 }
 
 func isHeader(line string) *internals.Content {
 	level := 0
-	for _, c := range line {
-		if c != '*' {
-			break
-		}
-		level++
+	switch {
+	case strings.HasPrefix(line, "* "):
+		level = 1
+	case strings.HasPrefix(line, "** "):
+		level = 2
+	case strings.HasPrefix(line, "*** "):
+		level = 3
+	case strings.HasPrefix(line, "**** "):
+		level = 4
+	case strings.HasPrefix(line, "***** "):
+		level = 5
+	default:
+		level = 0
 	}
 	// Not a header
 	if level < 1 {
@@ -220,6 +180,10 @@ func isHeader(line string) *internals.Content {
 
 func isComment(line string) bool {
 	return strings.HasPrefix(line, "# ")
+}
+
+func isOption(line string) bool {
+	return strings.HasPrefix(line, "#+")
 }
 
 func isLink(line string) *internals.Content {
@@ -283,28 +247,27 @@ func formParagraph(text string) *internals.Content {
 }
 
 func isList(line string) bool {
-	for _, prefix := range listPrefixes {
-		if strings.HasPrefix(line, prefix) {
-			return true
-		}
-	}
-	return false
+	return strings.HasPrefix(line, "- ")
 }
 
 func isSourceCodeBegin(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), `#+begin_src`)
+	return strings.HasPrefix(strings.ToLower(line), "#+begin_src")
 }
 
 func isSourceCodeEnd(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), `#+end_src`)
+	return strings.ToLower(line) == "#+end_src"
 }
 
 func sourceExtractLang(line string) string {
 	return SourceCodeRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
 }
 
-func isRawHTML(line string) bool {
-	return line == "++++"
+func isHTMLExportBegin(line string) bool {
+	return line == "#+begin_export html"
+}
+
+func isHTMLExportEnd(line string) bool {
+	return line == "#+end_export"
 }
 
 func isHorizonalLine(line string) bool {

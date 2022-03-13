@@ -16,8 +16,6 @@ import (
 
 func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
-	initFlags()
-	flag.Parse()
 	emilia.InitDarkness(darknessToml)
 	html.InitConstantTags()
 
@@ -26,13 +24,26 @@ func main() {
 		return
 	}
 
-	if os.Args[1] == "build" {
+	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
+	buildCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
+	buildCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
+	buildCmd.StringVar(&sourceExt, "source", ".org", "source extension")
+	buildCmd.StringVar(&targetExt, "target", ".html", "target extension")
+
+	fileCmd := flag.NewFlagSet("file", flag.ExitOnError)
+	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
+
+	switch os.Args[1] {
+	case "file":
+		fileCmd.Parse(os.Args[2:])
+		fmt.Println(orgToHTML(filename))
+	case "build":
+		buildCmd.Parse(os.Args[2:])
 		build()
-		return
-	}
-	if os.Args[1] == "lalatina" {
+	case "lalatina":
 		fmt.Println("DONT CALL ME THAT >.<")
-		return
+	default:
+		fmt.Println("see help, you pathetic excuse of a man")
 	}
 }
 
@@ -45,15 +56,9 @@ func build() {
 	fmt.Printf("Working on them... ")
 	toSave := make(map[string]string)
 	for _, file := range orgfiles {
-		page := orgmode.ParseFile(workDir, file)
-		// Ask emilia to work over the page a little
-		emilia.EnrichHeadings(page)
-		emilia.ResolveFootnotes(page)
 		htmlFilename := strings.Replace(filepath.Base(file), sourceExt, targetExt, 1)
 		targetFile := filepath.Join(filepath.Dir(file), htmlFilename)
-		htmlPage := html.ExportPage(page)
-		htmlPage = emilia.AddHolosceneTitles(file, htmlPage)
-		toSave[targetFile] = htmlPage
+		toSave[targetFile] = orgToHTML(file)
 	}
 	fmt.Println("done")
 	fmt.Printf("Flushing files... ")
@@ -63,19 +68,23 @@ func build() {
 	fmt.Println("done")
 }
 
+func orgToHTML(file string) string {
+	page := orgmode.ParseFile(workDir, file)
+	// Ask emilia to work over the page a little
+	emilia.EnrichHeadings(page)
+	emilia.ResolveFootnotes(page)
+	htmlPage := html.ExportPage(page)
+	htmlPage = emilia.AddHolosceneTitles(file, htmlPage)
+	return htmlPage
+}
+
 var (
 	workDir      = "."
 	darknessToml = "darkness.toml"
 	sourceExt    = ".org"
 	targetExt    = ".html"
+	filename     = "index.org"
 )
-
-func initFlags() {
-	flag.StringVar(&workDir, "dir", ".", "where do I look for files")
-	flag.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	flag.StringVar(&sourceExt, "source", ".org", "source extension [default: .org]")
-	flag.StringVar(&targetExt, "target", ".html", "target extension [default: .html]")
-}
 
 func findFilesByExt(dir, ext string) ([]string, error) {
 	files := make([]string, 0, 32)

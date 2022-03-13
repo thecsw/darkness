@@ -13,8 +13,11 @@ var (
 
 func InitDarkness(file string) {
 	Config = &DarknessConfig{}
-	data, _ := ioutil.ReadFile(file)
-	_, err := toml.Decode(string(data), Config)
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		panic(err)
+	}
+	_, err = toml.Decode(string(data), Config)
 	if err != nil {
 		panic(err)
 	}
