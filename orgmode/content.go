@@ -125,15 +125,15 @@ func sourceExtractLang(line string) string {
 }
 
 func isHTMLExportBegin(line string) bool {
-	return line == "#+begin_export html"
+	return strings.HasPrefix(strings.ToLower(line), "#+begin_export html")
 }
 
 func isHTMLExportEnd(line string) bool {
-	return line == "#+end_export"
+	return strings.HasPrefix(strings.ToLower(line), "#+end_export")
 }
 
 func isHorizonalLine(line string) bool {
-	return line == "---"
+	return strings.HasPrefix(line, "---")
 }
 
 func isAttentionBlack(line string) *internals.Content {

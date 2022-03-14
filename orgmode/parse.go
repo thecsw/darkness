@@ -20,9 +20,13 @@ func ParseFile(workDir, file string) *internals.Page {
 }
 
 func Parse(data string) *internals.Page {
+	// Add a newline before every heading just in case if
+	// there is no terminating empty line before each one
+	data = HeadingRegexp.ReplaceAllString(data, `\n$1 `)
 	// Pad a newline so that last elements can be processed
 	// properly before an EOF is encountered during parsing
 	data += "\n"
+	// Split the data into lines
 	lines := strings.Split(data, "\n")
 	page := &internals.Page{}
 	page.Contents = make([]internals.Content, 0, 16)
@@ -101,11 +105,6 @@ func Parse(data string) *internals.Page {
 			currentContext = previousContext
 			continue
 		}
-		// Add a horizontal line divider
-		if isHorizonalLine(line) {
-			addContent(internals.Content{Type: internals.TypeHorizontalLine})
-			continue
-		}
 		// Now, we need to parse headings here
 		if header := isHeader(line); header != nil {
 			if header.HeadingLevel == 1 {
@@ -118,6 +117,15 @@ func Parse(data string) *internals.Page {
 		}
 		// If we hit an empty line, end the whatever context we had
 		if line == "" {
+			// Empty context gets us nowhere
+			if len(previousContext) < 1 {
+				continue
+			}
+			// Add a horizontal line divider
+			if isHorizonalLine(previousContext) {
+				addContent(internals.Content{Type: internals.TypeHorizontalLine})
+				continue
+			}
 			// If we were in a list, save it as a list
 			if inList {
 				matches := UnorderedListRegexp.FindAllStringSubmatch(previousContext, -1)
@@ -134,10 +142,6 @@ func Parse(data string) *internals.Page {
 					Type: internals.TypeList,
 					List: currentList,
 				})
-				continue
-			}
-			// Otherwise, save as a paragraph if not empty
-			if len(previousContext) < 1 {
 				continue
 			}
 			// Let's see if our context is a standalone link

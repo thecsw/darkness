@@ -11,4 +11,5 @@ var (
 	LinkRegexp           = internals.LinkRegexp
 	AttentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP):\s*(.+)`)
 	UnorderedListRegexp  = regexp.MustCompile(`(?mU)- (.+) ∆`)
+	HeadingRegexp        = regexp.MustCompile(`(\*{1,5})[ ]`)
 )
