@@ -10,7 +10,8 @@ import (
 func processText(text string) string {
 	// To make bold itolics, it has to be wrapped in /*...*/
 	// instead of */.../*
-	text = strings.ReplaceAll(text, "*/", "/*")
+	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
+	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
 
 	text = html.EscapeString(text)
 	text = internals.ItalicText.ReplaceAllString(text, `$1<em>$2</em>$3`)
