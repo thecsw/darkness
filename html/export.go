@@ -106,8 +106,8 @@ func addTomb(page *internals.Page) {
 		return
 	}
 	last := &page.Contents[len(page.Contents)-1]
-	// Onnly add it to paragraphs
-	if last.Type != internals.TypeParagraph {
+	// Only add it to paragraphs
+	if !last.IsParagraph() {
 		return
 	}
 	last.Paragraph += " ◼"

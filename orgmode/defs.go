@@ -6,7 +6,8 @@ import (
 )
 
 var (
-	SourceCodeRegexp    = regexp.MustCompile(`(?s)#\+begin_src ?([[:print:]]+)?`)
-	LinkRegexp          = internals.LinkRegexp
-	UnorderedListRegexp = regexp.MustCompile(`(?mU)- (.+) ∆`)
+	SourceCodeRegexp     = regexp.MustCompile(`(?s)#\+begin_src ?([[:print:]]+)?`)
+	LinkRegexp           = internals.LinkRegexp
+	AttentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP):\s*(.+)`)
+	UnorderedListRegexp  = regexp.MustCompile(`(?mU)- (.+) ∆`)
 )

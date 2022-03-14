@@ -10,29 +10,30 @@ var (
 	contentFunctions = []func(*internals.Content) string{
 		headings, paragraph, list, listNumbered,
 		link, image, youtube, spotifyTrack,
-		spotifyPlaylist, sourceCode, rawHTML, horizontalLine,
+		spotifyPlaylist, sourceCode, rawHTML,
+		horizontalLine, attentionBlock,
 	}
 )
 
 func headings(content *internals.Content) string {
 	start := ``
-	if !content.HeaderChild && !content.HeaderFirst {
+	if !content.HeadingChild && !content.HeadingFirst {
 		start = `</div>` + "\n" + `</div>`
 	}
-	if content.HeaderChild && !content.HeaderFirst {
+	if content.HeadingChild && !content.HeadingFirst {
 		start = `</div>`
 	}
 	toReturn := fmt.Sprintf(start+`
 <div class="sect%d">
 <h%d id="%s">%s</h%d>
 <div class="sectionbody">`,
-		content.HeaderLevel-1,
-		content.HeaderLevel,
+		content.HeadingLevel-1,
+		content.HeadingLevel,
 		html.EscapeString(content.Header),
 		processText(content.Header),
-		content.HeaderLevel,
+		content.HeadingLevel,
 	)
-	if content.HeaderLast {
+	if content.HeadingLast {
 		toReturn += "\n" + `</div>`
 	}
 	return toReturn
@@ -127,4 +128,20 @@ func rawHTML(content *internals.Content) string {
 
 func horizontalLine(content *internals.Content) string {
 	return `<hr>`
+}
+
+func attentionBlock(content *internals.Content) string {
+	return fmt.Sprintf(`
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">%s</div>
+</td>
+<td class="content">
+%s
+</td>
+</tr>
+</table>
+</div>`, content.AttentionTitle, processText(content.AttentionText))
 }

@@ -17,7 +17,7 @@ func metaTags(page *internals.Page) string {
 	description := ""
 	for _, content := range page.Contents {
 		// We are only looking for paragraphs
-		if content.Type != internals.TypeParagraph {
+		if !content.IsParagraph() {
 			continue
 		}
 		// Skip holoscene times

@@ -12,7 +12,7 @@ func ResolveFootnotes(page *internals.Page) {
 	for i := range page.Contents {
 		c := &page.Contents[i]
 		// Only replace footnotes in paragraphs
-		if c.Type != internals.TypeParagraph {
+		if !c.IsParagraph() {
 			continue
 		}
 		matches := internals.FootnoteRegexp.FindAllStringSubmatch(c.Paragraph, -1)
