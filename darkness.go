@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"darkness/emilia"
 	"darkness/html"
@@ -16,38 +17,62 @@ import (
 
 func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
-	emilia.InitDarkness(darknessToml)
-	html.InitConstantTags()
 
 	if len(os.Args) == 1 {
-		fmt.Println("hm? I didn't get anything, see -help")
+		help()
 		return
 	}
 
-	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
-	buildCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
-	buildCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	buildCmd.StringVar(&sourceExt, "source", ".org", "source extension")
-	buildCmd.StringVar(&targetExt, "target", ".html", "target extension")
-
-	fileCmd := flag.NewFlagSet("file", flag.ExitOnError)
-	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
-
 	switch os.Args[1] {
 	case "file":
-		fileCmd.Parse(os.Args[2:])
-		fmt.Println(orgToHTML(filename))
+		oneFile()
 	case "build":
-		buildCmd.Parse(os.Args[2:])
 		build()
+	case "megumin":
+		megumin()
 	case "lalatina":
-		fmt.Println("DONT CALL ME THAT >.<")
+		fmt.Println("DONT CALL ME THAT (╥︣﹏᷅╥)")
+	case "aqua":
+		os.Exit(1)
+	case "-h", "--help", "-help", "help":
+		help()
 	default:
 		fmt.Println("see help, you pathetic excuse of a man")
 	}
 }
 
+func help() {
+	fmt.Println(`My name is Darkness.
+My calling is that of a crusader.
+Do Shometing Gwazy!
+
+Here are the commands you can use, -help is supported:
+  file - build a single input file and output to stdout
+  build - build the entire directory
+  megumin - blow up the directory
+  lalatina - DO NOT
+  aqua - ...
+
+Don't hold back! You have no choice!`)
+}
+
+func oneFile() {
+	fileCmd := flag.NewFlagSet("file", flag.ExitOnError)
+	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
+	fileCmd.Parse(os.Args[2:])
+	fmt.Println(orgToHTML(filename))
+}
+
 func build() {
+	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
+	buildCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
+	buildCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
+	buildCmd.StringVar(&sourceExt, "source", ".org", "source extension")
+	buildCmd.StringVar(&targetExt, "target", ".html", "target extension")
+	buildCmd.Parse(os.Args[2:])
+
+	emilia.InitDarkness(darknessToml)
+	html.InitConstantTags()
 	orgfiles, err := findFilesByExt(workDir, sourceExt)
 	if err != nil {
 		panic(err)
@@ -56,9 +81,7 @@ func build() {
 	fmt.Printf("Working on them... ")
 	toSave := make(map[string]string)
 	for _, file := range orgfiles {
-		htmlFilename := strings.Replace(filepath.Base(file), sourceExt, targetExt, 1)
-		targetFile := filepath.Join(filepath.Dir(file), htmlFilename)
-		toSave[targetFile] = orgToHTML(file)
+		toSave[getTarget(file)] = orgToHTML(file)
 	}
 	fmt.Println("done")
 	fmt.Printf("Flushing files... ")
@@ -66,6 +89,34 @@ func build() {
 		ioutil.WriteFile(k, []byte(v), 0644)
 	}
 	fmt.Println("done")
+}
+
+func aqua() {
+
+}
+
+func megumin() {
+	orgfiles, err := findFilesByExt(workDir, sourceExt)
+	if err != nil {
+		panic(err)
+	}
+	delayedSentencePrint([]string{
+		"Darker than black, darker than darkness, combine with my intense crimson.",
+		"Time to wake up, descend to these borders and appear as an intangible distortion.",
+		"Dance, dance, dance!",
+		"May a destructive force flood my torrent of power, a destructive force like no other!",
+		"Send all creation to its source!",
+		"Come out of your abyss!",
+		"Humanity knows no other more powerful offensive technique!",
+		"It is the ultimate magical attack!",
+		"Explosion!",
+	})
+	for _, orgfile := range orgfiles {
+		toRemove := getTarget(orgfile)
+		fmt.Printf("%s blew up!\n", toRemove)
+		time.Sleep(50 * time.Millisecond)
+		//os.Remove(toRemove)
+	}
 }
 
 func orgToHTML(file string) string {
@@ -101,4 +152,17 @@ func findFilesByExt(dir, ext string) ([]string, error) {
 		return nil
 	})
 	return files, err
+}
+
+func getTarget(file string) string {
+	htmlFilename := strings.Replace(filepath.Base(file), sourceExt, targetExt, 1)
+	return filepath.Join(filepath.Dir(file), htmlFilename)
+}
+
+func delayedSentencePrint(lines []string) {
+	for _, line := range lines {
+		fmt.Println(line)
+		time.Sleep(time.Duration(len(line)) * 40 * time.Millisecond)
+	}
+
 }
