@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/html"
@@ -197,7 +198,7 @@ func delayedSentencePrint(line string) {
 	for _, c := range line {
 		fmt.Printf("%c", c)
 		time.Sleep(60 * time.Millisecond)
-		if c == ',' {
+		if unicode.IsPunct(c) {
 			time.Sleep(400 * time.Millisecond)
 		}
 	}
