@@ -8,6 +8,7 @@ var (
 	ItalicText     = regexp.MustCompile(`(?mU)(^|[ ()_%<>])/(\S|\S\S|\S.+\S)/($|[ (),.!?;&_%<>])`)
 	VerbatimText   = regexp.MustCompile(`(?mU)(^|[ ()_%<>])=(\S|\S\S|\S.+\S)=($|[ (),.!?;&_%<>])`)
 	KeyboardRegexp = regexp.MustCompile(`kbd:\[([^][]+)\]`)
+	MathRegexp     = regexp.MustCompile(`(?mU)\$(.+)\$`)
 
 	FootnoteRegexp               = regexp.MustCompile(`\[fn::([^][]+)\]`)
 	FootnotePostProcessingRegexp = regexp.MustCompile(`!(\d+)!`)

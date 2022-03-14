@@ -30,8 +30,8 @@ func headings(content *internals.Content) string {
 <div class="sectionbody">`,
 		content.HeadingLevel-1,
 		content.HeadingLevel,
-		html.EscapeString(content.Header),
-		processText(content.Header),
+		html.EscapeString(content.Heading),
+		processText(content.Heading),
 		content.HeadingLevel,
 	)
 	if content.HeadingLast {

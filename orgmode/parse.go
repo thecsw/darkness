@@ -28,7 +28,15 @@ func Parse(data string) *internals.Page {
 	data += "\n"
 	// Split the data into lines
 	lines := strings.Split(data, "\n")
-	page := &internals.Page{}
+	page := &internals.Page{
+		Title:     "",
+		URL:       "",
+		MetaTags:  []internals.MetaTag{},
+		Links:     []internals.Link{},
+		Contents:  []internals.Content{},
+		Footnotes: []string{},
+		Scripts:   []string{},
+	}
 	page.Contents = make([]internals.Content, 0, 16)
 
 	inList := false
@@ -108,7 +116,7 @@ func Parse(data string) *internals.Page {
 		// Now, we need to parse headings here
 		if header := isHeader(line); header != nil {
 			if header.HeadingLevel == 1 {
-				page.Title = header.Header
+				page.Title = header.Heading
 				currentContext = ""
 				continue
 			}

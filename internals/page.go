@@ -7,6 +7,7 @@ type Page struct {
 	Links     []Link
 	Contents  []Content
 	Footnotes []string
+	Scripts   []string
 }
 
 type MetaTag struct {

@@ -30,7 +30,7 @@ func isHeader(line string) *internals.Content {
 	return &internals.Content{
 		Type:         internals.TypeHeading,
 		HeadingLevel: level,
-		Header:       line[level+1:],
+		Heading:      line[level+1:],
 	}
 }
 

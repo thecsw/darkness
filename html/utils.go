@@ -16,6 +16,7 @@ func processText(text string) string {
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
 
 	text = internals.LinkRegexp.ReplaceAllString(text, `<a href="$1">$2</a>`)
+	text = internals.MathRegexp.ReplaceAllString(text, `\($1\)`)
 
 	text = internals.FootnotePostProcessingRegexp.ReplaceAllString(text, `
 <sup class="footnote">[<a id="_footnoteref_$1" class="footnote" href="#_footnotedef_$1" title="View footnote.">$1</a>]</sup>
@@ -26,5 +27,6 @@ func processText(text string) string {
 
 func processTitle(title string) string {
 	title = strings.ReplaceAll(title, "'s", "’s")
+	title = internals.MathRegexp.ReplaceAllString(title, `\($1\)`)
 	return title
 }

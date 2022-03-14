@@ -26,7 +26,7 @@ type Content struct {
 	HeadingChild    bool
 	HeadingFirst    bool
 	HeadingLast     bool
-	Header          string
+	Heading         string
 	Paragraph       string
 	List            []string
 	ListNumbered    []string

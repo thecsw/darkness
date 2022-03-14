@@ -55,11 +55,14 @@ func styleTags() string {
 	return strings.Join(content, "")
 }
 
+var defaultScripts = []string{
+	`<script type="module">document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");</script>`,
+	`<script async src="https://sandyuraz.com/scripts/time.js"></script>`,
+}
+
 func scriptTags(page *internals.Page) string {
-	scripts := `<script type="module">document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");</script>
-<script async src="https://sandyuraz.com//scripts/time.js"></script>
-`
-	return scripts
+	allScripts := append(defaultScripts, page.Scripts...)
+	return strings.Join(allScripts, "\n")
 }
 
 func authorHeader(page *internals.Page) string {

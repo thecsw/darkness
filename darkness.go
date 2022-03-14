@@ -133,6 +133,7 @@ func orgToHTML(file string) string {
 	// Ask emilia to work over the page a little
 	emilia.EnrichHeadings(page)
 	emilia.ResolveFootnotes(page)
+	emilia.AddMathSupport(page)
 	htmlPage := html.ExportPage(page)
 	htmlPage = emilia.AddHolosceneTitles(file, htmlPage)
 	return htmlPage
