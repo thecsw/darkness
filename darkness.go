@@ -11,14 +11,13 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/pkg/profile"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/html"
 	"github.com/thecsw/darkness/orgmode"
 )
 
 func main() {
-	defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 
 	if len(os.Args) == 1 {
 		help()
