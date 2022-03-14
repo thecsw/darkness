@@ -9,25 +9,32 @@ import (
 
 func ResolveFootnotes(page *internals.Page) {
 	footnotes := make([]string, 0, 4)
-	fnCounter := 0
 	for i := range page.Contents {
 		c := &page.Contents[i]
-		// Only replace footnotes in paragraphs
-		if !c.IsParagraph() {
-			continue
+		// Replace footnotes in paragraphs
+		if c.IsParagraph() {
+			c.Paragraph = findFootnotes(c.Paragraph, &footnotes)
 		}
-		matches := internals.FootnoteRegexp.FindAllStringSubmatch(c.Paragraph, -1)
-		// no footnotes found
-		if len(matches) < 1 {
-			continue
+		// Footnotes can also appear in lists
+		if c.IsList() {
+			for i := 0; i < len(c.List); i++ {
+				c.List[i] = findFootnotes(c.List[i], &footnotes)
+			}
 		}
-		newParagraph := c.Paragraph
-		for _, match := range matches {
-			fnCounter++
-			footnotes = append(footnotes, match[1])
-			newParagraph = strings.Replace(newParagraph, match[0], fmt.Sprintf("!%d!", fnCounter), 1)
-		}
-		c.Paragraph = newParagraph
 	}
 	page.Footnotes = footnotes
+}
+
+func findFootnotes(text string, footnotes *[]string) string {
+	matches := internals.FootnoteRegexp.FindAllStringSubmatch(text, -1)
+	// no footnotes found
+	if len(matches) < 1 {
+		return text
+	}
+	newText := text
+	for _, match := range matches {
+		*footnotes = append(*footnotes, match[1])
+		newText = strings.Replace(newText, match[0], fmt.Sprintf("!%d!", len(*footnotes)), 1)
+	}
+	return newText
 }
