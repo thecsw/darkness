@@ -1,9 +1,10 @@
 package html
 
 import (
-	"darkness/internals"
 	"fmt"
 	"html"
+
+	"github.com/thecsw/darkness/internals"
 )
 
 var (

@@ -1,9 +1,10 @@
 package html
 
 import (
-	"darkness/emilia"
-	"darkness/internals"
 	"fmt"
+
+	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/internals"
 )
 
 type rel struct {

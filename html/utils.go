@@ -1,9 +1,10 @@
 package html
 
 import (
-	"darkness/internals"
 	"html"
 	"strings"
+
+	"github.com/thecsw/darkness/internals"
 )
 
 func processText(text string) string {

@@ -1,8 +1,9 @@
 package orgmode
 
 import (
-	"darkness/internals"
 	"strings"
+
+	"github.com/thecsw/darkness/internals"
 )
 
 func isHeader(line string) *internals.Content {

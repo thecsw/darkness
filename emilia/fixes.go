@@ -1,6 +1,6 @@
 package emilia
 
-import "darkness/internals"
+import "github.com/thecsw/darkness/internals"
 
 func EnrichHeadings(page *internals.Page) {
 	minHeadingLevel := 999

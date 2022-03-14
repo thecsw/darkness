@@ -10,9 +10,9 @@ import (
 	"strings"
 	"time"
 
-	"darkness/emilia"
-	"darkness/html"
-	"darkness/orgmode"
+	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/html"
+	"github.com/thecsw/darkness/orgmode"
 )
 
 func main() {

@@ -1,9 +1,10 @@
 package emilia
 
 import (
-	"darkness/internals"
 	"fmt"
 	"strings"
+
+	"github.com/thecsw/darkness/internals"
 )
 
 func ResolveFootnotes(page *internals.Page) {

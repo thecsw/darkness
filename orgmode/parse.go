@@ -1,11 +1,12 @@
 package orgmode
 
 import (
-	"darkness/emilia"
-	"darkness/internals"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
+
+	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/internals"
 )
 
 func ParseFile(workDir, file string) *internals.Page {

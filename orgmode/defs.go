@@ -1,8 +1,9 @@
 package orgmode
 
 import (
-	"darkness/internals"
 	"regexp"
+
+	"github.com/thecsw/darkness/internals"
 )
 
 var (

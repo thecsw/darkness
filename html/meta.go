@@ -1,11 +1,12 @@
 package html
 
 import (
-	"darkness/emilia"
-	"darkness/internals"
 	"fmt"
 	"html"
 	"strings"
+
+	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/internals"
 )
 
 const (
