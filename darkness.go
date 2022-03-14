@@ -96,11 +96,18 @@ func aqua() {
 }
 
 func megumin() {
+	explosionCmd := flag.NewFlagSet("megumin", flag.ExitOnError)
+	explosionCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
+	explosionCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
+	explosionCmd.StringVar(&sourceExt, "source", ".org", "source extension")
+	explosionCmd.StringVar(&targetExt, "target", ".html", "target extension")
+	emilia.InitDarkness(darknessToml)
+
 	orgfiles, err := findFilesByExt(workDir, sourceExt)
 	if err != nil {
 		panic(err)
 	}
-	delayedSentencePrint([]string{
+	delayedLinesPrint([]string{
 		"Darker than black, darker than darkness, combine with my intense crimson.",
 		"Time to wake up, descend to these borders and appear as an intangible distortion.",
 		"Dance, dance, dance!",
@@ -113,13 +120,13 @@ func megumin() {
 	})
 	for _, orgfile := range orgfiles {
 		toRemove := getTarget(orgfile)
-		fmt.Printf("%s blew up!\n", toRemove)
+		fmt.Println(toRemove, "went boom!")
 		time.Sleep(50 * time.Millisecond)
 		if err := os.Remove(toRemove); err != nil {
 			fmt.Println(toRemove, "failed to blow up!!")
 		}
 	}
-	delayedSentencePrint([]string{
+	delayedLinesPrint([]string{
 		"Wahahahahaha!",
 		"My name is Megumin, the number one mage of Axel!",
 		"Come, you shall all become my experience points today!",
@@ -177,10 +184,21 @@ func getTarget(file string) string {
 	return filepath.Join(filepath.Dir(file), htmlFilename)
 }
 
-func delayedSentencePrint(lines []string) {
+func delayedLinesPrint(lines []string) {
 	for _, line := range lines {
-		fmt.Println(line)
-		time.Sleep(time.Duration(len(line)) * 40 * time.Millisecond)
+		time.Sleep(200 * time.Millisecond)
+		delayedSentencePrint(line)
+		time.Sleep(900 * time.Millisecond)
+		fmt.Printf("\n")
 	}
+}
 
+func delayedSentencePrint(line string) {
+	for _, c := range line {
+		fmt.Printf("%c", c)
+		time.Sleep(60 * time.Millisecond)
+		if c == ',' {
+			time.Sleep(400 * time.Millisecond)
+		}
+	}
 }
