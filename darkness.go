@@ -117,6 +117,11 @@ func megumin() {
 		time.Sleep(50 * time.Millisecond)
 		//os.Remove(toRemove)
 	}
+	delayedSentencePrint([]string{
+		"Wahahahahaha!",
+		"My name is Megumin, the number one mage of Axel!",
+		"Come, you shall all become my experience points today!",
+	})
 }
 
 func orgToHTML(file string) string {
