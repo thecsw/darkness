@@ -90,7 +90,7 @@ func image(content *internals.Content) string {
 </div>
 <div class="title">%s</div>
 </div>
-<hr>`, content.Link, content.Link, content.LinkTitle, content.LinkTitle)
+<hr>`, content.Link, content.Link, content.LinkTitle, processText(content.LinkTitle))
 }
 
 func youtube(content *internals.Content) string {
