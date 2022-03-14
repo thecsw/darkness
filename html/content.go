@@ -77,8 +77,8 @@ func listNumbered(content *internals.Content) string {
 }
 
 func link(content *internals.Content) string {
-	// TODO
-	return ""
+	return fmt.Sprintf(`
+<a href="%s">%s</a>`, content.Link, processText(content.LinkTitle))
 }
 
 func image(content *internals.Content) string {

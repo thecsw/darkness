@@ -67,39 +67,32 @@ func isLink(line string) *internals.Content {
 		Link:      link,
 		LinkTitle: text,
 	}
-	// Our link is standalone. Check if it's an image
-	if strings.HasSuffix(link, ".png") || strings.HasSuffix(link, ".svg") ||
-		strings.HasSuffix(link, ".jpg") || strings.HasSuffix(link, ".gif") {
+	switch {
+	case ImageExtRegexp.MatchString(link):
+		// Our link is standalone. Check if it's an image
 		content.Type = internals.TypeImage
 		content.ImageSource = link
 		content.ImageCaption = text
-		return content
-	}
-	// Our link is standalone. Check if it's an audio file
-	if strings.HasSuffix(link, ".mp3") {
+	case AudioFileExtRegexp.MatchString(link):
+		// Our link is standalone. Check if it's an audio file
 		content.Type = internals.TypeAudioFile
 		content.AudioFile = link
-		return content
-	}
-	// Check if it's a youtube video embed
-	if strings.HasPrefix(link, "https://youtu.be/") {
+	case strings.HasPrefix(link, "https://youtu.be/"):
+		// Check if it's a youtube video embed
 		content.Type = internals.TypeYoutube
 		content.Youtube = link[17:]
-		return content
-	}
-	// Check if it's a spotify track link
-	if strings.HasPrefix(link, "https://open.spotify.com/track/") {
+	case strings.HasPrefix(link, "https://open.spotify.com/track/"):
+		// Check if it's a spotify track link
 		content.Type = internals.TypeSpotifyTrack
 		content.SpotifyTrack = link[31:]
-		return content
-	}
-	// Check if it's a spotify playlist link
-	if strings.HasPrefix(link, "https://open.spotify.com/playlist/") {
+	case strings.HasPrefix(link, "https://open.spotify.com/playlist/"):
+		// Check if it's a spotify playlist link
 		content.Type = internals.TypeSpotifyPlaylist
 		content.SpotifyPlaylist = link[34:]
-		return content
+	default:
+		// Just some link, keep it in its original form
 	}
-	return nil
+	return content
 }
 
 func formParagraph(text string) *internals.Content {

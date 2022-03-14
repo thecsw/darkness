@@ -16,6 +16,7 @@ func processText(text string) string {
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
 
 	text = internals.LinkRegexp.ReplaceAllString(text, `<a href="$1">$2</a>`)
+
 	text = internals.MathRegexp.ReplaceAllString(text, `\($1\)`)
 
 	text = strings.ReplaceAll(text, "'", "’")

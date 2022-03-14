@@ -34,24 +34,21 @@ func ConvertHoloscene(HEtime string) *time.Time {
 	return &tt
 }
 
-func AddHolosceneTitles(file, data string) string {
+func AddHolosceneTitles(data string) string {
 	// Match all paragraphs with holoscene time
 	matches := HEParagraphRegex.FindAllStringSubmatch(data, -1)
 	// No matches found, skip this file
 	if len(matches) < 1 {
-		//fmt.Println(file + " doesn't need replacements")
 		return data
 	}
 	for _, match := range matches {
 		HEtime := match[1]
 		tt := ConvertHoloscene(HEtime)
 		// Add the title to the paragraph
-		data = strings.ReplaceAll(data,
+		data = strings.Replace(data,
 			`>`+HEtime,
-			` title="`+tt.Format(RFC_EMILY)+`">`+HEtime,
+			` title="`+tt.Format(RFC_EMILY)+`">`+HEtime, 1,
 		)
 	}
-	//fmt.Printf("[HETIME] %s: replaced %d \n", file, len(matches))
 	return data
-
 }

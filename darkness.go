@@ -11,13 +11,14 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/pkg/profile"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/html"
 	"github.com/thecsw/darkness/orgmode"
 )
 
 func main() {
-	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+	defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 
 	if len(os.Args) == 1 {
 		help()
@@ -79,17 +80,11 @@ func build() {
 		panic(err)
 	}
 	fmt.Printf("Found %d files\n", len(orgfiles))
-	fmt.Printf("Working on them... ")
-	toSave := make(map[string]string)
+	fmt.Printf("Working on them... \n")
 	for _, file := range orgfiles {
-		toSave[getTarget(file)] = orgToHTML(file)
+		ioutil.WriteFile(getTarget(file), []byte(orgToHTML(file)), 0644)
 	}
-	fmt.Println("done")
-	fmt.Printf("Flushing files... ")
-	for k, v := range toSave {
-		ioutil.WriteFile(k, []byte(v), 0644)
-	}
-	fmt.Println("done")
+	fmt.Println("farewell")
 }
 
 func aqua() {
@@ -143,7 +138,7 @@ func orgToHTML(file string) string {
 	emilia.ResolveFootnotes(page)
 	emilia.AddMathSupport(page)
 	htmlPage := html.ExportPage(page)
-	htmlPage = emilia.AddHolosceneTitles(file, htmlPage)
+	htmlPage = emilia.AddHolosceneTitles(htmlPage)
 	return htmlPage
 }
 
