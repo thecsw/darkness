@@ -10,8 +10,14 @@ import (
 )
 
 func ExportPage(page *internals.Page) string {
-	// Add the red tomb to the last paragraph
-	addTomb(page)
+	// Add the red tomb to the last paragraph on given directories
+	// from the config
+	for _, tombPage := range emilia.Config.Website.Tombs {
+		if strings.HasPrefix(page.URL, emilia.JoinPath(tombPage)) {
+			addTomb(page)
+			break
+		}
+	}
 
 	content := make([]string, 0, len(page.Contents))
 	for _, v := range page.Contents {

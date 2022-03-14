@@ -6,6 +6,7 @@ locale = "en_GB"
 color = "#fffff4"
 twitter = "@sandyuraz"
 styles = ["css/asciidoctor.css", "css/web.css"]
+tombs = ["blogs", "anime", "arts"]
 
 [author]
 header = "najimi.png"
