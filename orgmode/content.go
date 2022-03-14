@@ -68,7 +68,8 @@ func isLink(line string) *internals.Content {
 		LinkTitle: text,
 	}
 	// Our link is standalone. Check if it's an image
-	if strings.HasSuffix(link, ".png") {
+	if strings.HasSuffix(link, ".png") || strings.HasSuffix(link, ".svg") ||
+		strings.HasSuffix(link, ".jpg") {
 		content.Type = internals.TypeImage
 		content.ImageSource = link
 		content.ImageCaption = text
