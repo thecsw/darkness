@@ -11,7 +11,7 @@ var (
 		headings, paragraph, list, listNumbered,
 		link, image, youtube, spotifyTrack,
 		spotifyPlaylist, sourceCode, rawHTML,
-		horizontalLine, attentionBlock,
+		horizontalLine, attentionBlock, audioFile,
 	}
 )
 
@@ -144,4 +144,10 @@ func attentionBlock(content *internals.Content) string {
 </tr>
 </table>
 </div>`, content.AttentionTitle, processText(content.AttentionText))
+}
+
+func audioFile(content *internals.Content) string {
+	return fmt.Sprintf(`
+<audio controls><source src="%s" type="audio/mpeg">music is good for the soul</audio>
+`, content.AudioFile)
 }

@@ -3,6 +3,7 @@ package emilia
 import (
 	"io/ioutil"
 	"net/url"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 )
@@ -20,6 +21,10 @@ func InitDarkness(file string) {
 	_, err = toml.Decode(string(data), Config)
 	if err != nil {
 		panic(err)
+	}
+	// URL must end with a trailing forward slash
+	if !strings.HasSuffix(Config.URL, "/") {
+		Config.URL += "/"
 	}
 	Config.URLPath, err = url.Parse(Config.URL)
 	if err != nil {

@@ -73,6 +73,12 @@ func isLink(line string) *internals.Content {
 		content.ImageCaption = text
 		return content
 	}
+	// Our link is standalone. Check if it's an audio file
+	if strings.HasSuffix(link, ".mp3") {
+		content.Type = internals.TypeAudioFile
+		content.AudioFile = link
+		return content
+	}
 	// Check if it's a youtube video embed
 	if strings.HasPrefix(link, "https://youtu.be/") {
 		content.Type = internals.TypeYoutube

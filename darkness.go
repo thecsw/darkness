@@ -115,7 +115,9 @@ func megumin() {
 		toRemove := getTarget(orgfile)
 		fmt.Printf("%s blew up!\n", toRemove)
 		time.Sleep(50 * time.Millisecond)
-		//os.Remove(toRemove)
+		if err := os.Remove(toRemove); err != nil {
+			fmt.Println(toRemove, "failed to blow up!!")
+		}
 	}
 	delayedSentencePrint([]string{
 		"Wahahahahaha!",

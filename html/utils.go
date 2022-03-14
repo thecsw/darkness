@@ -8,8 +8,8 @@ import (
 
 func processText(text string) string {
 	text = html.EscapeString(text)
-	text = internals.BoldText.ReplaceAllString(text, `$1<strong>$2</strong>$3`)
 	text = internals.ItalicText.ReplaceAllString(text, `$1<em>$2</em>$3`)
+	text = internals.BoldText.ReplaceAllString(text, `$1<strong>$2</strong>$3`)
 	text = internals.VerbatimText.ReplaceAllString(text, `$1<code>$2</code>$3`)
 	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)

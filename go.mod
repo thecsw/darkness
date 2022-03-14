@@ -1,4 +1,4 @@
-module darkness
+module github.com/thecsw/darkness
 
 go 1.18
 

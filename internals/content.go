@@ -16,6 +16,7 @@ const (
 	TypeRawHTML
 	TypeHorizontalLine
 	TypeAttentionText
+	TypeAudioFile
 )
 
 type Content struct {
@@ -41,6 +42,7 @@ type Content struct {
 	RawHTML         string
 	AttentionTitle  string
 	AttentionText   string
+	AudioFile       string
 }
 
 func (c Content) IsHeading() bool         { return c.Type == TypeHeading }
@@ -56,3 +58,4 @@ func (c Content) IsSourceCode() bool      { return c.Type == TypeSourceCode }
 func (c Content) IsRawHTML() bool         { return c.Type == TypeRawHTML }
 func (c Content) IsHorizontalLine() bool  { return c.Type == TypeHorizontalLine }
 func (c Content) IsAttentionBlock() bool  { return c.Type == TypeAttentionText }
+func (c Content) IsAudioFile() bool       { return c.Type == TypeAudioFile }
