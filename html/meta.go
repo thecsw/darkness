@@ -117,7 +117,7 @@ func addOpenGraph(page *internals.Page, description string) string {
 		{
 			Name:     "og:image",
 			Property: "og:image",
-			Content:  emilia.JoinPath("preview.png"),
+			Content:  page.URL + "/preview.png",
 		},
 		{
 			Name:     "og:image:alt",
@@ -172,7 +172,7 @@ func addTwitterMeta(page *internals.Page, description string) string {
 		{
 			Name:     "twitter:image:src",
 			Property: "twitter:image:src",
-			Content:  emilia.JoinPath("preview.png"),
+			Content:  page.URL + "/preview.png",
 		},
 		{
 			Name:     "twitter:url",
