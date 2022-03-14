@@ -155,7 +155,17 @@ func findFilesByExt(dir, ext string) ([]string, error) {
 			return err
 		}
 		if !info.IsDir() && filepath.Ext(path) == ext {
-			files = append(files, path)
+			// Check if it is not excluded
+			isExcluded := false
+			for _, excludedPath := range emilia.Config.Website.Exclude {
+				if strings.HasPrefix(path, excludedPath) {
+					isExcluded = true
+					break
+				}
+			}
+			if !isExcluded {
+				files = append(files, path)
+			}
 		}
 		return nil
 	})

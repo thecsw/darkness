@@ -18,6 +18,7 @@ type WebsiteConfig struct {
 	Twitter string
 	Styles  []string
 	Tombs   []string
+	Exclude []string
 }
 
 type AuthorConfig struct {

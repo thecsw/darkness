@@ -7,6 +7,7 @@ color = "#fffff4"
 twitter = "@sandyuraz"
 styles = ["css/asciidoctor.css", "css/web.css"]
 tombs = ["blogs", "anime", "arts"]
+exclude = ["present"]
 
 [author]
 header = "najimi.png"
