@@ -1,7 +1,9 @@
 package orgmode
 
 import (
+	"fmt"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -12,14 +14,15 @@ import (
 func ParseFile(workDir, file string) *internals.Page {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
-		panic(err)
+		fmt.Printf("failed to open the file %s: %s", file, err.Error())
+		os.Exit(1)
 	}
 	page := Parse(string(data))
 	page.URL = emilia.JoinPath(strings.TrimPrefix(filepath.Dir(file), workDir))
 	return page
 }
 
-func Parse(data string) *internals.Page {
+func Preprocess(data string) string {
 	// Add a newline before every heading just in case if
 	// there is no terminating empty line before each one
 	data = HeadingRegexp.ReplaceAllString(data, "\n$1")
@@ -29,8 +32,12 @@ func Parse(data string) *internals.Page {
 	// Pad a newline so that last elements can be processed
 	// properly before an EOF is encountered during parsing
 	data += "\n"
+	return data
+}
+
+func Parse(data string) *internals.Page {
 	// Split the data into lines
-	lines := strings.Split(data, "\n")
+	lines := strings.Split(Preprocess(data), "\n")
 	page := &internals.Page{
 		Title:     "",
 		URL:       "",
@@ -144,9 +151,9 @@ func Parse(data string) *internals.Page {
 				if len(matches) < 1 {
 					continue
 				}
-				currentList := make([]string, 0, len(matches))
-				for _, match := range matches {
-					currentList = append(currentList, match[1])
+				currentList := make([]string, len(matches))
+				for i, match := range matches {
+					currentList[i] = match[1]
 				}
 				// Add the list
 				addContent(internals.Content{

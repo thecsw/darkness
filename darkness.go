@@ -78,7 +78,8 @@ func build() {
 	html.InitConstantTags()
 	orgfiles, err := findFilesByExt(workDir, sourceExt)
 	if err != nil {
-		panic(err)
+		fmt.Printf("failed to find files by extension %s: %s", sourceExt, err.Error())
+		os.Exit(1)
 	}
 	fmt.Printf("Found %d files\n", len(orgfiles))
 	fmt.Printf("Working on them... \n")
@@ -103,7 +104,8 @@ func megumin() {
 
 	orgfiles, err := findFilesByExt(workDir, sourceExt)
 	if err != nil {
-		panic(err)
+		fmt.Printf("failed to find files by extension %s: %s", sourceExt, err.Error())
+		os.Exit(1)
 	}
 	delayedLinesPrint([]string{
 		"Darker than black, darker than darkness, combine with my intense crimson.",
