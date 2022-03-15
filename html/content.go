@@ -2,7 +2,6 @@ package html
 
 import (
 	"fmt"
-	"html"
 
 	"github.com/thecsw/darkness/internals"
 )
@@ -28,11 +27,11 @@ func headings(content *internals.Content) string {
 <div class="sect%d">
 <h%d id="%s">%s</h%d>
 <div class="sectionbody">`,
-		content.HeadingLevel-1,
-		content.HeadingLevel,
-		html.EscapeString(content.Heading),
-		processText(content.Heading),
-		content.HeadingLevel,
+		content.HeadingLevel-1,       // CSS class
+		content.HeadingLevel,         // HTML open tag
+		extractID(content.Heading),   // ID
+		processText(content.Heading), // Actual title
+		content.HeadingLevel,         // HTML close tag
 	)
 	if content.HeadingLast {
 		toReturn += "\n" + `</div>`

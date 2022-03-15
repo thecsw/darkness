@@ -46,7 +46,7 @@ func AddHolosceneTitles(data string) string {
 		// Add the title to the paragraph
 		data = strings.Replace(data,
 			match[0],
-			fmt.Sprintf(`title="%s"%s`,
+			fmt.Sprintf(` title="%s"%s`,
 				getHoloscene(match[1], match[2]).Format(RFC_EMILY), match[0]),
 			len(matches),
 		)

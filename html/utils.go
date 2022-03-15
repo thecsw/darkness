@@ -3,6 +3,7 @@ package html
 import (
 	"html"
 	"strings"
+	"unicode"
 
 	"github.com/thecsw/darkness/internals"
 )
@@ -38,4 +39,23 @@ func processTitle(title string) string {
 	title = strings.ReplaceAll(title, "'s", "’s")
 	title = internals.MathRegexp.ReplaceAllString(title, `\($1\)`)
 	return title
+}
+
+func extractID(heading string) string {
+	// Check if heading is a link
+	match := internals.LinkRegexp.FindStringSubmatch(heading)
+	if len(match) > 0 {
+		heading = match[2] // 0 is whole match, 1 is link, 2 is title
+	}
+	res := "_"
+	for _, c := range heading {
+		if unicode.IsSpace(c) || unicode.IsPunct(c) || unicode.IsSymbol(c) {
+			res += "_"
+			continue
+		}
+		if c <= unicode.MaxASCII {
+			res += string(unicode.ToLower(c))
+		}
+	}
+	return res
 }
