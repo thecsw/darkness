@@ -18,6 +18,7 @@ import (
 
 func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+	//defer profile.Start(profile.MemProfile, profile.MemProfileRate(1), profile.ProfilePath(".")).Stop()
 
 	if len(os.Args) == 1 {
 		help()
@@ -76,16 +77,20 @@ func build() {
 
 	emilia.InitDarkness(darknessToml)
 	html.InitConstantTags()
+	fmt.Printf("Looking for files... ")
+	start := time.Now()
 	orgfiles, err := findFilesByExt(workDir, sourceExt)
 	if err != nil {
 		fmt.Printf("failed to find files by extension %s: %s", sourceExt, err.Error())
 		os.Exit(1)
 	}
-	fmt.Printf("Found %d files\n", len(orgfiles))
-	fmt.Printf("Working on them... \n")
+	fmt.Printf("found %d in %d ms\n", len(orgfiles), time.Since(start).Milliseconds())
+	fmt.Printf("Building and flushing... ")
+	start = time.Now()
 	for _, file := range orgfiles {
 		ioutil.WriteFile(getTarget(file), []byte(orgToHTML(file)), 0644)
 	}
+	fmt.Printf("done in %d ms\n", time.Since(start).Milliseconds())
 	fmt.Println("farewell")
 }
 

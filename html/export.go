@@ -42,8 +42,7 @@ func ExportPage(page *internals.Page) string {
 </div>
 %s
 </body>
-</html>
-`,
+</html>`,
 		linkTags(page), metaTags(page), scriptTags(page),
 		processTitle(page.Title), styleTagsProcessed, authorHeader(page), strings.Join(content, ""),
 		addFootnotes(page),
