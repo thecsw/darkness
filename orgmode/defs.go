@@ -11,7 +11,7 @@ var (
 	LinkRegexp           = internals.LinkRegexp
 	AttentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP|IMPORTANT):\s*(.+)`)
 	UnorderedListRegexp  = regexp.MustCompile(`(?mU)- (.+) ∆`)
-	HeadingRegexp        = regexp.MustCompile(`^(\*{1,5})[ ]`)
+	HeadingRegexp        = regexp.MustCompile(`(?m)^(\*\*\*\*\*|\*\*\*\*|\*\*\*|\*\*|\*\s+)`)
 	ImageExtRegexp       = regexp.MustCompile(`\.(png|gif|jpg|jpeg|svg|webp)$`)
 	AudioFileExtRegexp   = regexp.MustCompile(`\.(mp3|flac|midi)$`)
 )

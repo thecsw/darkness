@@ -22,7 +22,10 @@ func ParseFile(workDir, file string) *internals.Page {
 func Parse(data string) *internals.Page {
 	// Add a newline before every heading just in case if
 	// there is no terminating empty line before each one
-	data = HeadingRegexp.ReplaceAllString(data, "\n"+`$1 `)
+	data = HeadingRegexp.ReplaceAllString(data, "\n$1")
+	// Debug stuff
+	// fmt.Println(data)
+	// fmt.Println("---------------------")
 	// Pad a newline so that last elements can be processed
 	// properly before an EOF is encountered during parsing
 	data += "\n"
