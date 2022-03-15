@@ -19,9 +19,9 @@ func ExportPage(page *internals.Page) string {
 		}
 	}
 
-	content := make([]string, 0, len(page.Contents))
-	for _, v := range page.Contents {
-		content = append(content, contentFunctions[v.Type](&v))
+	content := make([]string, len(page.Contents))
+	for i, v := range page.Contents {
+		content[i] = contentFunctions[v.Type](&v)
 	}
 
 	return fmt.Sprintf(`
@@ -51,12 +51,12 @@ func ExportPage(page *internals.Page) string {
 }
 
 func styleTags() string {
-	content := make([]string, 0, len(emilia.Config.Website.Styles))
-	for _, style := range emilia.Config.Website.Styles {
-		content = append(content, fmt.Sprintf(
+	content := make([]string, len(emilia.Config.Website.Styles))
+	for i, style := range emilia.Config.Website.Styles {
+		content[i] = fmt.Sprintf(
 			`<link rel="stylesheet" type="text/css" href="%s">`+"\n",
 			emilia.JoinPath(style),
-		))
+		)
 	}
 	return strings.Join(content, "")
 }
@@ -84,24 +84,15 @@ func authorHeader(page *internals.Page) string {
 	)
 
 	content += `<span id="revdate">` + "\n"
+	navLinks := make([]string, 0, len(emilia.Config.Navigation))
 	for i := 1; i <= len(emilia.Config.Navigation); i++ {
 		v := emilia.Config.Navigation[fmt.Sprintf("%d", i)]
-		homeIsOnHome := page.URL == emilia.Config.URL && v.Link == ""
-		if homeIsOnHome {
-			// Remove the extra pipe character
-			content = content[:len(content)-2]
+		if page.URL == emilia.Config.URL && v.Link == "" {
 			continue
 		}
-		content += fmt.Sprintf(
-			`<a href="%s">%s</a>`,
-			emilia.JoinPath(v.Link), v.Title,
-		)
-		if i < len(emilia.Config.Navigation) {
-			content += ` | `
-		}
+		navLinks = append(navLinks, fmt.Sprintf(`<a href="%s">%s</a>`, emilia.JoinPath(v.Link), v.Title))
 	}
-	content += `</span>`
-
+	content += strings.Join(navLinks, " | ") + `</span>`
 	content += `
 </div>
 <div id="hetime" class="details"></div>
@@ -127,15 +118,15 @@ func addFootnotes(page *internals.Page) string {
 	if len(page.Footnotes) < 1 {
 		return ""
 	}
-	footnotes := make([]string, 0, len(page.Footnotes))
+	footnotes := make([]string, len(page.Footnotes))
 	for i, footnote := range page.Footnotes {
-		footnotes = append(footnotes, fmt.Sprintf(`
+		footnotes[i] = fmt.Sprintf(`
 <div class="footnote" id="_footnotedef_%d">
 <a href="#_footnotedef_%d">%d</a>
 %s
 </div>
 `,
-			i+1, i+1, i+1, processText(footnote)))
+			i+1, i+1, i+1, processText(footnote))
 	}
 	return fmt.Sprintf(`
 <div id="footnotes">

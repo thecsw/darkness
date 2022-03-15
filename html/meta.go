@@ -29,12 +29,11 @@ func metaTags(page *internals.Page) string {
 		description = paragraph[:internals.Min(len(paragraph), DescriptionLength)] + "..."
 		break
 	}
-
-	content := addBasic(page, description)
-	content += addOpenGraph(page, description)
-	content += addTwitterMeta(page, description)
-
-	return content
+	tags := make([]string, 3)
+	tags[0] = addBasic(page, description)
+	tags[1] = addOpenGraph(page, description)
+	tags[2] = addTwitterMeta(page, description)
+	return strings.Join(tags, "")
 }
 
 type meta struct {
@@ -45,154 +44,69 @@ type meta struct {
 
 func metaTag(val meta) string {
 	return fmt.Sprintf(
-		`<meta name="%s" property="%s" content="%s">`+"\n",
+		`<meta name="%s" property="%s" content="%s">`,
 		val.Name, val.Property, html.EscapeString(val.Content),
 	)
 }
 
+const metaTopTag = `<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">`
+
+// Pre-allocate the tags slices, because they're same sized
+var (
+	// used in `addBasic`
+	basicTags = make([]string, 5)
+	// used in `addOpenGraph`
+	opengraphTags = make([]string, 11)
+	// used in `addTwitterMeta`
+	twitterTags = make([]string, 7)
+)
+
 func addBasic(page *internals.Page, description string) string {
 	toAdd := []meta{
-		{
-			Name:     "viewport",
-			Property: "viewport",
-			Content:  "width=device-width, initial-scale=1.0",
-		},
-		{
-			Name:     "generator",
-			Property: "generator",
-			Content:  "Darkness",
-		},
-		{
-			Name:     "author",
-			Property: "author",
-			Content:  emilia.Config.Author.Name,
-		},
-		{
-			Name:     "theme-color",
-			Property: "theme-color",
-			Content:  emilia.Config.Website.Color,
-		},
-		{
-			Name:     "description",
-			Property: "description",
-			Content:  html.EscapeString(description),
-		},
+		{"viewport", "viewport", "width=device-width, initial-scale=1.0"},
+		{"generator", "generator", "Darkness"},
+		{"author", "author", emilia.Config.Author.Name},
+		{"theme-color", "theme-color", emilia.Config.Website.Color},
+		{"description", "description", html.EscapeString(description)},
 	}
-	content := `<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-`
-	for _, add := range toAdd {
-		content += metaTag(add)
+	for i, add := range toAdd {
+		basicTags[i] = metaTag(add)
 	}
-	return content
+	return metaTopTag + strings.Join(basicTags, "\n")
 }
 
 func addOpenGraph(page *internals.Page, description string) string {
 	toAdd := []meta{
-		{
-			Name:     "og:title",
-			Property: "og:title",
-			Content:  html.EscapeString(page.Title),
-		},
-		{
-			Name:     "og:site_name",
-			Property: "og:site_name",
-			Content:  html.EscapeString(emilia.Config.Title),
-		},
-		{
-			Name:     "og:url",
-			Property: "og:url",
-			Content:  page.URL,
-		},
-		{
-			Name:     "og:locale",
-			Property: "og:locale",
-			Content:  emilia.Config.Website.Locale,
-		},
-		{
-			Name:     "og:type",
-			Property: "og:type",
-			Content:  "website",
-		},
-		{
-			Name:     "og:image",
-			Property: "og:image",
-			Content:  page.URL + "/preview.png",
-		},
-		{
-			Name:     "og:image:alt",
-			Property: "og:image:alt",
-			Content:  "Preview",
-		},
-		{
-			Name:     "og:image:type",
-			Property: "og:image:type",
-			Content:  "image/png",
-		},
-		{
-			Name:     "og:image:width",
-			Property: "og:image:width",
-			Content:  "1280",
-		},
-		{
-			Name:     "og:image:height",
-			Property: "og:image:height",
-			Content:  "640",
-		},
-		{
-			Name:     "og:description",
-			Property: "og:description",
-			Content:  html.EscapeString(description),
-		},
+		{"og:title", "og:title", html.EscapeString(page.Title)},
+		{"og:site_name", "og:site_name", html.EscapeString(emilia.Config.Title)},
+		{"og:url", "og:url", page.URL},
+		{"og:locale", "og:locale", emilia.Config.Website.Locale},
+		{"og:type", "og:type", "website"},
+		{"og:image", "og:image", page.URL + "/preview.png"},
+		{"og:image:alt", "og:image:alt", "Preview"},
+		{"og:image:type", "og:image:type", "image/png"},
+		{"og:image:width", "og:image:width", "1280"},
+		{"og:image:height", "og:image:height", "640"},
+		{"og:description", "og:description", html.EscapeString(description)}}
+	for i, add := range toAdd {
+		opengraphTags[i] = metaTag(add)
 	}
-	content := ""
-	for _, add := range toAdd {
-		content += metaTag(add)
-	}
-	return content
+	return strings.Join(opengraphTags, "\n")
 }
 
 func addTwitterMeta(page *internals.Page, description string) string {
 	toAdd := []meta{
-		{
-			Name:     "twitter:card",
-			Property: "twitter:card",
-			Content:  "summary_large_image",
-		},
-		{
-			Name:     "twitter:site",
-			Property: "twitter:site",
-			Content:  html.EscapeString(emilia.Config.Title),
-		},
-		{
-			Name:     "twitter:creator",
-			Property: "twitter:creator",
-			Content:  emilia.Config.Website.Twitter,
-		},
-		{
-			Name:     "twitter:image:src",
-			Property: "twitter:image:src",
-			Content:  page.URL + "/preview.png",
-		},
-		{
-			Name:     "twitter:url",
-			Property: "twitter:url",
-			Content:  page.URL,
-		},
-		{
-			Name:     "twitter:title",
-			Property: "twitter:title",
-			Content:  html.EscapeString(page.Title),
-		},
-		{
-			Name:     "twitter:description",
-			Property: "twitter:description",
-			Content:  html.EscapeString(description),
-		},
+		{"twitter:card", "twitter:card", "summary_large_image"},
+		{"twitter:site", "twitter:site", html.EscapeString(emilia.Config.Title)},
+		{"twitter:creator", "twitter:creator", emilia.Config.Website.Twitter},
+		{"twitter:image:src", "twitter:image:src", page.URL + "/preview.png"},
+		{"twitter:url", "twitter:url", page.URL},
+		{"twitter:title", "twitter:title", html.EscapeString(page.Title)},
+		{"twitter:description", "twitter:description", html.EscapeString(description)},
 	}
-	content := ""
-	for _, add := range toAdd {
-		content += metaTag(add)
+	for i, add := range toAdd {
+		twitterTags[i] = metaTag(add)
 	}
-	return content
+	return strings.Join(twitterTags, "\n")
 }

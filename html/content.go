@@ -2,6 +2,7 @@ package html
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/thecsw/darkness/internals"
 )
@@ -49,23 +50,23 @@ func paragraph(content *internals.Content) string {
 }
 
 func list(content *internals.Content) string {
-	elements := ""
-	for _, item := range content.List {
-		elements += fmt.Sprintf(`
+	elements := make([]string, len(content.List))
+	for i, item := range content.List {
+		elements[i] = fmt.Sprintf(`
 <li>
 <p>
 %s
 </p>
-</li>
-`, processText(item))
+</li>`, processText(item))
 	}
+
 	return fmt.Sprintf(`
 <div class="ulist">
 <ul>
 %s
 </ul>
 </div>
-`, elements)
+`, strings.Join(elements, "\n"))
 }
 
 func listNumbered(content *internals.Content) string {

@@ -2,6 +2,7 @@ package html
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/internals"
@@ -14,33 +15,22 @@ type rel struct {
 }
 
 func linkTag(val rel) string {
-	return fmt.Sprintf(
-		`<link rel="%s" href="%s" type="%s"/>`+"\n",
-		val.Rel, val.Href, val.Type,
-	)
+	return fmt.Sprintf(`<link rel="%s" href="%s" type="%s"/>`, val.Rel, val.Href, val.Type)
 }
+
+var (
+	// used in `linkTags`
+	links = make([]string, 3)
+)
 
 func linkTags(page *internals.Page) string {
 	toAdd := []rel{
-		{
-			Rel:  "canonical",
-			Href: page.URL,
-			Type: "",
-		},
-		{
-			Rel:  "shortcut icon",
-			Href: emilia.JoinPath("favicon.ico"),
-			Type: "image/x-icon",
-		},
-		{
-			Rel:  "icon",
-			Href: emilia.JoinPath("favicon.ico"),
-			Type: "",
-		},
+		{"canonical", page.URL, ""},
+		{"shortcut icon", emilia.JoinPath("favicon.ico"), "image/x-icon"},
+		{"icon", emilia.JoinPath("favicon.ico"), ""},
 	}
-	content := ""
-	for _, add := range toAdd {
-		content += linkTag(add)
+	for i, add := range toAdd {
+		links[i] = linkTag(add)
 	}
-	return content
+	return strings.Join(links, "\n")
 }
