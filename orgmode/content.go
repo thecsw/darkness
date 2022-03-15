@@ -62,37 +62,11 @@ func isLink(line string) *internals.Content {
 	if len(match) != len(line) {
 		return nil
 	}
-	content := &internals.Content{
+	return &internals.Content{
 		Type:      internals.TypeLink,
 		Link:      link,
 		LinkTitle: text,
 	}
-	switch {
-	case ImageExtRegexp.MatchString(link):
-		// Our link is standalone. Check if it's an image
-		content.Type = internals.TypeImage
-		content.ImageSource = link
-		content.ImageCaption = text
-	case AudioFileExtRegexp.MatchString(link):
-		// Our link is standalone. Check if it's an audio file
-		content.Type = internals.TypeAudioFile
-		content.AudioFile = link
-	case strings.HasPrefix(link, "https://youtu.be/"):
-		// Check if it's a youtube video embed
-		content.Type = internals.TypeYoutube
-		content.Youtube = link[17:]
-	case strings.HasPrefix(link, "https://open.spotify.com/track/"):
-		// Check if it's a spotify track link
-		content.Type = internals.TypeSpotifyTrack
-		content.SpotifyTrack = link[31:]
-	case strings.HasPrefix(link, "https://open.spotify.com/playlist/"):
-		// Check if it's a spotify playlist link
-		content.Type = internals.TypeSpotifyPlaylist
-		content.SpotifyPlaylist = link[34:]
-	default:
-		// Just some link, keep it in its original form
-	}
-	return content
 }
 
 func formParagraph(text string) *internals.Content {

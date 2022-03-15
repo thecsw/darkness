@@ -13,6 +13,8 @@ var (
 	VerbatimText        = regexp.MustCompile(`(?mU)(^|[ ()_%<>])=(\S|\S\S|\S.+\S)=($|[ (),.!?;&_%<>])`)
 	KeyboardRegexp      = regexp.MustCompile(`kbd:\[([^][]+)\]`)
 	MathRegexp          = regexp.MustCompile(`(?mU)\$(.+)\$`)
+	ImageExtRegexp      = regexp.MustCompile(`\.(png|gif|jpg|jpeg|svg|webp)$`)
+	AudioFileExtRegexp  = regexp.MustCompile(`\.(mp3|flac|midi)$`)
 
 	FootnoteRegexp               = regexp.MustCompile(`\[fn::([^][]+)\]`)
 	FootnotePostProcessingRegexp = regexp.MustCompile(`!(\d+)!`)

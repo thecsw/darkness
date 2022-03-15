@@ -9,9 +9,7 @@ import (
 var (
 	contentFunctions = []func(*internals.Content) string{
 		headings, paragraph, list, listNumbered,
-		link, image, youtube, spotifyTrack,
-		spotifyPlaylist, sourceCode, rawHTML,
-		horizontalLine, attentionBlock, audioFile,
+		link, sourceCode, rawHTML, horizontalLine, attentionBlock,
 	}
 )
 
@@ -75,41 +73,6 @@ func listNumbered(content *internals.Content) string {
 	return ""
 }
 
-func link(content *internals.Content) string {
-	return fmt.Sprintf(`
-<a href="%s">%s</a>`, content.Link, processText(content.LinkTitle))
-}
-
-func image(content *internals.Content) string {
-	return fmt.Sprintf(`
-<hr>
-<div class="imageblock">
-<div class="content">
-<a class="image" href="%s"><img src="%s" alt="%s"></a>
-</div>
-<div class="title">%s</div>
-</div>
-<hr>`, content.Link, content.Link, content.LinkTitle, processText(content.LinkTitle))
-}
-
-func youtube(content *internals.Content) string {
-	return fmt.Sprintf(`
-<iframe width="100%%" height="330px" src="https://www.youtube.com/embed/%s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-<hr>`, content.Youtube)
-}
-
-func spotifyTrack(content *internals.Content) string {
-	return fmt.Sprintf(`
-<iframe src="https://open.spotify.com/embed/track/%s" width="79%%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-<hr>`, content.SpotifyTrack)
-}
-
-func spotifyPlaylist(content *internals.Content) string {
-	return fmt.Sprintf(`
-<iframe src="https://open.spotify.com/embed/playlist/%s" width="79%%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-<hr>`, content.SpotifyPlaylist)
-}
-
 func sourceCode(content *internals.Content) string {
 	return fmt.Sprintf(`
 <div class="listingblock">
@@ -144,10 +107,4 @@ func attentionBlock(content *internals.Content) string {
 </tr>
 </table>
 </div>`, content.AttentionTitle, processText(content.AttentionText))
-}
-
-func audioFile(content *internals.Content) string {
-	return fmt.Sprintf(`
-<audio controls><source src="%s" type="audio/mpeg">music is good for the soul</audio>
-`, content.AudioFile)
 }
