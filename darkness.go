@@ -60,7 +60,9 @@ Don't hold back! You have no choice!`)
 func oneFile() {
 	fileCmd := flag.NewFlagSet("file", flag.ExitOnError)
 	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
+	fileCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	fileCmd.Parse(os.Args[2:])
+	emilia.InitDarkness(darknessToml)
 	fmt.Println(orgToHTML(filename))
 }
 
@@ -96,6 +98,7 @@ func megumin() {
 	explosionCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	explosionCmd.StringVar(&sourceExt, "source", ".org", "source extension")
 	explosionCmd.StringVar(&targetExt, "target", ".html", "target extension")
+	explosionCmd.Parse(os.Args[2:])
 	emilia.InitDarkness(darknessToml)
 
 	orgfiles, err := findFilesByExt(workDir, sourceExt)
@@ -133,6 +136,7 @@ func orgToHTML(file string) string {
 	// Debug line to show the current page
 	//litter.Dump(page)
 	// Ask emilia to work over the page a little
+	emilia.ResolveComments(page)
 	emilia.EnrichHeadings(page)
 	emilia.ResolveFootnotes(page)
 	emilia.AddMathSupport(page)

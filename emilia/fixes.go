@@ -1,6 +1,10 @@
 package emilia
 
-import "github.com/thecsw/darkness/internals"
+import (
+	"strings"
+
+	"github.com/thecsw/darkness/internals"
+)
 
 func EnrichHeadings(page *internals.Page) {
 	minHeadingLevel := 999
@@ -49,5 +53,28 @@ func EnrichHeadings(page *internals.Page) {
 			c.HeadingChild = true
 		}
 		currentLevel = c.HeadingLevel
+	}
+}
+
+func ResolveComments(page *internals.Page) {
+	start, headingLevel, searching := -1, -1, false
+	for i, content := range page.Contents {
+		if !content.IsHeading() {
+			continue
+		}
+		if strings.HasPrefix(content.Heading, "COMMENT ") && !searching {
+			start = i
+			headingLevel = content.HeadingLevel
+			searching = true
+			continue
+		}
+		if searching && content.HeadingLevel <= headingLevel {
+			page.Contents = append(page.Contents[:start], page.Contents[i:]...)
+			start, headingLevel, searching = -1, -1, false
+		}
+	}
+	// Still searching till the end? then set the finish to the last element
+	if searching {
+		page.Contents = page.Contents[:start]
 	}
 }

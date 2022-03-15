@@ -26,7 +26,7 @@ func metaTags(page *internals.Page) string {
 		if paragraph == "" || emilia.HEregex.MatchString(paragraph) {
 			continue
 		}
-		description = paragraph[:min(len(paragraph), DescriptionLength)] + "..."
+		description = paragraph[:internals.Min(len(paragraph), DescriptionLength)] + "..."
 		break
 	}
 
@@ -195,22 +195,4 @@ func addTwitterMeta(page *internals.Page, description string) string {
 		content += metaTag(add)
 	}
 	return content
-}
-
-type Number interface {
-	int | float64
-}
-
-func min[T Number](a, b T) T {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-func max[T Number](a, b T) T {
-	if a > b {
-		return a
-	}
-	return b
 }
