@@ -95,7 +95,7 @@ func Parse(data string) *internals.Page {
 				addContent(internals.Content{
 					Type:           internals.TypeSourceCode,
 					SourceCodeLang: sourceCodeLang,
-					SourceCode:     previousContext,
+					SourceCode:     strings.TrimRight(previousContext, "\n\t\r\f\b"),
 				})
 				continue
 			}
