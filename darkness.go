@@ -175,7 +175,14 @@ func orgToHTML(file string) string {
 	emilia.AddMathSupport(page)
 	emilia.SourceCodeTrimLeftWhitespace(page)
 	htmlPage := html.ExportPage(page)
-	htmlPage = emilia.AddHolosceneTitles(htmlPage)
+	// Usually, each page only needs 1 holoscene replacement.
+	// For the fortunes page, we need to replace all of them
+	htmlPage = emilia.AddHolosceneTitles(htmlPage, func() int {
+		if strings.HasSuffix(page.URL, "fortunes") {
+			return -1
+		}
+		return 1
+	}())
 	return htmlPage
 }
 

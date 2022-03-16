@@ -43,10 +43,11 @@ func getHoloscene(dayS, yearS string) *time.Time {
 	return &tt
 }
 
-// AddHolosceneTitles adds the titles of the Holoscene to the page.
-func AddHolosceneTitles(data string) string {
+// AddHolosceneTitles adds the titles of the Holoscene to the page, and
+// also how many to replace for the page, -1 for everything.
+func AddHolosceneTitles(data string, num int) string {
 	// Match all paragraphs with holoscene time
-	matches := HEParagraphRegex.FindAllStringSubmatch(data, -1)
+	matches := HEParagraphRegex.FindAllStringSubmatch(data, num)
 	for _, match := range matches {
 		// Add the title to the paragraph
 		data = strings.Replace(data,
