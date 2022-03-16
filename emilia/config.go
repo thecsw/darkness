@@ -28,6 +28,13 @@ func InitDarkness(file string) {
 		fmt.Printf("failed to decode the config %s: %s", file, err.Error())
 		os.Exit(1)
 	}
+	// If input/output formats are empty, default to .org/.html respectively
+	if len(Config.Project.Input) < 1 {
+		Config.Project.Input = ".org"
+	}
+	if len(Config.Project.Output) < 1 {
+		Config.Project.Output = ".html"
+	}
 	// If the URL is empty, then plug in the current directory
 	if len(Config.URL) < 1 {
 		Config.URL, err = os.Getwd()

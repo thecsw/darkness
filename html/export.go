@@ -78,12 +78,12 @@ func scriptTags(page *internals.Page) string {
 func authorHeader(page *internals.Page) string {
 	content := fmt.Sprintf(`
 <div id="header">
-<h1><img id="myface" src="%s" width="112" height="112">%s</h1>
+<h1>%s%s</h1>
 <div class="details">
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
 `,
-		emilia.JoinPath(emilia.Config.Author.Header), html.EscapeString(processTitle(page.Title)),
+		authorImage(), html.EscapeString(processTitle(page.Title)),
 		emilia.Config.Author.Name, emilia.Config.Author.Email,
 	)
 
@@ -91,7 +91,7 @@ func authorHeader(page *internals.Page) string {
 	navLinks := make([]string, 0, len(emilia.Config.Navigation))
 	for i := 1; i <= len(emilia.Config.Navigation); i++ {
 		v := emilia.Config.Navigation[fmt.Sprintf("%d", i)]
-		if page.URL == emilia.Config.URL && v.Link == "" {
+		if page.URL == emilia.Config.URL && v.Link == v.Hide {
 			continue
 		}
 		navLinks = append(navLinks, fmt.Sprintf(`<a href="%s">%s</a>`, emilia.JoinPath(v.Link), v.Title))
@@ -103,6 +103,16 @@ func authorHeader(page *internals.Page) string {
 </div>`
 
 	return content
+}
+
+// authorHeader returns img element if author header image is given
+func authorImage() string {
+	// Return nothing if it's not provided
+	if emilia.Config.Author.Image == "" {
+		return ""
+	}
+	return fmt.Sprintf(`<img id="myface" src="%s" width="112" height="112">`,
+		emilia.JoinPath(emilia.Config.Author.Image))
 }
 
 // addTomb adds the tomb to the last paragraph

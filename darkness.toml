@@ -1,19 +1,56 @@
-title = "Sandy's Website 🚀"
-url = "https://sandyuraz.com"
+# This is the title of your website
+title = "My shiny website ⭐️"
 
-[website]
-locale = "en_GB"
-color = "#fffff4"
-twitter = "@sandyuraz"
-styles = ["css/asciidoctor.css", "css/web.css"]
-tombs = ["blogs", "anime", "arts"]
+# This is the url, which darkness will use to create links
+# and all the relative paths. You can leave this off and
+# darkness will default to your current path, so you can
+# test the website locally and everything
+url = ""
+
+# UNCOMMENT WHEN DEPLOYING
+# url = "https://example.com"
+
+# This section will be about specific project settings
+[project]
+# The input file format, defaults to ".org"
+input = ".org"
+# The output file format, defaults to ".html"
+output = ".html"
+# Relative paths of directories, which will be excluded
 exclude = ["present"]
 
+# This is everything regarding website and some tags 
+[website]
+# Locale of your website
+locale = "en_GB"
+# Color scheme of your website
+color = "#fffff4"
+# Twitter handle for twitter previews, can be left off
+twitter = "@twitter"
+# The css files to include in HTML files, my css provided
+# has the styles and everything that should look good
+styles = ["https://sandyuraz.com/css/web.css"]
+# The relative paths of directories to include a tomb
+# symbol to the last paragraph to signify its end
+tombs = ["blogs", "anime", "arts"]
+
+# This is the author header section
 [author]
+# Picture to use on top of the website. This part will be
+# omitted from the website if found empty
 header = "najimi.png"
+# Name of the author, looks like "name - email"
 name = "email"
+# Email of the author, looks like "name - email"
 email = "ctu [at] ku [dot] edu"
 
+# Navigation portion of your website
+# Simply add new sections as a map/array, with
+# [navigation.N], providing link and title
+# for each element.
+# You can give a hide value to give it the path
+# where to hide the element. Like don't show the
+# "Go back home" button on the home page
 [navigation]
 
 [navigation.1]
@@ -21,13 +58,14 @@ link = "about"
 title = "About 🤔"
 
 [navigation.2]
-link = "books"
-title = "Bookshelf 📖"
+link = "blog"
+title = "Blog 🖋"
 
 [navigation.3]
-link = "fortunes"
-title = "Fortunes 🥠"
+link = ""
+title = ""
 
 [navigation.4]
 link = ""
 title = "Home 🏠"
+hide = ""

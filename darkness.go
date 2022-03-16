@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"flag"
 	"fmt"
 	"io/fs"
@@ -16,6 +17,11 @@ import (
 	"github.com/thecsw/darkness/orgmode"
 )
 
+var (
+	//go:embed darkness.toml
+	defaultDarknessToml string
+)
+
 // main is the entry point for the program
 func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
@@ -27,6 +33,8 @@ func main() {
 	}
 
 	switch os.Args[1] {
+	case "new":
+		newDarkness()
 	case "file":
 		oneFile()
 	case "build":
@@ -44,6 +52,7 @@ func main() {
 	}
 }
 
+// help shows default darkness help message
 func help() {
 	fmt.Println(`My name is Darkness.
 My calling is that of a crusader.
@@ -58,6 +67,19 @@ Here are the commands you can use, -help is supported:
   aqua - ...
 
 Don't hold back! You have no choice!`)
+}
+
+// newDarkness creates a default darkness config in the current directory
+// if one already exists, nothing will happen, except a notice of that
+func newDarkness() {
+	file, err := os.Open("darkness.toml")
+	if err == nil {
+		fmt.Println("darkness.toml already exists, bailing. bye")
+		file.Close()
+		return
+	}
+	ioutil.WriteFile("darkness.toml", []byte(defaultDarknessToml), 0600)
+	fmt.Println("add default darkness.toml here! go check it out, call for help too")
 }
 
 // oneFile builds a single file
@@ -75,24 +97,23 @@ func build() {
 	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
 	buildCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
 	buildCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	buildCmd.StringVar(&sourceExt, "source", ".org", "source extension")
-	buildCmd.StringVar(&targetExt, "target", ".html", "target extension")
 	buildCmd.Parse(os.Args[2:])
 
 	emilia.InitDarkness(darknessToml)
 	html.InitConstantTags()
 	fmt.Printf("Looking for files... ")
 	start := time.Now()
-	orgfiles, err := findFilesByExt(workDir, sourceExt)
+	orgfiles, err := findFilesByExt(workDir, emilia.Config.Project.Input)
 	if err != nil {
-		fmt.Printf("failed to find files by extension %s: %s", sourceExt, err.Error())
+		fmt.Printf("failed to find files by extension %s: %s",
+			emilia.Config.Project.Input, err.Error())
 		os.Exit(1)
 	}
 	fmt.Printf("found %d in %d ms\n", len(orgfiles), time.Since(start).Milliseconds())
 	fmt.Printf("Building and flushing... ")
 	start = time.Now()
 	for _, file := range orgfiles {
-		ioutil.WriteFile(getTarget(file), []byte(orgToHTML(file)), 0644)
+		ioutil.WriteFile(getTarget(file), []byte(orgToHTML(file)), 0600)
 	}
 	fmt.Printf("done in %d ms\n", time.Since(start).Milliseconds())
 	fmt.Println("farewell")
@@ -107,14 +128,13 @@ func megumin() {
 	explosionCmd := flag.NewFlagSet("megumin", flag.ExitOnError)
 	explosionCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
 	explosionCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	explosionCmd.StringVar(&sourceExt, "source", ".org", "source extension")
-	explosionCmd.StringVar(&targetExt, "target", ".html", "target extension")
 	explosionCmd.Parse(os.Args[2:])
 	emilia.InitDarkness(darknessToml)
 
-	orgfiles, err := findFilesByExt(workDir, sourceExt)
+	orgfiles, err := findFilesByExt(workDir, emilia.Config.Project.Input)
 	if err != nil {
-		fmt.Printf("failed to find files by extension %s: %s", sourceExt, err.Error())
+		fmt.Printf("failed to find files by extension %s: %s",
+			emilia.Config.Project.Input, err.Error())
 		os.Exit(1)
 	}
 	delayedLinesPrint([]string{
@@ -164,10 +184,6 @@ var (
 	workDir = "."
 	// darknessToml is the location of darkness.toml
 	darknessToml = "darkness.toml"
-	// sourceExt is the extension to look for
-	sourceExt = ".org"
-	// targetExt is the extension to output
-	targetExt = ".html"
 	// filename is the file to build
 	filename = "index.org"
 )
@@ -183,7 +199,7 @@ func findFilesByExt(dir, ext string) ([]string, error) {
 		if !info.IsDir() && filepath.Ext(path) == ext {
 			// Check if it is not excluded
 			isExcluded := false
-			for _, excludedPath := range emilia.Config.Website.Exclude {
+			for _, excludedPath := range emilia.Config.Project.Exclude {
 				if strings.HasPrefix(path, excludedPath) {
 					isExcluded = true
 					break
@@ -200,7 +216,8 @@ func findFilesByExt(dir, ext string) ([]string, error) {
 
 // getTarget returns the target file name
 func getTarget(file string) string {
-	htmlFilename := strings.Replace(filepath.Base(file), sourceExt, targetExt, 1)
+	htmlFilename := strings.Replace(filepath.Base(file),
+		emilia.Config.Project.Input, emilia.Config.Project.Output, 1)
 	return filepath.Join(filepath.Dir(file), htmlFilename)
 }
 
