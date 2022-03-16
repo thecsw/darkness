@@ -38,7 +38,7 @@ tombs = ["blogs", "anime", "arts"]
 [author]
 # Picture to use on top of the website. This part will be
 # omitted from the website if found empty
-header = "najimi.png"
+image = "najimi.png"
 # Name of the author, looks like "name - email"
 name = "email"
 # Email of the author, looks like "name - email"
