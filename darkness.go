@@ -132,6 +132,7 @@ func build() {
 	fmt.Println("farewell")
 }
 
+// fileSaver is a worker for file saving
 func fileSaver(files <-chan *bundle, wg *sync.WaitGroup) {
 	for file := range files {
 		ioutil.WriteFile(file.File, []byte(file.Data), 0600)
