@@ -9,11 +9,14 @@ import (
 )
 
 const (
+	// RFC_EMILY is the RFC3339 format for the emily time format
 	RFC_EMILY = "Mon, 02 Jan 2006"
 )
 
 var (
-	HEregex          = regexp.MustCompile(`(\d+);\s*(\d+)\s*H.E.`)
+	// HEregex is a regex for matching Holoscene times
+	HEregex = regexp.MustCompile(`(\d+);\s*(\d+)\s*H.E.`)
+	// HEParagraphRegex is a regex for matching Holoscene times in paragraphs
 	HEParagraphRegex = regexp.MustCompile(`>(\d+);\s*(\d+)\s*H.E.`)
 )
 
@@ -27,6 +30,7 @@ func ConvertHoloscene(HEtime string) *time.Time {
 	return getHoloscene(matches[0][1], matches[0][2])
 }
 
+// getHoloscene returns a time struct for a given holoscene time.
 func getHoloscene(dayS, yearS string) *time.Time {
 	// By the regex, we are guaranteed to have good numbers
 	day, _ := strconv.Atoi(dayS)
@@ -39,6 +43,7 @@ func getHoloscene(dayS, yearS string) *time.Time {
 	return &tt
 }
 
+// AddHolosceneTitles adds the titles of the Holoscene to the page.
 func AddHolosceneTitles(data string) string {
 	// Match all paragraphs with holoscene time
 	matches := HEParagraphRegex.FindAllStringSubmatch(data, -1)

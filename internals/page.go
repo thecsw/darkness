@@ -1,23 +1,39 @@
 package internals
 
+// Page is a struct for holding the page contents
 type Page struct {
-	Title     string
-	URL       string
-	MetaTags  []MetaTag
-	Links     []Link
-	Contents  []Content
+	// Title is the title of the page
+	Title string
+	// URL is the URL of the page
+	URL string
+	// Meta is the meta tags of the page
+	MetaTags []MetaTag
+	// Links is the link tags of the page
+	Links []Link
+	// Contents is the contents of the page
+	Contents []Content
+	// Footnotes is the footnotes of the page
 	Footnotes []string
-	Scripts   []string
+	// Scripts is the scripts of the page
+	Scripts []string
 }
 
+// MetaTag is a struct for holding the meta tag
 type MetaTag struct {
-	Name     string
-	Content  string
+	// Name is the name of the meta tag
+	Name string
+	// Content is the content of the meta tag
+	Content string
+	// Propery is the property of the meta tag
 	Property string
 }
 
+// Link is a struct for holding the link tag
 type Link struct {
-	Rel  string
+	// Rel is the rel of the link tag
+	Rel string
+	// Type is the type of the link tag
 	Type string
+	// Href is the href of the link tag
 	Href string
 }

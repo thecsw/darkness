@@ -5,9 +5,11 @@ import (
 )
 
 const (
+	// mathJavaScript is the javascript for math support using mathjax
 	mathJax = `<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>`
 
+	// katexJs is the javascript for math support using katex
 	katexJs = `
    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css" integrity="sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB" crossorigin="anonymous">
     <!-- The loading of KaTeX is deferred to speed up page rendering -->
@@ -41,9 +43,11 @@ const (
     });
 </script>
 `
+	// mathJs is the javascript for math support (either mathjax or katex)
 	mathJs = katexJs
 )
 
+// AddMathSupport adds math support to the page using javascript injection
 func AddMathSupport(page *internals.Page) {
 	// Find any match of the math regexp, if found, add the math script
 	for _, content := range page.Contents {

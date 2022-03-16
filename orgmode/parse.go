@@ -11,6 +11,7 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
+// ParseFile parses a single file and returns a list of elements
 func ParseFile(workDir, file string) *internals.Page {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
@@ -22,6 +23,7 @@ func ParseFile(workDir, file string) *internals.Page {
 	return page
 }
 
+// Preprocess preprocesses the input string to be parser-friendly
 func Preprocess(data string) string {
 	// Add a newline before every heading just in case if
 	// there is no terminating empty line before each one
@@ -35,6 +37,7 @@ func Preprocess(data string) string {
 	return data
 }
 
+// Parse parses the input string and returns a list of elements
 func Parse(data string) *internals.Page {
 	// Split the data into lines
 	lines := strings.Split(Preprocess(data), "\n")
@@ -49,18 +52,24 @@ func Parse(data string) *internals.Page {
 	}
 	page.Contents = make([]internals.Content, 0, 16)
 
+	// inList is true if we are in a list
 	inList := false
+	// inSourceCode is true if we are in a source code block
 	inSourceCode := false
+	// inRaw is true if we are in a raw block
 	inRawHTML := false
+	// sourceCodeLanguage is the language of the source code block
 	sourceCodeLang := ""
 
 	// Our context is a parody of a state machine
 	currentContext := ""
+	// addContent is a helper function to add content to the page
 	addContent := func(content internals.Content) {
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
 	}
 
+	// Loop through the lines
 	for _, rawLine := range lines {
 		// Trimp the line from whitespaces
 		line := strings.TrimSpace(rawLine)

@@ -8,12 +8,14 @@ import (
 )
 
 var (
+	// contentFunctions is a map of functions that process content
 	contentFunctions = []func(*internals.Content) string{
 		headings, paragraph, list, listNumbered,
 		link, sourceCode, rawHTML, horizontalLine, attentionBlock,
 	}
 )
 
+// headings gives us a heading html representation
 func headings(content *internals.Content) string {
 	start := ``
 	if !content.HeadingChild && !content.HeadingFirst {
@@ -38,6 +40,7 @@ func headings(content *internals.Content) string {
 	return toReturn
 }
 
+// paragraph gives us a paragraph html representation
 func paragraph(content *internals.Content) string {
 	text := processText(content.Paragraph)
 	return fmt.Sprintf(
@@ -49,6 +52,7 @@ func paragraph(content *internals.Content) string {
 	)
 }
 
+// list gives us a list html representation
 func list(content *internals.Content) string {
 	elements := make([]string, len(content.List))
 	for i, item := range content.List {
@@ -69,11 +73,13 @@ func list(content *internals.Content) string {
 `, strings.Join(elements, "\n"))
 }
 
+// listNumbered gives us a numbered list html representation
 func listNumbered(content *internals.Content) string {
 	// TODO
 	return ""
 }
 
+// sourceCode gives us a source code html representation
 func sourceCode(content *internals.Content) string {
 	return fmt.Sprintf(`
 <div class="listingblock">
@@ -86,14 +92,17 @@ func sourceCode(content *internals.Content) string {
 `, content.SourceCodeLang, content.SourceCodeLang, content.SourceCode)
 }
 
+// rawHTML gives us a raw html representation
 func rawHTML(content *internals.Content) string {
 	return content.RawHTML
 }
 
+// horizontalLine gives us a horizontal line html representation
 func horizontalLine(content *internals.Content) string {
 	return `<hr>`
 }
 
+// attentionBlock gives us a attention block html representation
 func attentionBlock(content *internals.Content) string {
 	return fmt.Sprintf(`
 <div class="admonitionblock note">

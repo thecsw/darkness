@@ -6,6 +6,7 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
+// SourceCodeTrimLeftWhitespace removes leading whitespace from source code blocks
 func SourceCodeTrimLeftWhitespace(page *internals.Page) {
 	for i, content := range page.Contents {
 		if !content.IsSourceCode() {

@@ -11,9 +11,11 @@ import (
 )
 
 var (
+	// Config is the global darkness config
 	Config *DarknessConfig
 )
 
+// InitDarkness initializes the darkness config
 func InitDarkness(file string) {
 	Config = &DarknessConfig{}
 	data, err := ioutil.ReadFile(file)
@@ -45,6 +47,7 @@ func InitDarkness(file string) {
 	}
 }
 
+// JoinPath joins a path to the darkness config URL
 func JoinPath(elem string) string {
 	u, _ := url.Parse(elem)
 	return Config.URLPath.ResolveReference(u).String()

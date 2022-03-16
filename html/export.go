@@ -9,6 +9,7 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
+// ExportPage exports the page to HTML
 func ExportPage(page *internals.Page) string {
 	// Add the red tomb to the last paragraph on given directories
 	// from the config
@@ -49,6 +50,7 @@ func ExportPage(page *internals.Page) string {
 	)
 }
 
+// styleTagsProcessed is the processed style tags
 func styleTags() string {
 	content := make([]string, len(emilia.Config.Website.Styles))
 	for i, style := range emilia.Config.Website.Styles {
@@ -60,16 +62,19 @@ func styleTags() string {
 	return strings.Join(content, "")
 }
 
+// defaultScripts are the default scripts
 var defaultScripts = []string{
 	`<script type="module">document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");</script>`,
 	`<script async src="https://sandyuraz.com/scripts/time.js"></script>`,
 }
 
+// scriptTags returns the script tags
 func scriptTags(page *internals.Page) string {
 	allScripts := append(defaultScripts, page.Scripts...)
 	return strings.Join(allScripts, "\n")
 }
 
+// authorHeader returns the author header
 func authorHeader(page *internals.Page) string {
 	content := fmt.Sprintf(`
 <div id="header">
@@ -100,6 +105,7 @@ func authorHeader(page *internals.Page) string {
 	return content
 }
 
+// addTomb adds the tomb to the last paragraph
 func addTomb(page *internals.Page) {
 	// Empty???
 	if len(page.Contents) < 1 {
@@ -113,6 +119,7 @@ func addTomb(page *internals.Page) {
 	last.Paragraph += " ◼"
 }
 
+// addFootnotes adds the footnotes
 func addFootnotes(page *internals.Page) string {
 	if len(page.Footnotes) < 1 {
 		return ""

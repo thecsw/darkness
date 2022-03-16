@@ -16,6 +16,7 @@ import (
 	"github.com/thecsw/darkness/orgmode"
 )
 
+// main is the entry point for the program
 func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 	//defer profile.Start(profile.MemProfile, profile.MemProfileRate(1), profile.ProfilePath(".")).Stop()
@@ -49,6 +50,7 @@ My calling is that of a crusader.
 Do Shometing Gwazy!
 
 Here are the commands you can use, -help is supported:
+  new - create darkness.toml in the current directory
   file - build a single input file and output to stdout
   build - build the entire directory
   megumin - blow up the directory
@@ -58,6 +60,7 @@ Here are the commands you can use, -help is supported:
 Don't hold back! You have no choice!`)
 }
 
+// oneFile builds a single file
 func oneFile() {
 	fileCmd := flag.NewFlagSet("file", flag.ExitOnError)
 	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
@@ -67,6 +70,7 @@ func oneFile() {
 	fmt.Println(orgToHTML(filename))
 }
 
+// build builds the entire directory
 func build() {
 	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
 	buildCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
@@ -98,6 +102,7 @@ func aqua() {
 	// KAZUMAAA-SAAAAAAAAN
 }
 
+// megumin blows up the directory
 func megumin() {
 	explosionCmd := flag.NewFlagSet("megumin", flag.ExitOnError)
 	explosionCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
@@ -138,6 +143,7 @@ func megumin() {
 	})
 }
 
+// orgToHTML converts an org file to html
 func orgToHTML(file string) string {
 	page := orgmode.ParseFile(workDir, file)
 	// Debug line to show the current page
@@ -154,13 +160,19 @@ func orgToHTML(file string) string {
 }
 
 var (
-	workDir      = "."
+	// workDir is the directory to look for files
+	workDir = "."
+	// darknessToml is the location of darkness.toml
 	darknessToml = "darkness.toml"
-	sourceExt    = ".org"
-	targetExt    = ".html"
-	filename     = "index.org"
+	// sourceExt is the extension to look for
+	sourceExt = ".org"
+	// targetExt is the extension to output
+	targetExt = ".html"
+	// filename is the file to build
+	filename = "index.org"
 )
 
+// findFilesByExt finds all files with a given extension
 func findFilesByExt(dir, ext string) ([]string, error) {
 	files := make([]string, 0, 32)
 	err := filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
@@ -186,11 +198,13 @@ func findFilesByExt(dir, ext string) ([]string, error) {
 	return files, err
 }
 
+// getTarget returns the target file name
 func getTarget(file string) string {
 	htmlFilename := strings.Replace(filepath.Base(file), sourceExt, targetExt, 1)
 	return filepath.Join(filepath.Dir(file), htmlFilename)
 }
 
+// delayedLinesPrint prints lines with a delay
 func delayedLinesPrint(lines []string) {
 	for _, line := range lines {
 		time.Sleep(200 * time.Millisecond)
@@ -200,6 +214,7 @@ func delayedLinesPrint(lines []string) {
 	}
 }
 
+// delayedSentencePrint prints a sentence with a delay
 func delayedSentencePrint(line string) {
 	for _, c := range line {
 		fmt.Printf("%c", c)

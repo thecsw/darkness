@@ -8,6 +8,7 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
+// processText returns a properly formatted HTML of a text
 func processText(text string) string {
 	// To make bold itolics, it has to be wrapped in /*...*/
 	// instead of */.../*
@@ -34,12 +35,14 @@ func processText(text string) string {
 	return text
 }
 
+// processTitle returns a properly formatted HTML of a title
 func processTitle(title string) string {
 	title = strings.ReplaceAll(title, "'s", "’s")
 	title = internals.MathRegexp.ReplaceAllString(title, `\($1\)`)
 	return title
 }
 
+// extractID returns a properly formatted ID for a heading title
 func extractID(heading string) string {
 	// Check if heading is a link
 	match := internals.LinkRegexp.FindStringSubmatch(heading)

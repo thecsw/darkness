@@ -6,6 +6,7 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
+// isHeader returns a non-nil object if the line is a header
 func isHeader(line string) *internals.Content {
 	level := 0
 	switch {
@@ -34,14 +35,17 @@ func isHeader(line string) *internals.Content {
 	}
 }
 
+// isComment returns true if the line is a comment
 func isComment(line string) bool {
 	return strings.HasPrefix(line, "# ")
 }
 
+// isOption returns true if the line is an option
 func isOption(line string) bool {
 	return strings.HasPrefix(line, "#+")
 }
 
+// isLink returns a non-nil object if the line is a link
 func isLink(line string) *internals.Content {
 	line = strings.TrimSpace(line)
 	// Not a link

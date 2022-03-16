@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	// ImageEmbedTemplate is the template for image embeds
 	ImageEmbedTemplate = `
 <hr>
 <div class="imageblock">
@@ -17,25 +18,33 @@ const (
 <div class="title">%s</div>
 </div>
 <hr>`
+	// AudioEmbedTemplate is the template for audio embeds
 	AudioEmbedTemplate = `
 <audio controls><source src="%s" type="audio/mpeg">music is good for the soul</audio>`
 
-	YoutubeEmbedPrefix   = "https://youtu.be/"
+	// YoutubeEmbedPrefix is the prefix for youtube embeds
+	YoutubeEmbedPrefix = "https://youtu.be/"
+	// YoutubeEmbedTemplate is the template for youtube embeds
 	YoutubeEmbedTemplate = `
 <iframe width="100%%" height="330px" src="https://www.youtube.com/embed/%s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <hr>`
 
-	SpotifyTrackEmbedPrefix   = "https://open.spotify.com/track/"
+	// SpotifyTrackEmbedPrefix is the prefix for spotify track embeds
+	SpotifyTrackEmbedPrefix = "https://open.spotify.com/track/"
+	// SpotifyTrackEmbedTemplate is the template for spotify track embeds
 	SpotifyTrackEmbedTemplate = `
 <iframe src="https://open.spotify.com/embed/track/%s" width="79%%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 <hr>`
 
-	SpotifyPlaylistEmbedPrefix   = "https://open.spotify.com/playlist/"
+	// SpotifyPlaylistEmbedPrefix is the prefix for spotify playlist embeds
+	SpotifyPlaylistEmbedPrefix = "https://open.spotify.com/playlist/"
+	// SpotifyPlaylistEmbedTemplate is the template for spotify playlist embeds
 	SpotifyPlaylistEmbedTemplate = `
 <iframe src="https://open.spotify.com/embed/playlist/%s" width="79%%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 <hr>`
 )
 
+// link returns an html representation of a link even if it's an embed command
 func link(content *internals.Content) string {
 	switch {
 	case internals.ImageExtRegexp.MatchString(content.Link):

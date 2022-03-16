@@ -7,6 +7,7 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
+// ResolveFootnotes resolves footnotes and cleans up the page if necessary
 func ResolveFootnotes(page *internals.Page) {
 	footnotes := make([]string, 0, 4)
 	for i := range page.Contents {
@@ -25,6 +26,7 @@ func ResolveFootnotes(page *internals.Page) {
 	page.Footnotes = footnotes
 }
 
+// findFootnotes finds footnotes in a paragraph and replaces them with a footnote reference
 func findFootnotes(text string, footnotes *[]string) string {
 	matches := internals.FootnoteRegexp.FindAllStringSubmatch(text, -1)
 	// no footnotes found

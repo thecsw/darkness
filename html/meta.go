@@ -10,9 +10,11 @@ import (
 )
 
 const (
+	// DescriptionLength is the maximum length of the description
 	DescriptionLength = 100
 )
 
+// metaTopTag is the top tag for all meta tags
 func metaTags(page *internals.Page) string {
 	// Find the first paragraph for description
 	description := ""
@@ -36,12 +38,14 @@ func metaTags(page *internals.Page) string {
 	return strings.Join(tags, "")
 }
 
+// meta is a struct for meta tags
 type meta struct {
 	Name     string
 	Property string
 	Content  string
 }
 
+// metaTag returns a string of the form <meta name="..." content="..." />
 func metaTag(val meta) string {
 	return fmt.Sprintf(
 		`<meta name="%s" property="%s" content="%s">`,
@@ -49,19 +53,11 @@ func metaTag(val meta) string {
 	)
 }
 
+// metaTopTag is the top tag for all meta tags
 const metaTopTag = `<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">`
 
-// Pre-allocate the tags slices, because they're same sized
-var (
-	// used in `addBasic`
-	basicTags = make([]string, 5)
-	// used in `addOpenGraph`
-	opengraphTags = make([]string, 11)
-	// used in `addTwitterMeta`
-	twitterTags = make([]string, 7)
-)
-
+// addBasic adds the basic meta tags
 func addBasic(page *internals.Page, description string) string {
 	toAdd := []meta{
 		{"viewport", "viewport", "width=device-width, initial-scale=1.0"},
@@ -70,12 +66,14 @@ func addBasic(page *internals.Page, description string) string {
 		{"theme-color", "theme-color", emilia.Config.Website.Color},
 		{"description", "description", html.EscapeString(description)},
 	}
+	basicTags := make([]string, 5)
 	for i, add := range toAdd {
 		basicTags[i] = metaTag(add)
 	}
 	return metaTopTag + strings.Join(basicTags, "\n")
 }
 
+// addOpenGraph adds the opengraph preview meta tags
 func addOpenGraph(page *internals.Page, description string) string {
 	toAdd := []meta{
 		{"og:title", "og:title", html.EscapeString(page.Title)},
@@ -89,12 +87,14 @@ func addOpenGraph(page *internals.Page, description string) string {
 		{"og:image:width", "og:image:width", "1280"},
 		{"og:image:height", "og:image:height", "640"},
 		{"og:description", "og:description", html.EscapeString(description)}}
+	opengraphTags := make([]string, 11)
 	for i, add := range toAdd {
 		opengraphTags[i] = metaTag(add)
 	}
 	return strings.Join(opengraphTags, "\n")
 }
 
+// addTwitterMeta adds the twitter preview meta tags
 func addTwitterMeta(page *internals.Page, description string) string {
 	toAdd := []meta{
 		{"twitter:card", "twitter:card", "summary_large_image"},
@@ -105,6 +105,7 @@ func addTwitterMeta(page *internals.Page, description string) string {
 		{"twitter:title", "twitter:title", html.EscapeString(page.Title)},
 		{"twitter:description", "twitter:description", html.EscapeString(description)},
 	}
+	twitterTags := make([]string, 7)
 	for i, add := range toAdd {
 		twitterTags[i] = metaTag(add)
 	}

@@ -6,6 +6,8 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
+// EnrichHeadings shifts heading levels to their correct layouts and
+// adds some additional information to the headings for later export
 func EnrichHeadings(page *internals.Page) {
 	minHeadingLevel := 999
 	// Find the smallest heanding
@@ -56,6 +58,8 @@ func EnrichHeadings(page *internals.Page) {
 	}
 }
 
+// ResolveComments resolves heading comments and cleans up the page if
+// COMMENT headings are encountered
 func ResolveComments(page *internals.Page) {
 	start, headingLevel, searching := -1, -1, false
 	for i, content := range page.Contents {
