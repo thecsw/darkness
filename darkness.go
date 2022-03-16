@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 	"unicode"
 
@@ -92,6 +93,11 @@ func oneFile() {
 	fmt.Println(orgToHTML(filename))
 }
 
+type bundle struct {
+	File string
+	Data string
+}
+
 // build builds the entire directory
 func build() {
 	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
@@ -112,11 +118,25 @@ func build() {
 	fmt.Printf("found %d in %d ms\n", len(orgfiles), time.Since(start).Milliseconds())
 	fmt.Printf("Building and flushing... ")
 	start = time.Now()
+	files := make(chan *bundle, len(orgfiles))
+	wg := &sync.WaitGroup{}
 	for _, file := range orgfiles {
-		ioutil.WriteFile(getTarget(file), []byte(orgToHTML(file)), 0600)
+		wg.Add(1)
+		go func(file string) {
+			files <- &bundle{getTarget(file), orgToHTML(file)}
+		}(file)
 	}
+	go fileSaver(files, wg)
+	wg.Wait()
 	fmt.Printf("done in %d ms\n", time.Since(start).Milliseconds())
 	fmt.Println("farewell")
+}
+
+func fileSaver(files <-chan *bundle, wg *sync.WaitGroup) {
+	for file := range files {
+		ioutil.WriteFile(file.File, []byte(file.Data), 0600)
+		wg.Done()
+	}
 }
 
 func aqua() {
