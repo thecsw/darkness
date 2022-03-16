@@ -178,7 +178,7 @@ func orgToHTML(file string) string {
 	// Usually, each page only needs 1 holoscene replacement.
 	// For the fortunes page, we need to replace all of them
 	htmlPage = emilia.AddHolosceneTitles(htmlPage, func() int {
-		if strings.HasSuffix(page.URL, "fortunes") {
+		if strings.HasSuffix(page.URL, "quotes") {
 			return -1
 		}
 		return 1
