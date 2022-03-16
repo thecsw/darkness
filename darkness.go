@@ -19,6 +19,8 @@ import (
 )
 
 var (
+	// defaultDarknessToml is the default darkness config
+	// that will be written on the "new"
 	//go:embed darkness.toml
 	defaultDarknessToml string
 )
@@ -93,11 +95,6 @@ func oneFile() {
 	fmt.Println(orgToHTML(filename))
 }
 
-type bundle struct {
-	File string
-	Data string
-}
-
 // build builds the entire directory
 func build() {
 	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
@@ -130,6 +127,12 @@ func build() {
 	wg.Wait()
 	fmt.Printf("done in %d ms\n", time.Since(start).Milliseconds())
 	fmt.Println("farewell")
+}
+
+// bundle is a struct that hold filename and contents to save
+type bundle struct {
+	File string
+	Data string
 }
 
 // fileSaver is a worker for file saving

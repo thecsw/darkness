@@ -155,7 +155,7 @@ func Parse(data string) *internals.Page {
 			}
 			// If we were in a list, save it as a list
 			if inList {
-				matches := UnorderedListRegexp.FindAllStringSubmatch(previousContext, -1)
+				matches := UnorderedListRegexp.FindAllStringSubmatch(previousContext[2:]+" ∆ ", -1)
 				// Shouldn't happen, continue as a failure
 				if len(matches) < 1 {
 					continue
@@ -169,6 +169,7 @@ func Parse(data string) *internals.Page {
 					Type: internals.TypeList,
 					List: currentList,
 				})
+				inList = false
 				continue
 			}
 			// Let's see if our context is a standalone link
@@ -185,13 +186,11 @@ func Parse(data string) *internals.Page {
 			addContent(*formParagraph(previousContext))
 			continue
 		}
-		currentContext += " "
-		// Mark if the current line is a list
-		inList = isList(line)
-		// Add a delimeter so we can later regex out each item
-		if inList {
-			currentContext += "∆ "
+		if isList(line) {
+			inList = true
+			currentContext = previousContext + " ∆" + line
 		}
+		currentContext += " "
 	}
 	return page
 }
