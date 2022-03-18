@@ -26,6 +26,9 @@ var (
 	// AudioRegexp is the regexp for matching audio (mp3, flac, midi)
 	AudioFileExtRegexp = regexp.MustCompile(`\.(mp3|flac|midi)$`)
 
+	//
+	NewLineRegexp = regexp.MustCompile(`(?m)([^\\])\\ `)
+
 	// FootnoteRegexp is the regexp for matching footnotes
 	FootnoteRegexp = regexp.MustCompile(`\[fn::([^][]+)\]`)
 	// FootnoteReferenceRegexp is the regexp for matching footnotes references
