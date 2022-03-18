@@ -2,7 +2,6 @@ package orgmode
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,7 +12,7 @@ import (
 
 // ParseFile parses a single file and returns a list of elements
 func ParseFile(workDir, file string) *internals.Page {
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	if err != nil {
 		fmt.Printf("failed to open the file %s: %s", file, err.Error())
 		os.Exit(1)

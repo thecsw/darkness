@@ -1,5 +1,5 @@
 # This is the title of your website
-title = "My shiny website ⭐️"
+title = "Ishmael's Moby 🐋"
 
 # This is the url, which darkness will use to create links
 # and all the relative paths. You can leave this off and
@@ -17,7 +17,7 @@ input = ".org"
 # The output file format, defaults to ".html"
 output = ".html"
 # Relative paths of directories, which will be excluded
-exclude = ["present"]
+exclude = ["excluded"]
 
 # This is everything regarding website and some tags 
 [website]
@@ -32,17 +32,17 @@ twitter = "@twitter"
 styles = ["https://sandyuraz.com/css/web.css"]
 # The relative paths of directories to include a tomb
 # symbol to the last paragraph to signify its end
-tombs = ["blogs", "anime", "arts"]
+tombs = ["blog"]
 
 # This is the author header section
 [author]
 # Picture to use on top of the website. This part will be
 # omitted from the website if found empty
-image = "najimi.png"
+image = "https://sandyuraz.com/ishmael/profile.webp"
 # Name of the author, looks like "name - email"
-name = "email"
+name = "Ishmael"
 # Email of the author, looks like "name - email"
-email = "ctu [at] ku [dot] edu"
+email = "ishmael@moby.dick"
 
 # Navigation portion of your website
 # Simply add new sections as a map/array, with
@@ -55,7 +55,7 @@ email = "ctu [at] ku [dot] edu"
 
 [navigation.1]
 link = "about"
-title = "About 🤔"
+title = "About me 🤔"
 
 [navigation.2]
 link = "blog"

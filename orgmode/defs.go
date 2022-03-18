@@ -12,7 +12,7 @@ var (
 	// LinkRegexp is the regexp for matching links
 	LinkRegexp = internals.LinkRegexp
 	// AttentionBlockRegexp is the regexp for matching attention blocks
-	AttentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP|IMPORTANT):\s*(.+)`)
+	AttentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP|IMPORTANT|CAUTION):\s*(.+)`)
 	// UnorderedListRegexp is the regexp for matching unordered lists
 	UnorderedListRegexp = regexp.MustCompile(`(?mU)- (.+) ∆`)
 	// HeadingRegexp is the regexp for matching headlines

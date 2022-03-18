@@ -2,6 +2,7 @@ package html
 
 import (
 	"fmt"
+	"html"
 	"strings"
 
 	"github.com/thecsw/darkness/internals"
@@ -89,7 +90,13 @@ func sourceCode(content *internals.Content) string {
 </pre>
 </div>
 </div>
-`, content.SourceCodeLang, content.SourceCodeLang, content.SourceCode)
+`, content.SourceCodeLang, content.SourceCodeLang, func(sourceCode string) string {
+		// Remove the nested parser blockers
+		s := strings.ReplaceAll(sourceCode, ",#", "#")
+		// Escape the whatever HTML that is found in source code
+		s = html.EscapeString(s)
+		return s
+	}(content.SourceCode))
 }
 
 // rawHTML gives us a raw html representation

@@ -33,14 +33,14 @@ const (
 	SpotifyTrackEmbedPrefix = "https://open.spotify.com/track/"
 	// SpotifyTrackEmbedTemplate is the template for spotify track embeds
 	SpotifyTrackEmbedTemplate = `
-<iframe src="https://open.spotify.com/embed/track/%s" width="79%%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+<center><iframe src="https://open.spotify.com/embed/track/%s" width="79%%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></center>
 <hr>`
 
 	// SpotifyPlaylistEmbedPrefix is the prefix for spotify playlist embeds
 	SpotifyPlaylistEmbedPrefix = "https://open.spotify.com/playlist/"
 	// SpotifyPlaylistEmbedTemplate is the template for spotify playlist embeds
 	SpotifyPlaylistEmbedTemplate = `
-<iframe src="https://open.spotify.com/embed/playlist/%s" width="79%%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+<center><iframe src="https://open.spotify.com/embed/playlist/%s" width="79%%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe></center>
 <hr>`
 )
 

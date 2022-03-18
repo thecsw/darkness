@@ -1,11 +1,11 @@
 package main
 
 import (
+	"bytes"
 	_ "embed"
 	"flag"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,10 +19,8 @@ import (
 )
 
 var (
-	// defaultDarknessToml is the default darkness config
-	// that will be written on the "new"
-	//go:embed darkness.toml
-	defaultDarknessToml string
+	//go:embed ishmael/ishmael.tar
+	defaultDarknessTemplate []byte
 )
 
 // main is the entry point for the program
@@ -61,8 +59,12 @@ func help() {
 My calling is that of a crusader.
 Do Shometing Gwazy!
 
+If you don't have a darkness website yet, start with
+creating it with new followed by the directory name
+
+  $> darkness new axel
+
 Here are the commands you can use, -help is supported:
-  new - create darkness.toml in the current directory
   file - build a single input file and output to stdout
   build - build the entire directory
   megumin - blow up the directory
@@ -75,14 +77,29 @@ Don't hold back! You have no choice!`)
 // newDarkness creates a default darkness config in the current directory
 // if one already exists, nothing will happen, except a notice of that
 func newDarkness() {
-	file, err := os.Open("darkness.toml")
-	if err == nil {
-		fmt.Println("darkness.toml already exists, bailing. bye")
-		file.Close()
+	if len(os.Args) != 3 {
+		fmt.Println("you forgot to add a directory name after new")
 		return
 	}
-	ioutil.WriteFile("darkness.toml", []byte(defaultDarknessToml), 0600)
-	fmt.Println("add default darkness.toml here! go check it out, call for help too")
+	dirName := os.Args[2]
+	f, err := os.Open(dirName)
+	if err == nil {
+		fmt.Println("this directory already exists, bailing")
+		f.Close()
+		return
+	}
+	if err := os.Mkdir(dirName, os.FileMode(0777)); err != nil {
+		fmt.Println("couldn't create a directory for you:", err.Error())
+		return
+	}
+	// Create a buffer for the tar file so we can start untarring it
+	tarBuf := bytes.NewReader(defaultDarknessTemplate)
+	if err := emilia.Untar(tarBuf, dirName); err != nil {
+		fmt.Println("failed at flushing the template files:", err.Error())
+		return
+	}
+	// Done
+	fmt.Printf("Done! Go to %s and start creating!\n(run darkness build in there)\n", dirName)
 }
 
 // oneFile builds a single file
@@ -138,7 +155,7 @@ type bundle struct {
 // fileSaver is a worker for file saving
 func fileSaver(files <-chan *bundle, wg *sync.WaitGroup) {
 	for file := range files {
-		ioutil.WriteFile(file.File, []byte(file.Data), 0600)
+		os.WriteFile(file.File, []byte(file.Data), 0600)
 		wg.Done()
 	}
 }
