@@ -22,6 +22,7 @@ func processText(text string) string {
 	text = internals.BoldText.ReplaceAllString(text, `$1<strong>$2</strong>$3`)
 	text = internals.VerbatimText.ReplaceAllString(text, `$1<code>$2</code>$3`)
 	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
+	text = strings.ReplaceAll(text, `\\`, `<br>`)
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
 
 	text = internals.LinkRegexp.ReplaceAllString(text, `<a href="$1">$2</a>`)
