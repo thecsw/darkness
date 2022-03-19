@@ -22,6 +22,21 @@ const (
 	AudioEmbedTemplate = `
 <audio controls><source src="%s" type="audio/mpeg">music is good for the soul</audio>`
 
+	// VideoEmbedTemplate is the template for video embeds
+	VideoEmbedTemplate = `
+<hr>
+<div class="videoblock">
+<div class="content">
+<video controls width="690px">
+<source src="%s" type="video/%s">
+Sorry, your browser doesn't support embedded videos.
+</video>
+</div>
+<div class="title">%s</div>
+</div>
+<hr>
+`
+
 	// YoutubeEmbedPrefix is the prefix for youtube embeds
 	YoutubeEmbedPrefix = "https://youtu.be/"
 	// YoutubeEmbedTemplate is the template for youtube embeds
@@ -52,6 +67,10 @@ func link(content *internals.Content) string {
 			content.LinkTitle, processText(content.LinkTitle))
 	case internals.AudioFileExtRegexp.MatchString(content.Link):
 		return fmt.Sprintf(AudioEmbedTemplate, content.Link)
+	case internals.VideoFileExtRegexp.MatchString(content.Link):
+		return fmt.Sprintf(VideoEmbedTemplate, content.Link, func(v string) string {
+			return internals.VideoFileExtRegexp.FindAllStringSubmatch(v, 1)[0][1]
+		}(content.Link), content.LinkTitle)
 	case strings.HasPrefix(content.Link, YoutubeEmbedPrefix):
 		return fmt.Sprintf(YoutubeEmbedTemplate, content.Link[len(YoutubeEmbedPrefix):])
 	case strings.HasPrefix(content.Link, SpotifyTrackEmbedPrefix):

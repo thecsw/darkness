@@ -25,8 +25,10 @@ var (
 	ImageExtRegexp = regexp.MustCompile(`\.(png|gif|jpg|jpeg|svg|webp)$`)
 	// AudioRegexp is the regexp for matching audio (mp3, flac, midi)
 	AudioFileExtRegexp = regexp.MustCompile(`\.(mp3|flac|midi)$`)
+	// VideoFileExtRegexp matches commonly used video file formats
+	VideoFileExtRegexp = regexp.MustCompile(`\.(mp4|mkv|mov|flv|webm)$`)
 
-	//
+	// NewLineRegexp matches a new line for non-math environments
 	NewLineRegexp = regexp.MustCompile(`(?m)([^\\])\\ `)
 
 	// FootnoteRegexp is the regexp for matching footnotes
