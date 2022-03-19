@@ -253,7 +253,8 @@ func findFilesByExt(dir, ext string) ([]string, error) {
 					break
 				}
 			}
-			if !isExcluded {
+			// Ignore hidden files
+			if !isExcluded && !strings.HasPrefix(filepath.Base(path), ".") {
 				files = append(files, path)
 			}
 		}

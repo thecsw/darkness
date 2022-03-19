@@ -24,7 +24,6 @@ const (
 
 	// VideoEmbedTemplate is the template for video embeds
 	VideoEmbedTemplate = `
-<hr>
 <div class="videoblock">
 <div class="content">
 <video controls width="690px">
