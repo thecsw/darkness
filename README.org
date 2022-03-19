@@ -88,7 +88,8 @@ cool things! It's the template website that we just made above. I do hope you
 find it fun here
 
 ** Formatting
-Here is some orgmode and darkness formatting guide!
+Here is some orgmode and darkness formatting guide! The actual formatting and
+final layout is [[https://sandyuraz.com/ishmael][here]]!
 
 *** Sections
 
