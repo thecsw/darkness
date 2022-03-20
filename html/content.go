@@ -85,9 +85,7 @@ func sourceCode(content *internals.Content) string {
 	return fmt.Sprintf(`
 <div class="listingblock">
 <div class="content">
-<pre class="highlight">
-<code class="language-%s" data-lang="%s">%s</code>
-</pre>
+<pre class="highlight"><code class="language-%s" data-lang="%s">%s</code></pre>
 </div>
 </div>
 `, content.SourceCodeLang, content.SourceCodeLang, func(sourceCode string) string {
