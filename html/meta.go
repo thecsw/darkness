@@ -28,7 +28,7 @@ func metaTags(page *internals.Page) string {
 		if paragraph == "" || emilia.HEregex.MatchString(paragraph) {
 			continue
 		}
-		description = paragraph[:internals.Min(len(paragraph), DescriptionLength)] + "..."
+		description = processText(paragraph[:internals.Min(len(paragraph), DescriptionLength)]) + "..."
 		break
 	}
 	tags := make([]string, 3)
