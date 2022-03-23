@@ -14,8 +14,10 @@ func processText(text string) string {
 	// instead of */.../*
 	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
 	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
-	text = strings.ReplaceAll(text, "'", "’")
-	text = strings.ReplaceAll(text, "`", "‘")
+	text = strings.ReplaceAll(text, "'s", "’s")
+	//text = strings.ReplaceAll(text, "`", "‘")
+	text = strings.ReplaceAll(text, "``", "“")
+	text = strings.ReplaceAll(text, "''", "”")
 
 	text = html.EscapeString(text)
 	text = internals.ItalicText.ReplaceAllString(text, `$1<em>$2</em>$3`)
