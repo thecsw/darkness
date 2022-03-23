@@ -40,7 +40,9 @@ Sorry, your browser doesn't support embedded videos.
 	YoutubeEmbedPrefix = "https://youtu.be/"
 	// YoutubeEmbedTemplate is the template for youtube embeds
 	YoutubeEmbedTemplate = `
-<iframe width="100%%" height="330px" src="https://www.youtube.com/embed/%s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="videoblock">
+<iframe class="responsive-iframe" src="https://www.youtube.com/embed/%s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
 <hr>`
 
 	// SpotifyTrackEmbedPrefix is the prefix for spotify track embeds
