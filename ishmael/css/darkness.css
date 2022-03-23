@@ -1,0 +1,1091 @@
+/* --------------------------------- */
+/* The custom fonts we are importing */
+/* --------------------------------- */
+
+@import url("https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;1,500&display=swap");
+@font-face {
+        font-family: "Fantasque Sans Mono";
+        src: url("fonts/FantasqueSansMono-Regular.woff2") format("woff2");
+        /* Chrome < 4, Legacy iOS */
+        font-weight: 400;
+        font-style: normal;
+}
+
+article,
+details,
+header,
+main {
+        display: block;
+}
+
+html {
+        font-family: sans-serif;
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+}
+
+a {
+        background: none;
+}
+
+a:focus {
+        outline: thin dotted;
+}
+
+a:active,
+a:hover {
+        outline: 0;
+}
+
+h1 {
+        font-size: 3em;
+        margin: 0.67em 0;
+}
+
+strong {
+        font-weight: bold;
+}
+
+hr {
+        -moz-box-sizing: content-box;
+        box-sizing: content-box;
+        height: 0;
+}
+
+code,
+pre {
+        font-family: monospace;
+        font-size: 1em;
+}
+
+pre {
+        white-space: pre;
+}
+
+#header,
+#content,
+#footnotes,
+#footer {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 0;
+        margin-bottom: 0;
+        max-width: 62.5em;
+        *zoom: 1;
+        position: relative;
+        padding-left: 0.9375em;
+        padding-right: 0.9375em;
+}
+#header::before,
+#header::after,
+#content::before,
+#content::after,
+#footnotes::before,
+#footnotes::after,
+#footer::before,
+#footer::after {
+        content: " ";
+        display: table;
+}
+#header::after,
+#content::after,
+#footnotes::after,
+#footer::after {
+        clear: both;
+}
+sup.footnote,
+sup.footnoteref {
+        font-size: 0.875em;
+        position: static;
+        vertical-align: super;
+}
+sup.footnote a,
+sup.footnoteref a {
+        text-decoration: none;
+}
+sup.footnote a:active,
+sup.footnoteref a:active {
+        text-decoration: underline;
+}
+#footnotes {
+        padding-top: 0.75em;
+        padding-bottom: 0.75em;
+        margin-bottom: 0.625em;
+}
+#footnotes hr {
+        width: 20%;
+        min-width: 6.25em;
+        margin: -0.25em 0 0.75em;
+        border-width: 1px 0 0;
+}
+#footnotes .footnote {
+        padding: 0 0.375em 0 0.225em;
+        line-height: 1.3334;
+        font-size: 0.875em;
+        margin-left: 1.2em;
+        margin-bottom: 0.2em;
+}
+#footnotes .footnote a:first-of-type {
+        font-weight: bold;
+        text-decoration: none;
+        margin-left: -1.05em;
+}
+#footnotes .footnote:last-of-type {
+        margin-bottom: 0;
+}
+#content #footnotes {
+        margin-top: -0.625em;
+        margin-bottom: 0;
+        padding: 0.75em 0;
+}
+
+small {
+        font-size: 80%;
+}
+
+img {
+        border: 0;
+}
+
+select {
+        font-family: inherit;
+        font-size: 100%;
+        margin: 0;
+}
+
+select {
+        text-transform: none;
+}
+
+table {
+        border-collapse: collapse;
+        border-spacing: 0;
+}
+
+*,
+*::before,
+*::after {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+}
+
+html,
+body {
+        font-size: 100%;
+}
+
+body {
+        background: #fff;
+        color: rgba(0, 0, 0, 0.8);
+        padding: 0;
+        margin: 0;
+        font-family: "Lora", "Lora Serif", serif;
+        font-weight: 500;
+        font-style: normal;
+        line-height: 1;
+        position: relative;
+        cursor: auto;
+        tab-size: 4;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+}
+
+a:hover {
+        cursor: pointer;
+}
+
+img {
+        max-width: 100%;
+        height: auto;
+}
+
+img {
+        -ms-interpolation-mode: bicubic;
+}
+
+.right {
+        float: right !important;
+}
+
+.text-right {
+        text-align: right !important;
+}
+
+img {
+        display: inline-block;
+        vertical-align: middle;
+}
+
+select {
+        width: 100%;
+}
+
+.admonitionblock td.content > .title,
+.imageblock > .title,
+.videoblock > .title,
+.listingblock > .title,
+.paragraph > .title,
+.ulist > .title {
+        line-height: 1.45;
+        color: #7a2518;
+        font-weight: 400;
+        margin-top: 0;
+        margin-bottom: 0.25em;
+}
+
+div,
+dd,
+ul,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+p,
+td {
+        margin: 0;
+        padding: 0;
+        direction: ltr;
+}
+
+a {
+        color: #2156a5;
+        text-decoration: underline;
+        line-height: inherit;
+}
+
+a:hover,
+a:focus {
+        color: #1d4b8f;
+}
+
+a img {
+        border: 0;
+}
+
+p {
+        font-family: inherit;
+        font-weight: 500;
+        font-size: 1em;
+        line-height: 1.6;
+        margin-bottom: 1.25em;
+        text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+        font-family: "Lora Sans", "Lora Sans", sans-serif;
+        font-weight: 300;
+        font-style: normal;
+        color: #c31585;
+        text-rendering: optimizeLegibility;
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+        line-height: 1.0125em;
+}
+
+h1 small,
+h2 small,
+h3 small,
+h4 small,
+h5 small,
+h6 small {
+        font-size: 60%;
+        color: #e99b8f;
+        line-height: 0;
+}
+
+h1 {
+        font-size: 2.125em;
+}
+
+h2 {
+        font-size: 1.6875em;
+}
+
+h3 {
+        font-size: 1.375em;
+}
+
+h4,
+h5 {
+        font-size: 1.125em;
+}
+
+h6 {
+        font-size: 1em;
+}
+
+hr {
+        border: solid #dddddf;
+        border-width: 1px 0 0;
+        clear: both;
+        margin: 1.25em 0 1.1875em;
+        height: 0;
+}
+
+em,
+i {
+        font-style: italic;
+        line-height: inherit;
+}
+
+strong {
+        font-weight: bold;
+        line-height: inherit;
+}
+
+small {
+        font-size: 60%;
+        line-height: inherit;
+}
+
+code {
+        font-family: "DejaVu Sans Mono", "Lora Sans Mono", monospace;
+        font-weight: 400;
+        color: rgba(0, 0, 0, 0.9);
+}
+
+ul {
+        font-size: 1em;
+        line-height: 1.6;
+        margin-bottom: 1.25em;
+        list-style-position: outside;
+        font-family: inherit;
+}
+
+ul {
+        margin-left: 1.5em;
+}
+
+ul li ul {
+        margin-left: 1.25em;
+        margin-bottom: 0;
+        font-size: 1em;
+}
+
+@media screen and (min-width: 768px) {
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+                line-height: 1.2;
+        }
+
+        h1 {
+                font-size: 3em;
+        }
+
+        h2 {
+                font-size: 2.3125em;
+        }
+
+        h3 {
+                font-size: 1.6875em;
+        }
+
+        h4 {
+                font-size: 1.4375em;
+        }
+}
+
+table {
+        background: #fff;
+        margin-bottom: 1.25em;
+        border: solid 1px #dedede;
+}
+
+table tr td {
+        padding: 0.5625em 0.625em;
+        font-size: inherit;
+        color: rgba(0, 0, 0, 0.8);
+}
+
+table tr.alt {
+        background: #f8f8f7;
+}
+
+table tr td {
+        display: table-cell;
+        line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+        line-height: 1.2;
+        /* word-spacing: -0.05em; */
+}
+
+h1 strong,
+h2 strong,
+h3 strong,
+h4 strong,
+h5 strong,
+h6 strong {
+        font-weight: 400;
+}
+
+:not(pre):not([class^="L"]) > code {
+        font-size: 0.9em;
+        font-style: normal !important;
+        letter-spacing: 0;
+        padding: 0.1em 0.5ex;
+        word-spacing: -0.15em;
+        background: #f7f7f8;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        line-height: 1.45;
+        text-rendering: optimizeSpeed;
+        word-wrap: break-word;
+}
+
+pre {
+        color: rgba(0, 0, 0, 0.9);
+        font-family: "DejaVu Sans Mono", "Lora Sans Mono", monospace;
+        line-height: 1.45;
+        text-rendering: optimizeSpeed;
+}
+
+pre code,
+pre pre {
+        color: inherit;
+        font-size: inherit;
+        line-height: inherit;
+}
+
+pre > code {
+        display: block;
+}
+
+em em {
+        font-style: normal;
+}
+
+strong strong {
+        font-weight: 400;
+}
+
+p a > code:hover {
+        color: rgba(0, 0, 0, 0.9);
+}
+
+#header,
+#content {
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 0;
+        margin-bottom: 0;
+        max-width: 62.5em;
+        *zoom: 1;
+        position: relative;
+        padding-left: 0.9375em;
+        padding-right: 0.9375em;
+}
+
+#header::before,
+#header::after,
+#content::before,
+#content::after {
+        content: " ";
+        display: table;
+}
+
+#header::after,
+#content::after {
+        clear: both;
+}
+
+#content {
+        margin-top: 1.25em;
+}
+
+#content::before {
+        content: none;
+}
+
+#header > h1:first-child {
+        color: rgba(0, 0, 0, 0.85);
+        margin-top: 2.25rem;
+        margin-bottom: 0;
+}
+
+#header > h1:only-child {
+        border-bottom: 1px solid #dddddf;
+        padding-bottom: 8px;
+}
+
+#header .details {
+        border-bottom: 1px solid #dddddf;
+        line-height: 1.45;
+        padding-top: 0.25em;
+        padding-bottom: 0.25em;
+        padding-left: 0.25em;
+        color: rgba(0, 0, 0, 0.6);
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -ms-flex-flow: row wrap;
+        -webkit-flex-flow: row wrap;
+        flex-flow: row wrap;
+}
+
+#header .details span:first-child {
+        margin-left: -0.125em;
+}
+
+#header .details span.email a {
+        color: rgba(0, 0, 0, 0.85);
+}
+
+#header .details br {
+        display: none;
+}
+
+#header .details br + span::before {
+        content: "\00a0\2013\00a0";
+}
+
+#header .details br + span.author::before {
+        content: "\00a0\22c5\00a0";
+        color: rgba(0, 0, 0, 0.85);
+}
+
+#content > h1:first-child:not([class]) {
+        color: rgba(0, 0, 0, 0.85);
+        border-bottom: 1px solid #dddddf;
+        padding-bottom: 8px;
+        margin-top: 0;
+        padding-top: 1.1rem;
+        margin-bottom: 1.25rem;
+}
+
+#content {
+        margin-bottom: 0.625em;
+}
+
+.sect1 {
+        padding-bottom: 0.625em;
+}
+
+@media screen and (min-width: 768px) {
+        #content {
+                margin-bottom: 1.25em;
+        }
+
+        .sect1 {
+                padding-bottom: 1.25em;
+        }
+}
+
+.sect1:last-child {
+        padding-bottom: 0;
+}
+
+.sect1 + .sect1 {
+        border-top: 1px solid #e7e7e9;
+}
+
+#content h1 > a.link,
+h2 > a.link,
+h3 > a.link,
+h4 > a.link,
+h5 > a.link,
+h6 > a.link {
+        color: #c31585;
+        text-decoration: none;
+}
+
+#content h1 > a.link:hover,
+h2 > a.link:hover,
+h3 > a.link:hover,
+h4 > a.link:hover,
+h5 > a.link:hover,
+h6 > a.link:hover {
+        color: #a53221;
+}
+
+details,
+.imageblock,
+.listingblock {
+        margin-bottom: 1.25em;
+}
+
+details > summary:first-of-type {
+        cursor: pointer;
+        display: list-item;
+        outline: none;
+        margin-bottom: 0.75em;
+}
+
+.admonitionblock td.content > .title,
+.imageblock > .title,
+.listingblock > .title,
+.paragraph > .title,
+.ulist > .title {
+        text-rendering: optimizeLegibility;
+        text-align: left;
+        font-family: "Lora", "Lora Serif", serif;
+        font-size: 1.1rem;
+        font-style: italic;
+}
+
+.admonitionblock > table {
+        border-collapse: separate;
+        border: 0;
+        background: none;
+        width: 100%;
+}
+
+.admonitionblock > table td.icon {
+        text-align: center;
+        width: 80px;
+}
+
+.admonitionblock > table td.icon img {
+        max-width: none;
+}
+
+.admonitionblock > table td.icon .title {
+        font-weight: bold;
+        font-family: "Lora Sans", "Lora Sans", sans-serif;
+        text-transform: uppercase;
+}
+
+.admonitionblock > table td.content {
+        padding-left: 1.125em;
+        padding-right: 1.25em;
+        border-left: 1px solid #dddddf;
+        color: rgba(0, 0, 0, 0.6);
+}
+
+.admonitionblock > table td.content > :last-child > :last-child {
+        margin-bottom: 0;
+}
+
+.listingblock > .content > pre {
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        word-wrap: break-word;
+        overflow-x: auto;
+        padding: 1em;
+        font-size: 0.8125em;
+}
+
+@media screen and (min-width: 768px) {
+        .listingblock > .content > pre {
+                font-size: 0.90625em;
+        }
+}
+
+@media screen and (min-width: 1280px) {
+        .listingblock > .content > pre {
+                font-size: 1em;
+        }
+}
+
+.listingblock > .content > pre:not(.highlight),
+.listingblock > .content > pre[class="highlight"],
+.listingblock > .content > pre[class^="highlight "] {
+        background: #f7f7f8;
+}
+
+.listingblock > .content {
+        position: relative;
+}
+
+.listingblock code[data-lang]::before {
+        display: none;
+        content: attr(data-lang);
+        position: absolute;
+        font-size: 0.75em;
+        top: 0.425rem;
+        right: 0.5rem;
+        line-height: 1;
+        text-transform: uppercase;
+        color: inherit;
+        opacity: 0.5;
+}
+
+.listingblock:hover code[data-lang]::before {
+        display: block;
+}
+
+.listingblock.terminal pre .command::before {
+        content: attr(data-prompt);
+        padding-right: 0.5em;
+        color: inherit;
+        opacity: 0.5;
+}
+
+.listingblock.terminal pre .command:not([data-prompt])::before {
+        content: "$";
+}
+
+ul > li p,
+ul dd,
+.ulist .ulist {
+        margin-bottom: 0.625em;
+}
+
+.imageblock.right {
+        margin: 0.25em 0 1.25em 0.625em;
+}
+
+.imageblock > .title {
+        margin-bottom: 0;
+}
+
+.image.right {
+        margin-top: 0.25em;
+        margin-bottom: 0.25em;
+        display: inline-block;
+        line-height: 0;
+}
+
+.image.right {
+        margin-left: 0.625em;
+}
+
+a.image {
+        text-decoration: none;
+        display: inline-block;
+}
+
+.videoblock.right {
+        margin: 0.25em 0 1.25em 0.625em;
+}
+
+.videoblock > .title {
+        margin-bottom: 0;
+}
+
+.video.right {
+        margin-top: 0.25em;
+        margin-bottom: 0.25em;
+        display: inline-block;
+        line-height: 0;
+}
+
+.video.right {
+        margin-left: 0.625em;
+}
+
+a.video {
+        text-decoration: none;
+        display: inline-block;
+}
+
+.small {
+        font-size: smaller;
+}
+
+.line-through {
+        text-decoration: line-through;
+}
+
+.green {
+        color: #006000;
+}
+
+.green-background {
+        background: #007d00;
+}
+
+.admonitionblock td.icon [class^="fa icon-"] {
+        font-size: 2.5em;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        cursor: default;
+}
+
+.admonitionblock td.icon .icon-note::before {
+        content: "\f05a";
+        color: #19407c;
+}
+
+.admonitionblock td.icon .icon-tip::before {
+        content: "\f0eb";
+        text-shadow: 1px 1px 2px rgba(155, 155, 0, 0.8);
+        color: #111;
+}
+
+.admonitionblock td.icon .icon-warning::before {
+        content: "\f071";
+        color: #bf6900;
+}
+
+.admonitionblock td.icon .icon-caution::before {
+        content: "\f06d";
+        color: #bf3400;
+}
+
+.admonitionblock td.icon .icon-important::before {
+        content: "\f06a";
+        color: #bf0000;
+}
+
+td.content {
+        text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+p,
+td.content,
+span.alt {
+        letter-spacing: -0.014em;
+        hyphens: auto;
+}
+
+p strong,
+td.content strong {
+        letter-spacing: 0.002em;
+}
+
+p,
+td.content,
+span.alt {
+        font-size: 1.0625rem;
+}
+
+p {
+        margin-bottom: 1.25rem;
+}
+
+@page {
+        margin: 1.25cm 0.75cm;
+}
+
+@media print {
+        * {
+                -webkit-box-shadow: none !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+        }
+
+        html {
+                font-size: 80%;
+        }
+
+        a {
+                color: inherit !important;
+                text-decoration: underline !important;
+        }
+
+        a[href^="#"],
+        a[href^="mailto:"] {
+                text-decoration: none !important;
+        }
+
+        pre,
+        tr,
+        img {
+                page-break-inside: avoid;
+        }
+
+        p,
+        td.content {
+                font-size: 1em;
+                orphans: 3;
+                widows: 3;
+        }
+
+        h2,
+        h3 {
+                page-break-after: avoid;
+        }
+
+        .listingblock code[data-lang]::before {
+                display: block;
+        }
+}
+
+/* --------------------------------------- */
+
+/* Margins inspired by The New York Review */
+
+/* --------------------------------------- */
+
+#header {
+        width: 760px;
+        max-width: 100%;
+}
+
+#content {
+        width: 610px;
+        max-width: 100%;
+}
+
+/* --------------------------------------------------- */
+
+/* I like rounded pictures, maybe will get rid of them */
+
+/* --------------------------------------------------- */
+
+img {
+        max-width: 100%;
+        border-radius: 10px;
+}
+
+.imageblock {
+        margin-left: auto;
+        margin-right: auto;
+        width: 690px;
+        right: 50px;
+        position: relative;
+        text-align: center;
+}
+
+.imageblock > .title {
+        text-align: center;
+        margin-top: 16px;
+}
+
+.videoblock {
+        margin-left: auto;
+        margin-right: auto;
+        width: 690px;
+        right: 50px;
+        position: relative;
+        text-align: center;
+}
+
+.videoblock > .title {
+        text-align: center;
+        margin-top: 16px;
+}
+
+/* --------------------------------------------- */
+/* Bold hover animations on links and clickables */
+/* --------------------------------------------- */
+
+a {
+        cursor: pointer;
+        color: #bc2abb;
+        line-height: inherit;
+        transition: 0.14s;
+}
+
+a:hover {
+        color: white;
+        background-color: #bc2abb;
+}
+
+a:visited {
+        color: #5e416d;
+        border-color: #5e416d;
+}
+
+a:visited:hover {
+        color: white;
+        background-color: #5e416d;
+}
+
+/* -------------------------------- */
+
+/* The actual body and fonts we use */
+
+/* -------------------------------- */
+
+body {
+        background: #fffff4;
+        color: #3a1616;
+        font-family: "Lora", serif;
+        /* Smooth the font a little bit, it's a
+         bit too bold on retina screens */
+        /* -webkit-font-smoothing: antialiased; */
+}
+
+p {
+        font-size: 1.15rem;
+        line-height: 1.8rem;
+        font-family: "Lora", serif;
+        font-weight: 500;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+        font-family: "Lora", serif;
+        font-weight: 500;
+        letter-spacing: -0.005em;
+}
+
+/* ---------------------------------------------- */
+
+/* Format monospace code with Fantasque sans mono */
+
+/* ---------------------------------------------- */
+
+code,
+pre {
+        font-family: "Fantasque Sans Mono", monospace;
+}
+
+/* ----------------------------- */
+
+/* Pretty pink content selection */
+
+/* ----------------------------- */
+
+::selection {
+        color: white;
+        background: #eb96ed;
+}
+
+/* --------------------- */
+
+/* Modified header sizes */
+
+/* --------------------- */
+
+h2 {
+        font-size: 2rem;
+}
+
+h3 {
+        font-size: 1.5rem;
+}
+
+/* ------------------------------------------ */
+
+/* Show my face picture when on wider screens */
+
+/* ------------------------------------------ */
+
+#myface {
+        display: block;
+}
+
+/* You can change 1px to 499px to hide on mobile screens */
+
+@media all and (max-width: 1px) {
+        #myface {
+                display: none;
+        }
+}
+
+@media all and (max-width: 700px) {
+        .imageblock {
+                max-width: 100%;
+                right: 0px;
+        }
+}

@@ -29,7 +29,7 @@ color = "#fffff4"
 twitter = "@twitter"
 # The css files to include in HTML files, my css provided
 # has the styles and everything that should look good
-styles = ["https://sandyuraz.com/css/web.css"]
+styles = ["css/darkness.css"]
 # The relative paths of directories to include a tomb
 # symbol to the last paragraph to signify its end
 tombs = ["blog"]
