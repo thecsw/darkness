@@ -26,7 +26,7 @@ const (
 	VideoEmbedTemplate = `
 <div class="videoblock">
 <div class="content">
-<video controls width="690px">
+<video controls class="responsive-iframe">
 <source src="%s" type="video/%s">
 Sorry, your browser doesn't support embedded videos.
 </video>
