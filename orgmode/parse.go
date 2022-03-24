@@ -59,6 +59,10 @@ func Parse(data string) *internals.Page {
 	inRawHTML := false
 	// sourceCodeLanguage is the language of the source code block
 	sourceCodeLang := ""
+	// inQuote marks if the current part should be wrapped in a quote
+	inQuote := false
+	// inCenter marks if the current part should be centered
+	inCenter := false
 
 	// Our context is a parody of a state machine
 	currentContext := ""
@@ -127,7 +131,32 @@ func Parse(data string) *internals.Page {
 		}
 		// Ignore orgmode comments and options, where source code blocks
 		// and export block options are exceptions to this rule
-		if isComment(line) || isOption(line) {
+		if isComment(line) {
+			currentContext = previousContext
+			continue
+		}
+		// Find if we are in a quote or in center
+		if isQuoteStart(line) {
+			inQuote = true
+			currentContext = previousContext
+			continue
+		}
+		if inQuote && isQuoteEnd(line) {
+			inQuote = false
+			currentContext = previousContext
+			continue
+		}
+		if isCenterStart(line) {
+			inCenter = true
+			currentContext = previousContext
+			continue
+		}
+		if inCenter && isCenterEnd(line) {
+			inCenter = false
+			currentContext = previousContext
+			continue
+		}
+		if isOption(line) {
 			currentContext = previousContext
 			continue
 		}
@@ -182,7 +211,7 @@ func Parse(data string) *internals.Page {
 				continue
 			}
 			// By default, save whatever we have as a paragraph
-			addContent(*formParagraph(previousContext))
+			addContent(*formParagraph(previousContext, inQuote, inCenter))
 			continue
 		}
 		if isList(line) {

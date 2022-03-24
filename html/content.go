@@ -43,13 +43,22 @@ func headings(content *internals.Content) string {
 
 // paragraph gives us a paragraph html representation
 func paragraph(content *internals.Content) string {
-	text := processText(content.Paragraph)
 	return fmt.Sprintf(
 		`
-<div class="paragraph">
-<p>%s</p>
+<div class="paragraph%s">
+<p>
+%s
+</p>
 </div>`,
-		text,
+		func() string {
+			if content.IsQuote {
+				return " quote"
+			}
+			if content.IsCentered {
+				return " center"
+			}
+			return ""
+		}(), processText(content.Paragraph),
 	)
 }
 
@@ -88,13 +97,13 @@ func sourceCode(content *internals.Content) string {
 <pre class="highlight"><code class="language-%s" data-lang="%s">%s</code></pre>
 </div>
 </div>
-`, content.SourceCodeLang, content.SourceCodeLang, func(sourceCode string) string {
+`, content.SourceCodeLang, content.SourceCodeLang, func() string {
 		// Remove the nested parser blockers
-		s := strings.ReplaceAll(sourceCode, ",#", "#")
+		s := strings.ReplaceAll(content.SourceCode, ",#", "#")
 		// Escape the whatever HTML that is found in source code
 		s = html.EscapeString(s)
 		return s
-	}(content.SourceCode))
+	}())
 }
 
 // rawHTML gives us a raw html representation

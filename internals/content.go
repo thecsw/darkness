@@ -59,6 +59,10 @@ type Content struct {
 	AttentionTitle string
 	// AttentionText is the attention text
 	AttentionText string
+	// IsQuote defines if this part is a quote or not
+	IsQuote bool
+	// IsCentered define if this part should be centered
+	IsCentered bool
 }
 
 // IsHeading tells us if the content is a heading

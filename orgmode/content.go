@@ -73,10 +73,12 @@ func isLink(line string) *internals.Content {
 	}
 }
 
-func formParagraph(text string) *internals.Content {
+func formParagraph(text string, inQuote bool, inCenter bool) *internals.Content {
 	return &internals.Content{
-		Type:      internals.TypeParagraph,
-		Paragraph: text,
+		Type:       internals.TypeParagraph,
+		Paragraph:  text,
+		IsCentered: inCenter,
+		IsQuote:    inQuote,
 	}
 }
 
@@ -105,7 +107,23 @@ func isHTMLExportEnd(line string) bool {
 }
 
 func isHorizonalLine(line string) bool {
-	return strings.HasPrefix(line, "---")
+	return line == "---"
+}
+
+func isQuoteStart(line string) bool {
+	return strings.HasPrefix(strings.ToLower(line), "#+begin_quote")
+}
+
+func isQuoteEnd(line string) bool {
+	return strings.HasPrefix(strings.ToLower(line), "#+end_quote")
+}
+
+func isCenterStart(line string) bool {
+	return strings.HasPrefix(strings.ToLower(line), "#+begin_center")
+}
+
+func isCenterEnd(line string) bool {
+	return strings.HasPrefix(strings.ToLower(line), "#+end_center")
 }
 
 func isAttentionBlack(line string) *internals.Content {
