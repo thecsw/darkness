@@ -27,6 +27,11 @@ func Preprocess(data string) string {
 	// Add a newline before every heading just in case if
 	// there is no terminating empty line before each one
 	data = HeadingRegexp.ReplaceAllString(data, "\n$1")
+	// Center and quote delimeters need a new line around
+	data = strings.ReplaceAll(data, "#+begin_quote", "\n#+begin_quote\n")
+	data = strings.ReplaceAll(data, "#+end_quote", "\n#+end_quote\n")
+	data = strings.ReplaceAll(data, "#+begin_center", "\n#+begin_center\n")
+	data = strings.ReplaceAll(data, "#+end_center", "\n#+end_center\n")
 	// Debug stuff
 	// fmt.Println(data)
 	// fmt.Println("---------------------")
