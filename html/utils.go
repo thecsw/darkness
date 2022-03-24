@@ -18,6 +18,7 @@ func processText(text string) string {
 	//text = strings.ReplaceAll(text, "`", "‘")
 	text = strings.ReplaceAll(text, "``", "“")
 	text = strings.ReplaceAll(text, "''", "”")
+	text = strings.ReplaceAll(text, "--", "—")
 
 	text = html.EscapeString(text)
 	text = internals.ItalicText.ReplaceAllString(text, `$1<em>$2</em>$3`)
