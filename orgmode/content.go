@@ -107,7 +107,7 @@ func isHTMLExportEnd(line string) bool {
 }
 
 func isHorizonalLine(line string) bool {
-	return line == "---"
+	return strings.TrimSpace(line) == "---"
 }
 
 func isQuoteStart(line string) bool {
