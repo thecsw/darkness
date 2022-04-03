@@ -38,7 +38,7 @@ func processText(text string) string {
 <sup class="footnote">[<a id="_footnoteref_$1" class="footnote" href="#_footnotedef_$1" title="View footnote.">$1</a>]</sup>
 `)
 
-	return text
+	return strings.TrimSpace(text)
 }
 
 // processTitle returns a properly formatted HTML of a title
