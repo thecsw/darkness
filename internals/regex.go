@@ -32,7 +32,7 @@ var (
 	NewLineRegexp = regexp.MustCompile(`(?m)([^\\])\\ `)
 
 	// FootnoteRegexp is the regexp for matching footnotes
-	FootnoteRegexp = regexp.MustCompile(`\[fn::([^][]+)\]`)
+	FootnoteRegexp = regexp.MustCompile(`(?m)\[fn::(.+)\]`)
 	// FootnoteReferenceRegexp is the regexp for matching footnotes references
 	FootnotePostProcessingRegexp = regexp.MustCompile(`!(\d+)!`)
 )
