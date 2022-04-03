@@ -17,7 +17,7 @@ var (
 	// HEregex is a regex for matching Holoscene times
 	HEregex = regexp.MustCompile(`(\d+);\s*(\d+)\s*H.E.`)
 	// HEParagraphRegex is a regex for matching Holoscene times in paragraphs
-	HEParagraphRegex = regexp.MustCompile(`>(\d+);\s*(\d+)\s*H.E.`)
+	HEParagraphRegex = regexp.MustCompile(`>\s*(\d+);\s*(\d+)\s*H.E.`)
 )
 
 // ConvertHoloscene takes a Holoscene time (127; 12022 H.E.) to a time struct.
