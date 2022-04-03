@@ -27,7 +27,7 @@ func linkTags(page *internals.Page) string {
 		{"shortcut icon", emilia.JoinPath("assets/favicon.ico"), "image/x-icon"},
 		{"apple-touch-icon", emilia.JoinPath("assets/apple-touch-icon.png"), "image/png"},
 		{"image_src", emilia.JoinPath("assets/android-chrome-512x512.png"), "image/png"},
-		{"icon", emilia.JoinPath("favicon.ico"), ""},
+		{"icon", emilia.JoinPath("assets/favicon.ico"), ""},
 	}
 	links := make([]string, 5)
 	for i, add := range toAdd {
