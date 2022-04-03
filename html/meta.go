@@ -3,6 +3,7 @@ package html
 import (
 	"fmt"
 	"html"
+	"path"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
@@ -81,7 +82,7 @@ func addOpenGraph(page *internals.Page, description string) string {
 		{"og:url", "og:url", page.URL},
 		{"og:locale", "og:locale", emilia.Config.Website.Locale},
 		{"og:type", "og:type", "website"},
-		{"og:image", "og:image", page.URL + "/preview.png"},
+		{"og:image", "og:image", path.Join(page.URL, emilia.Config.Website.Preview)},
 		{"og:image:alt", "og:image:alt", "Preview"},
 		{"og:image:type", "og:image:type", "image/png"},
 		{"og:image:width", "og:image:width", "1280"},
@@ -100,7 +101,7 @@ func addTwitterMeta(page *internals.Page, description string) string {
 		{"twitter:card", "twitter:card", "summary_large_image"},
 		{"twitter:site", "twitter:site", html.EscapeString(emilia.Config.Title)},
 		{"twitter:creator", "twitter:creator", emilia.Config.Website.Twitter},
-		{"twitter:image:src", "twitter:image:src", page.URL + "/preview.png"},
+		{"twitter:image:src", "twitter:image:src", path.Join(page.URL, emilia.Config.Website.Preview)},
 		{"twitter:url", "twitter:url", page.URL},
 		{"twitter:title", "twitter:title", html.EscapeString(page.Title)},
 		{"twitter:description", "twitter:description", html.EscapeString(description)},

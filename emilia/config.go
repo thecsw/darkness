@@ -29,11 +29,14 @@ func InitDarkness(file string) {
 		os.Exit(1)
 	}
 	// If input/output formats are empty, default to .org/.html respectively
-	if len(Config.Project.Input) < 1 {
+	if notDefined(Config.Project.Input) {
 		Config.Project.Input = ".org"
 	}
-	if len(Config.Project.Output) < 1 {
+	if notDefined(Config.Project.Output) {
 		Config.Project.Output = ".html"
+	}
+	if notDefined(Config.Website.Preview) {
+		Config.Website.Preview = "preview.png"
 	}
 	// If the URL is empty, then plug in the current directory
 	if len(Config.URL) < 1 {
@@ -58,4 +61,8 @@ func InitDarkness(file string) {
 func JoinPath(elem string) string {
 	u, _ := url.Parse(elem)
 	return Config.URLPath.ResolveReference(u).String()
+}
+
+func notDefined(what string) bool {
+	return what == ""
 }

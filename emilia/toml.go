@@ -42,6 +42,9 @@ type WebsiteConfig struct {
 	Styles []string
 	// Tombs is the list of relative paths where to include the tombstones
 	Tombs []string
+	// Preview is the filename of the picture in the
+	// same directory to use as a page preview. defaults to preview.png
+	Preview string
 }
 
 // AuthorConfig is the author section of the config
