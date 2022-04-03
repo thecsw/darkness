@@ -15,6 +15,8 @@ func processText(text string) string {
 	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
 	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
 	text = strings.ReplaceAll(text, "'s", "’s")
+	text = strings.ReplaceAll(text, "n't", "n’t")
+	text = strings.ReplaceAll(text, "'re", "’re")
 	//text = strings.ReplaceAll(text, "`", "‘")
 	text = strings.ReplaceAll(text, "``", "“")
 	text = strings.ReplaceAll(text, "''", "”")
