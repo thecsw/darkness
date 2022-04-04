@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
@@ -84,7 +85,7 @@ func addOpenGraph(page *internals.Page, description string) string {
 		{"og:type", "og:type", "website"},
 		{"og:image", "og:image", path.Join(page.URL, emilia.Config.Website.Preview)},
 		{"og:image:alt", "og:image:alt", "Preview"},
-		{"og:image:type", "og:image:type", "image/png"},
+		{"og:image:type", "og:image:type", "image/" + strings.TrimLeft(filepath.Ext(emilia.Config.Website.Preview), ".")},
 		{"og:image:width", "og:image:width", "1280"},
 		{"og:image:height", "og:image:height", "640"},
 		{"og:description", "og:description", html.EscapeString(description)}}
