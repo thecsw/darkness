@@ -44,6 +44,10 @@ func processText(text string) string {
 // processTitle returns a properly formatted HTML of a title
 func processTitle(title string) string {
 	title = strings.ReplaceAll(title, "'s", "’s")
+	title = strings.ReplaceAll(title, "n't", "n’t")
+	title = strings.ReplaceAll(title, "'re", "’re")
+	title = strings.ReplaceAll(title, "``", "“")
+	title = strings.ReplaceAll(title, "''", "”")
 	title = internals.MathRegexp.ReplaceAllString(title, `\($1\)`)
 	return title
 }
