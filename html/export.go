@@ -2,7 +2,6 @@ package html
 
 import (
 	"fmt"
-	"html"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
@@ -83,7 +82,7 @@ func authorHeader(page *internals.Page) string {
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
 `,
-		authorImage(), html.EscapeString(processTitle(page.Title)),
+		authorImage(), processTitle(page.Title),
 		emilia.Config.Author.Name, emilia.Config.Author.Email,
 	)
 

@@ -8,12 +8,8 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
-// processText returns a properly formatted HTML of a text
-func processText(text string) string {
-	// To make bold itolics, it has to be wrapped in /*...*/
-	// instead of */.../*
-	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
-	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
+// fancyQuotes replaces boring single and double quotes with fancier Unicode versions
+func fancyQuotes(text string) string {
 	text = strings.ReplaceAll(text, "'s", "’s")
 	text = strings.ReplaceAll(text, "n't", "n’t")
 	text = strings.ReplaceAll(text, "'re", "’re")
@@ -21,15 +17,29 @@ func processText(text string) string {
 	text = strings.ReplaceAll(text, "``", "“")
 	text = strings.ReplaceAll(text, "''", "”")
 	text = strings.ReplaceAll(text, "--", "—")
+	return text
+}
 
-	text = html.EscapeString(text)
+// markupHTML replaces the markup regexes defined in internal with HTML tags
+func markupHTML(text string) string {
 	text = internals.ItalicText.ReplaceAllString(text, `$1<em>$2</em>$3`)
 	text = internals.BoldText.ReplaceAllString(text, `$1<strong>$2</strong>$3`)
 	text = internals.VerbatimText.ReplaceAllString(text, `$1<code>$2</code>$3`)
 	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
 	text = internals.NewLineRegexp.ReplaceAllString(text, `$1<br>`)
-	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
+	return text
+}
 
+// processText returns a properly formatted HTML of a text
+func processText(text string) string {
+	// To make bold itolics, it has to be wrapped in /*...*/
+	// instead of */.../*
+	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
+	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
+
+	text = html.EscapeString(fancyQuotes(text))
+	text = markupHTML(text)
+	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
 	text = internals.LinkRegexp.ReplaceAllString(text, `<a href="$1">$2</a>`)
 
 	//text = internals.MathRegexp.ReplaceAllString(text, `\($1\)`)
@@ -43,11 +53,8 @@ func processText(text string) string {
 
 // processTitle returns a properly formatted HTML of a title
 func processTitle(title string) string {
-	title = strings.ReplaceAll(title, "'s", "’s")
-	title = strings.ReplaceAll(title, "n't", "n’t")
-	title = strings.ReplaceAll(title, "'re", "’re")
-	title = strings.ReplaceAll(title, "``", "“")
-	title = strings.ReplaceAll(title, "''", "”")
+	title = fancyQuotes(title)
+	title = markupHTML(title)
 	title = internals.MathRegexp.ReplaceAllString(title, `\($1\)`)
 	return title
 }
