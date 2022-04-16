@@ -22,6 +22,10 @@ func fancyQuotes(text string) string {
 
 // markupHTML replaces the markup regexes defined in internal with HTML tags
 func markupHTML(text string) string {
+	// To make bold itolics, it has to be wrapped in /*...*/
+	// instead of */.../*
+	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
+	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
 	text = internals.ItalicText.ReplaceAllString(text, `$1<em>$2</em>$3`)
 	text = internals.BoldText.ReplaceAllString(text, `$1<strong>$2</strong>$3`)
 	text = internals.VerbatimText.ReplaceAllString(text, `$1<code>$2</code>$3`)
@@ -32,11 +36,6 @@ func markupHTML(text string) string {
 
 // processText returns a properly formatted HTML of a text
 func processText(text string) string {
-	// To make bold itolics, it has to be wrapped in /*...*/
-	// instead of */.../*
-	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
-	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
-
 	text = html.EscapeString(fancyQuotes(text))
 	text = markupHTML(text)
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
@@ -57,6 +56,21 @@ func processTitle(title string) string {
 	title = markupHTML(title)
 	title = internals.MathRegexp.ReplaceAllString(title, `\($1\)`)
 	return title
+}
+
+// processDescription returns a plain-text to be fit into the description
+func processDescription(desc string) string {
+	desc = fancyQuotes(desc)
+	// To make bold itolics, it has to be wrapped in /*...*/
+	// instead of */.../*
+	desc = internals.BoldItalicTextBegin.ReplaceAllString(desc, `$1/*`)
+	desc = internals.BoldItalicTextEnd.ReplaceAllString(desc, `*/$1`)
+	desc = internals.ItalicText.ReplaceAllString(desc, `$1$2$3`)
+	desc = internals.BoldText.ReplaceAllString(desc, `$1$2$3`)
+	desc = internals.VerbatimText.ReplaceAllString(desc, `$1$2$3`)
+	desc = internals.KeyboardRegexp.ReplaceAllString(desc, `$1`)
+	desc = internals.NewLineRegexp.ReplaceAllString(desc, `$1`)
+	return desc
 }
 
 // extractID returns a properly formatted ID for a heading title
