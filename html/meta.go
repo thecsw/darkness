@@ -11,11 +11,6 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
-const (
-	// DescriptionLength is the maximum length of the description
-	DescriptionLength = 100
-)
-
 // metaTopTag is the top tag for all meta tags
 func metaTags(page *internals.Page) string {
 	// Find the first paragraph for description
@@ -30,7 +25,8 @@ func metaTags(page *internals.Page) string {
 		if paragraph == "" || emilia.HEregex.MatchString(paragraph) {
 			continue
 		}
-		description = processDescription(paragraph[:internals.Min(len(paragraph), DescriptionLength)]) + "..."
+		description = processDescription(
+			paragraph[:internals.Min(len(paragraph), emilia.Config.Website.DescriptionLength)]) + "..."
 		break
 	}
 	tags := make([]string, 3)

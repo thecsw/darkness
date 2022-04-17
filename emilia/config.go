@@ -38,6 +38,9 @@ func InitDarkness(file string) {
 	if notDefined(Config.Website.Preview) {
 		Config.Website.Preview = "preview.png"
 	}
+	if Config.Website.DescriptionLength < 1 {
+		Config.Website.DescriptionLength = 100
+	}
 	// If the URL is empty, then plug in the current directory
 	if len(Config.URL) < 1 {
 		Config.URL, err = os.Getwd()

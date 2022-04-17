@@ -45,6 +45,9 @@ type WebsiteConfig struct {
 	// Preview is the filename of the picture in the
 	// same directory to use as a page preview. defaults to preview.png
 	Preview string
+	// Description length dictates on how many characters do we extract
+	// from the page to show in the web prewies, like OpenGraph and Twitter
+	DescriptionLength uint `toml:"description_length"`
 }
 
 // AuthorConfig is the author section of the config
