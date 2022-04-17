@@ -47,7 +47,7 @@ type WebsiteConfig struct {
 	Preview string
 	// Description length dictates on how many characters do we extract
 	// from the page to show in the web prewies, like OpenGraph and Twitter
-	DescriptionLength uint `toml:"description_length"`
+	DescriptionLength int `toml:"description_length"`
 }
 
 // AuthorConfig is the author section of the config
