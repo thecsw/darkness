@@ -13,6 +13,7 @@ func fancyQuotes(text string) string {
 	text = strings.ReplaceAll(text, "'s", "’s")
 	text = strings.ReplaceAll(text, "n't", "n’t")
 	text = strings.ReplaceAll(text, "'re", "’re")
+	text = strings.ReplaceAll(text, "'ll", "’ll")
 	//text = strings.ReplaceAll(text, "`", "‘")
 	text = strings.ReplaceAll(text, "``", "“")
 	text = strings.ReplaceAll(text, "''", "”")
