@@ -11,6 +11,7 @@ import (
 // fancyQuotes replaces boring single and double quotes with fancier Unicode versions
 func fancyQuotes(text string) string {
 	text = strings.ReplaceAll(text, "'s", "’s")
+	text = strings.ReplaceAll(text, "'m", "’m")
 	text = strings.ReplaceAll(text, "n't", "n’t")
 	text = strings.ReplaceAll(text, "'re", "’re")
 	text = strings.ReplaceAll(text, "'ll", "’ll")
