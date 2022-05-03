@@ -137,7 +137,7 @@ func addFootnotes(page *internals.Page) string {
 	for i, footnote := range page.Footnotes {
 		footnotes[i] = fmt.Sprintf(`
 <div class="footnote" id="_footnotedef_%d">
-<a href="#_footnotedef_%d">%d</a>
+<a href="#_footnoteref_%d">%d</a>
 %s
 </div>
 `,
