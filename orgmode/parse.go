@@ -68,6 +68,9 @@ func Parse(data string) *internals.Page {
 	inQuote := false
 	// inCenter marks if the current part should be centered
 	inCenter := false
+	// inDropCap is a flag telling us whether next paragraph should
+	// have a stylish drop cap
+	inDropCap := false
 
 	// Our context is a parody of a state machine
 	currentContext := ""
@@ -161,6 +164,13 @@ func Parse(data string) *internals.Page {
 			currentContext = previousContext
 			continue
 		}
+		if isDropCap(line) {
+			inDropCap = true
+			currentContext = previousContext
+			continue
+		}
+		// isOption is a sink for any options that darkness
+		// does not support, hence will be ignored
 		if isOption(line) {
 			currentContext = previousContext
 			continue
@@ -216,7 +226,14 @@ func Parse(data string) *internals.Page {
 				continue
 			}
 			// By default, save whatever we have as a paragraph
-			addContent(*formParagraph(previousContext, inQuote, inCenter))
+			addContent(*formParagraph(
+				previousContext,
+				inQuote,
+				inCenter,
+				inDropCap,
+			))
+			// Reset the drop cap flag
+			inDropCap = false
 			continue
 		}
 		if isList(line) {

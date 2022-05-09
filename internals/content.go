@@ -63,6 +63,8 @@ type Content struct {
 	IsQuote bool
 	// IsCentered define if this part should be centered
 	IsCentered bool
+	// IsDropCap defines whether to enlarge the first letter
+	IsDropCap bool
 }
 
 // IsHeading tells us if the content is a heading

@@ -73,12 +73,13 @@ func isLink(line string) *internals.Content {
 	}
 }
 
-func formParagraph(text string, inQuote bool, inCenter bool) *internals.Content {
+func formParagraph(text string, inQuote bool, inCenter bool, inDropCap bool) *internals.Content {
 	return &internals.Content{
 		Type:       internals.TypeParagraph,
 		Paragraph:  text,
 		IsCentered: inCenter,
 		IsQuote:    inQuote,
+		IsDropCap:  inDropCap,
 	}
 }
 
@@ -124,6 +125,10 @@ func isCenterStart(line string) bool {
 
 func isCenterEnd(line string) bool {
 	return strings.HasPrefix(strings.ToLower(line), "#+end_center")
+}
+
+func isDropCap(line string) bool {
+	return strings.HasPrefix(strings.ToLower(line), "#+drop_cap")
 }
 
 func isAttentionBlack(line string) *internals.Content {
