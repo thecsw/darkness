@@ -1019,6 +1019,28 @@ p {
         font-weight: 500;
 }
 
+.quote {
+        max-width: 550px;
+        display: block;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 40px;
+        margin-inline-end: 40px;
+}
+
+.center {
+        text-align: center;
+}
+
+.dropcap::first-letter {
+        float: left !important;
+        font-size: 2.2rem !important;
+        font-style: normal !important;
+        font-weight: 500 !important;
+        line-height: 2rem !important;
+        margin: -0.46rem 0 0 !important;
+}
+
 h1,
 h2,
 h3,
