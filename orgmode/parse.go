@@ -230,7 +230,7 @@ func Parse(data string) *internals.Page {
 			// If we were in a table, save it as such
 			if inTable {
 				rows := strings.Split(previousContext, " ø")[1:]
-				tableData := make([][]string, len(rows)-1)
+				tableData := make([][]string, len(rows))
 				for i, row := range rows {
 					row = strings.TrimSpace(row)
 					if len(row) < 1 {
