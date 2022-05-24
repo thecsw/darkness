@@ -87,6 +87,14 @@ func isList(line string) bool {
 	return strings.HasPrefix(line, "- ")
 }
 
+func isTable(line string) bool {
+	return strings.HasPrefix(line, "| ") || strings.HasPrefix(line, "|-")
+}
+
+func isTableHeaderDelimeter(line string) bool {
+	return strings.HasPrefix(line, "|-")
+}
+
 func isSourceCodeBegin(line string) bool {
 	return strings.HasPrefix(strings.ToLower(line), "#+begin_src")
 }
@@ -129,6 +137,10 @@ func isCenterEnd(line string) bool {
 
 func isDropCap(line string) bool {
 	return strings.HasPrefix(strings.ToLower(line), "#+drop_cap")
+}
+
+func isCaption(line string) bool {
+	return strings.HasPrefix(strings.ToLower(line), "#+caption:")
 }
 
 func isAttentionBlack(line string) *internals.Content {

@@ -8,20 +8,22 @@ const (
 	TypeHeading TypeContent = iota
 	// TypeParagraph is the type of paragraph, which is just text
 	TypeParagraph
-	// TypeList is the type of an unordered list
+	// TypeList is the type of unordered list
 	TypeList
-	// TypeListNumbered is the type of a numbered list
+	// TypeListNumbered is the type of numbered list
 	TypeListNumbered
-	// TypeLink is the type of a link
+	// TypeLink is the type of link
 	TypeLink
-	// TypeSourceCode is the type of a source code block
+	// TypeSourceCode is the type of source code block
 	TypeSourceCode
-	// TypeRawHTML is the type of a raw HTML block
+	// TypeRawHTML is the type of raw HTML block
 	TypeRawHTML
-	// TypeHorizontalLine is the type of a horizontal line
+	// TypeHorizontalLine is the type of horizontal line
 	TypeHorizontalLine
-	// TypeAttentionText is the type of an attention text block
+	// TypeAttentionText is the type of attention text block
 	TypeAttentionText
+	// TypeTable is the type of a table
+	TypeTable
 )
 
 // Content is a piece of content of a page
@@ -65,6 +67,13 @@ type Content struct {
 	IsCentered bool
 	// IsDropCap defines whether to enlarge the first letter
 	IsDropCap bool
+	// Table is the table of items
+	Table [][]string
+	// TableHeaders tell us whether the table has headers
+	// (use the first row as headers instead of data)
+	TableHeaders bool
+	// Caption is the current caption
+	Caption string
 }
 
 // IsHeading tells us if the content is a heading
@@ -93,3 +102,6 @@ func (c Content) IsHorizontalLine() bool { return c.Type == TypeHorizontalLine }
 
 // IsAttentionBlock tells us if the content is an attention text block
 func (c Content) IsAttentionBlock() bool { return c.Type == TypeAttentionText }
+
+// IsTable tells us if the content block is a table
+func (c Content) IsTable() bool { return c.Type == TypeTable }

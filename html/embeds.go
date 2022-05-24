@@ -35,6 +35,14 @@ Sorry, your browser doesn't support embedded videos.
 </div>
 <hr>
 `
+	// Table is the template for image embeds
+	TableTemplate = `
+<div class="imageblock">
+<div class="title">%s</div>
+<div class="content">
+%s
+</div>
+</div>`
 
 	// YoutubeEmbedPrefix is the prefix for youtube embeds
 	YoutubeEmbedPrefix = "https://youtu.be/"

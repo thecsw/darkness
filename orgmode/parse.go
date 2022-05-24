@@ -58,6 +58,10 @@ func Parse(data string) *internals.Page {
 
 	// inList is true if we are in a list
 	inList := false
+	// inTable is true if we are in a table
+	inTable := false
+	// inTableHasHeaders tells us whether the table has headers
+	inTableHasHeaders := false
 	// inSourceCode is true if we are in a source code block
 	inSourceCode := false
 	// inRaw is true if we are in a raw block
@@ -71,6 +75,8 @@ func Parse(data string) *internals.Page {
 	// inDropCap is a flag telling us whether next paragraph should
 	// have a stylish drop cap
 	inDropCap := false
+	// caption is the current caption we can read
+	caption := ""
 
 	// Our context is a parody of a state machine
 	currentContext := ""
@@ -78,6 +84,7 @@ func Parse(data string) *internals.Page {
 	addContent := func(content internals.Content) {
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
+		caption = ""
 	}
 
 	// Loop through the lines
@@ -123,6 +130,7 @@ func Parse(data string) *internals.Page {
 					Type:           internals.TypeSourceCode,
 					SourceCodeLang: sourceCodeLang,
 					SourceCode:     strings.TrimRight(previousContext, "\n\t\r\f\b"),
+					Caption:        caption,
 				})
 				continue
 			}
@@ -169,6 +177,11 @@ func Parse(data string) *internals.Page {
 			currentContext = previousContext
 			continue
 		}
+		if isCaption(line) {
+			caption = strings.TrimSpace(strings.ReplaceAll(line, "#+caption:", ""))
+			currentContext = previousContext
+			continue
+		}
 		// isOption is a sink for any options that darkness
 		// does not support, hence will be ignored
 		if isOption(line) {
@@ -198,21 +211,50 @@ func Parse(data string) *internals.Page {
 			}
 			// If we were in a list, save it as a list
 			if inList {
-				matches := UnorderedListRegexp.FindAllStringSubmatch(previousContext[2:]+" ∆ ", -1)
+				matches := strings.Split(previousContext, " ∆ ")
+				for i, match := range matches {
+					matches[i] = strings.Replace(match, "- ", "", 1)
+				}
 				// Shouldn't happen, continue as a failure
 				if len(matches) < 1 {
 					continue
 				}
-				currentList := make([]string, len(matches))
-				for i, match := range matches {
-					currentList[i] = match[1]
-				}
 				// Add the list
 				addContent(internals.Content{
 					Type: internals.TypeList,
-					List: currentList,
+					List: matches,
 				})
 				inList = false
+				continue
+			}
+			// If we were in a table, save it as such
+			if inTable {
+				rows := strings.Split(previousContext, " ø")
+				tableData := make([][]string, len(rows)-1)
+				for i, row := range rows[1:] {
+					row = strings.TrimSpace(row)
+					if len(row) < 1 {
+						fmt.Println("LEAVING")
+						continue
+					}
+					// Split by the item delimeter
+					columns := strings.Split(row, "|")
+					// Trim the array from the first and last element
+					columns = columns[1 : len(columns)-1]
+					// Trim each item by the left/right whitespace
+					for j, item := range columns {
+						columns[j] = strings.TrimSpace(item)
+					}
+					tableData[i] = columns
+				}
+				addContent(internals.Content{
+					Type:         internals.TypeTable,
+					Table:        tableData,
+					TableHeaders: inTableHasHeaders,
+					Caption:      caption,
+				})
+				inTable = false
+				inTableHasHeaders = false
 				continue
 			}
 			// Let's see if our context is a standalone link
@@ -239,6 +281,16 @@ func Parse(data string) *internals.Page {
 		if isList(line) {
 			inList = true
 			currentContext = previousContext + " ∆" + line
+		}
+		if isTable(line) {
+			inTable = true
+			// If it's a delimeter, save it and move on
+			if isTableHeaderDelimeter(line) {
+				inTableHasHeaders = true
+				currentContext = previousContext
+				continue
+			}
+			currentContext = previousContext + " ø" + line
 		}
 		currentContext += " "
 	}

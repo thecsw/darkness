@@ -11,8 +11,16 @@ import (
 var (
 	// contentFunctions is a map of functions that process content
 	contentFunctions = []func(*internals.Content) string{
-		headings, paragraph, list, listNumbered,
-		link, sourceCode, rawHTML, horizontalLine, attentionBlock,
+		headings,
+		paragraph,
+		list,
+		listNumbered,
+		link,
+		sourceCode,
+		rawHTML,
+		horizontalLine,
+		attentionBlock,
+		table,
 	}
 )
 
@@ -136,4 +144,21 @@ func attentionBlock(content *internals.Content) string {
 </tr>
 </table>
 </div>`, content.AttentionTitle, processText(content.AttentionText))
+}
+
+// table gives an HTML formatted table
+func table(content *internals.Content) string {
+	rows := make([]string, len(content.Table))
+	for i := range content.Table {
+		for j, v := range content.Table[i] {
+			topTag := "td"
+			if i == 0 && content.TableHeaders {
+				topTag = "th"
+			}
+			content.Table[i][j] = fmt.Sprintf("<%s>%s</%s>", topTag, processText(v), topTag)
+		}
+		rows[i] = fmt.Sprintf("<tr>\n%s</tr>", strings.Join(content.Table[i], "\n"))
+	}
+	tableHTML := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
+	return fmt.Sprintf(TableTemplate, content.Caption, tableHTML)
 }
