@@ -211,7 +211,7 @@ func Parse(data string) *internals.Page {
 			}
 			// If we were in a list, save it as a list
 			if inList {
-				matches := strings.Split(previousContext, " ∆ ")
+				matches := strings.Split(previousContext, " ∆")[1:]
 				for i, match := range matches {
 					matches[i] = strings.Replace(match, "- ", "", 1)
 				}
@@ -229,9 +229,9 @@ func Parse(data string) *internals.Page {
 			}
 			// If we were in a table, save it as such
 			if inTable {
-				rows := strings.Split(previousContext, " ø")
+				rows := strings.Split(previousContext, " ø")[1:]
 				tableData := make([][]string, len(rows)-1)
-				for i, row := range rows[1:] {
+				for i, row := range rows {
 					row = strings.TrimSpace(row)
 					if len(row) < 1 {
 						fmt.Println("LEAVING")
