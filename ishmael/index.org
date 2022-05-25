@@ -32,7 +32,7 @@ audio).
 *** Images
 See for example, below is a link on its line with an image path
 
-[[https://sandyuraz.com/ishmael/evangelion.webp][/CUT/, August 2009 issue. Art by Tadashi Hiramatsu]]
+[[evangelion.webp][/CUT/, August 2009 issue. Art by Tadashi Hiramatsu]]
 
 *** Songs
 Depending on the link type, darkness will intelligently stub in a preview if
@@ -114,3 +114,22 @@ Another cool thing darkness can do for you is keeping track of your
 footnotes. We follow orgmode's conventions as well. Anywhere in the text, if
 you have a string in the form of =[fn­:: blablabla]=, that =blablabla= will go and
 become your footnote. [fn:: /Formatting/ *also* =works= in footnotes]
+
+** Tables
+
+Tables are super cool, by making an orgmode table and /optionally/ adding a
+caption above it with =#+caption: blablabla=, we can get the following,
+
+#+caption: This is my very cool table
+| Name     | Origin                 | Waifu?       |
+|----------+------------------------+--------------|
+| Rem      | Re:Rezo                | YES YES YES  |
+| Aqua     | Konosuba               | *Absolutely.*  |
+| Zero Two | Darling in the FRANXX  | =no other way= |
+| Najimi   | Komi Can't Communicate | /yes/          |
+
+** Drop caps
+
+#+drop_cap
+Drop a nice =#+drop_cap= above any paragraph and it will make this nice /old style/
+section division.

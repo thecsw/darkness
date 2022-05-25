@@ -158,11 +158,6 @@ select {
         text-transform: none;
 }
 
-table {
-        border-collapse: collapse;
-        border-spacing: 0;
-}
-
 *,
 *::before,
 *::after {
@@ -267,15 +262,6 @@ a:focus {
 
 a img {
         border: 0;
-}
-
-p {
-        font-family: inherit;
-        font-weight: 500;
-        font-size: 1em;
-        line-height: 1.6;
-        margin-bottom: 1.25em;
-        text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -403,12 +389,13 @@ ul li ul {
 
 table {
         background: #fff;
-        margin-bottom: 1.25em;
+        margin-bottom: 1.25rem;
+        margin-top: 1rem;
         border: solid 1px #dedede;
 }
 
 table tr td {
-        padding: 0.5625em 0.625em;
+        padding: 0.5625rem 0.625rem;
         font-size: inherit;
         color: rgba(0, 0, 0, 0.8);
 }
@@ -635,6 +622,7 @@ details > summary:first-of-type {
 }
 
 .admonitionblock td.content > .title,
+.videoblock > .title,
 .imageblock > .title,
 .listingblock > .title,
 .paragraph > .title,
@@ -669,8 +657,8 @@ details > summary:first-of-type {
 }
 
 .admonitionblock > table td.content {
-        padding-left: 1.125em;
-        padding-right: 1.25em;
+        /* padding-left: 1.125em; */
+        /* padding-right: 1.25em; */
         border-left: 1px solid #dddddf;
         color: rgba(0, 0, 0, 0.6);
 }
@@ -744,10 +732,12 @@ ul dd,
         margin-bottom: 0.625em;
 }
 
+.videoblock.right,
 .imageblock.right {
         margin: 0.25em 0 1.25em 0.625em;
 }
 
+.videoblock > .title,
 .imageblock > .title {
         margin-bottom: 0;
 }
@@ -766,25 +756,6 @@ ul dd,
 a.image {
         text-decoration: none;
         display: inline-block;
-}
-
-.videoblock.right {
-        margin: 0.25em 0 1.25em 0.625em;
-}
-
-.videoblock > .title {
-        margin-bottom: 0;
-}
-
-.video.right {
-        margin-top: 0.25em;
-        margin-bottom: 0.25em;
-        display: inline-block;
-        line-height: 0;
-}
-
-.video.right {
-        margin-left: 0.625em;
 }
 
 a.video {
@@ -858,14 +829,9 @@ td.content strong {
         letter-spacing: 0.002em;
 }
 
-p,
 td.content,
 span.alt {
         font-size: 1.0625rem;
-}
-
-p {
-        margin-bottom: 1.25rem;
 }
 
 @page {
@@ -943,6 +909,7 @@ img {
         border-radius: 10px;
 }
 
+.videoblock,
 .imageblock {
         margin-left: auto;
         margin-right: auto;
@@ -954,21 +921,12 @@ img {
 
 .imageblock > .title {
         text-align: center;
-        margin-top: 16px;
-}
-
-.videoblock {
-        margin-left: auto;
-        margin-right: auto;
-        width: 690px;
-        right: 50px;
-        position: relative;
-        text-align: center;
+        margin-top: 1rem;
 }
 
 .videoblock > .title {
         text-align: center;
-        margin-top: 16px;
+        margin-top: 3rem;
 }
 
 /* --------------------------------------------- */
@@ -1012,18 +970,23 @@ body {
         /* -webkit-font-smoothing: antialiased; */
 }
 
-p {
+.sectionbody,
+.paragraph {
         font-size: 1.15rem;
         line-height: 1.8rem;
         font-family: "Lora", serif;
         font-weight: 500;
+        line-height: 1.6;
+        margin-bottom: 1.25em;
+        text-rendering: optimizeLegibility;
 }
 
 .quote {
+        font-size: 1rem;
         max-width: 550px;
         display: block;
-        margin-block-start: 1em;
-        margin-block-end: 1em;
+        margin-block-start: 1rem;
+        margin-block-end: 1rem;
         margin-inline-start: 40px;
         margin-inline-end: 40px;
 }
@@ -1038,7 +1001,7 @@ p {
         font-style: normal !important;
         font-weight: 500 !important;
         line-height: 2rem !important;
-        margin: -0.46rem 0 0 !important;
+        margin: -0.48rem 0 0 !important;
 }
 
 h1,
@@ -1087,6 +1050,43 @@ h3 {
         font-size: 1.5rem;
 }
 
+.videoblock {
+        position: relative;
+        overflow: hidden;
+        width: 690px;
+        padding-top: 390px; /* 16:9 Aspect Ratio (divide 9 by 16 = 0.5625) */
+}
+
+/* Then style the iframe to fit in the container div with full height and width */
+.responsive-iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+}
+
+table {
+        border-collapse: collapse;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+}
+tr {
+        background-color: white;
+}
+th,
+td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid peachpuff;
+}
+tr:hover {
+        background-color: antiquewhite;
+}
+
 /* ------------------------------------------ */
 
 /* Show my face picture when on wider screens */
@@ -1108,6 +1108,12 @@ h3 {
 @media all and (max-width: 700px) {
         .imageblock {
                 max-width: 100%;
+                right: 0px;
+        }
+
+        .videoblock {
+                width: 100%;
+                padding-top: 56.25%;
                 right: 0px;
         }
 }
