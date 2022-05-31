@@ -20,9 +20,9 @@ types of blocks you add to your page.
 Simple formatting is supported as well, you can do some *bold* text, maybe even
 /italics/, and =verbatim=. For =*bold*=, surround your text with astericks, for
 =/italics/=, surround with forward slashes, and verbatim with equal signs,
-==verbatim==
+==verbatim= = or =~code~=
 
-Some new ones were added, such as +strike-through+ (=+strike-through+=) and
+Some new ones were added, such as +strike-through+ (=+­strike-through+=) and
 _underline_ (=_underline_=).
 
 ** Links and embeds
@@ -110,6 +110,8 @@ sharp edges in whatever you're writing about. Start a paragraph with =NOTE:=,
 =IMPORTANT:=, =CAUTION:=, =TIP:=, or =WARNING:=, and you will get an attention-grabber
 
 TIP: This is kinda useful for technical posts when you mention exceptions or so 
+
+IMPORTANT: Life is to be lived.
 
 ** Footnotes
 
