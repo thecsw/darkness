@@ -22,6 +22,9 @@ Simple formatting is supported as well, you can do some *bold* text, maybe even
 =/italics/=, surround with forward slashes, and verbatim with equal signs,
 ==verbatim==
 
+Some new ones were added, such as +strike-through+ (=+strike-through+=) and
+_underline_ (=_underline_=).
+
 ** Links and embeds
 
 Links are in the form of =[­[link][text]]=. If your link is in a text, then it will
