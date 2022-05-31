@@ -18,7 +18,7 @@ var (
 	// VerbatimText is the regexp for matching verbatim text
 	VerbatimText = markupRegex(`[~=]`)
 	// StrikethroughText is the regexp for matching strikethrough text
-	StrikethroughText = markupRegex(`+`)
+	StrikethroughText = markupRegex(`\+`)
 	// UnderlineText is the regexp for matching underline text
 	UnderlineText = markupRegex(`_`)
 	// KeyboardRegexp is the regexp for matching keyboard text
