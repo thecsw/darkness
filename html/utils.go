@@ -2,6 +2,7 @@ package html
 
 import (
 	"html"
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -22,17 +23,24 @@ func fancyQuotes(text string) string {
 	return text
 }
 
+// markupHTMLMapping maps the regex markup to html replacements
+var markupHTMLMapping = map[*regexp.Regexp]string{
+	internals.ItalicText:        `$1<em>$2</em>$3`,
+	internals.BoldText:          `$1<strong>$2</strong>$3`,
+	internals.VerbatimText:      `$1<code>$2</code>$3`,
+	internals.StrikethroughText: `$1<s>$2</s>$3`,
+	internals.UnderlineText:     `$1<u>$2</u>$3`,
+}
+
 // markupHTML replaces the markup regexes defined in internal with HTML tags
 func markupHTML(text string) string {
 	// To make bold italics, it has to be wrapped in /*...*/
 	// instead of */.../*
 	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
 	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
-	text = internals.ItalicText.ReplaceAllString(text, `$1<em>$2</em>$3`)
-	text = internals.BoldText.ReplaceAllString(text, `$1<strong>$2</strong>$3`)
-	text = internals.VerbatimText.ReplaceAllString(text, `$1<code>$2</code>$3`)
-	text = internals.StrikethroughText.ReplaceAllString(text, `$1<s>$2</s>$3`)
-	text = internals.UnderlineText.ReplaceAllString(text, `$1<u>$2</u>$3`)
+	for source, replacement := range markupHTMLMapping {
+		text = source.ReplaceAllString(text, replacement)
+	}
 	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
 	text = internals.NewLineRegexp.ReplaceAllString(text, `$1<br>`)
 	return text
@@ -69,11 +77,9 @@ func flattenFormatting(what string) string {
 	// instead of */.../*
 	what = internals.BoldItalicTextBegin.ReplaceAllString(what, `$1/*`)
 	what = internals.BoldItalicTextEnd.ReplaceAllString(what, `*/$1`)
-	what = internals.ItalicText.ReplaceAllString(what, `$1$2$3`)
-	what = internals.BoldText.ReplaceAllString(what, `$1$2$3`)
-	what = internals.VerbatimText.ReplaceAllString(what, `$1$2$3`)
-	what = internals.StrikethroughText.ReplaceAllString(what, `$1$2$3`)
-	what = internals.UnderlineText.ReplaceAllString(what, `$1$2$3`)
+	for source := range markupHTMLMapping {
+		what = source.ReplaceAllString(what, `$1$2$3`)
+	}
 	what = internals.KeyboardRegexp.ReplaceAllString(what, `$1`)
 	what = internals.NewLineRegexp.ReplaceAllString(what, `$1`)
 	return what
