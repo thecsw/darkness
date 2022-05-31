@@ -40,6 +40,8 @@ func main() {
 		oneFile()
 	case "build":
 		build()
+	case "clean":
+		clean()
 	case "megumin":
 		megumin()
 	case "lalatina":
@@ -164,6 +166,27 @@ func aqua() {
 	// KAZUMAAA-SAAAAAAAAN
 }
 
+// clean cleans up the directory
+func clean() {
+	cleanCmd := flag.NewFlagSet("clean", flag.ExitOnError)
+	cleanCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
+	cleanCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
+	cleanCmd.Parse(os.Args[2:])
+	emilia.InitDarkness(darknessToml)
+	orgfiles, err := findFilesByExt(workDir, emilia.Config.Project.Input)
+	if err != nil {
+		fmt.Printf("failed to find files by extension %s: %s",
+			emilia.Config.Project.Input, err.Error())
+		os.Exit(1)
+	}
+	for _, orgfile := range orgfiles {
+		toRemove := getTarget(orgfile)
+		if err := os.Remove(toRemove); err != nil {
+			fmt.Println(toRemove, "failed to delete: "+err.Error())
+		}
+	}
+}
+
 // megumin blows up the directory
 func megumin() {
 	explosionCmd := flag.NewFlagSet("megumin", flag.ExitOnError)
@@ -191,11 +214,11 @@ func megumin() {
 	})
 	for _, orgfile := range orgfiles {
 		toRemove := getTarget(orgfile)
-		fmt.Println(toRemove, "went boom!")
-		time.Sleep(50 * time.Millisecond)
 		if err := os.Remove(toRemove); err != nil {
 			fmt.Println(toRemove, "failed to blow up!!")
 		}
+		fmt.Println(toRemove, "went boom!")
+		time.Sleep(50 * time.Millisecond)
 	}
 	delayedLinesPrint([]string{
 		"Wahahahahaha!",
