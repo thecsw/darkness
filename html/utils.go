@@ -24,7 +24,7 @@ func fancyQuotes(text string) string {
 
 // markupHTML replaces the markup regexes defined in internal with HTML tags
 func markupHTML(text string) string {
-	// To make bold itolics, it has to be wrapped in /*...*/
+	// To make bold italics, it has to be wrapped in /*...*/
 	// instead of */.../*
 	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
 	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
@@ -60,19 +60,19 @@ func processTitle(title string) string {
 	return title
 }
 
-// processDescription returns a plain-text to be fit into the description
-func processDescription(desc string) string {
-	desc = fancyQuotes(desc)
-	// To make bold itolics, it has to be wrapped in /*...*/
+// flattenFormatting returns a plain-text to be fit into the description
+func flattenFormatting(what string) string {
+	what = fancyQuotes(what)
+	// To make bold italics, it has to be wrapped in /*...*/
 	// instead of */.../*
-	desc = internals.BoldItalicTextBegin.ReplaceAllString(desc, `$1/*`)
-	desc = internals.BoldItalicTextEnd.ReplaceAllString(desc, `*/$1`)
-	desc = internals.ItalicText.ReplaceAllString(desc, `$1$2$3`)
-	desc = internals.BoldText.ReplaceAllString(desc, `$1$2$3`)
-	desc = internals.VerbatimText.ReplaceAllString(desc, `$1$2$3`)
-	desc = internals.KeyboardRegexp.ReplaceAllString(desc, `$1`)
-	desc = internals.NewLineRegexp.ReplaceAllString(desc, `$1`)
-	return desc
+	what = internals.BoldItalicTextBegin.ReplaceAllString(what, `$1/*`)
+	what = internals.BoldItalicTextEnd.ReplaceAllString(what, `*/$1`)
+	what = internals.ItalicText.ReplaceAllString(what, `$1$2$3`)
+	what = internals.BoldText.ReplaceAllString(what, `$1$2$3`)
+	what = internals.VerbatimText.ReplaceAllString(what, `$1$2$3`)
+	what = internals.KeyboardRegexp.ReplaceAllString(what, `$1`)
+	what = internals.NewLineRegexp.ReplaceAllString(what, `$1`)
+	return what
 }
 
 // extractID returns a properly formatted ID for a heading title

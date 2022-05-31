@@ -24,7 +24,7 @@ func metaTags(page *internals.Page) string {
 		if paragraph == "" || emilia.HEregex.MatchString(paragraph) {
 			continue
 		}
-		description = processDescription(
+		description = flattenFormatting(
 			paragraph[:internals.Min(len(paragraph), emilia.Config.Website.DescriptionLength)]) + "..."
 		break
 	}
@@ -73,7 +73,7 @@ func addBasic(page *internals.Page, description string) string {
 // addOpenGraph adds the opengraph preview meta tags
 func addOpenGraph(page *internals.Page, description string) string {
 	toAdd := []meta{
-		{"og:title", "og:title", html.EscapeString(processDescription(page.Title))},
+		{"og:title", "og:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"og:site_name", "og:site_name", html.EscapeString(emilia.Config.Title)},
 		{"og:url", "og:url", page.URL},
 		{"og:locale", "og:locale", emilia.Config.Website.Locale},
@@ -99,7 +99,7 @@ func addTwitterMeta(page *internals.Page, description string) string {
 		{"twitter:creator", "twitter:creator", emilia.Config.Website.Twitter},
 		{"twitter:image:src", "twitter:image:src", strings.TrimRight(page.URL, "/") + "/" + emilia.Config.Website.Preview},
 		{"twitter:url", "twitter:url", page.URL},
-		{"twitter:title", "twitter:title", html.EscapeString(processDescription(page.Title))},
+		{"twitter:title", "twitter:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"twitter:description", "twitter:description", html.EscapeString(description)},
 	}
 	twitterTags := make([]string, 7)
