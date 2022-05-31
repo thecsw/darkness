@@ -22,7 +22,7 @@ Simple formatting is supported as well, you can do some *bold* text, maybe even
 =/italics/=, surround with forward slashes, and verbatim with equal signs,
 ==verbatim= = or =~code~=
 
-Some new ones were added, such as +strike-through+ (=+­strike-through+=) and
+Some new ones were added, such as +strike-through+ (=­+strike-through+=) and
 _underline_ (=_underline_=).
 
 ** Links and embeds
