@@ -48,6 +48,8 @@ type WebsiteConfig struct {
 	// Description length dictates on how many characters do we extract
 	// from the page to show in the web prewies, like OpenGraph and Twitter
 	DescriptionLength int `toml:"description_length"`
+	// Normalize headings will shift heading levels if enabled
+	NormalizeHeadings bool `toml:"normalize_headings"`
 }
 
 // AuthorConfig is the author section of the config

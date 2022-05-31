@@ -9,24 +9,27 @@ import (
 // EnrichHeadings shifts heading levels to their correct layouts and
 // adds some additional information to the headings for later export
 func EnrichHeadings(page *internals.Page) {
-	minHeadingLevel := 999
-	// Find the smallest heanding
-	for i := range page.Contents {
-		c := &page.Contents[i]
-		if !c.IsHeading() {
-			continue
+	// Normalizing headings
+	if Config.Website.NormalizeHeadings {
+		minHeadingLevel := 999
+		// Find the smallest heading
+		for i := range page.Contents {
+			c := &page.Contents[i]
+			if !c.IsHeading() {
+				continue
+			}
+			if c.HeadingLevel < minHeadingLevel {
+				minHeadingLevel = c.HeadingLevel
+			}
 		}
-		if c.HeadingLevel < minHeadingLevel {
-			minHeadingLevel = c.HeadingLevel
+		// Shift everything over
+		for i := range page.Contents {
+			c := &page.Contents[i]
+			if !c.IsHeading() {
+				continue
+			}
+			c.HeadingLevel -= (minHeadingLevel - 2)
 		}
-	}
-	// Shift everything over
-	for i := range page.Contents {
-		c := &page.Contents[i]
-		if !c.IsHeading() {
-			continue
-		}
-		c.HeadingLevel -= (minHeadingLevel - 2)
 	}
 	// Mark the first heading
 	for i := range page.Contents {
