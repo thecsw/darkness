@@ -16,7 +16,11 @@ var (
 	// BoldItalicTextEnd is the regexp for matching bold-italic text from the right
 	BoldItalicTextEnd = regexp.MustCompile(`(?mU)/\*($|[ (),.!?;&_%<>])`)
 	// VerbatimText is the regexp for matching verbatim text
-	VerbatimText = regexp.MustCompile(`(?mU)(^|[ ()\[\]_%<>])=(\S|\S\S|\S.+\S)=($|[ ()\[\],.!?:;&_%<>“”])`)
+	VerbatimText = regexp.MustCompile(`(?mU)(^|[ ()\[\]_%<>])[~=](\S|\S\S|\S.+\S)[~=]($|[ ()\[\],.!?:;&_%<>“”])`)
+	// StrikethroughText is the regexp for matching strikethrough text
+	StrikethroughText = regexp.MustCompile(`(?mU)(^|[ ()\[\]_%<>])+(\S|\S\S|\S.+\S)+($|[ ()\[\],.!?:;&_%<>“”])`)
+	// UnderlineText is the regexp for matching underline text
+	UnderlineText = regexp.MustCompile(`(?mU)(^|[ ()\[\]_%<>])_(\S|\S\S|\S.+\S)_($|[ ()\[\],.!?:;&_%<>“”])`)
 	// KeyboardRegexp is the regexp for matching keyboard text
 	KeyboardRegexp = regexp.MustCompile(`kbd:\[([^][]+)\]`)
 	// MathRegexp is the regexp for matching math text

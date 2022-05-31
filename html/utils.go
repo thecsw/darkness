@@ -31,6 +31,8 @@ func markupHTML(text string) string {
 	text = internals.ItalicText.ReplaceAllString(text, `$1<em>$2</em>$3`)
 	text = internals.BoldText.ReplaceAllString(text, `$1<strong>$2</strong>$3`)
 	text = internals.VerbatimText.ReplaceAllString(text, `$1<code>$2</code>$3`)
+	text = internals.StrikethroughText.ReplaceAllString(text, `$1<s>$2</s>$3`)
+	text = internals.UnderlineText.ReplaceAllString(text, `$1<u>$2</u>$3`)
 	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
 	text = internals.NewLineRegexp.ReplaceAllString(text, `$1<br>`)
 	return text
@@ -70,6 +72,8 @@ func flattenFormatting(what string) string {
 	what = internals.ItalicText.ReplaceAllString(what, `$1$2$3`)
 	what = internals.BoldText.ReplaceAllString(what, `$1$2$3`)
 	what = internals.VerbatimText.ReplaceAllString(what, `$1$2$3`)
+	what = internals.StrikethroughText.ReplaceAllString(what, `$1$2$3`)
+	what = internals.UnderlineText.ReplaceAllString(what, `$1$2$3`)
 	what = internals.KeyboardRegexp.ReplaceAllString(what, `$1`)
 	what = internals.NewLineRegexp.ReplaceAllString(what, `$1`)
 	return what
