@@ -181,7 +181,7 @@ func clean() {
 	}
 	for _, orgfile := range orgfiles {
 		toRemove := getTarget(orgfile)
-		if err := os.Remove(toRemove); err != nil {
+		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to delete: "+err.Error())
 		}
 	}
@@ -214,7 +214,7 @@ func megumin() {
 	})
 	for _, orgfile := range orgfiles {
 		toRemove := getTarget(orgfile)
-		if err := os.Remove(toRemove); err != nil {
+		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to blow up!!")
 		}
 		fmt.Println(toRemove, "went boom!")
