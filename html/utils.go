@@ -60,9 +60,17 @@ func processText(text string) string {
 
 	text = internals.FootnotePostProcessingRegexp.ReplaceAllStringFunc(text, func(what string) string {
 		num, _ := strconv.Atoi(strings.ReplaceAll(what, "!", ""))
-		return fmt.Sprintf(`
-<sup class="footnote">[<a id="_footnoteref_%d" class="footnote" href="#_footnotedef_%d" title="View footnote.">%s</a>]</sup>
-		`, num, num, footnoteLabel(num))
+		// get the footnote HTML body
+		footnote := fmt.Sprintf(
+			`<a id="_footnoteref_%d" class="footnote" href="#_footnotedef_%d" title="View footnote.">%s</a>`,
+			num, num, footnoteLabel(num))
+		// Decide if we need to wrap the footnote in square brackets
+		if emilia.Config.Website.FootnoteBrackets {
+			footnote = "[" + footnote + "]"
+		}
+		return `
+<sup class="footnote">` + footnote + `</sup>
+`
 	})
 
 	return strings.TrimSpace(text)

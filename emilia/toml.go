@@ -52,6 +52,8 @@ type WebsiteConfig struct {
 	NormalizeHeadings bool `toml:"normalize_headings"`
 	// RomanFootnotes tells if we have to use roman numerals for footnotes
 	RomanFootnotes bool `toml:"roman_footnotes"`
+	// FootnoteBrackets decides whether to use brackets on footnotes
+	FootnoteBrackets bool `toml:"footnote_brackets"`
 }
 
 // AuthorConfig is the author section of the config

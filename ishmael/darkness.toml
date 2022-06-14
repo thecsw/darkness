@@ -43,6 +43,8 @@ description_length = 137
 normalize_headings = false
 # Roman Footnotes tells if we have to use roman numerals for footnotes
 roman_footnotes = true
+# Decide whether to use brackets on footnotes
+footnote_brackets = true
 
 # This is the author header section
 [author]
