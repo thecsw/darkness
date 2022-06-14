@@ -26,7 +26,7 @@ type ProjectConfig struct {
 	Input string
 	// Output is the output format (defaulte ".html")
 	Output string
-	// Excuses is the list of relative paths to exclude from the project
+	// Excludes is the list of relative paths to exclude from the project
 	Exclude []string
 }
 
@@ -50,6 +50,8 @@ type WebsiteConfig struct {
 	DescriptionLength int `toml:"description_length"`
 	// Normalize headings will shift heading levels if enabled
 	NormalizeHeadings bool `toml:"normalize_headings"`
+	// RomanFootnotes tells if we have to use roman numerals for footnotes
+	RomanFootnotes bool `toml:"roman_footnotes"`
 }
 
 // AuthorConfig is the author section of the config

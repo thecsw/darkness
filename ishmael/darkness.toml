@@ -17,7 +17,7 @@ input = ".org"
 # The output file format, defaults to ".html"
 output = ".html"
 # Relative paths of directories, which will be excluded
-exclude = ["excluded"]
+exclude = ["do_not_look_here"]
 
 # This is everything regarding website and some tags 
 [website]
@@ -33,6 +33,16 @@ styles = ["css/darkness.css"]
 # The relative paths of directories to include a tomb
 # symbol to the last paragraph to signify its end
 tombs = ["blog"]
+# Preview is the filename of the picture in the
+# same directory to use as a page preview. defaults to preview.png
+preview = "preview.jpg"
+# Description length dictates on how many characters do we extract
+# from the page to show in the web prewies, like OpenGraph and Twitter
+description_length = 137
+# Normalize headings will shift heading levels if enabled
+normalize_headings = false
+# Roman Footnotes tells if we have to use roman numerals for footnotes
+roman_footnotes = true
 
 # This is the author header section
 [author]
