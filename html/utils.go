@@ -180,10 +180,3 @@ func numberToRoman(num int) string {
 	}
 	return res
 }
-
-func footnoteLabel(num int) string {
-	if emilia.Config.Website.RomanFootnotes {
-		return numberToRoman(num)
-	}
-	return strconv.Itoa(num)
-}

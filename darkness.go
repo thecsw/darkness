@@ -122,7 +122,7 @@ func build() {
 	buildCmd.Parse(os.Args[2:])
 
 	emilia.InitDarkness(darknessToml)
-	html.InitConstantTags()
+	html.InitializeExporter()
 	fmt.Printf("Looking for files... ")
 	start := time.Now()
 	orgfiles, err := findFilesByExt(workDir, emilia.Config.Project.Input)
