@@ -110,7 +110,7 @@ func authorImage() string {
 	if emilia.Config.Author.Image == "" {
 		return ""
 	}
-	return fmt.Sprintf(`<img id="myface" src="%s" width="112" height="112">`,
+	return fmt.Sprintf(`<img id="myface" src="%s" width="112" alt="Top Face" height="112">`,
 		emilia.JoinPath(emilia.Config.Author.Image))
 }
 
