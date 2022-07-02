@@ -119,30 +119,6 @@ func isHorizonalLine(line string) bool {
 	return strings.TrimSpace(line) == "---"
 }
 
-func isQuoteStart(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), "#+begin_quote")
-}
-
-func isQuoteEnd(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), "#+end_quote")
-}
-
-func isCenterStart(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), "#+begin_center")
-}
-
-func isCenterEnd(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), "#+end_center")
-}
-
-func isDropCap(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), "#+drop_cap")
-}
-
-func isCaption(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), "#+caption:")
-}
-
 func isAttentionBlack(line string) *internals.Content {
 	matches := AttentionBlockRegexp.FindAllStringSubmatch(line, 1)
 	if len(matches) < 1 {

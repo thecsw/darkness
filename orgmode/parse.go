@@ -151,40 +151,26 @@ func Parse(data string) *internals.Page {
 			currentContext = previousContext
 			continue
 		}
-		// Find if we are in a quote or in center
-		if isQuoteStart(line) {
-			inQuote = true
-			currentContext = previousContext
-			continue
-		}
-		if inQuote && isQuoteEnd(line) {
-			inQuote = false
-			currentContext = previousContext
-			continue
-		}
-		if isCenterStart(line) {
-			inCenter = true
-			currentContext = previousContext
-			continue
-		}
-		if inCenter && isCenterEnd(line) {
-			inCenter = false
-			currentContext = previousContext
-			continue
-		}
-		if isDropCap(line) {
-			inDropCap = true
-			currentContext = previousContext
-			continue
-		}
-		if isCaption(line) {
-			caption = strings.TrimSpace(strings.ReplaceAll(line, "#+caption:", ""))
-			currentContext = previousContext
-			continue
-		}
 		// isOption is a sink for any options that darkness
 		// does not support, hence will be ignored
 		if isOption(line) {
+			option := strings.ToLower(line[2:])
+			switch option {
+			case "drop_cap":
+				inDropCap = true
+			case "begin_quote":
+				inQuote = true
+			case "end_quote":
+				leaveContext(&inQuote)
+			case "begin_center":
+				inCenter = true
+			case "end_center":
+				leaveContext(&inCenter)
+			case "caption:":
+				caption = extractOptionLabel("caption")
+			default:
+				// do nothing if an unknown option is used
+			}
 			currentContext = previousContext
 			continue
 		}
@@ -295,4 +281,8 @@ func Parse(data string) *internals.Page {
 		currentContext += " "
 	}
 	return page
+}
+
+func extractOptionLabel(option string) string {
+	return strings.TrimSpace(option[len(option)+1:])
 }
