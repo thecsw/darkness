@@ -47,6 +47,7 @@ func Parse(data string) *internals.Page {
 	lines := strings.Split(Preprocess(data), "\n")
 	page := &internals.Page{
 		Title:     "",
+		Date:      "",
 		URL:       "",
 		MetaTags:  []internals.MetaTag{},
 		Links:     []internals.Link{},
@@ -168,6 +169,8 @@ func Parse(data string) *internals.Page {
 				leaveContext(&inCenter)
 			case "caption:":
 				caption = extractOptionLabel("caption")
+			case "date:":
+				page.Date = extractOptionLabel("date")
 			default:
 				// do nothing if an unknown option is used
 			}
@@ -280,7 +283,33 @@ func Parse(data string) *internals.Page {
 		}
 		currentContext += " "
 	}
+
+	// Optional parsing to see if H.E. has been left on the first line
+	// as the date
+	fillHolosceneDate(page)
 	return page
+}
+
+func fillHolosceneDate(page *internals.Page) {
+	// No contents found?
+	if len(page.Contents) < 1 {
+		return
+	}
+	// Needs to be a simple text
+	if !page.Contents[0].IsParagraph() {
+		return
+	}
+	if !strings.HasSuffix(page.Contents[0].Paragraph, "H.E.") {
+		return
+	}
+	page.Date = page.Contents[0].Paragraph
+	page.DateHoloscene = true
+}
+
+func leaveContext(inSomething *bool) {
+	if *inSomething {
+		*inSomething = false
+	}
 }
 
 func extractOptionLabel(option string) string {

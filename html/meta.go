@@ -60,6 +60,7 @@ func addBasic(page *internals.Page, description string) string {
 		{"viewport", "viewport", "width=device-width, initial-scale=1.0"},
 		{"generator", "generator", "Darkness"},
 		{"author", "author", emilia.Config.Author.Name},
+		{"date", "date", page.Date},
 		{"theme-color", "theme-color", emilia.Config.Website.Color},
 		{"description", "description", html.EscapeString(description)},
 	}

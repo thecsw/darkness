@@ -76,7 +76,7 @@ func isLink(line string) *internals.Content {
 func formParagraph(text string, inQuote bool, inCenter bool, inDropCap bool) *internals.Content {
 	return &internals.Content{
 		Type:       internals.TypeParagraph,
-		Paragraph:  text,
+		Paragraph:  strings.TrimSpace(text),
 		IsCentered: inCenter,
 		IsQuote:    inQuote,
 		IsDropCap:  inDropCap,

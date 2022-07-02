@@ -4,6 +4,11 @@ package internals
 type Page struct {
 	// Title is the title of the page
 	Title string
+	// Date is the date of the page
+	Date string
+	// DateHoloscene tells us whether the first paragraph
+	// on the page is given as holoscene date stamp
+	DateHoloscene bool
 	// URL is the URL of the page
 	URL string
 	// Meta is the meta tags of the page
