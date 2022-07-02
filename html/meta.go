@@ -63,7 +63,7 @@ func addBasic(page *internals.Page, description string) string {
 		{"theme-color", "theme-color", emilia.Config.Website.Color},
 		{"description", "description", html.EscapeString(description)},
 	}
-	basicTags := make([]string, 5)
+	basicTags := make([]string, len(toAdd))
 	for i, add := range toAdd {
 		basicTags[i] = metaTag(add)
 	}
@@ -84,7 +84,7 @@ func addOpenGraph(page *internals.Page, description string) string {
 		{"og:image:width", "og:image:width", "1280"},
 		{"og:image:height", "og:image:height", "640"},
 		{"og:description", "og:description", html.EscapeString(description)}}
-	opengraphTags := make([]string, 11)
+	opengraphTags := make([]string, len(toAdd))
 	for i, add := range toAdd {
 		opengraphTags[i] = metaTag(add)
 	}
@@ -102,7 +102,7 @@ func addTwitterMeta(page *internals.Page, description string) string {
 		{"twitter:title", "twitter:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"twitter:description", "twitter:description", html.EscapeString(description)},
 	}
-	twitterTags := make([]string, 7)
+	twitterTags := make([]string, len(toAdd))
 	for i, add := range toAdd {
 		twitterTags[i] = metaTag(add)
 	}
