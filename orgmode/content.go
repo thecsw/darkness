@@ -10,15 +10,15 @@ import (
 func isHeader(line string) *internals.Content {
 	level := 0
 	switch {
-	case strings.HasPrefix(line, "* "):
+	case strings.HasPrefix(line, SectionLevelOne):
 		level = 1
-	case strings.HasPrefix(line, "** "):
+	case strings.HasPrefix(line, SectionLevelTwo):
 		level = 2
-	case strings.HasPrefix(line, "*** "):
+	case strings.HasPrefix(line, SectionLevelThree):
 		level = 3
-	case strings.HasPrefix(line, "**** "):
+	case strings.HasPrefix(line, SectionLevelFour):
 		level = 4
-	case strings.HasPrefix(line, "***** "):
+	case strings.HasPrefix(line, SectionLevelFive):
 		level = 5
 	default:
 		level = 0
@@ -37,12 +37,12 @@ func isHeader(line string) *internals.Content {
 
 // isComment returns true if the line is a comment
 func isComment(line string) bool {
-	return strings.HasPrefix(line, "# ")
+	return strings.HasPrefix(line, CommentPrefix)
 }
 
 // isOption returns true if the line is an option
 func isOption(line string) bool {
-	return strings.HasPrefix(line, "#+")
+	return strings.HasPrefix(line, OptionPrefix)
 }
 
 // isLink returns a non-nil object if the line is a link
@@ -96,11 +96,11 @@ func isTableHeaderDelimeter(line string) bool {
 }
 
 func isSourceCodeBegin(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), "#+begin_src")
+	return strings.HasPrefix(strings.ToLower(line), OptionPrefix+OptionBeginSource)
 }
 
 func isSourceCodeEnd(line string) bool {
-	return strings.ToLower(line) == "#+end_src"
+	return strings.ToLower(line) == OptionPrefix+OptionEndSource
 }
 
 func sourceExtractLang(line string) string {
@@ -108,15 +108,15 @@ func sourceExtractLang(line string) string {
 }
 
 func isHTMLExportBegin(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), "#+begin_export html")
+	return strings.HasPrefix(strings.ToLower(line), OptionPrefix+OptionBeginExport+" html")
 }
 
 func isHTMLExportEnd(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), "#+end_export")
+	return strings.HasPrefix(strings.ToLower(line), OptionPrefix+OptionEndExport)
 }
 
 func isHorizonalLine(line string) bool {
-	return strings.TrimSpace(line) == "---"
+	return strings.TrimSpace(line) == HorizontalLine
 }
 
 func isAttentionBlack(line string) *internals.Content {

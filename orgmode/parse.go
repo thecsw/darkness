@@ -28,10 +28,11 @@ func Preprocess(data string) string {
 	// there is no terminating empty line before each one
 	data = HeadingRegexp.ReplaceAllString(data, "\n$1")
 	// Center and quote delimeters need a new line around
-	data = strings.ReplaceAll(data, "#+begin_quote", "\n#+begin_quote\n")
-	data = strings.ReplaceAll(data, "#+end_quote", "\n#+end_quote\n")
-	data = strings.ReplaceAll(data, "#+begin_center", "\n#+begin_center\n")
-	data = strings.ReplaceAll(data, "#+end_center", "\n#+end_center\n")
+	for _, v := range SurroundWithNewlines {
+		data = strings.ReplaceAll(data,
+			OptionPrefix+v,
+			"\n"+OptionPrefix+v+"\n")
+	}
 	// Debug stuff
 	// fmt.Println(data)
 	// fmt.Println("---------------------")
@@ -155,22 +156,23 @@ func Parse(data string) *internals.Page {
 		// isOption is a sink for any options that darkness
 		// does not support, hence will be ignored
 		if isOption(line) {
-			option := strings.ToLower(line[2:])
-			switch option {
-			case "drop_cap":
+			givenLine := line[2:]
+			whatOption := optionParser(givenLine)
+			switch {
+			case whatOption(OptionDropCap):
 				inDropCap = true
-			case "begin_quote":
+			case whatOption(OptionBeginQuote):
 				inQuote = true
-			case "end_quote":
+			case whatOption(OptionEndQuote):
 				leaveContext(&inQuote)
-			case "begin_center":
+			case whatOption(OptionBeginCenter):
 				inCenter = true
-			case "end_center":
+			case whatOption(OptionEndCenter):
 				leaveContext(&inCenter)
-			case "caption:":
-				caption = extractOptionLabel("caption")
-			case "date:":
-				page.Date = extractOptionLabel("date")
+			case whatOption(OptionCaption):
+				caption = extractOptionLabel(givenLine, OptionCaption)
+			case whatOption(OptionDate):
+				page.Date = extractOptionLabel(givenLine, OptionDate)
 			default:
 				// do nothing if an unknown option is used
 			}
@@ -312,6 +314,12 @@ func leaveContext(inSomething *bool) {
 	}
 }
 
-func extractOptionLabel(option string) string {
-	return strings.TrimSpace(option[len(option)+1:])
+func optionParser(given string) func(string) bool {
+	return func(option string) bool {
+		return strings.HasPrefix(strings.ToLower(given), option)
+	}
+}
+
+func extractOptionLabel(given string, option string) string {
+	return strings.TrimSpace(given[len(option)+1:])
 }
