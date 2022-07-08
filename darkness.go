@@ -119,6 +119,7 @@ func build() {
 	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
 	buildCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
 	buildCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
+	disableParallel := buildCmd.Bool("disable-parallel", false, "disable parallel build")
 	buildCmd.Parse(os.Args[2:])
 
 	emilia.InitDarkness(darknessToml)
@@ -132,8 +133,18 @@ func build() {
 		os.Exit(1)
 	}
 	fmt.Printf("found %d in %d ms\n", len(orgfiles), time.Since(start).Milliseconds())
+	buildFunc := buildParallel
+	if *disableParallel {
+		buildFunc = buildSimple
+	}
 	fmt.Printf("Building and flushing... ")
 	start = time.Now()
+	buildFunc(orgfiles)
+	fmt.Printf("done in %d ms\n", time.Since(start).Milliseconds())
+	fmt.Println("farewell")
+}
+
+func buildParallel(orgfiles []string) {
 	files := make(chan *bundle, len(orgfiles))
 	wg := &sync.WaitGroup{}
 	for _, file := range orgfiles {
@@ -144,8 +155,13 @@ func build() {
 	}
 	go fileSaver(files, wg)
 	wg.Wait()
-	fmt.Printf("done in %d ms\n", time.Since(start).Milliseconds())
-	fmt.Println("farewell")
+}
+
+func buildSimple(orgfiles []string) {
+	for _, file := range orgfiles {
+		os.WriteFile(getTarget(file), []byte(orgToHTML(file)), 0600)
+	}
+
 }
 
 // bundle is a struct that hold filename and contents to save
