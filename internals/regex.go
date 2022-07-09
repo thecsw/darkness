@@ -14,7 +14,7 @@ var (
 	// BoldItalicText is the regexp for matching bold-italic text from the left
 	BoldItalicTextBegin = regexp.MustCompile(`(?mU)(^|[ ()_%<>])\*/`)
 	// BoldItalicTextEnd is the regexp for matching bold-italic text from the right
-	BoldItalicTextEnd = regexp.MustCompile(`(?mU)/\*($|[ (),.!?;&_%<>])`)
+	BoldItalicTextEnd = regexp.MustCompile(`(?mU)/\*($|[ (),.!?;&_%><])`)
 	// VerbatimText is the regexp for matching verbatim text
 	VerbatimText = markupRegex(`[~=]`)
 	// StrikethroughText is the regexp for matching strikethrough text
@@ -43,7 +43,7 @@ var (
 
 func markupRegex(delimeter string) *regexp.Regexp {
 	return regexp.MustCompile(
-		`(?mU)(^|[ ()\[\]_%<>])` + delimeter +
+		`(?mU)(^|[ ()\[\]_%>])` + delimeter +
 			`(\S|\S\S|\S.+\S)` + delimeter +
-			`($|[ ()\[\],.!?:;&_%<>“”])`)
+			`($|[ ()\[\],.!?:;&_%<“”])`)
 }

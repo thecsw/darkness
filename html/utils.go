@@ -50,6 +50,10 @@ func markupHTML(text string) string {
 	for source, replacement := range markupHTMLMapping {
 		text = source.ReplaceAllString(text, replacement)
 	}
+	// Double pass for giggles
+	for source, replacement := range markupHTMLMapping {
+		text = source.ReplaceAllString(text, replacement)
+	}
 	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
 	text = internals.NewLineRegexp.ReplaceAllString(text, `$1<br>`)
 	return text
