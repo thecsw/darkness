@@ -6,6 +6,7 @@ test.org
 sandyuraz
 darkness
 .idea
+secrets
 
 # Binaries for programs and plugins
 *.exe
@@ -22,3 +23,5 @@ darkness
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+dist/
