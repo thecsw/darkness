@@ -1,6 +1,8 @@
 package emilia
 
 import (
+	"strings"
+
 	"github.com/thecsw/darkness/internals"
 )
 
@@ -53,6 +55,10 @@ func AddMathSupport(page *internals.Page) {
 	for _, content := range page.Contents {
 		// If it's in our paragraph
 		if content.IsParagraph() {
+			if strings.Contains(content.Paragraph, `\begin`) {
+				page.Scripts = append(page.Scripts, mathJs)
+				return
+			}
 			// If found, add the script and leave
 			if internals.MathRegexp.MatchString(content.Paragraph) {
 				page.Scripts = append(page.Scripts, mathJs)
