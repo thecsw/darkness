@@ -1,0 +1,41 @@
+title = "Sandy’s Website ⛩"
+url = "https://sandyuraz.com"
+
+[website]
+locale = "en_GB"
+color = "#fffff4"
+twitter = "@sandyuraz"
+styles = ["css/web.css"]
+tombs = ["blogs", "anime", "arts"]
+preview = "preview.jpg"
+description_length = 137
+normalize_headings = false
+roman_footnotes = true
+footnote_brackets = false
+holoscene_dates = true
+
+[project]
+exclude = ["present"]
+
+[author]
+image = "najimi.webp"
+name = "sandy"
+email = "[at] sandyuraz [dot] com"
+
+[navigation]
+
+[navigation.1]
+link = "dossier"
+title = "Dossier 🖋"
+
+[navigation.2]
+link = "books"
+title = "Bookshelf 🔖"
+
+[navigation.3]
+link = "fortunes"
+title = "Fortunes 🧧"
+
+[navigation.4]
+link = ""
+title = "Home 🏠"

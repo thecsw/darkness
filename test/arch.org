@@ -1,0 +1,359 @@
+* Installing glorious arch linux ☄️
+
+May 2nd, 2019
+
+NOTE: This blog is a /little/ bit outdated. I just went through a new arch
+installation in about 2-3 years. Many things were changed, like no more
+=wifi-menu=, =rankmirrors=, etc. In general, instructions below would give you
+*a* correct installation, but you would just have to fill out some of the gaps
+yourself. Good luck 😘
+
+Welcome to my guide on installing Glorious Arch
+Linux! For some background, I have been using arch for the last and it
+is still my only machine that I use as a daily driver. Arch Linux is a
+lightweight DIY type of distro that does not assume what kind of person
+you are and thus just lets you be yourself.
+
+** Pre-Installation
+The whole system comes with a pre-compiled kernel (=Linux=), package
+manager (=pacman=), and some basic coreutils (=GNU=). That does not seem
+a lot, but this is just enough to make some great things. It installs a
+barebone system which allows the user to customize their system to
+smallest details and making it their own. Not like =ubuntu= with all the
+whistles and bangs included.
+
+This guide has an exact copy of steps I use when installing Arch Linux.
+Installed it over ~25 times. The beauty of arch is that no installation
+is considered the best one. Every installation can be unique and
+bespoke. This guide only shows how to setup a complete arch environment
+with simple and straight-forward steps. If you want to know more about
+each step and different options you can go with, please consult with the
+official [[https://wiki.archlinux.org/index.php/Installation_guide][Arch Wiki]]. They have everything and more than you will ever need.
+
+Open the [[https://www.archlinux.org/][Arch Linux Official Website]] and
+download the latest image file. Later on just take a flash drive and
+burn it with =rufus= on Windows or with =dd= on Linux. To save you some
+trouble, here is an example =dd= command to burn the image
+
+#+BEGIN_SRC sh
+% sudo dd if=/path/to/image.iso of=/dev/your_drive
+#+END_SRC
+
+NOTE: =%= indicates that we are in the terminal. Everything after =%=
+should be executed.
+
+NOTE: This guide does not include installing Arch Linux as dual boot.
+
+** Installation
+*** BIOS and Flash Drive
+**** BIOS Configuration
+
+This part is quite easy. The only thing that you should do is to tell
+your BIOS to boot from Flash Drives instead of bootloader and other
+drives. This process is different for every BIOS Version and
+motherboard, however, this is really easy as all the entries in the BIOS
+menu are self-explanatory.
+
+**** Flash Drive
+
+Just plug in your flash drive and power on/reboot your device. + Now,
+you will see a systemd prompt asking to boot. Choose the boot option
+that includes Arch Linux in it. + You should see a prompt of this form:
+
+#+BEGIN_SRC sh
+% root@archios
+#+END_SRC
+
+IMPORTANT: If you see a bunch of files when running the command below,
+then everything is [green]/OK/
+
+#+BEGIN_SRC sh
+% ls /sys/firmware/efi/efivars
+#+END_SRC
+
+IMPORTANT: If you have an Ethernet connection, you may skip this step.
+If you are trying to install Arch Linux on a laptop, please use
+=wifi-menu= to connect to a wifi point.
+
+*** Disk Partitioning
+
+Okay, now we need to partition our hard/state drive. How do we do that?
+Actually, there are many ways to to it, however I prefer to use
+=cfdisk=. It has pseudo-GUI, which is easier to work and operate with.
+Before partitioning, we should find the name of your drive. For that, in
+your command line type.
+
+#+BEGIN_SRC sh
+% fdisk -l
+#+END_SRC
+
+You will see a list of available storages. Ignore everything that ends
+with: boot, root, include, etc. What you are interested in is the
+biggest available drive. For example, my laptop has integrated SD Card
+27GB and it is called =/dev/mmcblk0=. For the sake of simplicity, let's
+use notation =/dev/sda= for the name of the drive. Okay, good. Now,
+launch =cfdisk= by typing
+
+#+BEGIN_SRC sh
+% cfdisk -z /dev/sda
+#+END_SRC
+
+You will enter pseudo-GUI interface. Select *gpt* and now you will see
+your drive's partitions. Next, we need to create 3 partitions:
+=EFI System(/dev/sda1)=, =Swap memory(/dev/sda2)= and
+=Root Directory (x86\_64)(/dev/sda3)=. I don't create home partitions,
+as I just don't like it.
+
+By the rules, your swap should be 2xRAM and EFI System 512MB. Everything
+else can be given to Root Directory. Now, exit cfdisk by choosing QUIT.
+
+*** Formatting partitions
+We need to format partitions appropriately and accordignly. Your EFI
+System should be FAT32 formatted, because we use systemd-boot. To do
+that, type
+
+#+BEGIN_SRC sh
+% mkfs.fat -F32 /dev/sda1
+#+END_SRC
+
+Your swap partition should be formatted as swap memory (obviously)
+
+#+BEGIN_SRC sh
+% mkswap /dev/sda2
+% swapon /dev/sda2
+#+END_SRC
+
+Your main directory should be formatted as ext4, so to use all your
+files further on
+
+#+BEGIN_SRC sh
+% mkfs.ext4 /dev/sda3
+#+END_SRC
+
+Very good, our partitions are properly formatted and we can go on.
+
+*** Mounting
+Now, we should mount our partitions. Firstly, we should mount our root
+partition
+
+#+BEGIN_SRC sh
+% mount /dev/sda3 /mnt
+#+END_SRC
+
+Then, we should mount the EFI System, so the system would know where is
+the boot point. We also need to create boot directory on our own.
+
+#+BEGIN_SRC sh
+% mkdir /mnt/boot
+% mount /dev/sda1 /mnt/boot
+#+END_SRC
+
+Awesome, everything is mounted, now we can start installing the system
+
+*** Finding closest mirrors
+
+This part is quite easy. However, when I was installing my system, I had
+a problem with downloading speed, it was something like 20-50KB/s.
+Awful. To fix that and get the maximum download speed, do the following:
+
+#+BEGIN_SRC sh
+% cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+% sed -i 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
+% rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
+#+END_SRC
+
+Now, you will be connected to the fastest mirrors in your location.
+Hurray!
+
+*** Pacstrap
+
+Now we will install the base system. Here, we will intall base and
+base-devel packages, because it will get us enough packages to start
+using Arch Linux. It may take a while. Sit back, take a cup of coffee
+and relax.
+
+#+BEGIN_SRC sh
+% pacstrap /mnt base base-devel
+#+END_SRC
+
+*** Genfstab
+
+Now, the system is installed on the device and we need to tell our OS
+and Bootloader about the partitions of our disk. To do so, perform:
+
+#+BEGIN_SRC sh
+% genfstab -U /mnt >> /mnt/etc/fstab
+#+END_SRC
+
+CAUTION: Check =/mnt/etc/fstab= for any errors. If it looks right to
+you, it probably is.
+
+*** Configuring the system
+
+If you have come this far, congratulations! You have installed the raw
+version of arch and essential tools. We have to perform some number of
+necessary configurations to make it usable as a daily driver.
+
+Log in to the newly installed system with
+
+#+BEGIN_SRC sh
+% arch-chroot /mnt
+#+END_SRC
+
+WARNING: If it does not let you in or some error occurs, please make
+sure you followed all the steps correctly.
+
+**** Setting the time
+
+We need to set your local time. Find your timezone in
+=/usr/share/zonenifo= and use it instead of =_Region_= and =_City_=
+
+#+BEGIN_SRC sh
+% ln -sf /usr/share/zoneinfo/Region/City /etc/localtime
+% hwclock --systohc
+#+END_SRC
+
+**** Configuring essential files
+
+- Uncomment =en_US.UTF-8 UTF-8= and other if needed in =/etc/locale.gen=
+- Generate locales by running =% locale-gen=
+- Set the =LANG= variable equal to locale =% echo 'LANG=en_US.UTF-8' > /etc/locale.conf=
+- Set the keyboard layout to standard QWERTY =% echo 'KEYMAP=us' > /etc/vconsole.conf=
+
+NOTE: If you are a power user with /dvorak/, run =% echo 'KEYMAP=dvorak' > /etc/vconsole.conf=
+
+- Set the hostname of your choice =% echo _myhostname_ > /etc/hostname=
+- Configure the hosts on your machine
+
+=% echo 127.0.0.1 localhost\n::1 localhost\n127.0.1.1 _myhostname_.localdomain _myhostname_ > /etc/hosts= 
+
+- Configuring your network drivers with =% pacman -S iw dialog wpa_actiond wpa_supplicant sudo=
+- Generate your kernel image (initramfs) =% mkinitcpio -p linux=
+- Change your default root password =% passwd=
+- Add new users =% useradd -m -G wheel -s /usr/bin/bash _user_=
+- Set the sudo access by uncommenting =%wheel ALL = (ALL) ALL= when running =visudo=
+- Changing the /user/'s password =% passwd _user_=
+
+*** Bootloader
+
+Small but important things swept out of the way, we have to configure
+one of the most important parts of this installation. Usually only arch
+and gentoo people have to work with manually setting up a bootloader.
+[[https://wiki.archlinux.org/index.php/Arch_boot_process#Boot_loader][Bootloader]]
+is a small program that boots your actual OS after motherboard's BIOS
+gives you control over the system. In this installation, we are going
+with [[https://freedesktop.org/wiki/Software/systemd/][systemd]]. It is the
+most compatible bootloader with Arch system in general. Also, my
+laptop's hardware does not work with other bootloaders. Systemd is
+getting some bad fame because it is bloated, massive, and way too
+complicated. I agree with it but this is the best we have right now.
+Just like C++.
+
+NOTE: You can go with [[https://www.gnu.org/software/grub/][GRUB]], but
+please consult with Arch Wiki before trying to do that.
+
+Assuming you have an intel chipset, run the following
+
+#+BEGIN_SRC sh
+% pacman -S intel-ucode
+% bootctl --path=/boot install
+#+END_SRC
+
+Use =vi= or =nano= text editor to write down the following:
+
+#+BEGIN_SRC sh
+/boot/loader/loader.conf
+------------------------
+default Arch(arch)
+timeout 4
+editor 0
+#+END_SRC
+
+And for the second file:
+
+#+BEGIN_SRC sh
+/boot/loader/entries/entry.conf
+-------------------------------
+title Arch Linux
+linux /vmlinuz-linux
+initrd /intel-ucode.img
+initrd /initramfs-linux.img
+options root=/dev/sda3 rw
+#+END_SRC
+
+*** Finishing up
+
+You are exactly two commands away from a complete Arch Linux
+installation!
+
+You need to exit =chroot= by runing =% exit= and reboot with =% reboot=
+
+When you turn your machine back on, you should see some text popping out
+on the screen (that's systemd) and finally, you should see the following
+prompt:
+
+#+BEGIN_SRC sh
+Arch Linux (tty1)
+_myhostname_ login:
+#+END_SRC
+
+If you see this, then /Congratulations!/ + You have completed the
+installation. Everything is terminal based, if you want to install X
+Window Server for GUI and other shiny stuff, please follow to teh
+Post-Installation chapter.
+
+WARNING: If you did not see the login prompt, retrace your steps and
+make sure you followed everything in this guide. Best way to get out, is
+just search for the problem online or visit [[https://reddit.com/r/archlinux][r/archlinux]] to get some real
+online help.
+
+** Post-Installation
+
+I hope you enjoyed this installation guide. After the last step, you
+should be able to have an actual working and stable system. I will not
+go into details how to set up your Desktop Environment or Window
+Manager. It should be unique and this is your adventure now. I will give
+you a list of useful commands just to get started. Also, further reading
+links will be included.
+
+- Run this to install a package =% sudo pacman -S _package_name_=
+- Remove a package from your system =% sudo pacman -Rs _package_name_=
+- Update the system's packages =% sudo pacman -Syu=
+- Installing X Graphical Server =% sudo pacman -S xorg xorg-xinit=
+- Installing zshell =% sudo pacman -S zsh= and update your shell =% chsh=
+- Installing graphical terminal emulator =% sudo pacman -S rxvt-unicode rxvt-unicode-terminfo=
+- Installing =i3= and =dmenu= with =% sudo pacman -S i3 dmenu=
+- Enable =i3= with =% echo \#!/bin/bash\nexec i3 > ~/.xinitrc= and =% chmod 700 ~/.xinitrc=
+- Start graphical X server with =% startx=
+
+IMPORTANT: Never ever run =% sudo pacman --force=. The only exception is
+if you have a loaded gun pointed at your head (which is very unlikely,
+hopefully).
+
+I hope you enjoyed the installation process and I am sure you were able
+to learn something new about Linux and yourself.
+
+/See you next time./
+
+** Further Reading
+
+/IT'S DANGEROUS TO GO ALONE! TAKE THIS./
+
+- [[https://wiki.archlinux.org/index.php/Frequently_asked_questions][Arch Linux Frequently Asked Questions]]
+- [[https://wiki.archlinux.org/index.php/General_recommendations][Arch Linux General Recommendations]]
+- [[https://wiki.archlinux.org/index.php/List_of_applications][Arch Linux List of Applications]]
+
+TIP: Always try to consult with the List of Applications while searching
+for a program and when installing it.
+
+- [[https://wiki.archlinux.org/index.php/Arch_compared_to_other_distributions][Arch Linux compared to other distributions]]]
+- [[https://www.archlinux.org/packages/][Arch Linux packages]]
+- [[https://aur.archlinux.org/][Arch Linux AUR Home]]
+
+** Pictures
+
+[[pic1.webp][Writing my website in tmux]]
+
+[[pic2.webp][My desktop]]
+
+[[pic3.webp][i3 with =cowsay=, =pipes.sh=, =htop=, =neofetch=]]
