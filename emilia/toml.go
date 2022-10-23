@@ -5,9 +5,9 @@ import "net/url"
 // DarknessConfig is the global darkness config
 type DarknessConfig struct {
 	// Title is the title of the site
-	Title string
+	Title string `toml:"title"`
 	// URL is the URL of the site
-	URL string
+	URL string `toml:"url"`
 	// Project is the project section of the config
 	Project ProjectConfig
 	// Website is the website section of the config
@@ -17,34 +17,34 @@ type DarknessConfig struct {
 	// Navigation is the navigation section of the config
 	Navigation map[string]NavigationConfig
 	// URLPath is the parsed URL of the site
-	URLPath *url.URL
+	URLPath *url.URL `toml:"-"`
 }
 
 // ProjectConfig is the project section of the config
 type ProjectConfig struct {
 	// Input is the input format (default ".org")
-	Input string
+	Input string `toml:"input"`
 	// Output is the output format (defaulte ".html")
-	Output string
+	Output string `toml:"output"`
 	// Excludes is the list of relative paths to exclude from the project
-	Exclude []string
+	Exclude []string `toml:"exclude"`
 }
 
 // WebsiteConfig is the website section of the config
 type WebsiteConfig struct {
 	// Locale is the locale of the site
-	Locale string
+	Locale string `toml:"locale"`
 	// Color is the color of the site
-	Color string
+	Color string `toml:"color"`
 	// Twitter is the twitter handle of the site
-	Twitter string
+	Twitter string `toml:"twitter"`
 	// Styles is the list of relative paths to css files for the site
-	Styles []string
+	Styles []string `toml:"styles"`
 	// Tombs is the list of relative paths where to include the tombstones
-	Tombs []string
+	Tombs []string `toml:"tombs"`
 	// Preview is the filename of the picture in the
 	// same directory to use as a page preview. defaults to preview.png
-	Preview string
+	Preview string `toml:"preview"`
 	// Description length dictates on how many characters do we extract
 	// from the page to show in the web prewies, like OpenGraph and Twitter
 	DescriptionLength int `toml:"description_length"`
@@ -64,19 +64,19 @@ type WebsiteConfig struct {
 // AuthorConfig is the author section of the config
 type AuthorConfig struct {
 	// AuthorImage is the header image (can be empty)
-	Image string
+	Image string `toml:"image"`
 	// Name is the name of the author
-	Name string
+	Name string `toml:"name"`
 	// Email is the email of the author
-	Email string
+	Email string `toml:"email"`
 }
 
 // NavigationConfig is the navigation section of the config
 type NavigationConfig struct {
 	// Link is the link of the navigation item
-	Link string
+	Link string `toml:"link"`
 	// Title is the title of the navigation item
-	Title string
+	Title string `toml:"title"`
 	// Hide is the path where to hide the element
-	Hide string
+	Hide string `toml:"hide"`
 }
