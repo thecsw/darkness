@@ -51,26 +51,32 @@ const (
 
 // AddMathSupport adds math support to the page using javascript injection
 func AddMathSupport(page *internals.Page) {
+	// If we found math-related tags, add the scripts
+	if hasMathEquations(page) {
+		page.Scripts = append(page.Scripts, mathJs)
+	}
+}
+
+// hasMathEquations returns true if the page has any math equations and
+// returns false otherwise
+func hasMathEquations(page *internals.Page) bool {
 	// Find any match of the math regexp, if found, add the math script
 	for _, content := range page.Contents {
 		// If it's in our paragraph
 		if content.IsParagraph() {
 			if strings.Contains(content.Paragraph, `\begin`) {
-				page.Scripts = append(page.Scripts, mathJs)
-				return
+				return true
 			}
 			// If found, add the script and leave
 			if internals.MathRegexp.MatchString(content.Paragraph) {
-				page.Scripts = append(page.Scripts, mathJs)
-				return
+				return true
 			}
 		}
 		// Or in the heading
 		if content.IsHeading() {
 			// If found, add the script and leave
 			if internals.MathRegexp.MatchString(content.Heading) {
-				page.Scripts = append(page.Scripts, mathJs)
-				return
+				return true
 			}
 		}
 		// Or if it's a list
@@ -78,11 +84,11 @@ func AddMathSupport(page *internals.Page) {
 			for _, item := range content.List {
 				// If found, add the script and leave
 				if internals.MathRegexp.MatchString(item) {
-					page.Scripts = append(page.Scripts, mathJs)
-					return
+					return true
 				}
 
 			}
 		}
 	}
+	return false
 }
