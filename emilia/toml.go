@@ -54,6 +54,11 @@ type WebsiteConfig struct {
 	RomanFootnotes bool `toml:"roman_footnotes"`
 	// FootnoteBrackets decides whether to use brackets on footnotes
 	FootnoteBrackets bool `toml:"footnote_brackets"`
+	// SyntaxHighlighting decides whether to enable code blocks'
+	// syntax highlighting with highlight.js
+	SyntaxHighlighting bool `toml:"syntax_highlighting"`
+	// SyntaxHighlightingTheme decides what theme to use from highlight.js
+	SyntaxHighlightingTheme string `toml:"syntax_highlighting_theme"`
 }
 
 // AuthorConfig is the author section of the config

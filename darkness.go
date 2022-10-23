@@ -248,12 +248,15 @@ func orgToHTML(file string) string {
 	page := orgmode.ParseFile(workDir, file)
 	// Debug line to show the current page
 	//litter.Dump(page)
+
 	// Ask emilia to work over the page a little
 	emilia.ResolveComments(page)
 	emilia.EnrichHeadings(page)
 	emilia.ResolveFootnotes(page)
 	emilia.AddMathSupport(page)
 	emilia.SourceCodeTrimLeftWhitespace(page)
+	emilia.AddSyntaxHighlighting(page)
+
 	htmlPage := html.ExportPage(page)
 	// Usually, each page only needs 1 holoscene replacement.
 	// For the fortunes page, we need to replace all of them

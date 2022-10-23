@@ -58,6 +58,10 @@ func InitDarkness(file string) {
 		fmt.Printf("failed to parse url from config %s: %s", Config.URL, err.Error())
 		os.Exit(1)
 	}
+	// Set the default syntax highlighting theme
+	if notDefined(Config.Website.SyntaxHighlightingTheme) {
+		Config.Website.SyntaxHighlightingTheme = highlightJsThemeDefaultPath
+	}
 }
 
 // JoinPath joins a path to the darkness config URL

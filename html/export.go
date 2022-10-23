@@ -44,20 +44,21 @@ func ExportPage(page *internals.Page) string {
 </body>
 </html>`,
 		linkTags(page), metaTags(page), scriptTags(page),
-		processTitle(flattenFormatting(page.Title)), styleTagsProcessed,
+		processTitle(flattenFormatting(page.Title)), styleTags(page),
 		authorHeader(page), strings.Join(content, ""), addFootnotes(page),
 	)
 }
 
-// styleTagsProcessed is the processed style tags
-func styleTags() string {
-	content := make([]string, len(emilia.Config.Website.Styles))
+// styleTags is the processed style tags
+func styleTags(page *internals.Page) string {
+	content := make([]string, len(emilia.Config.Website.Styles)+len(page.Stylesheets))
 	for i, style := range emilia.Config.Website.Styles {
 		content[i] = fmt.Sprintf(
 			`<link rel="stylesheet" type="text/css" href="%s">`+"\n",
 			emilia.JoinPath(style),
 		)
 	}
+	content = append(content, page.Stylesheets...)
 	return strings.Join(content, "")
 }
 

@@ -102,15 +102,28 @@ func listNumbered(content *internals.Content) string {
 	return ""
 }
 
+var sourceCodeLang = map[string]string{
+	"":   "plaintext",
+	"sh": "bash",
+}
+
+func mapSourceCodeLang(s string) string {
+	if v, ok := sourceCodeLang[s]; ok {
+		return v
+	}
+	return s
+}
+
 // sourceCode gives us a source code html representation
 func sourceCode(content *internals.Content) string {
+	lang := mapSourceCodeLang(content.SourceCodeLang)
 	return fmt.Sprintf(`
 <div class="listingblock">
 <div class="content">
 <pre class="highlight"><code class="language-%s" data-lang="%s">%s</code></pre>
 </div>
 </div>
-`, content.SourceCodeLang, content.SourceCodeLang, func() string {
+`, lang, lang, func() string {
 		// Remove the nested parser blockers
 		s := strings.ReplaceAll(content.SourceCode, ",#", "#")
 		// Escape the whatever HTML that is found in source code

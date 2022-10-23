@@ -21,6 +21,8 @@ type Page struct {
 	Footnotes []string
 	// Scripts is the scripts of the page
 	Scripts []string
+	// Stylesheets is the list of css of the page
+	Stylesheets []string
 }
 
 // MetaTag is a struct for holding the meta tag
