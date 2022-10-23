@@ -44,49 +44,59 @@ func Preprocess(data string) string {
 
 // Parse parses the input string and returns a list of elements
 func Parse(data string) *internals.Page {
+
+	parser := &Parser{}
+	parser.Init()
+
 	// Split the data into lines
 	lines := strings.Split(Preprocess(data), "\n")
 	page := &internals.Page{
 		Title:     "",
 		Date:      "",
 		URL:       "",
-		MetaTags:  []internals.MetaTag{},
-		Links:     []internals.Link{},
 		Contents:  []internals.Content{},
 		Footnotes: []string{},
 		Scripts:   []string{},
 	}
 	page.Contents = make([]internals.Content, 0, 16)
 
-	// inList is true if we are in a list
-	inList := false
-	// inTable is true if we are in a table
-	inTable := false
-	// inTableHasHeaders tells us whether the table has headers
-	inTableHasHeaders := false
-	// inSourceCode is true if we are in a source code block
-	inSourceCode := false
-	// inRaw is true if we are in a raw block
-	inRawHTML := false
+	// currentFlags uses flags to set options
+	currentFlags := internals.Bits(0)
 	// sourceCodeLanguage is the language of the source code block
 	sourceCodeLang := ""
-	// inQuote marks if the current part should be wrapped in a quote
-	inQuote := false
-	// inCenter marks if the current part should be centered
-	inCenter := false
-	// inDropCap is a flag telling us whether next paragraph should
-	// have a stylish drop cap
-	inDropCap := false
 	// caption is the current caption we can read
 	caption := ""
-
+	// detailsSummary is the current details' summary
+	additionalContext := ""
 	// Our context is a parody of a state machine
 	currentContext := ""
+
 	// addContent is a helper function to add content to the page
 	addContent := func(content internals.Content) {
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
 		caption = ""
+	}
+	extractDetailsSummary := func(line string) string {
+		if v := extractOptionLabel(line, OptionBeginDetails); len(v) < 1 {
+			return v
+		}
+		return "Details"
+	}
+	addFlag, removeFlag, flipFlag, hasFlag := internals.LatchFlags(&currentFlags)
+	optionsActions := map[string]func(line string){
+		OptionDropCap:     func(line string) { addFlag(internals.InDropCapFlag) },
+		OptionBeginQuote:  func(line string) { addFlag(internals.InQuoteFlag) },
+		OptionEndQuote:    func(line string) { removeFlag(internals.InQuoteFlag) },
+		OptionBeginCenter: func(line string) { addFlag(internals.InCenterFlag) },
+		OptionEndCenter:   func(line string) { removeFlag(internals.InCenterFlag) },
+		OptionBeginDetails: func(line string) {
+			addFlag(internals.InDetailsFlag)
+			additionalContext = extractDetailsSummary(line)
+		},
+		OptionEndDetails: func(line string) { removeFlag(internals.InDetailsFlag) },
+		OptionCaption:    func(line string) { caption = extractOptionLabel(line, OptionCaption) },
+		OptionDate:       func(line string) { page.Date = extractOptionLabel(line, OptionDate) },
 	}
 
 	// Loop through the lines
@@ -99,11 +109,11 @@ func Parse(data string) *internals.Page {
 		currentContext = currentContext + line
 
 		// If we are in a raw html envoronment
-		if inRawHTML {
+		if hasFlag(internals.InRawHTMLFlag) {
 			// Maybe it's time to leave it?
 			if isHTMLExportEnd(line) {
 				// Mark the leave
-				inRawHTML = false
+				removeFlag(internals.InRawHTMLFlag)
 				// Save the raw html
 				addContent(internals.Content{
 					Type:    internals.TypeRawHTML,
@@ -117,16 +127,16 @@ func Parse(data string) *internals.Page {
 		}
 		// Now, check if we can enter a raw html environment
 		if isHTMLExportBegin(line) {
-			inRawHTML = true
+			addFlag(internals.InRawHTMLFlag)
 			currentContext = previousContext
 			continue
 		}
 		// If we are in a source code block?
-		if inSourceCode {
+		if hasFlag(internals.InSourceCodeFlag) {
 			// Check if it's time to leave
 			if isSourceCodeEnd(line) {
 				// Mark the leave
-				inSourceCode = false
+				removeFlag(internals.InSourceCodeFlag)
 				// Save the source code
 				addContent(internals.Content{
 					Type:           internals.TypeSourceCode,
@@ -143,7 +153,7 @@ func Parse(data string) *internals.Page {
 		// Should we enter a source code environment?
 		if isSourceCodeBegin(line) {
 			sourceCodeLang = sourceExtractLang(line)
-			inSourceCode = true
+			addFlag(internals.InSourceCodeFlag)
 			currentContext = ""
 			continue
 		}
@@ -157,24 +167,9 @@ func Parse(data string) *internals.Page {
 		// does not support, hence will be ignored
 		if isOption(line) {
 			givenLine := line[2:]
-			whatOption := optionParser(givenLine)
-			switch {
-			case whatOption(OptionDropCap):
-				inDropCap = true
-			case whatOption(OptionBeginQuote):
-				inQuote = true
-			case whatOption(OptionEndQuote):
-				leaveContext(&inQuote)
-			case whatOption(OptionBeginCenter):
-				inCenter = true
-			case whatOption(OptionEndCenter):
-				leaveContext(&inCenter)
-			case whatOption(OptionCaption):
-				caption = extractOptionLabel(givenLine, OptionCaption)
-			case whatOption(OptionDate):
-				page.Date = extractOptionLabel(givenLine, OptionDate)
-			default:
-				// do nothing if an unknown option is used
+			option := strings.Split(givenLine, " ")[0]
+			if action, ok := optionsActions[option]; ok {
+				action(givenLine)
 			}
 			currentContext = previousContext
 			continue
@@ -201,7 +196,7 @@ func Parse(data string) *internals.Page {
 				continue
 			}
 			// If we were in a list, save it as a list
-			if inList {
+			if hasFlag(internals.InListFlag) {
 				matches := strings.Split(previousContext, " ∆")[1:]
 				for i, match := range matches {
 					matches[i] = strings.Replace(match, "- ", "", 1)
@@ -215,11 +210,11 @@ func Parse(data string) *internals.Page {
 					Type: internals.TypeList,
 					List: matches,
 				})
-				inList = false
+				flipFlag(internals.InListFlag)
 				continue
 			}
 			// If we were in a table, save it as such
-			if inTable {
+			if hasFlag(internals.InTableFlag) {
 				rows := strings.Split(previousContext, " ø")[1:]
 				tableData := make([][]string, len(rows))
 				for i, row := range rows {
@@ -241,11 +236,10 @@ func Parse(data string) *internals.Page {
 				addContent(internals.Content{
 					Type:         internals.TypeTable,
 					Table:        tableData,
-					TableHeaders: inTableHasHeaders,
+					TableHeaders: hasFlag(internals.InTableHasHeadersFlag),
 					Caption:      caption,
 				})
-				inTable = false
-				inTableHasHeaders = false
+				removeFlag(internals.InTableFlag | internals.InTableHasHeadersFlag)
 				continue
 			}
 			// Let's see if our context is a standalone link
@@ -259,25 +253,20 @@ func Parse(data string) *internals.Page {
 				continue
 			}
 			// By default, save whatever we have as a paragraph
-			addContent(*formParagraph(
-				previousContext,
-				inQuote,
-				inCenter,
-				inDropCap,
-			))
+			addContent(*formParagraph(previousContext, additionalContext, currentFlags))
 			// Reset the drop cap flag
-			inDropCap = false
+			removeFlag(internals.InDropCapFlag)
 			continue
 		}
 		if isList(line) {
-			inList = true
+			addFlag(internals.InListFlag)
 			currentContext = previousContext + " ∆" + line
 		}
 		if isTable(line) {
-			inTable = true
+			addFlag(internals.InTableFlag)
 			// If it's a delimeter, save it and move on
 			if isTableHeaderDelimeter(line) {
-				inTableHasHeaders = true
+				addFlag(internals.InTableHasHeadersFlag)
 				currentContext = previousContext
 				continue
 			}

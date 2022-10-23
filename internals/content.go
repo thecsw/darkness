@@ -1,36 +1,12 @@
 package internals
 
-// TypeContent is the type of content, used for enums
-type TypeContent uint8
-
-const (
-	// TypeHeading is the type of heading
-	TypeHeading TypeContent = iota
-	// TypeParagraph is the type of paragraph, which is just text
-	TypeParagraph
-	// TypeList is the type of unordered list
-	TypeList
-	// TypeListNumbered is the type of numbered list
-	TypeListNumbered
-	// TypeLink is the type of link
-	TypeLink
-	// TypeSourceCode is the type of source code block
-	TypeSourceCode
-	// TypeRawHTML is the type of raw HTML block
-	TypeRawHTML
-	// TypeHorizontalLine is the type of horizontal line
-	TypeHorizontalLine
-	// TypeAttentionText is the type of attention text block
-	TypeAttentionText
-	// TypeTable is the type of a table
-	TypeTable
-)
-
 // Content is a piece of content of a page
 type Content struct {
 	// Type is the type of content
 	Type TypeContent
 
+	// Options tells us about the options enabled on the type
+	Options Bits
 	// HeadingLevel is the heading level of the content (1 being the title, starts at 2)
 	HeadingLevel int
 	// HeadingChild tells us if the current heading is a child of some previous heading
@@ -61,12 +37,6 @@ type Content struct {
 	AttentionTitle string
 	// AttentionText is the attention text
 	AttentionText string
-	// IsQuote defines if this part is a quote or not
-	IsQuote bool
-	// IsCentered define if this part should be centered
-	IsCentered bool
-	// IsDropCap defines whether to enlarge the first letter
-	IsDropCap bool
 	// Table is the table of items
 	Table [][]string
 	// TableHeaders tell us whether the table has headers
@@ -74,6 +44,8 @@ type Content struct {
 	TableHeaders bool
 	// Caption is the current caption
 	Caption string
+	// Summary is the current summary
+	Summary string
 }
 
 // IsHeading tells us if the content is a heading
@@ -105,3 +77,11 @@ func (c Content) IsAttentionBlock() bool { return c.Type == TypeAttentionText }
 
 // IsTable tells us if the content block is a table
 func (c Content) IsTable() bool { return c.Type == TypeTable }
+
+func (c Content) IsCentered() bool { return HasFlag(&c.Options, InCenterFlag) }
+
+func (c Content) IsDetails() bool { return HasFlag(&c.Options, InDetailsFlag) }
+
+func (c Content) IsDropCap() bool { return HasFlag(&c.Options, InDropCapFlag) }
+
+func (c Content) IsQuote() bool { return HasFlag(&c.Options, InQuoteFlag) }

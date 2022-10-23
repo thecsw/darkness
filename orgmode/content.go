@@ -73,14 +73,16 @@ func isLink(line string) *internals.Content {
 	}
 }
 
-func formParagraph(text string, inQuote bool, inCenter bool, inDropCap bool) *internals.Content {
-	return &internals.Content{
-		Type:       internals.TypeParagraph,
-		Paragraph:  strings.TrimSpace(text),
-		IsCentered: inCenter,
-		IsQuote:    inQuote,
-		IsDropCap:  inDropCap,
+func formParagraph(text, extra string, options internals.Bits) *internals.Content {
+	val := &internals.Content{
+		Type:      internals.TypeParagraph,
+		Paragraph: strings.TrimSpace(text),
+		Options:   options,
 	}
+	if internals.HasFlag(&options, internals.InDetailsFlag) {
+		val.Summary = extra
+	}
+	return val
 }
 
 func isList(line string) bool {

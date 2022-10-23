@@ -60,13 +60,13 @@ func paragraph(content *internals.Content) string {
 </div>`,
 		// div class
 		func() string {
-			if content.IsQuote {
+			if content.IsQuote() {
 				return " quote"
 			}
-			if content.IsCentered {
+			if content.IsCentered() {
 				return " center"
 			}
-			if content.IsDropCap {
+			if content.IsDropCap() {
 				return " dropcap"
 			}
 			return ""
