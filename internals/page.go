@@ -11,10 +11,6 @@ type Page struct {
 	DateHoloscene bool
 	// URL is the URL of the page
 	URL string
-	// Meta is the meta tags of the page
-	MetaTags []MetaTag
-	// Links is the link tags of the page
-	Links []Link
 	// Contents is the contents of the page
 	Contents []Content
 	// Footnotes is the footnotes of the page
