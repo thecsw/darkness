@@ -44,10 +44,6 @@ func Preprocess(data string) string {
 
 // Parse parses the input string and returns a list of elements
 func Parse(data string) *internals.Page {
-
-	parser := &Parser{}
-	parser.Init()
-
 	// Split the data into lines
 	lines := strings.Split(Preprocess(data), "\n")
 	page := &internals.Page{
