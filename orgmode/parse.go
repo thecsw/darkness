@@ -31,7 +31,7 @@ func Preprocess(data string) string {
 	for _, v := range SurroundWithNewlines {
 		data = strings.ReplaceAll(data,
 			OptionPrefix+v,
-			"\n"+OptionPrefix+v+"\n")
+			"\n"+OptionPrefix+v)
 	}
 	// Debug stuff
 	// fmt.Println(data)
@@ -89,7 +89,7 @@ func Parse(data string) *internals.Page {
 		OptionEndCenter:   func(line string) { removeFlag(internals.InCenterFlag) },
 		OptionBeginDetails: func(line string) {
 			addFlag(internals.InDetailsFlag)
-			additionalContext = detailsExtractSummary(OptionPrefix + line)
+			additionalContext = detailsExtractSummary(line)
 			if additionalContext == "" {
 				additionalContext = "open for details"
 			}
@@ -173,7 +173,7 @@ func Parse(data string) *internals.Page {
 			givenLine := line[2:]
 			option := strings.Split(givenLine, " ")[0]
 			if action, ok := optionsActions[option]; ok {
-				action(givenLine)
+				action(rawLine)
 			}
 			currentContext = previousContext
 			continue
@@ -224,7 +224,6 @@ func Parse(data string) *internals.Page {
 				for i, row := range rows {
 					row = strings.TrimSpace(row)
 					if len(row) < 1 {
-						fmt.Println("LEAVING")
 						continue
 					}
 					// Split by the item delimeter

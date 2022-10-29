@@ -180,7 +180,7 @@ func table(content *internals.Content) string {
 // table gives an HTML formatted table
 func details(content *internals.Content) string {
 	if internals.HasFlag(&content.Options, internals.InDetailsFlag) {
-		return fmt.Sprintf("<details>\n<summary>%s</summary>", content.Summary)
+		return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
 	}
 	return "</details>"
 }
