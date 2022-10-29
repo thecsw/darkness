@@ -73,11 +73,12 @@ func Parse(data string) *internals.Page {
 		currentContext = ""
 		caption = ""
 	}
-	extractDetailsSummary := func(line string) string {
-		if v := extractOptionLabel(line, OptionBeginDetails); len(v) < 1 {
-			return v
-		}
-		return "Details"
+	addDetails := func() {
+		addContent(internals.Content{
+			Type:    internals.TypeDetails,
+			Options: currentFlags,
+			Summary: additionalContext,
+		})
 	}
 	addFlag, removeFlag, flipFlag, hasFlag := internals.LatchFlags(&currentFlags)
 	optionsActions := map[string]func(line string){
@@ -88,11 +89,18 @@ func Parse(data string) *internals.Page {
 		OptionEndCenter:   func(line string) { removeFlag(internals.InCenterFlag) },
 		OptionBeginDetails: func(line string) {
 			addFlag(internals.InDetailsFlag)
-			additionalContext = extractDetailsSummary(line)
+			additionalContext = detailsExtractSummary(OptionPrefix + line)
+			if additionalContext == "" {
+				additionalContext = "open for details"
+			}
+			addDetails()
 		},
-		OptionEndDetails: func(line string) { removeFlag(internals.InDetailsFlag) },
-		OptionCaption:    func(line string) { caption = extractOptionLabel(line, OptionCaption) },
-		OptionDate:       func(line string) { page.Date = extractOptionLabel(line, OptionDate) },
+		OptionEndDetails: func(line string) {
+			removeFlag(internals.InDetailsFlag)
+			addDetails()
+		},
+		OptionCaption: func(line string) { caption = extractOptionLabel(line, OptionCaption) },
+		OptionDate:    func(line string) { page.Date = extractOptionLabel(line, OptionDate) },
 	}
 
 	// Loop through the lines

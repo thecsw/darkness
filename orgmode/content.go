@@ -109,6 +109,10 @@ func sourceExtractLang(line string) string {
 	return SourceCodeRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
 }
 
+func detailsExtractSummary(line string) string {
+	return DetailsRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
+}
+
 func isHTMLExportBegin(line string) bool {
 	return strings.HasPrefix(strings.ToLower(line), OptionPrefix+OptionBeginExport+" html")
 }

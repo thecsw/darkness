@@ -21,6 +21,7 @@ var (
 		horizontalLine,
 		attentionBlock,
 		table,
+		details,
 	}
 )
 
@@ -174,4 +175,12 @@ func table(content *internals.Content) string {
 	}
 	tableHTML := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
 	return fmt.Sprintf(TableTemplate, content.Caption, tableHTML)
+}
+
+// table gives an HTML formatted table
+func details(content *internals.Content) string {
+	if internals.HasFlag(&content.Options, internals.InDetailsFlag) {
+		return fmt.Sprintf("<details>\n<summary>%s</summary>", content.Summary)
+	}
+	return "</details>"
 }

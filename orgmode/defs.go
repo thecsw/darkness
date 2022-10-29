@@ -35,9 +35,12 @@ var (
 	SurroundWithNewlines = []string{
 		OptionBeginQuote, OptionEndQuote,
 		OptionBeginCenter, OptionEndCenter,
+		OptionBeginDetails, OptionEndDetails,
 	}
 	// SourceCodeRegexp is the regexp for matching source blocks
 	SourceCodeRegexp = regexp.MustCompile(`(?s)#\+begin_src ?([[:print:]]+)?`)
+	// DetailsRegexp is the regexp for matching details
+	DetailsRegexp = regexp.MustCompile(`(?s)#\+begin_details ?([[:print:]]+)?`)
 	// LinkRegexp is the regexp for matching links
 	LinkRegexp = internals.LinkRegexp
 	// AttentionBlockRegexp is the regexp for matching attention blocks
