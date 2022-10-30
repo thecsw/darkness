@@ -59,6 +59,8 @@ type WebsiteConfig struct {
 	SyntaxHighlighting bool `toml:"syntax_highlighting"`
 	// SyntaxHighlightingTheme decides what theme to use from highlight.js
 	SyntaxHighlightingTheme string `toml:"syntax_highlighting_theme"`
+	// ExtraHead is the list of html directives to insert in <head>
+	ExtraHead []string `toml:"extra_head"`
 }
 
 // AuthorConfig is the author section of the config

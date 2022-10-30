@@ -31,6 +31,7 @@ func ExportPage(page *internals.Page) string {
 %s
 %s
 %s
+%s
 <title>%s</title>
 </head>
 %s
@@ -44,6 +45,7 @@ func ExportPage(page *internals.Page) string {
 </body>
 </html>`,
 		linkTags(page), metaTags(page), scriptTags(page),
+		strings.Join(emilia.Config.Website.ExtraHead, "\n"),
 		processTitle(flattenFormatting(page.Title)), styleTags(page),
 		authorHeader(page), strings.Join(content, ""), addFootnotes(page),
 	)
