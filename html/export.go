@@ -40,7 +40,6 @@ func ExportPage(page *internals.Page) string {
 			(i == len(page.Contents)-1 && lastWasInContent) {
 			content[i] = "\n</div>\n" + content[i]
 		}
-		fmt.Println(v.Type, " - ", lastWasInContent, currentlyInContent)
 		lastWasInContent = currentlyInContent
 	}
 
