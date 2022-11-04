@@ -23,6 +23,10 @@ var (
 	defaultDarknessTemplate []byte
 )
 
+const (
+	savePerms = fs.FileMode(0644)
+)
+
 // main is the entry point for the program
 func main() {
 	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
@@ -173,7 +177,7 @@ type bundle struct {
 // fileSaver is a worker for file saving
 func fileSaver(files <-chan *bundle, wg *sync.WaitGroup) {
 	for file := range files {
-		os.WriteFile(file.File, []byte(file.Data), 0600)
+		os.WriteFile(file.File, []byte(file.Data), savePerms)
 		wg.Done()
 	}
 }
