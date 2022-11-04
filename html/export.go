@@ -37,9 +37,8 @@ func ExportPage(page *internals.Page) string {
 %s
 <body class="article">
 %s
-<div id="content">
+<div class="content">
 %s
-</div>
 </div>
 %s
 </body>
@@ -79,7 +78,7 @@ func scriptTags(page *internals.Page) string {
 // authorHeader returns the author header
 func authorHeader(page *internals.Page) string {
 	content := fmt.Sprintf(`
-<div id="header">
+<div class="header">
 <h1>%s%s</h1>
 <div class="details">
 <span id="author" class="author">%s</span><br>

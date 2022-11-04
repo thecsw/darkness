@@ -13,7 +13,7 @@ const (
 <hr>
 <div class="imageblock">
 <div class="content">
-<a class="image" href="%s"><img src="%s" alt="%s"></a>
+<a class="image" href="%s"><img class="image" src="%s" alt="%s"></a>
 </div>
 <div class="title">%s</div>
 </div>
