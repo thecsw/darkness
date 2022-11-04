@@ -8,6 +8,10 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
+const (
+	tombEnding = " ◼"
+)
+
 // ExportPage exports the page to HTML
 func ExportPage(page *internals.Page) string {
 	// Add the red tomb to the last paragraph on given directories
@@ -133,7 +137,7 @@ func addTomb(page *internals.Page) {
 	if !last.IsParagraph() {
 		return
 	}
-	last.Paragraph += " ◼"
+	last.Paragraph += tombEnding
 }
 
 // addFootnotes adds the footnotes
