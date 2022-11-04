@@ -28,18 +28,24 @@ func ExportPage(page *internals.Page) string {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- Links -->
 %s
+<!-- Meta -->
 %s
+<!-- Scripts -->
 %s
+<!-- Extra -->
 %s
 <title>%s</title>
 </head>
+<!-- Styling -->
 %s
 <body class="article">
+<!-- Header -->
 %s
-<div class="content">
+<!-- Content -->
 %s
-</div>
+<!-- Footnotes -->
 %s
 </body>
 </html>`,
