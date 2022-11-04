@@ -69,6 +69,7 @@ func Parse(data string) *internals.Page {
 
 	// addContent is a helper function to add content to the page
 	addContent := func(content internals.Content) {
+		content.Options = currentFlags
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
 		caption = ""
@@ -76,7 +77,6 @@ func Parse(data string) *internals.Page {
 	addDetails := func() {
 		addContent(internals.Content{
 			Type:    internals.TypeDetails,
-			Options: currentFlags,
 			Summary: additionalContext,
 		})
 	}
@@ -198,7 +198,9 @@ func Parse(data string) *internals.Page {
 			}
 			// Add a horizontal line divider
 			if isHorizonalLine(previousContext) {
-				addContent(internals.Content{Type: internals.TypeHorizontalLine})
+				addContent(internals.Content{
+					Type: internals.TypeHorizontalLine,
+				})
 				continue
 			}
 			// If we were in a list, save it as a list

@@ -40,6 +40,7 @@ const (
 	InCenterFlag
 	InDetailsFlag
 	InDropCapFlag
+	InGalleryFlag
 )
 
 var (
