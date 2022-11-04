@@ -26,12 +26,12 @@ func ParseFile(workDir, file string) *internals.Page {
 func Preprocess(data string) string {
 	// Add a newline before every heading just in case if
 	// there is no terminating empty line before each one
-	data = HeadingRegexp.ReplaceAllString(data, "\n$1")
+	data = headingRegexp.ReplaceAllString(data, "\n$1")
 	// Center and quote delimeters need a new line around
-	for _, v := range SurroundWithNewlines {
+	for _, v := range surroundWithNewlines {
 		data = strings.ReplaceAll(data,
-			OptionPrefix+v,
-			"\n"+OptionPrefix+v)
+			optionPrefix+v,
+			"\n"+optionPrefix+v)
 	}
 	// Debug stuff
 	// fmt.Println(data)
@@ -82,12 +82,12 @@ func Parse(data string) *internals.Page {
 	}
 	addFlag, removeFlag, flipFlag, hasFlag := internals.LatchFlags(&currentFlags)
 	optionsActions := map[string]func(line string){
-		OptionDropCap:     func(line string) { addFlag(internals.InDropCapFlag) },
-		OptionBeginQuote:  func(line string) { addFlag(internals.InQuoteFlag) },
-		OptionEndQuote:    func(line string) { removeFlag(internals.InQuoteFlag) },
-		OptionBeginCenter: func(line string) { addFlag(internals.InCenterFlag) },
-		OptionEndCenter:   func(line string) { removeFlag(internals.InCenterFlag) },
-		OptionBeginDetails: func(line string) {
+		optionDropCap:     func(line string) { addFlag(internals.InDropCapFlag) },
+		optionBeginQuote:  func(line string) { addFlag(internals.InQuoteFlag) },
+		optionEndQuote:    func(line string) { removeFlag(internals.InQuoteFlag) },
+		optionBeginCenter: func(line string) { addFlag(internals.InCenterFlag) },
+		optionEndCenter:   func(line string) { removeFlag(internals.InCenterFlag) },
+		optionBeginDetails: func(line string) {
 			addFlag(internals.InDetailsFlag)
 			additionalContext = detailsExtractSummary(line)
 			if additionalContext == "" {
@@ -95,12 +95,14 @@ func Parse(data string) *internals.Page {
 			}
 			addDetails()
 		},
-		OptionEndDetails: func(line string) {
+		optionEndDetails: func(line string) {
 			removeFlag(internals.InDetailsFlag)
 			addDetails()
 		},
-		OptionCaption: func(line string) { caption = extractOptionLabel(line, OptionCaption) },
-		OptionDate:    func(line string) { page.Date = extractOptionLabel(line, OptionDate) },
+		optionBeginGallery: func(line string) { addFlag(internals.InGalleryFlag) },
+		optionEndGallery:   func(line string) { removeFlag(internals.InGalleryFlag) },
+		optionCaption:      func(line string) { caption = extractOptionLabel(line, optionCaption) },
+		optionDate:         func(line string) { page.Date = extractOptionLabel(line, optionDate) },
 	}
 
 	// Loop through the lines

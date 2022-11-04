@@ -10,15 +10,15 @@ import (
 func isHeader(line string) *internals.Content {
 	level := 0
 	switch {
-	case strings.HasPrefix(line, SectionLevelOne):
+	case strings.HasPrefix(line, sectionLevelOne):
 		level = 1
-	case strings.HasPrefix(line, SectionLevelTwo):
+	case strings.HasPrefix(line, sectionLevelTwo):
 		level = 2
-	case strings.HasPrefix(line, SectionLevelThree):
+	case strings.HasPrefix(line, sectionLevelThree):
 		level = 3
-	case strings.HasPrefix(line, SectionLevelFour):
+	case strings.HasPrefix(line, sectionLevelFour):
 		level = 4
-	case strings.HasPrefix(line, SectionLevelFive):
+	case strings.HasPrefix(line, sectionLevelFive):
 		level = 5
 	default:
 		level = 0
@@ -37,22 +37,22 @@ func isHeader(line string) *internals.Content {
 
 // isComment returns true if the line is a comment
 func isComment(line string) bool {
-	return strings.HasPrefix(line, CommentPrefix)
+	return strings.HasPrefix(line, commentPrefix)
 }
 
 // isOption returns true if the line is an option
 func isOption(line string) bool {
-	return strings.HasPrefix(line, OptionPrefix)
+	return strings.HasPrefix(line, optionPrefix)
 }
 
 // isLink returns a non-nil object if the line is a link
 func isLink(line string) *internals.Content {
 	line = strings.TrimSpace(line)
 	// Not a link
-	if !LinkRegexp.MatchString(line) {
+	if !linkRegexp.MatchString(line) {
 		return nil
 	}
-	submatches := LinkRegexp.FindAllStringSubmatch(line, 1)
+	submatches := linkRegexp.FindAllStringSubmatch(line, 1)
 	// Sanity check
 	if len(submatches) < 1 {
 		return nil
@@ -98,35 +98,35 @@ func isTableHeaderDelimeter(line string) bool {
 }
 
 func isSourceCodeBegin(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), OptionPrefix+OptionBeginSource)
+	return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionBeginSource)
 }
 
 func isSourceCodeEnd(line string) bool {
-	return strings.ToLower(line) == OptionPrefix+OptionEndSource
+	return strings.ToLower(line) == optionPrefix+optionEndSource
 }
 
 func sourceExtractLang(line string) string {
-	return SourceCodeRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
+	return sourceCodeRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
 }
 
 func detailsExtractSummary(line string) string {
-	return DetailsRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
+	return detailsRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
 }
 
 func isHTMLExportBegin(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), OptionPrefix+OptionBeginExport+" html")
+	return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionBeginExport+" html")
 }
 
 func isHTMLExportEnd(line string) bool {
-	return strings.HasPrefix(strings.ToLower(line), OptionPrefix+OptionEndExport)
+	return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionEndExport)
 }
 
 func isHorizonalLine(line string) bool {
-	return strings.TrimSpace(line) == HorizontalLine
+	return strings.TrimSpace(line) == horizontalLine
 }
 
 func isAttentionBlack(line string) *internals.Content {
-	matches := AttentionBlockRegexp.FindAllStringSubmatch(line, 1)
+	matches := attentionBlockRegexp.FindAllStringSubmatch(line, 1)
 	if len(matches) < 1 {
 		return nil
 	}

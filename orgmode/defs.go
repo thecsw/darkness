@@ -7,28 +7,31 @@ import (
 )
 
 const (
-	CommentPrefix      = "# "
-	OptionPrefix       = "#+"
-	OptionDropCap      = "drop_cap"
-	OptionBeginSource  = "begin_src"
-	OptionEndSource    = "end_src"
-	OptionBeginExport  = "begin_export"
-	OptionEndExport    = "end_export"
-	OptionBeginQuote   = "begin_quote"
-	OptionEndQuote     = "end_quote"
-	OptionBeginCenter  = "begin_center"
-	OptionEndCenter    = "end_center"
-	OptionBeginDetails = "begin_details"
-	OptionEndDetails   = "end_details"
-	OptionCaption      = "caption"
-	OptionDate         = "date"
-	HorizontalLine     = "---"
+	commentPrefix      = "# "
+	optionPrefix       = "#+"
+	optionDropCap      = "drop_cap"
+	optionBeginSource  = "begin_src"
+	optionEndSource    = "end_src"
+	optionBeginExport  = "begin_export"
+	optionEndExport    = "end_export"
+	optionBeginQuote   = "begin_quote"
+	optionEndQuote     = "end_quote"
+	optionBeginCenter  = "begin_center"
+	optionEndCenter    = "end_center"
+	optionBeginDetails = "begin_details"
+	optionEndDetails   = "end_details"
+	optionBeginGallery = "begin_gallery"
+	optionEndGallery   = "end_gallery"
+	optionCaption      = "caption"
+	optionDate         = "date"
+	horizontalLine     = "---"
 
-	SectionLevelOne   = "* "
-	SectionLevelTwo   = "** "
-	SectionLevelThree = "*** "
-	SectionLevelFour  = "**** "
-	SectionLevelFive  = "***** "
+	sectionLevelOne   = "* "
+	sectionLevelTwo   = "** "
+	sectionLevelThree = "*** "
+	sectionLevelFour  = "**** "
+	sectionLevelFive  = "***** "
+
 	listSeparator    = string(rune(30))
 	listSeparatorWS  = " " + listSeparator
 	tableSeparator   = string(rune(29))
@@ -36,21 +39,22 @@ const (
 )
 
 var (
-	SurroundWithNewlines = []string{
-		OptionBeginQuote, OptionEndQuote,
-		OptionBeginCenter, OptionEndCenter,
-		OptionBeginDetails, OptionEndDetails,
+	surroundWithNewlines = []string{
+		optionBeginQuote, optionEndQuote,
+		optionBeginCenter, optionEndCenter,
+		optionBeginDetails, optionEndDetails,
+		optionBeginGallery, optionEndGallery,
 	}
-	// SourceCodeRegexp is the regexp for matching source blocks
-	SourceCodeRegexp = regexp.MustCompile(`(?s)#\+begin_src ?([[:print:]]+)?`)
-	// DetailsRegexp is the regexp for matching details
-	DetailsRegexp = regexp.MustCompile(`(?s)#\+begin_details ?([[:print:]]+)?`)
-	// LinkRegexp is the regexp for matching links
-	LinkRegexp = internals.LinkRegexp
-	// AttentionBlockRegexp is the regexp for matching attention blocks
-	AttentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP|IMPORTANT|CAUTION):\s*(.+)`)
-	// UnorderedListRegexp is the regexp for matching unordered lists
-	UnorderedListRegexp = regexp.MustCompile(`(?mU)- (.+) ∆`)
-	// HeadingRegexp is the regexp for matching headlines
-	HeadingRegexp = regexp.MustCompile(`(?m)^(\*\*\*\*\*|\*\*\*\*|\*\*\*|\*\*|\*\s+)`)
+	// sourceCodeRegexp is the regexp for matching source blocks
+	sourceCodeRegexp = regexp.MustCompile(`(?s)#\+begin_src ?([[:print:]]+)?`)
+	// detailsRegexp is the regexp for matching details
+	detailsRegexp = regexp.MustCompile(`(?s)#\+begin_details ?([[:print:]]+)?`)
+	// linkRegexp is the regexp for matching links
+	linkRegexp = internals.LinkRegexp
+	// attentionBlockRegexp is the regexp for matching attention blocks
+	attentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP|IMPORTANT|CAUTION):\s*(.+)`)
+	// unorderedListRegexp is the regexp for matching unordered lists
+	unorderedListRegexp = regexp.MustCompile(`(?mU)- (.+) ` + listSeparator)
+	// headingRegexp is the regexp for matching headlines
+	headingRegexp = regexp.MustCompile(`(?m)^(\*\*\*\*\*|\*\*\*\*|\*\*\*|\*\*|\*\s+)`)
 )
