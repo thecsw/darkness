@@ -201,7 +201,7 @@ func Parse(data string) *internals.Page {
 			}
 			// If we were in a list, save it as a list
 			if hasFlag(internals.InListFlag) {
-				matches := strings.Split(previousContext, " ∆")[1:]
+				matches := strings.Split(previousContext, listSeparatorWS)[1:]
 				for i, match := range matches {
 					matches[i] = strings.Replace(match, "- ", "", 1)
 				}
@@ -219,7 +219,7 @@ func Parse(data string) *internals.Page {
 			}
 			// If we were in a table, save it as such
 			if hasFlag(internals.InTableFlag) {
-				rows := strings.Split(previousContext, " ø")[1:]
+				rows := strings.Split(previousContext, tableSeparatorWS)[1:]
 				tableData := make([][]string, len(rows))
 				for i, row := range rows {
 					row = strings.TrimSpace(row)
@@ -263,7 +263,7 @@ func Parse(data string) *internals.Page {
 		}
 		if isList(line) {
 			addFlag(internals.InListFlag)
-			currentContext = previousContext + " ∆" + line
+			currentContext = previousContext + listSeparatorWS + line
 		}
 		if isTable(line) {
 			addFlag(internals.InTableFlag)
@@ -273,7 +273,7 @@ func Parse(data string) *internals.Page {
 				currentContext = previousContext
 				continue
 			}
-			currentContext = previousContext + " ø" + line
+			currentContext = previousContext + tableSeparatorWS + line
 		}
 		currentContext += " "
 	}

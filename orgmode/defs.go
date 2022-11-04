@@ -29,6 +29,10 @@ const (
 	SectionLevelThree = "*** "
 	SectionLevelFour  = "**** "
 	SectionLevelFive  = "***** "
+	listSeparator    = string(rune(30))
+	listSeparatorWS  = " " + listSeparator
+	tableSeparator   = string(rune(29))
+	tableSeparatorWS = " " + tableSeparator
 )
 
 var (
