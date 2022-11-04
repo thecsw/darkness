@@ -73,6 +73,8 @@ func Parse(data string) *internals.Page {
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
 		caption = ""
+		additionalContext = ""
+		sourceCodeLang = ""
 	}
 	addDetails := func() {
 		addContent(internals.Content{
