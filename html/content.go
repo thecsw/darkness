@@ -29,7 +29,7 @@ var (
 func headings(content *internals.Content) string {
 	start := ``
 	if !content.HeadingChild && !content.HeadingFirst {
-		start = `</div>` + "\n" + `</div>`
+		start = "</div>\n</div>"
 	}
 	if content.HeadingChild && !content.HeadingFirst {
 		start = `</div>`
@@ -45,7 +45,7 @@ func headings(content *internals.Content) string {
 		content.HeadingLevel,         // HTML close tag
 	)
 	if content.HeadingLast {
-		toReturn += "\n" + `</div>`
+		toReturn += "</div>\n</div>\n"
 	}
 	return toReturn
 }
@@ -78,6 +78,11 @@ func paragraph(content *internals.Content) string {
 
 // list gives us a list html representation
 func list(content *internals.Content) string {
+	// Hijack this type for galleries
+	if internals.HasFlag(&content.Options, internals.InGalleryFlag) {
+		return gallery(content)
+	}
+
 	elements := make([]string, len(content.List))
 	for i, item := range content.List {
 		elements[i] = fmt.Sprintf(`
@@ -95,6 +100,20 @@ func list(content *internals.Content) string {
 </ul>
 </div>
 `, strings.Join(elements, "\n"))
+}
+
+func gallery(content *internals.Content) string {
+	flexItems := make([]string, len(content.List))
+	for i, item := range content.List {
+		flexItems[i] = fmt.Sprintf(`<img class="item" height="33%%" width="33%%" src="%s">`, strings.TrimSpace(item))
+	}
+	return fmt.Sprintf(`
+<center>
+<div class="gallery">
+%s
+</div>
+</center>
+`, strings.Join(flexItems, "\n"))
 }
 
 // listNumbered gives us a numbered list html representation
@@ -174,7 +193,7 @@ func table(content *internals.Content) string {
 		rows[i] = fmt.Sprintf("<tr>\n%s</tr>", strings.Join(content.Table[i], "\n"))
 	}
 	tableHTML := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
-	return fmt.Sprintf(TableTemplate, content.Caption, tableHTML)
+	return fmt.Sprintf(tableTemplate, content.Caption, tableHTML)
 }
 
 // table gives an HTML formatted table

@@ -24,8 +24,24 @@ func ExportPage(page *internals.Page) string {
 	}
 
 	content := make([]string, len(page.Contents))
+	shouldBeInContent := func(v *internals.Content) bool {
+		return v.Type != internals.TypeLink &&
+			!internals.HasFlag(&v.Options, internals.InGalleryFlag)
+	}
+	lastWasInContent := false
+	currentlyInContent := false
 	for i, v := range page.Contents {
+		currentlyInContent = shouldBeInContent(&v)
 		content[i] = contentFunctions[v.Type](&v)
+		if !lastWasInContent && currentlyInContent {
+			content[i] = `<div class="content">` + "\n" + content[i]
+		}
+		if (lastWasInContent && !currentlyInContent) ||
+			(i == len(page.Contents)-1 && lastWasInContent) {
+			content[i] = "\n</div>\n" + content[i]
+		}
+		fmt.Println(v.Type, " - ", lastWasInContent, currentlyInContent)
+		lastWasInContent = currentlyInContent
 	}
 
 	return fmt.Sprintf(`
