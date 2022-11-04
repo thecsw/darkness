@@ -304,18 +304,6 @@ func fillHolosceneDate(page *internals.Page) {
 	page.DateHoloscene = true
 }
 
-func leaveContext(inSomething *bool) {
-	if *inSomething {
-		*inSomething = false
-	}
-}
-
-func optionParser(given string) func(string) bool {
-	return func(option string) bool {
-		return strings.HasPrefix(strings.ToLower(given), option)
-	}
-}
-
 func extractOptionLabel(given string, option string) string {
 	return strings.TrimSpace(given[len(option)+1:])
 }
