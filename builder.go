@@ -65,7 +65,7 @@ func build() {
 	// If parallel processing is disabled, only provision one workers
 	// per each processing stage.
 	if *disableParallel {
-		defaultNumOfWorkers = 1
+		*customNumWorkers = 1
 	}
 
 	// Create the channel to feed read files.
