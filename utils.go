@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/fs"
+	"io/ioutil"
 	"path/filepath"
 	"strings"
 
@@ -39,7 +40,7 @@ func findFilesByExt(dir, ext string) ([]string, error) {
 			}
 		}
 		// Ignore hidden files
-		if !isExcluded && !strings.HasPrefix(filepath.Base(path), ".") {
+		if !isExcluded && !strings.HasPrefix(filepath.Base(path), workDir) {
 			files = append(files, path)
 		}
 		return nil
@@ -56,7 +57,11 @@ func getTarget(file string) string {
 
 // orgToHTML converts an org file to html
 func orgToHTML(file string) string {
-	page := orgmode.ParseFile(workDir, file)
+	data, err := ioutil.ReadFile(file)
+	if err != nil {
+		panic(err)
+	}
+	page := orgmode.Parse(string(data), file)
 	htmlPage := exportAndEnrich(page)
 	// Usually, each page only needs 1 holoscene replacement.
 	// For the fortunes page, we need to replace all of them

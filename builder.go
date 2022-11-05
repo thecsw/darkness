@@ -116,6 +116,7 @@ func build() {
 		}
 	}(wg)
 
+	// Wait for all the files to get saved and then leave.
 	wg.Wait()
 	fmt.Printf("Processed in %d ms\n", time.Since(start).Milliseconds())
 	fmt.Println("farewell")

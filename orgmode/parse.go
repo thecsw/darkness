@@ -1,24 +1,12 @@
 package orgmode
 
 import (
-	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/internals"
 )
-
-// ParseFile parses a single file and returns a list of elements
-func ParseFile(workDir, file string) *internals.Page {
-	data, err := os.ReadFile(file)
-	if err != nil {
-		fmt.Printf("failed to open the file %s: %s", file, err.Error())
-		os.Exit(1)
-	}
-	return Parse(string(data), file)
-}
 
 // Preprocess preprocesses the input string to be parser-friendly
 func Preprocess(data string) string {
