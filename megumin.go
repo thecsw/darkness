@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"sync"
 	"time"
 	"unicode"
 
@@ -17,18 +18,17 @@ func clean() {
 	cleanCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	cleanCmd.Parse(os.Args[2:])
 	emilia.InitDarkness(darknessToml)
-	orgfiles, err := findFilesByExt(workDir, emilia.Config.Project.Input)
-	if err != nil {
-		fmt.Printf("failed to find files by extension %s: %s",
-			emilia.Config.Project.Input, err.Error())
-		os.Exit(1)
-	}
-	for _, orgfile := range orgfiles {
+	orgfiles := make(chan string)
+	wg := &sync.WaitGroup{}
+	go findFilesByExt(workDir, emilia.Config.Project.Input, orgfiles, wg)
+	for orgfile := range orgfiles {
 		toRemove := getTarget(orgfile)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to delete: "+err.Error())
 		}
+		wg.Done()
 	}
+	wg.Wait()
 }
 
 // megumin blows up the directory
@@ -39,12 +39,6 @@ func megumin() {
 	explosionCmd.Parse(os.Args[2:])
 	emilia.InitDarkness(darknessToml)
 
-	orgfiles, err := findFilesByExt(workDir, emilia.Config.Project.Input)
-	if err != nil {
-		fmt.Printf("failed to find files by extension %s: %s",
-			emilia.Config.Project.Input, err.Error())
-		os.Exit(1)
-	}
 	delayedLinesPrint([]string{
 		"Darker than black, darker than darkness, combine with my intense crimson.",
 		"Time to wake up, descend to these borders and appear as an intangible distortion.",
@@ -56,14 +50,19 @@ func megumin() {
 		"It is the ultimate magical attack!",
 		"Explosion!",
 	})
-	for _, orgfile := range orgfiles {
+	orgfiles := make(chan string)
+	wg := &sync.WaitGroup{}
+	go findFilesByExt(workDir, emilia.Config.Project.Input, orgfiles, wg)
+	for orgfile := range orgfiles {
 		toRemove := getTarget(orgfile)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to blow up!!")
 		}
 		fmt.Println(toRemove, "went boom!")
+		wg.Done()
 		time.Sleep(50 * time.Millisecond)
 	}
+	wg.Wait()
 	delayedLinesPrint([]string{
 		"Wahahahahaha!",
 		"My name is Megumin, the number one mage of Axel!",

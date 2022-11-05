@@ -51,13 +51,6 @@ func build() {
 
 	// Find all the appropriate orgmode files and save the list.
 	start := time.Now()
-	orgfiles, err := findFilesByExt(workDir, emilia.Config.Project.Input)
-	fmt.Printf("Found %d files in %d ms\n", len(orgfiles), time.Since(start).Milliseconds())
-	if err != nil {
-		fmt.Printf("failed to find files by extension %s: %s",
-			emilia.Config.Project.Input, err.Error())
-		os.Exit(1)
-	}
 
 	// Set the channel capacity to user input.
 	channelCapacity = *customChannelCapacity
@@ -69,7 +62,19 @@ func build() {
 	}
 
 	// Create the channel to feed read files.
-	orgmodes := make(chan *bundle, channelCapacity)
+	orgfiles := make(chan string, channelCapacity)
+
+	// Create the worker that will read files and push bundles.
+	orgmodes := genericWorkers(orgfiles, func(v string) *bundle {
+		data, err := ioutil.ReadFile(v)
+		if err != nil {
+			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
+		}
+		return &bundle{
+			File: v,
+			Data: string(data),
+		}
+	}, 1)
 
 	// Create the workers for parsing and converting orgmode to Page.
 	pages := genericWorkers(orgmodes, func(v *bundle) *internals.Page {
@@ -84,40 +89,33 @@ func build() {
 		}
 	}, *customNumWorkers)
 
-	// Spin off the goroutine that will push the orgmode files' contents
-	// to the parsing workers, which in turn would feed those Pages to the
-	// building workers, which in turn would feed those into the next
-	// goroutine after this one.
-	start = time.Now()
-	go func() {
-		for _, orgfile := range orgfiles {
-			data, err := ioutil.ReadFile(orgfile)
-			if err != nil {
-				fmt.Printf("Failed to open %s: %s\n", orgfile, err.Error())
-			}
-			orgmodes <- &bundle{
-				File: orgfile,
-				Data: string(data),
-			}
-		}
-		close(orgmodes)
-	}()
+	// This will block darkness from exiting until all the files are done.
+	wg := &sync.WaitGroup{}
+
+	// Add a block here so the file explorer has a bit of time to spin
+	// up and start filling up its channel.
+	wg.Add(1)
+
+	// Run a discovery for files and feed to the reader worker.
+	go findFilesByExt(workDir, emilia.Config.Project.Input, orgfiles, wg)
 
 	// Build a wait group to ensure we always read and write the same
 	// number of files, such that after the file has been read, parsed,
 	// enriched, and exported -- this goroutine would pick them up and
 	// save it at the right spot, marking itself Done and leaving.
-	wg := &sync.WaitGroup{}
-	wg.Add(len(orgfiles))
 	go func(wg *sync.WaitGroup) {
 		for result := range results {
 			os.WriteFile(result.File, []byte(result.Data), savePerms)
 			wg.Done()
 		}
+		// Remove the artificial block we made before discovery.
+		wg.Done()
 	}(wg)
 
 	// Wait for all the files to get saved and then leave.
 	wg.Wait()
+
+	// Report back on some of the results
 	fmt.Printf("Processed in %d ms\n", time.Since(start).Milliseconds())
 	fmt.Println("farewell")
 }

@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"path/filepath"
 	"strings"
+	"sync"
 
+	"github.com/sanity-io/litter"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/html"
 	"github.com/thecsw/darkness/internals"
@@ -21,9 +23,8 @@ type bundle struct {
 }
 
 // findFilesByExt finds all files with a given extension
-func findFilesByExt(dir, ext string) ([]string, error) {
-	files := make([]string, 0, 32)
-	err := filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
+func findFilesByExt(dir, ext string, orgfiles chan<- string, wg *sync.WaitGroup) {
+	filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
 			fmt.Println(err)
 			return err
@@ -41,11 +42,12 @@ func findFilesByExt(dir, ext string) ([]string, error) {
 		}
 		// Ignore hidden files
 		if !isExcluded && !strings.HasPrefix(filepath.Base(path), workDir) {
-			files = append(files, path)
+			wg.Add(1)
+			orgfiles <- path
 		}
 		return nil
 	})
-	return files, err
+	close(orgfiles)
 }
 
 // getTarget returns the target file name
@@ -63,6 +65,7 @@ func orgToHTML(file string) string {
 	}
 	page := orgmode.Parse(string(data), file)
 	htmlPage := exportAndEnrich(page)
+	litter.Dump(page)
 	// Usually, each page only needs 1 holoscene replacement.
 	// For the fortunes page, we need to replace all of them
 	htmlPage = emilia.AddHolosceneTitles(htmlPage, func() int {
