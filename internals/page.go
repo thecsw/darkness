@@ -2,6 +2,8 @@ package internals
 
 // Page is a struct for holding the page contents
 type Page struct {
+	// File is the original filename of the page (optional)
+	File string
 	// Title is the title of the page
 	Title string
 	// Date is the date of the page

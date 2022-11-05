@@ -20,3 +20,22 @@ func Max[T Number](a, b T) T {
 	}
 	return b
 }
+
+func First[T any](x []T) T {
+	if len(x) > 0 {
+		return x[0]
+	}
+	return ZeroValue[T]()
+}
+
+func Last[T any](x []T) T {
+	if len(x) > 0 {
+		return x[len(x)-1]
+	}
+	return ZeroValue[T]()
+}
+
+func ZeroValue[T any]() T {
+	var t T
+	return t
+}

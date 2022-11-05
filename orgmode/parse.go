@@ -17,9 +17,7 @@ func ParseFile(workDir, file string) *internals.Page {
 		fmt.Printf("failed to open the file %s: %s", file, err.Error())
 		os.Exit(1)
 	}
-	page := Parse(string(data))
-	page.URL = emilia.JoinPath(strings.TrimPrefix(filepath.Dir(file), workDir))
-	return page
+	return Parse(string(data), file)
 }
 
 // Preprocess preprocesses the input string to be parser-friendly
@@ -33,9 +31,6 @@ func Preprocess(data string) string {
 			optionPrefix+v,
 			"\n"+optionPrefix+v)
 	}
-	// Debug stuff
-	// fmt.Println(data)
-	// fmt.Println("---------------------")
 	// Pad a newline so that last elements can be processed
 	// properly before an EOF is encountered during parsing
 	data += "\n"
@@ -43,13 +38,15 @@ func Preprocess(data string) string {
 }
 
 // Parse parses the input string and returns a list of elements
-func Parse(data string) *internals.Page {
+func Parse(data string, filename string) *internals.Page {
 	// Split the data into lines
 	lines := strings.Split(Preprocess(data), "\n")
 	page := &internals.Page{
-		Title:     "",
-		Date:      "",
-		URL:       "",
+		File:  filename,
+		Title: "",
+		Date:  "",
+		URL: emilia.JoinPath(strings.TrimPrefix(
+			filepath.Dir(filename), ".")),
 		Contents:  []internals.Content{},
 		Footnotes: []string{},
 		Scripts:   []string{},

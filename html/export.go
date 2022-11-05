@@ -36,9 +36,13 @@ func ExportPage(page *internals.Page) string {
 		if !lastWasInContent && currentlyInContent {
 			content[i] = `<div class="content">` + "\n" + content[i]
 		}
-		if (lastWasInContent && !currentlyInContent) ||
-			(i == len(page.Contents)-1 && lastWasInContent) {
+		if lastWasInContent && !currentlyInContent {
 			content[i] = "\n</div>\n" + content[i]
+		}
+		if i == len(page.Contents)-1 {
+			if currentlyInContent {
+				content[i] = content[i] + "\n</div>\n"
+			}
 		}
 		lastWasInContent = currentlyInContent
 	}
