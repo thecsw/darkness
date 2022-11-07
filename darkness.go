@@ -32,7 +32,8 @@ func main() {
 	case "build":
 		build()
 	case "clean":
-		clean()
+		isQuietMegumin = true
+		megumin()
 	case "megumin":
 		megumin()
 	case "lalatina":

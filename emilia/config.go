@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -61,6 +62,16 @@ func InitDarkness(file string) {
 	// Set the default syntax highlighting theme
 	if notDefined(Config.Website.SyntaxHighlightingTheme) {
 		Config.Website.SyntaxHighlightingTheme = highlightJsThemeDefaultPath
+	}
+	// Build the regex that will be used to exclude files that
+	// have been denoted in emilia darkness config.
+	excludePattern := fmt.Sprintf("(?mU)(%s)/.*",
+		strings.Join(Config.Project.Exclude, "|"))
+	Config.Project.ExcludeRegex, err = regexp.Compile(excludePattern)
+	if err != nil {
+		fmt.Println("Bad exclude regex, made", excludePattern,
+			"\nFailed with error:", err.Error())
+		os.Exit(1)
 	}
 }
 

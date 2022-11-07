@@ -1,6 +1,9 @@
 package emilia
 
-import "net/url"
+import (
+	"net/url"
+	"regexp"
+)
 
 // DarknessConfig is the global darkness config
 type DarknessConfig struct {
@@ -27,7 +30,8 @@ type ProjectConfig struct {
 	// Output is the output format (defaulte ".html")
 	Output string `toml:"output"`
 	// Excludes is the list of relative paths to exclude from the project
-	Exclude []string `toml:"exclude"`
+	Exclude      []string       `toml:"exclude"`
+	ExcludeRegex *regexp.Regexp `toml:"-"`
 }
 
 // WebsiteConfig is the website section of the config

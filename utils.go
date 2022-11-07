@@ -1,13 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"io/fs"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
 	"sync"
 
+	"github.com/karrick/godirwalk"
 	"github.com/sanity-io/litter"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/html"
@@ -23,29 +22,21 @@ type bundle struct {
 }
 
 // findFilesByExt finds all files with a given extension
-func findFilesByExt(dir, ext string, orgfiles chan<- string, wg *sync.WaitGroup) {
-	filepath.Walk(dir, func(path string, info fs.FileInfo, err error) error {
-		if err != nil {
-			fmt.Println(err)
-			return err
-		}
-		if info.IsDir() || filepath.Ext(path) != ext {
-			return nil
-		}
-		// Check if it is not excluded
-		isExcluded := false
-		for _, excludedPath := range emilia.Config.Project.Exclude {
-			if strings.HasPrefix(path, excludedPath) {
-				isExcluded = true
-				break
+func findFilesByExt(orgfiles chan<- string, wg *sync.WaitGroup) {
+	godirwalk.Walk(workDir, &godirwalk.Options{
+		Callback: func(osPathname string, de *godirwalk.Dirent) error {
+			if filepath.Ext(osPathname) != emilia.Config.Project.Input {
+				return nil
 			}
-		}
-		// Ignore hidden files
-		if !isExcluded && !strings.HasPrefix(filepath.Base(path), workDir) {
+			if emilia.Config.Project.ExcludeRegex.MatchString(osPathname) ||
+				internals.First([]rune(de.Name())) == rune('.') {
+				return filepath.SkipDir
+			}
 			wg.Add(1)
-			orgfiles <- path
-		}
-		return nil
+			orgfiles <- osPathname
+			return nil
+		},
+		Unsorted: true, // (optional) set true for faster yet non-deterministic enumeration (see godoc)
 	})
 	close(orgfiles)
 }

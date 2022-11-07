@@ -11,25 +11,9 @@ import (
 	"github.com/thecsw/darkness/emilia"
 )
 
-// clean cleans up the directory
-func clean() {
-	cleanCmd := flag.NewFlagSet("clean", flag.ExitOnError)
-	cleanCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
-	cleanCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	cleanCmd.Parse(os.Args[2:])
-	emilia.InitDarkness(darknessToml)
-	orgfiles := make(chan string)
-	wg := &sync.WaitGroup{}
-	go findFilesByExt(workDir, emilia.Config.Project.Input, orgfiles, wg)
-	for orgfile := range orgfiles {
-		toRemove := getTarget(orgfile)
-		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
-			fmt.Println(toRemove, "failed to delete: "+err.Error())
-		}
-		wg.Done()
-	}
-	wg.Wait()
-}
+var (
+	isQuietMegumin = false
+)
 
 // megumin blows up the directory
 func megumin() {
@@ -50,18 +34,22 @@ func megumin() {
 		"It is the ultimate magical attack!",
 		"Explosion!",
 	})
-	orgfiles := make(chan string)
+	orgfiles := make(chan string, channelCapacity)
 	wg := &sync.WaitGroup{}
-	go findFilesByExt(workDir, emilia.Config.Project.Input, orgfiles, wg)
+	wg.Add(1)
+	go findFilesByExt(orgfiles, wg)
 	for orgfile := range orgfiles {
 		toRemove := getTarget(orgfile)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to blow up!!")
 		}
-		fmt.Println(toRemove, "went boom!")
+		if !isQuietMegumin {
+			fmt.Println(toRemove, "went boom!")
+			time.Sleep(50 * time.Millisecond)
+		}
 		wg.Done()
-		time.Sleep(50 * time.Millisecond)
 	}
+	wg.Done()
 	wg.Wait()
 	delayedLinesPrint([]string{
 		"Wahahahahaha!",
@@ -72,6 +60,9 @@ func megumin() {
 
 // delayedLinesPrint prints lines with a delay
 func delayedLinesPrint(lines []string) {
+	if isQuietMegumin {
+		return
+	}
 	for _, line := range lines {
 		time.Sleep(200 * time.Millisecond)
 		delayedSentencePrint(line)
@@ -82,6 +73,9 @@ func delayedLinesPrint(lines []string) {
 
 // delayedSentencePrint prints a sentence with a delay
 func delayedSentencePrint(line string) {
+	if isQuietMegumin {
+		return
+	}
 	for _, c := range line {
 		fmt.Printf("%c", c)
 		time.Sleep(60 * time.Millisecond)

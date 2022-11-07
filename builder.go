@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
@@ -52,6 +53,12 @@ func build() {
 	// Find all the appropriate orgmode files and save the list.
 	start := time.Now()
 
+	var err error
+	workDir, err = filepath.Abs(workDir)
+	if err != nil {
+		fmt.Println("Couldn't determine absolute path of", workDir)
+	}
+
 	// Set the channel capacity to user input.
 	channelCapacity = *customChannelCapacity
 
@@ -97,7 +104,7 @@ func build() {
 	wg.Add(1)
 
 	// Run a discovery for files and feed to the reader worker.
-	go findFilesByExt(workDir, emilia.Config.Project.Input, orgfiles, wg)
+	go findFilesByExt(orgfiles, wg)
 
 	// Build a wait group to ensure we always read and write the same
 	// number of files, such that after the file has been read, parsed,
@@ -106,6 +113,7 @@ func build() {
 	go func(wg *sync.WaitGroup) {
 		for result := range results {
 			os.WriteFile(result.File, []byte(result.Data), savePerms)
+			//os.WriteFile("/dev/null", []byte(result.Data), savePerms)
 			wg.Done()
 		}
 		// Remove the artificial block we made before discovery.
