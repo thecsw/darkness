@@ -22,16 +22,11 @@ func linkTag(val rel) string {
 
 // linkTags returns a string of the form <link rel="..." href="..." /> for an entire page
 func linkTags(page *internals.Page) string {
-	toAdd := []rel{
+	return strings.Join(internals.Map(linkTag, []rel{
 		{"canonical", page.URL, ""},
 		{"shortcut icon", emilia.JoinPath("assets/favicon.ico"), "image/x-icon"},
 		{"apple-touch-icon", emilia.JoinPath("assets/apple-touch-icon.png"), "image/png"},
 		{"image_src", emilia.JoinPath("assets/android-chrome-512x512.png"), "image/png"},
 		{"icon", emilia.JoinPath("assets/favicon.ico"), ""},
-	}
-	links := make([]string, 5)
-	for i, add := range toAdd {
-		links[i] = linkTag(add)
-	}
-	return strings.Join(links, "\n")
+	}), "\n")
 }

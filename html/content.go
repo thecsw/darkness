@@ -11,17 +11,9 @@ import (
 var (
 	// contentFunctions is a map of functions that process content
 	contentFunctions = []func(*internals.Content) string{
-		headings,
-		paragraph,
-		list,
-		listNumbered,
-		link,
-		sourceCode,
-		rawHTML,
-		horizontalLine,
-		attentionBlock,
-		table,
-		details,
+		headings, paragraph, list, listNumbered, link,
+		sourceCode, rawHTML, horizontalLine, attentionBlock,
+		table, details,
 	}
 )
 
@@ -76,44 +68,45 @@ func paragraph(content *internals.Content) string {
 	)
 }
 
+// makeListItem makes an html item
+func makeListItem(s string) string {
+	return fmt.Sprintf(`
+<li>
+<p>
+%s
+</p>
+</li>`, processText(s))
+}
+
 // list gives us a list html representation
 func list(content *internals.Content) string {
 	// Hijack this type for galleries
 	if internals.HasFlag(&content.Options, internals.InGalleryFlag) {
 		return gallery(content)
 	}
-
-	elements := make([]string, len(content.List))
-	for i, item := range content.List {
-		elements[i] = fmt.Sprintf(`
-<li>
-<p>
-%s
-</p>
-</li>`, processText(item))
-	}
-
 	return fmt.Sprintf(`
 <div class="ulist">
 <ul>
 %s
 </ul>
 </div>
-`, strings.Join(elements, "\n"))
+`, strings.Join(internals.Map(makeListItem, content.List), "\n"))
 }
 
+// makeFlexItem will make an item of the flexbox .gallery with 1/3 width
+func makeFlexItem(s string) string {
+	return fmt.Sprintf(`<img class="item" height="33%%" width="33%%" src="%s">`, strings.TrimSpace(s))
+}
+
+// gallery will create a flexbox gallery as defined in .gallery css class
 func gallery(content *internals.Content) string {
-	flexItems := make([]string, len(content.List))
-	for i, item := range content.List {
-		flexItems[i] = fmt.Sprintf(`<img class="item" height="33%%" width="33%%" src="%s">`, strings.TrimSpace(item))
-	}
 	return fmt.Sprintf(`
 <center>
 <div class="gallery">
 %s
 </div>
 </center>
-`, strings.Join(flexItems, "\n"))
+`, strings.Join(internals.Map(makeFlexItem, content.List), "\n"))
 }
 
 // listNumbered gives us a numbered list html representation
@@ -122,11 +115,15 @@ func listNumbered(content *internals.Content) string {
 	return ""
 }
 
+// sourceCodeLang maps our source code language name to the
+// name that highlight.js will need when coloring code
 var sourceCodeLang = map[string]string{
 	"":   "plaintext",
 	"sh": "bash",
 }
 
+// mapSourceCodeLang tries to map the simple source code language
+// to the one that highlight.js would accept
 func mapSourceCodeLang(s string) string {
 	if v, ok := sourceCodeLang[s]; ok {
 		return v

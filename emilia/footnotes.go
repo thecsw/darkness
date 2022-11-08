@@ -7,23 +7,25 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
-// ResolveFootnotes resolves footnotes and cleans up the page if necessary
-func ResolveFootnotes(page *internals.Page) {
-	footnotes := make([]string, 0, 4)
-	for i := range page.Contents {
-		c := &page.Contents[i]
-		// Replace footnotes in paragraphs
-		if c.IsParagraph() {
-			c.Paragraph = findFootnotes(c.Paragraph, &footnotes)
-		}
-		// Footnotes can also appear in lists
-		if c.IsList() {
-			for i := 0; i < len(c.List); i++ {
-				c.List[i] = findFootnotes(c.List[i], &footnotes)
+// WithFootnotes resolves footnotes and cleans up the page if necessary
+func WithFootnotes() internals.PageOption {
+	return func(page *internals.Page) {
+		footnotes := make([]string, 0, 4)
+		for i := range page.Contents {
+			c := &page.Contents[i]
+			// Replace footnotes in paragraphs
+			if c.IsParagraph() {
+				c.Paragraph = findFootnotes(c.Paragraph, &footnotes)
+			}
+			// Footnotes can also appear in lists
+			if c.IsList() {
+				for i := 0; i < len(c.List); i++ {
+					c.List[i] = findFootnotes(c.List[i], &footnotes)
+				}
 			}
 		}
+		page.Footnotes = footnotes
 	}
-	page.Footnotes = footnotes
 }
 
 // findFootnotes finds footnotes in a paragraph and replaces them with a footnote reference

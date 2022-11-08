@@ -49,11 +49,13 @@ const (
 	mathJs = katexJs
 )
 
-// AddMathSupport adds math support to the page using javascript injection
-func AddMathSupport(page *internals.Page) {
-	// If we found math-related tags, add the scripts
-	if hasMathEquations(page) {
-		page.Scripts = append(page.Scripts, mathJs)
+// WithMathSupport adds math support to the page using javascript injection
+func WithMathSupport() internals.PageOption {
+	return func(page *internals.Page) {
+		// If we found math-related tags, add the scripts
+		if hasMathEquations(page) {
+			page.Scripts = append(page.Scripts, mathJs)
+		}
 	}
 }
 

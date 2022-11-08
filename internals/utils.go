@@ -72,3 +72,20 @@ func Tail[T any](num int, arr []T) []T {
 	}
 	return arr[len(arr)-num : len(arr)-1]
 }
+
+func Any[T comparable](val T, arr []T) bool {
+	for _, v := range arr {
+		if val == v {
+			return true
+		}
+	}
+	return false
+}
+
+func Repeat[T any](val T, size int) []T {
+	arr := make([]T, 0, size)
+	for i := 0; i < size; i++ {
+		arr = append(arr, val)
+	}
+	return arr
+}

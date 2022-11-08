@@ -34,7 +34,7 @@ func megumin() {
 		"It is the ultimate magical attack!",
 		"Explosion!",
 	})
-	orgfiles := make(chan string, channelCapacity)
+	orgfiles := make(chan string, defaultNumOfWorkers)
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
 	go findFilesByExt(orgfiles, wg)

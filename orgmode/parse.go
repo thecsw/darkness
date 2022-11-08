@@ -29,17 +29,12 @@ func Preprocess(data string) string {
 func Parse(data string, filename string) *internals.Page {
 	// Split the data into lines
 	lines := strings.Split(Preprocess(data), "\n")
-	page := &internals.Page{
-		File:  filename,
-		Title: "",
-		Date:  "",
-		URL: emilia.JoinPath(strings.TrimPrefix(
-			filepath.Dir(filename), ".")),
-		Contents:  []internals.Content{},
-		Footnotes: []string{},
-		Scripts:   []string{},
-	}
-	page.Contents = make([]internals.Content, 0, 16)
+
+	page := internals.NewPage(
+		internals.WithFilename(filename),
+		internals.WithURL(emilia.JoinPath(filepath.Dir(filename))),
+		internals.WithContents(make([]internals.Content, 0, 16)),
+	)
 
 	// currentFlags uses flags to set options
 	currentFlags := internals.Bits(0)

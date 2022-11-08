@@ -84,10 +84,12 @@ func exportAndEnrich(page *internals.Page) string {
 
 // emiliaStuff applies common emilia enhancements.
 func emiliaStuff(page *internals.Page) {
-	emilia.ResolveComments(page)
-	emilia.EnrichHeadings(page)
-	emilia.ResolveFootnotes(page)
-	emilia.AddMathSupport(page)
-	emilia.SourceCodeTrimLeftWhitespace(page)
-	emilia.AddSyntaxHighlighting(page)
+	page.Options(
+		emilia.WithResolvedComments(),
+		emilia.WithEnrichedHeadings(),
+		emilia.WithFootnotes(),
+		emilia.WithMathSupport(),
+		emilia.WithSourceCodeTrimmedLeftWhitespace(),
+		emilia.WithSyntaxHighlighting(),
+	)
 }

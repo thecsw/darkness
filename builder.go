@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -15,6 +16,12 @@ import (
 	"github.com/thecsw/darkness/orgmode"
 )
 
+const (
+	// savePerms tells us what permissions to use for the
+	// final export files.
+	savePerms = fs.FileMode(0644)
+)
+
 var (
 	// workDir is the directory to look for files
 	workDir = "."
@@ -22,6 +29,9 @@ var (
 	darknessToml = "darkness.toml"
 	// filename is the file to build
 	filename = "index.org"
+	// defaultNumOfWorkers gives us the number of workers to
+	// spin up in each stage: parsing and processing.
+	defaultNumOfWorkers = 14
 )
 
 // oneFile builds a single file
@@ -59,9 +69,6 @@ func build() {
 		fmt.Println("Couldn't determine absolute path of", workDir)
 	}
 
-	// Set the channel capacity to user input.
-	channelCapacity = *customChannelCapacity
-
 	// If parallel processing is disabled, only provision one workers
 	// per each processing stage.
 	if *disableParallel {
@@ -69,10 +76,10 @@ func build() {
 	}
 
 	// Create the channel to feed read files.
-	orgfiles := make(chan string, channelCapacity)
+	orgfiles := make(chan string, *customChannelCapacity)
 
 	// Create the worker that will read files and push bundles.
-	orgmodes := genericWorkers(orgfiles, func(v string) *bundle {
+	orgmodes := internals.GenericWorkers(orgfiles, func(v string) *bundle {
 		data, err := ioutil.ReadFile(v)
 		if err != nil {
 			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
@@ -81,20 +88,20 @@ func build() {
 			File: v,
 			Data: string(data),
 		}
-	}, 1)
+	}, 1, *customChannelCapacity)
 
 	// Create the workers for parsing and converting orgmode to Page.
-	pages := genericWorkers(orgmodes, func(v *bundle) *internals.Page {
+	pages := internals.GenericWorkers(orgmodes, func(v *bundle) *internals.Page {
 		return orgmode.Parse(v.Data, v.File)
-	}, *customNumWorkers)
+	}, *customNumWorkers, *customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
-	results := genericWorkers(pages, func(v *internals.Page) *bundle {
+	results := internals.GenericWorkers(pages, func(v *internals.Page) *bundle {
 		return &bundle{
 			File: getTarget(v.File),
 			Data: exportAndEnrich(v),
 		}
-	}, *customNumWorkers)
+	}, *customNumWorkers, *customChannelCapacity)
 
 	// This will block darkness from exiting until all the files are done.
 	wg := &sync.WaitGroup{}
