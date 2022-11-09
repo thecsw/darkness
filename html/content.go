@@ -8,24 +8,53 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
-var (
-	// contentFunctions is a map of functions that process content
-	contentFunctions = []func(*internals.Content) string{
-		headings, paragraph, list, listNumbered, link,
-		sourceCode, rawHTML, horizontalLine, attentionBlock,
-		table, details,
+func (e *ExporterHTML) buildContent(i int, v *internals.Content) string {
+	built := e.contentFunctions[v.Type](v)
+	divv := whatDivType(v)
+	if e.inHeading {
+		if i == e.contentsNum-1 {
+			built += "</div>\n</div>"
+			goto done
+		}
+		if divv != divOutside {
+			goto done
+		}
+		built = "</div>\n</div>" + built
+		e.inHeading = false
 	}
-)
+done:
+	if e.inWriting {
+		if divv != divOutside {
+			e.inWriting = divv == divWriting
+			goto done2
+		}
+		built = "</div>" + built
+		e.inWriting = false
+	} else {
+		if divv == divWriting {
+			built = `<div class="writing">` + built
+			e.inWriting = true
+		}
+	}
+done2:
+	if divv == divWriting && i == e.contentsNum-1 {
+		built += "</div>"
+	}
+	return built
+}
 
 // headings gives us a heading html representation
-func headings(content *internals.Content) string {
+func (e *ExporterHTML) headings(content *internals.Content) string {
 	start := ``
-	if !content.HeadingChild && !content.HeadingFirst {
+	if e.inHeading {
 		start = "</div>\n</div>"
 	}
-	if content.HeadingChild && !content.HeadingFirst {
-		start = `</div>`
-	}
+	// if !content.HeadingChild && !content.HeadingFirst {
+	// 	start = "</div>\n</div>"
+	// }
+	// if content.HeadingChild && !content.HeadingFirst {
+	// 	start = `</div>`
+	// }
 	toReturn := fmt.Sprintf(start+`
 <div class="sect%d">
 <h%d id="%s">%s</h%d>
@@ -36,14 +65,15 @@ func headings(content *internals.Content) string {
 		processText(content.Heading), // Actual title
 		content.HeadingLevel,         // HTML close tag
 	)
-	if content.HeadingLast {
-		toReturn += "</div>\n</div>\n"
-	}
+	e.inHeading = true
+	// if content.HeadingLast {
+	// 	toReturn += "</div>\n</div>\n"
+	// }
 	return toReturn
 }
 
 // paragraph gives us a paragraph html representation
-func paragraph(content *internals.Content) string {
+func (e *ExporterHTML) paragraph(content *internals.Content) string {
 	return fmt.Sprintf(
 		`
 <div class="paragraph%s">
@@ -79,10 +109,10 @@ func makeListItem(s string) string {
 }
 
 // list gives us a list html representation
-func list(content *internals.Content) string {
+func (e *ExporterHTML) list(content *internals.Content) string {
 	// Hijack this type for galleries
 	if internals.HasFlag(&content.Options, internals.InGalleryFlag) {
-		return gallery(content)
+		return e.gallery(content)
 	}
 	return fmt.Sprintf(`
 <div class="ulist">
@@ -99,7 +129,7 @@ func makeFlexItem(s string) string {
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
-func gallery(content *internals.Content) string {
+func (e *ExporterHTML) gallery(content *internals.Content) string {
 	return fmt.Sprintf(`
 <center>
 <div class="gallery">
@@ -110,7 +140,7 @@ func gallery(content *internals.Content) string {
 }
 
 // listNumbered gives us a numbered list html representation
-func listNumbered(content *internals.Content) string {
+func (e *ExporterHTML) listNumbered(content *internals.Content) string {
 	// TODO
 	return ""
 }
@@ -132,7 +162,7 @@ func mapSourceCodeLang(s string) string {
 }
 
 // sourceCode gives us a source code html representation
-func sourceCode(content *internals.Content) string {
+func (e *ExporterHTML) sourceCode(content *internals.Content) string {
 	lang := mapSourceCodeLang(content.SourceCodeLang)
 	return fmt.Sprintf(`
 <div class="listingblock">
@@ -150,17 +180,17 @@ func sourceCode(content *internals.Content) string {
 }
 
 // rawHTML gives us a raw html representation
-func rawHTML(content *internals.Content) string {
+func (e *ExporterHTML) rawHTML(content *internals.Content) string {
 	return content.RawHTML
 }
 
 // horizontalLine gives us a horizontal line html representation
-func horizontalLine(content *internals.Content) string {
+func (e *ExporterHTML) horizontalLine(content *internals.Content) string {
 	return `<hr>`
 }
 
 // attentionBlock gives us a attention block html representation
-func attentionBlock(content *internals.Content) string {
+func (e *ExporterHTML) attentionBlock(content *internals.Content) string {
 	return fmt.Sprintf(`
 <div class="admonitionblock note">
 <table>
@@ -177,7 +207,7 @@ func attentionBlock(content *internals.Content) string {
 }
 
 // table gives an HTML formatted table
-func table(content *internals.Content) string {
+func (e *ExporterHTML) table(content *internals.Content) string {
 	rows := make([]string, len(content.Table))
 	for i := range content.Table {
 		for j, v := range content.Table[i] {
@@ -194,7 +224,7 @@ func table(content *internals.Content) string {
 }
 
 // table gives an HTML formatted table
-func details(content *internals.Content) string {
+func (e *ExporterHTML) details(content *internals.Content) string {
 	if internals.HasFlag(&content.Options, internals.InDetailsFlag) {
 		return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
 	}

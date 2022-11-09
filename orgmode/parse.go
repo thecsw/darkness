@@ -47,6 +47,7 @@ func Parse(data string, filename string) *internals.Page {
 	// Our context is a parody of a state machine
 	currentContext := ""
 
+	addFlag, removeFlag, flipFlag, hasFlag := internals.LatchFlags(&currentFlags)
 	// addContent is a helper function to add content to the page
 	addContent := func(content internals.Content) {
 		content.Options = currentFlags
@@ -62,7 +63,6 @@ func Parse(data string, filename string) *internals.Page {
 			Summary: additionalContext,
 		})
 	}
-	addFlag, removeFlag, flipFlag, hasFlag := internals.LatchFlags(&currentFlags)
 	optionsActions := map[string]func(line string){
 		optionDropCap:     func(line string) { addFlag(internals.InDropCapFlag) },
 		optionBeginQuote:  func(line string) { addFlag(internals.InQuoteFlag) },
@@ -237,7 +237,7 @@ func Parse(data string, filename string) *internals.Page {
 				continue
 			}
 			// Also check if this is an attention block, like "NOTE:..." or "WARNING:..."
-			if attention := isAttentionBlack(previousContext); attention != nil {
+			if attention := isAttentionBlock(previousContext); attention != nil {
 				addContent(*attention)
 				continue
 			}

@@ -11,10 +11,10 @@ import (
 )
 
 // metaTopTag is the top tag for all meta tags
-func metaTags(page *internals.Page) string {
+func (e *ExporterHTML) metaTags() string {
 	// Find the first paragraph for description
 	description := ""
-	for _, content := range page.Contents {
+	for _, content := range e.Page.Contents {
 		// We are only looking for paragraphs
 		if !content.IsParagraph() {
 			continue
@@ -29,9 +29,9 @@ func metaTags(page *internals.Page) string {
 		break
 	}
 	tags := make([]string, 3)
-	tags[0] = addBasic(page, description)
-	tags[1] = addOpenGraph(page, description)
-	tags[2] = addTwitterMeta(page, description)
+	tags[0] = addBasic(e.Page, description)
+	tags[1] = addOpenGraph(e.Page, description)
+	tags[2] = addTwitterMeta(e.Page, description)
 	return strings.Join(tags, "")
 }
 

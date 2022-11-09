@@ -1,17 +1,24 @@
 package html
 
 import (
-	"strconv"
+	"fmt"
 
-	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/internals"
 )
 
-var footnoteLabel = strconv.Itoa
+func init() {
+	if internals.TypeContent(len(divTypes)) !=
+		internals.TypeShouldBeLastDoNotTouch {
+		panic(fmt.Sprintf("len(html.divTypes) should be %d",
+			internals.TypeShouldBeLastDoNotTouch))
+	}
+}
 
-// InitializeExporter initializes the constant tags
-func InitializeExporter() {
-	// Monkey patch the function if we're using the roman footnotes
-	if emilia.Config.Website.RomanFootnotes {
-		footnoteLabel = numberToRoman
+func init() {
+	e := NewExporterHTML()
+	if internals.TypeContent(len(e.contentFunctions)) !=
+		internals.TypeShouldBeLastDoNotTouch {
+		panic(fmt.Sprintf("len(html.contentFunctions) should be %d",
+			internals.TypeShouldBeLastDoNotTouch))
 	}
 }

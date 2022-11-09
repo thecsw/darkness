@@ -55,24 +55,14 @@ func orgToHTML(file string) string {
 		panic(err)
 	}
 	page := orgmode.Parse(string(data), file)
-	htmlPage := exportAndEnrich(page)
-	litter.Dump(page)
-	// Usually, each page only needs 1 holoscene replacement.
-	// For the fortunes page, we need to replace all of them
-	htmlPage = emilia.AddHolosceneTitles(htmlPage, func() int {
-		if strings.HasSuffix(page.URL, "quotes") {
-			return -1
-		}
-		return 1
-	}())
-	return htmlPage
+	litter.Dump(*page)
+	return exportAndEnrich(page)
 }
 
 // exportAndEnrich automatically applies all the emilia enhancements
 // and converts Page into an html document.
 func exportAndEnrich(page *internals.Page) string {
-	emiliaStuff(page)
-	result := html.ExportPage(page)
+	result := html.NewExporterHTML(html.WithPage(applyEmilia(page))).Export()
 	result = emilia.AddHolosceneTitles(result, func() int {
 		if strings.HasSuffix(page.URL, "quotes") {
 			return -1
@@ -82,9 +72,9 @@ func exportAndEnrich(page *internals.Page) string {
 	return result
 }
 
-// emiliaStuff applies common emilia enhancements.
-func emiliaStuff(page *internals.Page) {
-	page.Options(
+// applyEmilia applies common emilia enhancements.
+func applyEmilia(page *internals.Page) *internals.Page {
+	return page.Options(
 		emilia.WithResolvedComments(),
 		emilia.WithEnrichedHeadings(),
 		emilia.WithFootnotes(),

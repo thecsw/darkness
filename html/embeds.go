@@ -23,6 +23,7 @@ const (
 	// videoEmbedTemplate is the template for video embeds
 	videoEmbedTemplate = `
 <div class="videoblock">
+<hr>
 <video controls class="responsive-iframe">
 <source src="%s" type="video/%s">
 Sorry, your browser doesn't support embedded videos.
@@ -43,6 +44,7 @@ Sorry, your browser doesn't support embedded videos.
 	// youtubeEmbedTemplate is the template for youtube embeds
 	youtubeEmbedTemplate = `
 <div class="videoblock">
+<hr>
 <iframe class="responsive-iframe" src="https://www.youtube.com/embed/%s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <hr>
 </div>`
@@ -67,7 +69,7 @@ Sorry, your browser doesn't support embedded videos.
 )
 
 // link returns an html representation of a link even if it's an embed command
-func link(content *internals.Content) string {
+func (e *ExporterHTML) link(content *internals.Content) string {
 	switch {
 	case internals.ImageExtRegexp.MatchString(content.Link):
 		return fmt.Sprintf(imageEmbedTemplate, content.Link, content.Link,

@@ -12,6 +12,7 @@ import (
 )
 
 var (
+	// if true, darkness cleans with no output
 	isQuietMegumin = false
 )
 

@@ -58,10 +58,7 @@ func build() {
 	emilia.InitDarkness(darknessToml)
 
 	// Initialize some of the custom exporter settings.
-	html.InitializeExporter()
-
-	// Find all the appropriate orgmode files and save the list.
-	start := time.Now()
+	html.InitPackage()
 
 	var err error
 	workDir, err = filepath.Abs(workDir)
@@ -110,6 +107,9 @@ func build() {
 	// up and start filling up its channel.
 	wg.Add(1)
 
+	// Find all the appropriate orgmode files and save the list.
+	start := time.Now()
+
 	// Run a discovery for files and feed to the reader worker.
 	go findFilesByExt(orgfiles, wg)
 
@@ -120,7 +120,6 @@ func build() {
 	go func(wg *sync.WaitGroup) {
 		for result := range results {
 			os.WriteFile(result.File, []byte(result.Data), savePerms)
-			//os.WriteFile("/dev/null", []byte(result.Data), savePerms)
 			wg.Done()
 		}
 		// Remove the artificial block we made before discovery.

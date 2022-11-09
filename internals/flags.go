@@ -26,6 +26,9 @@ const (
 	TypeTable
 	// TypeDetails is the type for html details
 	TypeDetails
+	// This is the last type that should not be touched --
+	// It's used to verify consistency within darkness.
+	TypeShouldBeLastDoNotTouch
 )
 
 type Bits uint16

@@ -30,13 +30,13 @@ func InitDarkness(file string) {
 		os.Exit(1)
 	}
 	// If input/output formats are empty, default to .org/.html respectively
-	if notDefined(Config.Project.Input) {
+	if undef(Config.Project.Input) {
 		Config.Project.Input = ".org"
 	}
-	if notDefined(Config.Project.Output) {
+	if undef(Config.Project.Output) {
 		Config.Project.Output = ".html"
 	}
-	if notDefined(Config.Website.Preview) {
+	if undef(Config.Website.Preview) {
 		Config.Website.Preview = "preview.png"
 	}
 	if Config.Website.DescriptionLength < 1 {
@@ -60,7 +60,7 @@ func InitDarkness(file string) {
 		os.Exit(1)
 	}
 	// Set the default syntax highlighting theme
-	if notDefined(Config.Website.SyntaxHighlightingTheme) {
+	if undef(Config.Website.SyntaxHighlightingTheme) {
 		Config.Website.SyntaxHighlightingTheme = highlightJsThemeDefaultPath
 	}
 	// Build the regex that will be used to exclude files that
@@ -81,6 +81,6 @@ func JoinPath(elem string) string {
 	return Config.URLPath.ResolveReference(u).String()
 }
 
-func notDefined(what string) bool {
+func undef(what string) bool {
 	return what == ""
 }

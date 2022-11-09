@@ -125,7 +125,7 @@ func isHorizonalLine(line string) bool {
 	return strings.TrimSpace(line) == horizontalLine
 }
 
-func isAttentionBlack(line string) *internals.Content {
+func isAttentionBlock(line string) *internals.Content {
 	matches := attentionBlockRegexp.FindAllStringSubmatch(line, 1)
 	if len(matches) < 1 {
 		return nil

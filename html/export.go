@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/internals"
 )
 
 const (
@@ -13,42 +12,23 @@ const (
 )
 
 // ExportPage exports the page to HTML
-func ExportPage(page *internals.Page) string {
+func (e *ExporterHTML) Export() string {
 	// Add the red tomb to the last paragraph on given directories
 	// from the config
 	for _, tombPage := range emilia.Config.Website.Tombs {
-		if strings.HasPrefix(page.URL, emilia.JoinPath(tombPage)) {
-			addTomb(page)
+		if strings.HasPrefix(e.Page.URL, emilia.JoinPath(tombPage)) {
+			e.addTomb()
 			break
 		}
 	}
-
-	content := make([]string, len(page.Contents))
-	shouldBeInContent := func(v *internals.Content) bool {
-		return v.Type != internals.TypeLink &&
-			!internals.HasFlag(&v.Options, internals.InGalleryFlag)
-	}
-	lastWasInContent := false
-	currentlyInContent := false
-	for i, v := range page.Contents {
-		currentlyInContent = shouldBeInContent(&v)
-		content[i] = contentFunctions[v.Type](&v)
-		if !lastWasInContent && currentlyInContent {
-			content[i] = `<div class="writing">` + "\n" + content[i]
-		}
-		if lastWasInContent && !currentlyInContent {
-			content[i] = "\n</div>\n" + content[i]
-		}
-		if i == len(page.Contents)-1 {
-			if currentlyInContent {
-				content[i] = content[i] + "\n</div>\n"
-			}
-		}
-		lastWasInContent = currentlyInContent
+	content := make([]string, e.contentsNum)
+	var activeDiv divType
+	for i, v := range e.Page.Contents {
+		content[i] = e.buildContent(i, &v)
+		e.currentDiv = activeDiv
 	}
 
-	return fmt.Sprintf(`
-<!DOCTYPE html>
+	return fmt.Sprintf(`<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Links -->
@@ -59,6 +39,7 @@ func ExportPage(page *internals.Page) string {
 %s
 <!-- Extra -->
 %s
+<!-- Title -->
 <title>%s</title>
 </head>
 <!-- Styling -->
@@ -72,23 +53,27 @@ func ExportPage(page *internals.Page) string {
 %s
 </body>
 </html>`,
-		linkTags(page), metaTags(page), scriptTags(page),
+		e.linkTags(), e.metaTags(), e.scriptTags(),
 		strings.Join(emilia.Config.Website.ExtraHead, "\n"),
-		processTitle(flattenFormatting(page.Title)), styleTags(page),
-		authorHeader(page), strings.Join(content, ""), addFootnotes(page),
+		processTitle(flattenFormatting(e.Page.Title)), e.styleTags(),
+		e.authorHeader(), strings.Join(content, ""), e.addFootnotes(),
 	)
 }
 
+func (e *ExporterHTML) swimUp() {
+	e.inHeading = false
+}
+
 // styleTags is the processed style tags
-func styleTags(page *internals.Page) string {
-	content := make([]string, len(emilia.Config.Website.Styles)+len(page.Stylesheets))
+func (e *ExporterHTML) styleTags() string {
+	content := make([]string, len(emilia.Config.Website.Styles)+len(e.Page.Stylesheets))
 	for i, style := range emilia.Config.Website.Styles {
 		content[i] = fmt.Sprintf(
 			`<link rel="stylesheet" type="text/css" href="%s">`+"\n",
 			emilia.JoinPath(style),
 		)
 	}
-	content = append(content, page.Stylesheets...)
+	content = append(content, e.Page.Stylesheets...)
 	return strings.Join(content, "")
 }
 
@@ -99,13 +84,13 @@ var defaultScripts = []string{
 }
 
 // scriptTags returns the script tags
-func scriptTags(page *internals.Page) string {
-	allScripts := append(defaultScripts, page.Scripts...)
+func (e *ExporterHTML) scriptTags() string {
+	allScripts := append(defaultScripts, e.Page.Scripts...)
 	return strings.Join(allScripts, "\n")
 }
 
 // authorHeader returns the author header
-func authorHeader(page *internals.Page) string {
+func (e *ExporterHTML) authorHeader() string {
 	content := fmt.Sprintf(`
 <div class="header">
 <h1>%s%s</h1>
@@ -113,7 +98,7 @@ func authorHeader(page *internals.Page) string {
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
 `,
-		authorImage(), processTitle(page.Title),
+		authorImage(), processTitle(e.Page.Title),
 		emilia.Config.Author.Name, emilia.Config.Author.Email,
 	)
 
@@ -121,7 +106,7 @@ func authorHeader(page *internals.Page) string {
 	navLinks := make([]string, 0, len(emilia.Config.Navigation))
 	for i := 1; i <= len(emilia.Config.Navigation); i++ {
 		v := emilia.Config.Navigation[fmt.Sprintf("%d", i)]
-		if page.URL == emilia.Config.URL && v.Link == v.Hide {
+		if e.Page.URL == emilia.Config.URL && v.Link == v.Hide {
 			continue
 		}
 		navLinks = append(navLinks, fmt.Sprintf(`<a href="%s">%s</a>`, emilia.JoinPath(v.Link), v.Title))
@@ -146,38 +131,15 @@ func authorImage() string {
 }
 
 // addTomb adds the tomb to the last paragraph
-func addTomb(page *internals.Page) {
+func (e *ExporterHTML) addTomb() {
 	// Empty???
-	if len(page.Contents) < 1 {
+	if e.contentsNum < 1 {
 		return
 	}
-	last := &page.Contents[len(page.Contents)-1]
+	last := &e.Page.Contents[e.contentsNum-1]
 	// Only add it to paragraphs
 	if !last.IsParagraph() {
 		return
 	}
 	last.Paragraph += tombEnding
-}
-
-// addFootnotes adds the footnotes
-func addFootnotes(page *internals.Page) string {
-	if len(page.Footnotes) < 1 {
-		return ""
-	}
-	footnotes := make([]string, len(page.Footnotes))
-	for i, footnote := range page.Footnotes {
-		footnotes[i] = fmt.Sprintf(`
-<div class="footnote" id="_footnotedef_%d">
-<a href="#_footnoteref_%d">%s</a>
-%s
-</div>
-`,
-			i+1, i+1, footnoteLabel(i+1), processText(footnote))
-	}
-	return fmt.Sprintf(`
-<div id="footnotes">
-<hr>
-%s
-</div>
-`, strings.Join(footnotes, ""))
 }
