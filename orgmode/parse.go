@@ -112,6 +112,9 @@ func Parse(data string, filename string) *internals.Page {
 		// Now, check if we can enter a raw html environment
 		if isHTMLExportBegin(line) {
 			addFlag(internals.InRawHTMLFlag)
+			if strings.HasSuffix(line, "unsafe") {
+				addFlag(internals.InRawHtmlFlagUnsafe)
+			}
 			currentContext = previousContext
 			continue
 		}

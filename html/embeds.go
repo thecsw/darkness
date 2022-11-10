@@ -32,7 +32,17 @@ Sorry, your browser doesn't support embedded videos.
 <hr>
 </div>
 `
-	// Table is the template for image embeds
+
+	// rawHTMLTemplate wraps raw html in `mediablock`
+	rawHTMLTemplate = `
+<div class="mediablock">
+<hr>
+%s
+<div class="title">%s</div>
+<hr>
+</div>`
+
+	// tableTemplate is the template for image embeds
 	tableTemplate = `
 <div class="mediablock">
 <div class="title">%s</div>

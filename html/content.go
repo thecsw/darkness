@@ -185,7 +185,12 @@ func (e *ExporterHTML) sourceCode(content *internals.Content) string {
 
 // rawHTML gives us a raw html representation
 func (e *ExporterHTML) rawHTML(content *internals.Content) string {
-	return content.RawHTML
+	// If the unsafe flag is enabled, don't even wrap it in `mediablock`
+	if internals.HasFlag(&content.Options, internals.InRawHtmlFlagUnsafe) {
+		return content.RawHTML
+	}
+	return fmt.Sprintf(rawHTMLTemplate, content.RawHTML, content.Caption)
+
 }
 
 // horizontalLine gives us a horizontal line html representation

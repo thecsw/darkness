@@ -39,6 +39,7 @@ const (
 	InTableHasHeadersFlag
 	InSourceCodeFlag
 	InRawHTMLFlag
+	InRawHtmlFlagUnsafe
 	InQuoteFlag
 	InCenterFlag
 	InDetailsFlag
