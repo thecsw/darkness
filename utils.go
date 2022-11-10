@@ -33,8 +33,9 @@ func findFilesByExt(orgfiles chan<- string, wg *sync.WaitGroup) {
 				return filepath.SkipDir
 			}
 			wg.Add(1)
-			orgfiles <- osPathname
-			return nil
+			relPath, err := filepath.Rel(workDir, osPathname)
+			orgfiles <- relPath
+			return err
 		},
 		Unsorted: true, // (optional) set true for faster yet non-deterministic enumeration (see godoc)
 	})
