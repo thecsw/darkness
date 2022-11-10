@@ -13,6 +13,7 @@ require (
 	github.com/karrick/godirwalk v1.17.0 // indirect
 	github.com/pkg/profile v1.7.0 // indirect
 	github.com/yuin/goldmark v1.5.2 // indirect
+	golang.org/x/exp v0.0.0-20221109205753-fc8884afc316
 	golang.org/x/mod v0.6.0 // indirect
 	golang.org/x/net v0.1.0 // indirect
 	golang.org/x/sys v0.2.0 // indirect
