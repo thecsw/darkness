@@ -45,10 +45,6 @@ var (
 		optionBeginDetails, optionEndDetails,
 		optionBeginGallery, optionEndGallery,
 	}
-	// sourceCodeRegexp is the regexp for matching source blocks
-	sourceCodeRegexp = regexp.MustCompile(`(?s)#\+begin_src ?([[:print:]]+)?`)
-	// detailsRegexp is the regexp for matching details
-	detailsRegexp = regexp.MustCompile(`(?s)#\+begin_details ?([[:print:]]+)?`)
 	// linkRegexp is the regexp for matching links
 	linkRegexp = internals.LinkRegexp
 	// attentionBlockRegexp is the regexp for matching attention blocks

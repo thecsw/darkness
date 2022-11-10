@@ -73,6 +73,20 @@ func Tail[T any](num int, arr []T) []T {
 	return arr[len(arr)-num : len(arr)-1]
 }
 
+func Drop[T any](num int, arr []T) []T {
+	if len(arr) < num {
+		return []T{}
+	}
+	return arr[num:]
+}
+
+func DropString(num int, what string) string {
+	if len(what) < num {
+		return ""
+	}
+	return what[num:]
+}
+
 func Any[T comparable](val T, arr []T) bool {
 	for _, v := range arr {
 		if val == v {

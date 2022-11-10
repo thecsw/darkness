@@ -106,11 +106,12 @@ func isSourceCodeEnd(line string) bool {
 }
 
 func sourceExtractLang(line string) string {
-	return sourceCodeRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
+	return strings.TrimSpace(internals.DropString(len(optionPrefix)+len(optionBeginSource), line))
 }
 
 func detailsExtractSummary(line string) string {
-	return detailsRegexp.FindAllStringSubmatch(strings.ToLower(line), 1)[0][1]
+	return strings.TrimSpace(internals.DropString(len(optionPrefix)+len(optionBeginDetails), line))
+}
 }
 
 func isHTMLExportBegin(line string) bool {
