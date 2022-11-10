@@ -124,19 +124,29 @@ func (e *ExporterHTML) list(content *internals.Content) string {
 }
 
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
-func makeFlexItem(s string) string {
-	return fmt.Sprintf(`<img class="item" height="33%%" width="33%%" src="%s">`, strings.TrimSpace(s))
+func makeFlexItem(s string, folder string) string {
+	return fmt.Sprintf(`<img class="item" height="33%%" width="33%%" src="%s">`, folder+s)
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
 func (e *ExporterHTML) gallery(content *internals.Content) string {
+	makeFlexItemWithFolder := func(f string) func(string) string {
+		return func(s string) string {
+			return makeFlexItem(s, f)
+		}
+	}(func() string {
+		if len(content.Summary) > 0 {
+			return content.Summary + "/"
+		}
+		return ""
+	}())
 	return fmt.Sprintf(`
 <center>
 <div class="gallery">
 %s
 </div>
 </center>
-`, strings.Join(internals.Map(makeFlexItem, content.List), "\n"))
+`, strings.Join(internals.Map(makeFlexItemWithFolder, content.List), "\n"))
 }
 
 // listNumbered gives us a numbered list html representation

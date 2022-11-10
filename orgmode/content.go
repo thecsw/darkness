@@ -112,6 +112,9 @@ func sourceExtractLang(line string) string {
 func detailsExtractSummary(line string) string {
 	return strings.TrimSpace(internals.DropString(len(optionPrefix)+len(optionBeginDetails), line))
 }
+
+func galleryExtractSourceFolder(line string) string {
+	return strings.TrimSpace(internals.DropString(len(optionPrefix)+len(optionBeginGallery), line))
 }
 
 func isHTMLExportBegin(line string) bool {

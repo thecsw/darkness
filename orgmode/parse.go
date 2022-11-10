@@ -51,17 +51,9 @@ func Parse(data string, filename string) *internals.Page {
 	// addContent is a helper function to add content to the page
 	addContent := func(content internals.Content) {
 		content.Options = currentFlags
+		content.Summary = additionalContext
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
-		caption = ""
-		additionalContext = ""
-		sourceCodeLang = ""
-	}
-	addDetails := func() {
-		addContent(internals.Content{
-			Type:    internals.TypeDetails,
-			Summary: additionalContext,
-		})
 	}
 	optionsActions := map[string]func(line string){
 		optionDropCap:     func(line string) { addFlag(internals.InDropCapFlag) },
@@ -75,16 +67,19 @@ func Parse(data string, filename string) *internals.Page {
 			if additionalContext == "" {
 				additionalContext = "open for details"
 			}
-			addDetails()
+			addContent(internals.Content{Type: internals.TypeDetails})
 		},
 		optionEndDetails: func(line string) {
 			removeFlag(internals.InDetailsFlag)
-			addDetails()
+			addContent(internals.Content{Type: internals.TypeDetails})
 		},
-		optionBeginGallery: func(line string) { addFlag(internals.InGalleryFlag) },
-		optionEndGallery:   func(line string) { removeFlag(internals.InGalleryFlag) },
-		optionCaption:      func(line string) { caption = extractOptionLabel(line, optionCaption) },
-		optionDate:         func(line string) { page.Date = extractOptionLabel(line, optionDate) },
+		optionBeginGallery: func(line string) {
+			addFlag(internals.InGalleryFlag)
+			additionalContext = galleryExtractSourceFolder(line)
+		},
+		optionEndGallery: func(line string) { removeFlag(internals.InGalleryFlag) },
+		optionCaption:    func(line string) { caption = extractOptionLabel(line, optionCaption) },
+		optionDate:       func(line string) { page.Date = extractOptionLabel(line, optionDate) },
 	}
 
 	// Loop through the lines
