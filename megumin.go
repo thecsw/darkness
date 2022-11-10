@@ -16,7 +16,7 @@ var (
 	isQuietMegumin = false
 )
 
-// megumin blows up the directory
+// megumin blows up the directory.
 func megumin() {
 	explosionCmd := flag.NewFlagSet("megumin", flag.ExitOnError)
 	explosionCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
@@ -59,7 +59,7 @@ func megumin() {
 	})
 }
 
-// delayedLinesPrint prints lines with a delay
+// delayedLinesPrint prints lines with a delay.
 func delayedLinesPrint(lines []string) {
 	if isQuietMegumin {
 		return
@@ -72,7 +72,7 @@ func delayedLinesPrint(lines []string) {
 	}
 }
 
-// delayedSentencePrint prints a sentence with a delay
+// delayedSentencePrint prints a sentence with a delay.
 func delayedSentencePrint(line string) {
 	if isQuietMegumin {
 		return

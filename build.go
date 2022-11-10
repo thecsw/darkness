@@ -22,18 +22,18 @@ const (
 )
 
 var (
-	// workDir is the directory to look for files
+	// workDir is the directory to look for files.
 	workDir = "."
-	// darknessToml is the location of darkness.toml
+	// darknessToml is the location of `darkness.toml`.
 	darknessToml = "darkness.toml"
-	// filename is the file to build
+	// filename is the file to build.
 	filename = "index.org"
 	// defaultNumOfWorkers gives us the number of workers to
 	// spin up in each stage: parsing and processing.
 	defaultNumOfWorkers = 14
 )
 
-// oneFile builds a single file
+// oneFile builds a single file.
 func oneFile() {
 	fileCmd := flag.NewFlagSet("file", flag.ExitOnError)
 	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
@@ -43,7 +43,7 @@ func oneFile() {
 	fmt.Println(orgToHTML(filename))
 }
 
-// build builds the entire directory
+// build builds the entire directory.
 func build() {
 	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
 	buildCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
