@@ -22,8 +22,8 @@ const (
 	optionEndDetails   = "end_details"
 	optionBeginGallery = "begin_gallery"
 	optionEndGallery   = "end_gallery"
-	optionCaption      = "caption"
-	optionDate         = "date"
+	optionCaption      = "caption:"
+	optionDate         = "date:"
 	horizontalLine     = "---"
 
 	sectionLevelOne   = "* "

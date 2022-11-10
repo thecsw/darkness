@@ -36,7 +36,7 @@ var (
 	// VideoFileExtRegexp matches commonly used video file formats.
 	VideoFileExtRegexp = regexp.MustCompile(`\.(mp4|mkv|mov|flv|webm)$`)
 	// NewLineRegexp matches a new line for non-math environments.
-	NewLineRegexp = regexp.MustCompile(`(?mU)([^\\])\\\s*`)
+	NewLineRegexp = regexp.MustCompile(`(?mU)([^\\])\\([ ]|$)`)
 	// FootnoteRegexp is the regexp for matching footnotes.
 	FootnoteRegexp = regexp.MustCompile(`(?mU)\[fn:: (.+)\]([:;!?\t\n. ]|$)`)
 	// FootnoteReferenceRegexp is the regexp for matching footnotes references.
@@ -44,7 +44,7 @@ var (
 )
 
 // FixBoldItalicMarkups fixes bold italic text sources, such that all
-// occurences of */.../*  are switched to /*...*/
+// occurences of \*/.../\*  are switched to /\*...\*/
 func FixBoldItalicMarkups(input string) string {
 	return BoldItalicTextEnd.ReplaceAllString(BoldItalicTextBegin.ReplaceAllString(input, `$1/*`), `*/$1`)
 }

@@ -73,6 +73,7 @@ func isLink(line string) *internals.Content {
 	}
 }
 
+// formParagraph builds a proper paragraph-oriented `Content` object.
 func formParagraph(text, extra string, options internals.Bits) *internals.Content {
 	val := &internals.Content{
 		Type:      internals.TypeParagraph,
@@ -85,50 +86,54 @@ func formParagraph(text, extra string, options internals.Bits) *internals.Conten
 	return val
 }
 
+// isList returns true if we are currently reading a list, false otherwise.
 func isList(line string) bool {
 	return strings.HasPrefix(line, "- ")
 }
 
+// isTable returns true if we are currently reading a table, false otherwise.
 func isTable(line string) bool {
 	return strings.HasPrefix(line, "| ") || strings.HasPrefix(line, "|-")
 }
 
+// isTableHeaderDelimeter returns true if we are currently reading a table
+// header delimiter, false otherwise.
 func isTableHeaderDelimeter(line string) bool {
 	return strings.HasPrefix(line, "|-")
 }
 
+// isSourceCodeBegin returns true if we are currently reading the start of
+// a source code block, false otherwise.
 func isSourceCodeBegin(line string) bool {
 	return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionBeginSource)
 }
 
+// isSourceCodeEnd returns true if we are currently reading the end of a
+// source code block, false otherwise.
 func isSourceCodeEnd(line string) bool {
 	return strings.ToLower(line) == optionPrefix+optionEndSource
 }
 
-func sourceExtractLang(line string) string {
-	return strings.TrimSpace(internals.DropString(len(optionPrefix)+len(optionBeginSource), line))
-}
-
-func detailsExtractSummary(line string) string {
-	return strings.TrimSpace(internals.DropString(len(optionPrefix)+len(optionBeginDetails), line))
-}
-
-func galleryExtractSourceFolder(line string) string {
-	return strings.TrimSpace(internals.DropString(len(optionPrefix)+len(optionBeginGallery), line))
-}
-
+// isHTMLExportBegin returns true if we are currently reading the start
+// of an html export block, false otherwise.
 func isHTMLExportBegin(line string) bool {
 	return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionBeginExport+" html")
 }
 
+// isHTMLExportEnd returns true if we are currently reading the end of an
+// html export block, false otherwise.
 func isHTMLExportEnd(line string) bool {
 	return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionEndExport)
 }
 
+// isHorizonalLine returns true if we are currently reading a horizontal line,
+// false otherwise.
 func isHorizonalLine(line string) bool {
 	return strings.TrimSpace(line) == horizontalLine
 }
 
+// isAttentionBlock returns *Content object if we have fonud an attention block
+// with filled values, nil otherwise.
 func isAttentionBlock(line string) *internals.Content {
 	matches := attentionBlockRegexp.FindAllStringSubmatch(line, 1)
 	if len(matches) < 1 {
@@ -139,4 +144,34 @@ func isAttentionBlock(line string) *internals.Content {
 		AttentionTitle: matches[0][1],
 		AttentionText:  matches[0][2],
 	}
+}
+
+// extractOptionLabel is a utility function used to extract option values.
+func extractOptionLabel(given string, option string) string {
+	return strings.TrimSpace(internals.DropString(len(optionPrefix)+len(option), given))
+}
+
+// extractSourceCodeLanguage extracts language `LANG` from `#+begin_src LANG`.
+func extractSourceCodeLanguage(line string) string {
+	return extractOptionLabel(line, optionBeginSource)
+}
+
+// extractDetailsSummary extracts summary `SUMMARY` from `#+begin_details SUMMARY`.
+func extractDetailsSummary(line string) string {
+	return extractOptionLabel(line, optionBeginDetails)
+}
+
+// extractCaptionTitle extracts caption `TITLE` from `#+caption: TITLE`.
+func extractCaptionTitle(line string) string {
+	return extractOptionLabel(line, optionCaption)
+}
+
+// extractDate extracts date `DATE` from `#+date: DATE`.
+func extractDate(line string) string {
+	return extractOptionLabel(line, optionDate)
+}
+
+// extractGalleryFolder extracts gallery `FOLDER` from `#+begin_gallery FOLDER`.
+func extractGalleryFolder(line string) string {
+	return extractOptionLabel(line, optionBeginGallery)
 }

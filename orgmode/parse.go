@@ -52,6 +52,7 @@ func Parse(data string, filename string) *internals.Page {
 	addContent := func(content internals.Content) {
 		content.Options = currentFlags
 		content.Summary = additionalContext
+		content.Caption = caption
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
 	}
@@ -63,7 +64,7 @@ func Parse(data string, filename string) *internals.Page {
 		optionEndCenter:   func(line string) { removeFlag(internals.InCenterFlag) },
 		optionBeginDetails: func(line string) {
 			addFlag(internals.InDetailsFlag)
-			additionalContext = detailsExtractSummary(line)
+			additionalContext = extractDetailsSummary(line)
 			if additionalContext == "" {
 				additionalContext = "open for details"
 			}
@@ -75,11 +76,11 @@ func Parse(data string, filename string) *internals.Page {
 		},
 		optionBeginGallery: func(line string) {
 			addFlag(internals.InGalleryFlag)
-			additionalContext = galleryExtractSourceFolder(line)
+			additionalContext = extractGalleryFolder(line)
 		},
 		optionEndGallery: func(line string) { removeFlag(internals.InGalleryFlag) },
-		optionCaption:    func(line string) { caption = extractOptionLabel(line, optionCaption) },
-		optionDate:       func(line string) { page.Date = extractOptionLabel(line, optionDate) },
+		optionCaption:    func(line string) { caption = extractCaptionTitle(line) },
+		optionDate:       func(line string) { page.Date = extractDate(line) },
 	}
 
 	// Loop through the lines
@@ -135,7 +136,7 @@ func Parse(data string, filename string) *internals.Page {
 		}
 		// Should we enter a source code environment?
 		if isSourceCodeBegin(line) {
-			sourceCodeLang = sourceExtractLang(line)
+			sourceCodeLang = extractSourceCodeLanguage(line)
 			addFlag(internals.InSourceCodeFlag)
 			currentContext = ""
 			continue
@@ -221,7 +222,6 @@ func Parse(data string, filename string) *internals.Page {
 					Type:         internals.TypeTable,
 					Table:        tableData,
 					TableHeaders: hasFlag(internals.InTableHasHeadersFlag),
-					Caption:      caption,
 				})
 				removeFlag(internals.InTableFlag | internals.InTableHasHeadersFlag)
 				continue
@@ -279,8 +279,4 @@ func fillHolosceneDate(page *internals.Page) {
 	}
 	page.Date = page.Contents[0].Paragraph
 	page.DateHoloscene = true
-}
-
-func extractOptionLabel(given string, option string) string {
-	return strings.TrimSpace(given[len(option)+1:])
 }

@@ -48,7 +48,7 @@ var (
 		divOutside, // internals.TypeRawHTML
 		divOutside, // internals.TypeHorizontalLine
 		divWriting, // internals.TypeAttentionText
-		divWriting, // internals.TypeTable
+		divOutside, // internals.TypeTable
 		divWriting, // internals.TypeDetails
 	}
 )

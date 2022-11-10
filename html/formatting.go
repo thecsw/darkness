@@ -46,10 +46,8 @@ func markupHTML(text string) string {
 	for source, replacement := range markupHTMLMapping {
 		text = source.ReplaceAllString(text, replacement)
 	}
-	// Double pass for giggles
-	for source, replacement := range markupHTMLMapping {
-		text = source.ReplaceAllString(text, replacement)
-	}
+	// We only need to run bold text repacement again
+	text = internals.BoldText.ReplaceAllString(text, markupHTMLMapping[internals.BoldText])
 	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
 	text = internals.NewLineRegexp.ReplaceAllString(text, `$1<br>`)
 	return text
@@ -57,13 +55,10 @@ func markupHTML(text string) string {
 
 // processText returns a properly formatted HTML of a text
 func processText(text string) string {
-	text = html.EscapeString(fancyQuotes(text))
-	text = markupHTML(text)
+	text = markupHTML(html.EscapeString(fancyQuotes(text)))
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
 	text = internals.LinkRegexp.ReplaceAllString(text, `<a href="$1">$2</a>`)
-
-	//text = internals.MathRegexp.ReplaceAllString(text, `\($1\)`)
-
+	text = internals.MathRegexp.ReplaceAllString(text, `\($1\)`)
 	text = internals.FootnotePostProcessingRegexp.ReplaceAllStringFunc(text, func(what string) string {
 		num, _ := strconv.Atoi(strings.ReplaceAll(what, "!", ""))
 		// get the footnote HTML body
@@ -78,7 +73,6 @@ func processText(text string) string {
 <sup class="footnote">` + footnote + `</sup>
 `
 	})
-
 	return strings.TrimSpace(text)
 }
 
