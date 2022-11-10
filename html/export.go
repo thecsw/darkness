@@ -11,7 +11,7 @@ const (
 	tombEnding = " ◼"
 )
 
-// ExportPage exports the page to HTML
+// Export runs the process of exporting
 func (e *ExporterHTML) Export() string {
 	// Add the red tomb to the last paragraph on given directories
 	// from the config
@@ -21,11 +21,10 @@ func (e *ExporterHTML) Export() string {
 			break
 		}
 	}
-	content := make([]string, e.contentsNum)
-	var activeDiv divType
+	// Build the HTML (string) representation of each content
+	content := make([]string, 0, e.contentsNum)
 	for i, v := range e.Page.Contents {
-		content[i] = e.buildContent(i, &v)
-		e.currentDiv = activeDiv
+		content = append(content, e.buildContent(i, &v))
 	}
 
 	return fmt.Sprintf(`<!DOCTYPE html>
@@ -60,11 +59,12 @@ func (e *ExporterHTML) Export() string {
 	)
 }
 
-func (e *ExporterHTML) swimUp() {
+// leftHeading leaves the heading.
+func (e *ExporterHTML) leftHeading() {
 	e.inHeading = false
 }
 
-// styleTags is the processed style tags
+// styleTags is the processed style tags.
 func (e *ExporterHTML) styleTags() string {
 	content := make([]string, len(emilia.Config.Website.Styles)+len(e.Page.Stylesheets))
 	for i, style := range emilia.Config.Website.Styles {
@@ -77,19 +77,19 @@ func (e *ExporterHTML) styleTags() string {
 	return strings.Join(content, "")
 }
 
-// defaultScripts are the default scripts
+// defaultScripts are the default scripts.
 var defaultScripts = []string{
 	`<script type="module">document.documentElement.classList.remove("no-js");document.documentElement.classList.add("js");</script>`,
 	`<script async src="https://sandyuraz.com/scripts/time.js"></script>`,
 }
 
-// scriptTags returns the script tags
+// scriptTags returns the script tags.
 func (e *ExporterHTML) scriptTags() string {
 	allScripts := append(defaultScripts, e.Page.Scripts...)
 	return strings.Join(allScripts, "\n")
 }
 
-// authorHeader returns the author header
+// authorHeader returns the author header.
 func (e *ExporterHTML) authorHeader() string {
 	content := fmt.Sprintf(`
 <div class="header">
@@ -120,7 +120,7 @@ func (e *ExporterHTML) authorHeader() string {
 	return content
 }
 
-// authorHeader returns img element if author header image is given
+// authorHeader returns img element if author header image is given.
 func authorImage() string {
 	// Return nothing if it's not provided
 	if emilia.Config.Author.Image == "" {
@@ -130,7 +130,7 @@ func authorImage() string {
 		emilia.JoinPath(emilia.Config.Author.Image))
 }
 
-// addTomb adds the tomb to the last paragraph
+// addTomb adds the tomb to the last paragraph.
 func (e *ExporterHTML) addTomb() {
 	// Empty???
 	if e.contentsNum < 1 {

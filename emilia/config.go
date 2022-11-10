@@ -73,6 +73,10 @@ func InitDarkness(file string) {
 			"\nFailed with error:", err.Error())
 		os.Exit(1)
 	}
+	// Monkey patch the function if we're using the roman footnotes
+	if Config.Website.RomanFootnotes {
+		FootnoteLabeler = numberToRoman
+	}
 }
 
 // JoinPath joins a path to the darkness config URL

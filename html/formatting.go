@@ -42,10 +42,7 @@ var markupHTMLMapping = map[*regexp.Regexp]string{
 
 // markupHTML replaces the markup regexes defined in internal with HTML tags
 func markupHTML(text string) string {
-	// To make bold italics, it has to be wrapped in /*...*/
-	// instead of */.../*
-	text = internals.BoldItalicTextBegin.ReplaceAllString(text, `$1/*`)
-	text = internals.BoldItalicTextEnd.ReplaceAllString(text, `*/$1`)
+	text = internals.FixBoldItalicMarkups(text)
 	for source, replacement := range markupHTMLMapping {
 		text = source.ReplaceAllString(text, replacement)
 	}
@@ -72,7 +69,7 @@ func processText(text string) string {
 		// get the footnote HTML body
 		footnote := fmt.Sprintf(
 			`<a id="_footnoteref_%d" class="footnote" href="#_footnotedef_%d" title="View footnote.">%s</a>`,
-			num, num, footnoteLabel(num))
+			num, num, emilia.FootnoteLabeler(num))
 		// Decide if we need to wrap the footnote in square brackets
 		if emilia.Config.Website.FootnoteBrackets {
 			footnote = "[" + footnote + "]"
@@ -87,23 +84,10 @@ func processText(text string) string {
 
 // processTitle returns a properly formatted HTML of a title
 func processTitle(title string) string {
-	title = fancyQuotes(title)
-	title = markupHTML(title)
-	title = internals.MathRegexp.ReplaceAllString(title, `\($1\)`)
-	return title
+	return internals.MathRegexp.ReplaceAllString(markupHTML(fancyQuotes(title)), `\($1\)`)
 }
 
 // flattenFormatting returns a plain-text to be fit into the description
 func flattenFormatting(what string) string {
-	what = fancyQuotes(what)
-	// To make bold italics, it has to be wrapped in /*...*/
-	// instead of */.../*
-	what = internals.BoldItalicTextBegin.ReplaceAllString(what, `$1/*`)
-	what = internals.BoldItalicTextEnd.ReplaceAllString(what, `*/$1`)
-	for source := range markupHTMLMapping {
-		what = source.ReplaceAllString(what, `$1$2$3`)
-	}
-	what = internals.KeyboardRegexp.ReplaceAllString(what, `$1`)
-	what = internals.NewLineRegexp.ReplaceAllString(what, `$1`)
-	return what
+	return internals.RemoveFormatting(fancyQuotes(what))
 }

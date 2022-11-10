@@ -8,6 +8,8 @@ import (
 	"github.com/thecsw/darkness/internals"
 )
 
+// buildContent runs the givent `*Content` against known protocols/policies
+// and does some funky logic to balance div openings and closures.
 func (e *ExporterHTML) buildContent(i int, v *internals.Content) string {
 	built := e.contentFunctions[v.Type](v)
 	divv := whatDivType(v)
@@ -46,15 +48,10 @@ done2:
 // headings gives us a heading html representation
 func (e *ExporterHTML) headings(content *internals.Content) string {
 	start := ``
+	// Automatically close whatever you had before
 	if e.inHeading {
 		start = "</div>\n</div>"
 	}
-	// if !content.HeadingChild && !content.HeadingFirst {
-	// 	start = "</div>\n</div>"
-	// }
-	// if content.HeadingChild && !content.HeadingFirst {
-	// 	start = `</div>`
-	// }
 	toReturn := fmt.Sprintf(start+`
 <div class="sect%d">
 <h%d id="%s">%s</h%d>
@@ -66,9 +63,6 @@ func (e *ExporterHTML) headings(content *internals.Content) string {
 		content.HeadingLevel,         // HTML close tag
 	)
 	e.inHeading = true
-	// if content.HeadingLast {
-	// 	toReturn += "</div>\n</div>\n"
-	// }
 	return toReturn
 }
 

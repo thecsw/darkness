@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/html"
 	"github.com/thecsw/darkness/internals"
 	"github.com/thecsw/darkness/orgmode"
 )
@@ -56,9 +55,6 @@ func build() {
 
 	// Read the config and initialize emilia settings.
 	emilia.InitDarkness(darknessToml)
-
-	// Initialize some of the custom exporter settings.
-	html.InitPackage()
 
 	var err error
 	workDir, err = filepath.Abs(workDir)
