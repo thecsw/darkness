@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/echidna"
 )
 
 // isHeader returns a non-nil object if the line is a header
@@ -148,7 +149,7 @@ func isAttentionBlock(line string) *internals.Content {
 
 // extractOptionLabel is a utility function used to extract option values.
 func extractOptionLabel(given string, option string) string {
-	return strings.TrimSpace(internals.DropString(len(optionPrefix)+len(option), given))
+	return strings.TrimSpace(echidna.DropString(len(optionPrefix)+len(option), given))
 }
 
 // extractSourceCodeLanguage extracts language `LANG` from `#+begin_src LANG`.

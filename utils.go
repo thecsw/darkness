@@ -12,6 +12,7 @@ import (
 	"github.com/thecsw/darkness/html"
 	"github.com/thecsw/darkness/internals"
 	"github.com/thecsw/darkness/orgmode"
+	"github.com/thecsw/echidna"
 )
 
 // bundle is a struct that hold filename and contents -- used for
@@ -29,7 +30,7 @@ func findFilesByExt(orgfiles chan<- string, wg *sync.WaitGroup) {
 				return nil
 			}
 			if emilia.Config.Project.ExcludeRegex.MatchString(osPathname) ||
-				internals.First([]rune(de.Name())) == rune('.') {
+				echidna.First([]rune(de.Name())) == rune('.') {
 				return filepath.SkipDir
 			}
 			wg.Add(1)

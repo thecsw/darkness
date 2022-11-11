@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/echidna"
 )
 
 // rel is a struct for holding the rel and href of a link
@@ -22,7 +22,7 @@ func linkTag(val rel) string {
 
 // linkTags returns a string of the form <link rel="..." href="..." /> for an entire page
 func (e *ExporterHTML) linkTags() string {
-	return strings.Join(internals.Map(linkTag, []rel{
+	return strings.Join(echidna.Map(linkTag, []rel{
 		{"canonical", e.Page.URL, ""},
 		{"shortcut icon", emilia.JoinPath("assets/favicon.ico"), "image/x-icon"},
 		{"apple-touch-icon", emilia.JoinPath("assets/apple-touch-icon.png"), "image/png"},

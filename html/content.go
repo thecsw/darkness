@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/echidna"
 )
 
 // buildContent runs the givent `*Content` against known protocols/policies
@@ -114,7 +115,7 @@ func (e *ExporterHTML) list(content *internals.Content) string {
 %s
 </ul>
 </div>
-`, strings.Join(internals.Map(makeListItem, content.List), "\n"))
+`, strings.Join(echidna.Map(makeListItem, content.List), "\n"))
 }
 
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
@@ -140,7 +141,7 @@ func (e *ExporterHTML) gallery(content *internals.Content) string {
 %s
 </div>
 </center>
-`, strings.Join(internals.Map(makeFlexItemWithFolder, content.List), "\n"))
+`, strings.Join(echidna.Map(makeFlexItemWithFolder, content.List), "\n"))
 }
 
 // listNumbered gives us a numbered list html representation

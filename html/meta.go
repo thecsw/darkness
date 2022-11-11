@@ -8,6 +8,7 @@ import (
 
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/echidna"
 )
 
 // metaTopTag is the top tag for all meta tags
@@ -25,7 +26,7 @@ func (e *ExporterHTML) metaTags() string {
 			continue
 		}
 		description = flattenFormatting(
-			paragraph[:internals.Min(len(paragraph), emilia.Config.Website.DescriptionLength)]) + "..."
+			paragraph[:echidna.Min(len(paragraph), emilia.Config.Website.DescriptionLength)]) + "..."
 		break
 	}
 	tags := make([]string, 3)
@@ -56,7 +57,7 @@ const metaTopTag = `<meta charset="UTF-8">
 
 // addBasic adds the basic meta tags
 func addBasic(page *internals.Page, description string) string {
-	return metaTopTag + strings.Join(internals.Map(metaTag, []meta{
+	return metaTopTag + strings.Join(echidna.Map(metaTag, []meta{
 		{"viewport", "viewport", "width=device-width, initial-scale=1.0"},
 		{"generator", "generator", "Darkness"},
 		{"author", "author", emilia.Config.Author.Name},
@@ -67,7 +68,7 @@ func addBasic(page *internals.Page, description string) string {
 
 // addOpenGraph adds the opengraph preview meta tags
 func addOpenGraph(page *internals.Page, description string) string {
-	return strings.Join(internals.Map(metaTag, []meta{
+	return strings.Join(echidna.Map(metaTag, []meta{
 		{"og:title", "og:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"og:site_name", "og:site_name", html.EscapeString(emilia.Config.Title)},
 		{"og:url", "og:url", page.URL},
@@ -83,7 +84,7 @@ func addOpenGraph(page *internals.Page, description string) string {
 
 // addTwitterMeta adds the twitter preview meta tags
 func addTwitterMeta(page *internals.Page, description string) string {
-	return strings.Join(internals.Map(metaTag, []meta{
+	return strings.Join(echidna.Map(metaTag, []meta{
 		{"twitter:card", "twitter:card", "summary_large_image"},
 		{"twitter:site", "twitter:site", html.EscapeString(emilia.Config.Title)},
 		{"twitter:creator", "twitter:creator", emilia.Config.Website.Twitter},

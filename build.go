@@ -13,6 +13,7 @@ import (
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/internals"
 	"github.com/thecsw/darkness/orgmode"
+	"github.com/thecsw/echidna"
 )
 
 const (
@@ -72,7 +73,7 @@ func build() {
 	orgfiles := make(chan string, *customChannelCapacity)
 
 	// Create the worker that will read files and push bundles.
-	orgmodes := internals.GenericWorkers(orgfiles, func(v string) *bundle {
+	orgmodes := echidna.GenericWorkers(orgfiles, func(v string) *bundle {
 		data, err := ioutil.ReadFile(v)
 		if err != nil {
 			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
@@ -84,12 +85,12 @@ func build() {
 	}, 1, *customChannelCapacity)
 
 	// Create the workers for parsing and converting orgmode to Page.
-	pages := internals.GenericWorkers(orgmodes, func(v *bundle) *internals.Page {
+	pages := echidna.GenericWorkers(orgmodes, func(v *bundle) *internals.Page {
 		return orgmode.Parse(v.Data, v.File)
 	}, *customNumWorkers, *customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
-	results := internals.GenericWorkers(pages, func(v *internals.Page) *bundle {
+	results := echidna.GenericWorkers(pages, func(v *internals.Page) *bundle {
 		return &bundle{
 			File: getTarget(v.File),
 			Data: exportAndEnrich(v),

@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/echidna"
 )
 
 // WithSourceCodeTrimmedLeftWhitespace removes leading whitespace from source code blocks
@@ -27,7 +28,7 @@ func WithSourceCodeTrimmedLeftWhitespace() internals.PageOption {
 				if len(line)-len(strings.TrimLeft(line, " ")) < offset {
 					return
 				}
-				lines[i] = line[internals.Min(len(lines[i]), offset):]
+				lines[i] = line[echidna.Min(len(lines[i]), offset):]
 			}
 			(&page.Contents[i]).SourceCode = strings.Join(lines, "\n")
 		}
