@@ -12,18 +12,18 @@ const (
 )
 
 // Export runs the process of exporting
-func (e *ExporterHTML) Export() string {
+func (e ExporterHTML) Export() string {
 	// Add the red tomb to the last paragraph on given directories
 	// from the config
 	for _, tombPage := range emilia.Config.Website.Tombs {
-		if strings.HasPrefix(e.Page.URL, emilia.JoinPath(tombPage)) {
+		if strings.HasPrefix(e.page.URL, emilia.JoinPath(tombPage)) {
 			e.addTomb()
 			break
 		}
 	}
 	// Build the HTML (string) representation of each content
 	content := make([]string, 0, e.contentsNum)
-	for i, v := range e.Page.Contents {
+	for i, v := range e.page.Contents {
 		content = append(content, e.buildContent(i, &v))
 	}
 
@@ -54,26 +54,26 @@ func (e *ExporterHTML) Export() string {
 </html>`,
 		e.linkTags(), e.metaTags(), e.scriptTags(),
 		strings.Join(emilia.Config.Website.ExtraHead, "\n"),
-		processTitle(flattenFormatting(e.Page.Title)), e.styleTags(),
+		processTitle(flattenFormatting(e.page.Title)), e.styleTags(),
 		e.authorHeader(), strings.Join(content, ""), e.addFootnotes(),
 	)
 }
 
 // leftHeading leaves the heading.
-func (e *ExporterHTML) leftHeading() {
+func (e ExporterHTML) leftHeading() {
 	e.inHeading = false
 }
 
 // styleTags is the processed style tags.
-func (e *ExporterHTML) styleTags() string {
-	content := make([]string, len(emilia.Config.Website.Styles)+len(e.Page.Stylesheets))
+func (e ExporterHTML) styleTags() string {
+	content := make([]string, len(emilia.Config.Website.Styles)+len(e.page.Stylesheets))
 	for i, style := range emilia.Config.Website.Styles {
 		content[i] = fmt.Sprintf(
 			`<link rel="stylesheet" type="text/css" href="%s">`+"\n",
 			emilia.JoinPath(style),
 		)
 	}
-	content = append(content, e.Page.Stylesheets...)
+	content = append(content, e.page.Stylesheets...)
 	return strings.Join(content, "")
 }
 
@@ -84,13 +84,13 @@ var defaultScripts = []string{
 }
 
 // scriptTags returns the script tags.
-func (e *ExporterHTML) scriptTags() string {
-	allScripts := append(defaultScripts, e.Page.Scripts...)
+func (e ExporterHTML) scriptTags() string {
+	allScripts := append(defaultScripts, e.page.Scripts...)
 	return strings.Join(allScripts, "\n")
 }
 
 // authorHeader returns the author header.
-func (e *ExporterHTML) authorHeader() string {
+func (e ExporterHTML) authorHeader() string {
 	content := fmt.Sprintf(`
 <div class="header">
 <h1>%s%s</h1>
@@ -98,7 +98,7 @@ func (e *ExporterHTML) authorHeader() string {
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
 `,
-		authorImage(), processTitle(e.Page.Title),
+		authorImage(), processTitle(e.page.Title),
 		emilia.Config.Author.Name, emilia.Config.Author.Email,
 	)
 
@@ -106,7 +106,7 @@ func (e *ExporterHTML) authorHeader() string {
 	navLinks := make([]string, 0, len(emilia.Config.Navigation))
 	for i := 1; i <= len(emilia.Config.Navigation); i++ {
 		v := emilia.Config.Navigation[fmt.Sprintf("%d", i)]
-		if e.Page.URL == emilia.Config.URL && v.Link == v.Hide {
+		if e.page.URL == emilia.Config.URL && v.Link == v.Hide {
 			continue
 		}
 		navLinks = append(navLinks, fmt.Sprintf(`<a href="%s">%s</a>`, emilia.JoinPath(v.Link), v.Title))
@@ -131,12 +131,12 @@ func authorImage() string {
 }
 
 // addTomb adds the tomb to the last paragraph.
-func (e *ExporterHTML) addTomb() {
+func (e ExporterHTML) addTomb() {
 	// Empty???
 	if e.contentsNum < 1 {
 		return
 	}
-	last := &e.Page.Contents[e.contentsNum-1]
+	last := &e.page.Contents[e.contentsNum-1]
 	// Only add it to paragraphs
 	if !last.IsParagraph() {
 		return

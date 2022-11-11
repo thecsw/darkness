@@ -7,9 +7,9 @@ import (
 	"sync"
 
 	"github.com/karrick/godirwalk"
-	"github.com/sanity-io/litter"
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/html"
+	"github.com/thecsw/darkness/export"
+	"github.com/thecsw/darkness/export/html"
 	"github.com/thecsw/darkness/orgmode"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/echidna"
@@ -57,15 +57,21 @@ func orgToHTML(file string) string {
 		panic(err)
 	}
 	page := orgmode.Parse(string(data), file)
-	litter.Dump(*page)
-	return exportAndEnrich(page)
+	return exportAndEnrich(applyEmilia(page))
 }
 
 // exportAndEnrich automatically applies all the emilia enhancements
 // and converts Page into an html document.
 func exportAndEnrich(page *yunyun.Page) string {
-	result := html.NewExporterHTML(html.WithPage(applyEmilia(page))).Export()
-	result = emilia.AddHolosceneTitles(result, func() int {
+	// exporter := exporterCreator()
+	// litter.Dump(exporterCreator)
+	// litter.Dump(exporter)
+	// exporter := initExporter[*html.ExporterHTML]()
+	// fmt.Println(initExporter[*html.ExporterHTML]())
+	// fmt.Println(exporter)
+	exporter := &html.ExporterHTML{}
+	exporter.SetPage(applyEmilia(page))
+	result := emilia.AddHolosceneTitles(exporter.Export(), func() int {
 		if strings.HasSuffix(page.URL, "quotes") {
 			return -1
 		}
@@ -84,4 +90,26 @@ func applyEmilia(page *yunyun.Page) *yunyun.Page {
 		emilia.WithSourceCodeTrimmedLeftWhitespace(),
 		emilia.WithSyntaxHighlighting(),
 	)
+}
+
+const (
+	exporterDefaultKey = ".html"
+)
+
+var (
+	exporterCreator func() export.Exporter
+	exporterMap     = map[string]func() export.Exporter{
+		".html": initExporter[*html.ExporterHTML],
+	}
+)
+
+func initExporter[T export.Exporter]() export.Exporter {
+	return echidna.ZeroValue[T]()
+}
+
+func getExporterCreator() func() export.Exporter {
+	if v, ok := exporterMap[emilia.Config.Project.Input]; ok {
+		return v
+	}
+	return exporterMap[exporterDefaultKey]
 }

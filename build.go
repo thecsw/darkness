@@ -56,6 +56,7 @@ func build() {
 
 	// Read the config and initialize emilia settings.
 	emilia.InitDarkness(darknessToml)
+	exporterCreator = getExporterCreator()
 
 	var err error
 	workDir, err = filepath.Abs(workDir)

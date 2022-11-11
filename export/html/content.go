@@ -47,7 +47,7 @@ done2:
 }
 
 // headings gives us a heading html representation
-func (e *ExporterHTML) headings(content *yunyun.Content) string {
+func (e *ExporterHTML) Heading(content *yunyun.Content) string {
 	start := ``
 	// Automatically close whatever you had before
 	if e.inHeading {
@@ -68,7 +68,7 @@ func (e *ExporterHTML) headings(content *yunyun.Content) string {
 }
 
 // paragraph gives us a paragraph html representation
-func (e *ExporterHTML) paragraph(content *yunyun.Content) string {
+func (e ExporterHTML) Paragraph(content *yunyun.Content) string {
 	return fmt.Sprintf(
 		`
 <div class="paragraph%s">
@@ -104,7 +104,7 @@ func makeListItem(s string) string {
 }
 
 // list gives us a list html representation
-func (e *ExporterHTML) list(content *yunyun.Content) string {
+func (e ExporterHTML) List(content *yunyun.Content) string {
 	// Hijack this type for galleries
 	if yunyun.HasFlag(&content.Options, yunyun.InGalleryFlag) {
 		return e.gallery(content)
@@ -124,7 +124,7 @@ func makeFlexItem(s string, folder string) string {
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
-func (e *ExporterHTML) gallery(content *yunyun.Content) string {
+func (e ExporterHTML) gallery(content *yunyun.Content) string {
 	makeFlexItemWithFolder := func(f string) func(string) string {
 		return func(s string) string {
 			return makeFlexItem(s, f)
@@ -145,7 +145,7 @@ func (e *ExporterHTML) gallery(content *yunyun.Content) string {
 }
 
 // listNumbered gives us a numbered list html representation
-func (e *ExporterHTML) listNumbered(content *yunyun.Content) string {
+func (e ExporterHTML) ListNumbered(content *yunyun.Content) string {
 	// TODO
 	return ""
 }
@@ -167,7 +167,7 @@ func mapSourceCodeLang(s string) string {
 }
 
 // sourceCode gives us a source code html representation
-func (e *ExporterHTML) sourceCode(content *yunyun.Content) string {
+func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
 	lang := mapSourceCodeLang(content.SourceCodeLang)
 	return fmt.Sprintf(`
 <div class="listingblock">
@@ -185,7 +185,7 @@ func (e *ExporterHTML) sourceCode(content *yunyun.Content) string {
 }
 
 // rawHTML gives us a raw html representation
-func (e *ExporterHTML) rawHTML(content *yunyun.Content) string {
+func (e ExporterHTML) RawHTML(content *yunyun.Content) string {
 	// If the unsafe flag is enabled, don't even wrap it in `mediablock`
 	if yunyun.HasFlag(&content.Options, yunyun.InRawHtmlFlagUnsafe) {
 		return content.RawHTML
@@ -195,12 +195,12 @@ func (e *ExporterHTML) rawHTML(content *yunyun.Content) string {
 }
 
 // horizontalLine gives us a horizontal line html representation
-func (e *ExporterHTML) horizontalLine(content *yunyun.Content) string {
+func (e ExporterHTML) HorizontalLine(content *yunyun.Content) string {
 	return `<hr>`
 }
 
 // attentionBlock gives us a attention block html representation
-func (e *ExporterHTML) attentionBlock(content *yunyun.Content) string {
+func (e ExporterHTML) AttentionBlock(content *yunyun.Content) string {
 	return fmt.Sprintf(`
 <div class="admonitionblock note">
 <table>
@@ -217,7 +217,7 @@ func (e *ExporterHTML) attentionBlock(content *yunyun.Content) string {
 }
 
 // table gives an HTML formatted table
-func (e *ExporterHTML) table(content *yunyun.Content) string {
+func (e ExporterHTML) Table(content *yunyun.Content) string {
 	rows := make([]string, len(content.Table))
 	for i := range content.Table {
 		for j, v := range content.Table[i] {
@@ -234,7 +234,7 @@ func (e *ExporterHTML) table(content *yunyun.Content) string {
 }
 
 // table gives an HTML formatted table
-func (e *ExporterHTML) details(content *yunyun.Content) string {
+func (e ExporterHTML) Details(content *yunyun.Content) string {
 	if yunyun.HasFlag(&content.Options, yunyun.InDetailsFlag) {
 		return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
 	}

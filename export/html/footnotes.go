@@ -8,12 +8,12 @@ import (
 )
 
 // addFootnotes adds the footnotes
-func (e *ExporterHTML) addFootnotes() string {
-	if len(e.Page.Footnotes) < 1 {
+func (e ExporterHTML) addFootnotes() string {
+	if len(e.page.Footnotes) < 1 {
 		return ""
 	}
-	footnotes := make([]string, len(e.Page.Footnotes))
-	for i, footnote := range e.Page.Footnotes {
+	footnotes := make([]string, len(e.page.Footnotes))
+	for i, footnote := range e.page.Footnotes {
 		footnotes[i] = fmt.Sprintf(`
 <div class="footnote" id="_footnotedef_%d">
 <a href="#_footnoteref_%d">%s</a>

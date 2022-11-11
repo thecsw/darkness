@@ -21,9 +21,9 @@ func linkTag(val rel) string {
 }
 
 // linkTags returns a string of the form <link rel="..." href="..." /> for an entire page
-func (e *ExporterHTML) linkTags() string {
+func (e ExporterHTML) linkTags() string {
 	return strings.Join(echidna.Map(linkTag, []rel{
-		{"canonical", e.Page.URL, ""},
+		{"canonical", e.page.URL, ""},
 		{"shortcut icon", emilia.JoinPath("assets/favicon.ico"), "image/x-icon"},
 		{"apple-touch-icon", emilia.JoinPath("assets/apple-touch-icon.png"), "image/png"},
 		{"image_src", emilia.JoinPath("assets/android-chrome-512x512.png"), "image/png"},
