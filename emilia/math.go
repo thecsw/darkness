@@ -63,7 +63,10 @@ func WithMathSupport() yunyun.PageOption {
 // hasMathEquations returns true if the page has any math equations and
 // returns false otherwise.
 func hasMathEquations(page *yunyun.Page) bool {
-	return echidna.Anyf(hasEquationInContent, echidna.Map(echidna.GetPointer[yunyun.Content], page.Contents))
+	pp := echidna.Map(echidna.GetPointer[yunyun.Content], page.Contents)
+	// fmt.Println(page.URL)
+	// fmt.Println(pp)
+	return echidna.Anyf(hasEquationInContent, pp)
 }
 
 // hasEquationInContent returns true if the content has math equations in it.
@@ -76,13 +79,11 @@ func hasEquationInContent(content *yunyun.Content) bool {
 // hasEquationInParagraph returns true if the content is a paragraph
 // AND there is some math in there.
 func hasEquationInParagraph(content *yunyun.Content) bool {
-	// If it's not in paragraph, this shouldn't even run.
-	if !content.IsParagraph() ||
-		!strings.Contains(content.Paragraph, `\begin`) ||
-		!yunyun.MathRegexp.MatchString(content.Paragraph) {
-		// If none of the above worked, give up on this paragraph.
-		return false
+	if content.IsParagraph() && (strings.Contains(content.Paragraph, `\begin`) ||
+		yunyun.MathRegexp.MatchString(content.Paragraph)) {
+		return true
 	}
+	// If none of the above worked, give up on this paragraph.
 	return false
 }
 
@@ -94,10 +95,10 @@ func hasEquationInList(content *yunyun.Content) bool {
 	return echidna.Anyf(yunyun.MathRegexp.MatchString, content.List)
 }
 
-// hasEquationsInHeading returns true if the equation has heading
+// hasEquationsInHeading returns true if the heading has an equation.
 func hasEquationsInHeading(content *yunyun.Content) bool {
-	if !content.IsHeading() || !yunyun.MathRegexp.MatchString(content.Heading) {
+	if !content.IsHeading() {
 		return false
 	}
-	return true
+	return yunyun.MathRegexp.MatchString(content.Heading)
 }
