@@ -14,5 +14,5 @@ require (
 
 require (
 	github.com/karrick/godirwalk v1.17.0
-	github.com/thecsw/echidna v0.0.0-20221111012701-7660f1e9dce0
+	github.com/thecsw/echidna v0.0.0-20221111022134-ceb2efc81ce9
 )

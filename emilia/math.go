@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/echidna"
 )
 
 const (
@@ -60,37 +61,43 @@ func WithMathSupport() yunyun.PageOption {
 }
 
 // hasMathEquations returns true if the page has any math equations and
-// returns false otherwise
+// returns false otherwise.
 func hasMathEquations(page *yunyun.Page) bool {
-	// Find any match of the math regexp, if found, add the math script
-	for _, content := range page.Contents {
-		// If it's in our paragraph
-		if content.IsParagraph() {
-			if strings.Contains(content.Paragraph, `\begin`) {
-				return true
-			}
-			// If found, add the script and leave
-			if yunyun.MathRegexp.MatchString(content.Paragraph) {
-				return true
-			}
-		}
-		// Or in the heading
-		if content.IsHeading() {
-			// If found, add the script and leave
-			if yunyun.MathRegexp.MatchString(content.Heading) {
-				return true
-			}
-		}
-		// Or if it's a list
-		if content.IsList() {
-			for _, item := range content.List {
-				// If found, add the script and leave
-				if yunyun.MathRegexp.MatchString(item) {
-					return true
-				}
+	return echidna.Anyf(hasEquationInContent, echidna.Map(echidna.GetPointer[yunyun.Content], page.Contents))
+}
 
-			}
-		}
+// hasEquationInContent returns true if the content has math equations in it.
+func hasEquationInContent(content *yunyun.Content) bool {
+	return hasEquationInParagraph(content) ||
+		hasEquationInList(content) ||
+		hasEquationsInHeading(content)
+}
+
+// hasEquationInParagraph returns true if the content is a paragraph
+// AND there is some math in there.
+func hasEquationInParagraph(content *yunyun.Content) bool {
+	// If it's not in paragraph, this shouldn't even run.
+	if !content.IsParagraph() ||
+		!strings.Contains(content.Paragraph, `\begin`) ||
+		!yunyun.MathRegexp.MatchString(content.Paragraph) {
+		// If none of the above worked, give up on this paragraph.
+		return false
 	}
 	return false
+}
+
+// hasEquationInList returns true if the list has math equations.
+func hasEquationInList(content *yunyun.Content) bool {
+	if !content.IsList() {
+		return false
+	}
+	return echidna.Anyf(yunyun.MathRegexp.MatchString, content.List)
+}
+
+// hasEquationsInHeading returns true if the equation has heading
+func hasEquationsInHeading(content *yunyun.Content) bool {
+	if !content.IsHeading() || !yunyun.MathRegexp.MatchString(content.Heading) {
+		return false
+	}
+	return true
 }

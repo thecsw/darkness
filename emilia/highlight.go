@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/echidna"
 )
 
 const (
@@ -16,10 +17,12 @@ const (
 
 func WithSyntaxHighlighting() yunyun.PageOption {
 	return func(page *yunyun.Page) {
+		// If Emilia disabled the syntax highlighting, don't even bother.
 		if !Config.Website.SyntaxHighlighting {
 			return
 		}
-		if !hasCodeBlocks(page) {
+		// Check if any content has a source code and if not, no highlighting.
+		if !echidna.Anyf(func(v yunyun.Content) bool { return v.IsSourceCode() }, page.Contents) {
 			return
 		}
 		page.Stylesheets = append(page.Stylesheets,
@@ -28,13 +31,4 @@ func WithSyntaxHighlighting() yunyun.PageOption {
 			fmt.Sprintf(highlightJsScript, JoinPath(highlightJsScriptDefaultPath)),
 			highlightJsAction)
 	}
-}
-
-func hasCodeBlocks(page *yunyun.Page) bool {
-	for _, content := range page.Contents {
-		if !content.IsSourceCode() && len(content.SourceCodeLang) > 0 {
-			return true
-		}
-	}
-	return false
 }

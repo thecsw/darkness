@@ -17,8 +17,10 @@ github.com/stretchr/testify v0.0.0-20161117074351-18a02ba4a312/go.mod h1:a8OnRci
 github.com/stretchr/testify v1.7.1/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.8.0 h1:pSgiaMZlXftHpm5L7V1+rVB+AZJydKsMxsQBIJw4PKk=
 github.com/stretchr/testify v1.8.0/go.mod h1:yNjHg4UonilssWZ8iaSj1OCr/vHnekPRkoO+kdMU+MU=
-github.com/thecsw/echidna v0.0.0-20221111012701-7660f1e9dce0 h1:8qq/CZRB9EPU66gfZhfOMUbk99wl1HwxGiL8EDeC2lM=
-github.com/thecsw/echidna v0.0.0-20221111012701-7660f1e9dce0/go.mod h1:WNghygH6EJFFsrLtZmQl6H2oNFUPZ6NCxkip/s1cIQI=
+github.com/thecsw/echidna v0.0.0-20221111020258-456a0bd9622d h1:vzm+SObh6ATFjJan3BXNqrzOonr8sHaYwYYX2iwLYvU=
+github.com/thecsw/echidna v0.0.0-20221111020258-456a0bd9622d/go.mod h1:WNghygH6EJFFsrLtZmQl6H2oNFUPZ6NCxkip/s1cIQI=
+github.com/thecsw/echidna v0.0.0-20221111022134-ceb2efc81ce9 h1:YpgTUeO3TCTgydgvFGHPLXvvPJDFqlgn6J3VJIGZvck=
+github.com/thecsw/echidna v0.0.0-20221111022134-ceb2efc81ce9/go.mod h1:WNghygH6EJFFsrLtZmQl6H2oNFUPZ6NCxkip/s1cIQI=
 golang.org/x/exp v0.0.0-20221110155412-d0897a79cd37 h1:wKMvZzBFHbOCGvF2OmxR5Fqv/jDlkt7slnPz5ejEU8A=
 golang.org/x/exp v0.0.0-20221110155412-d0897a79cd37/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
