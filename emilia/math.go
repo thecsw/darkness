@@ -63,10 +63,7 @@ func WithMathSupport() yunyun.PageOption {
 // hasMathEquations returns true if the page has any math equations and
 // returns false otherwise.
 func hasMathEquations(page *yunyun.Page) bool {
-	pp := echidna.Map(echidna.GetPointer[yunyun.Content], page.Contents)
-	// fmt.Println(page.URL)
-	// fmt.Println(pp)
-	return echidna.Anyf(hasEquationInContent, pp)
+	return echidna.Anyf(hasEquationInContent, echidna.Map(echidna.GetPointer[yunyun.Content], page.Contents))
 }
 
 // hasEquationInContent returns true if the content has math equations in it.
