@@ -43,7 +43,7 @@ var (
 		divWriting, // yunyun.TypeParagraph
 		divSpecial, // yunyun.TypeList
 		divWriting, // yunyun.TypeListNumbered
-		divOutside, // yunyun.TypeLink
+		divSpecial, // yunyun.TypeLink
 		divWriting, // yunyun.TypeSourceCode
 		divOutside, // yunyun.TypeRawHTML
 		divOutside, // yunyun.TypeHorizontalLine
@@ -53,16 +53,24 @@ var (
 	}
 )
 
-func whatDivType(content *yunyun.Content) divType {
+func (e ExporterHTML) whatDivType(content *yunyun.Content) divType {
 	dt := divTypes[int(content.Type)]
 	if dt != divSpecial {
 		return dt
 	}
+	// If the list has the gallery flag on, do not wrap it writing.
 	if content.IsList() {
 		if yunyun.HasFlag(&content.Options, yunyun.InGalleryFlag) {
 			return divOutside
 		}
 		return divWriting
+	}
+	// If the link was not an embed, wrap it in writing.
+	if content.IsLink() {
+		if e.linkWasNotEmbed {
+			return divWriting
+		}
+		return divOutside
 	}
 	// default to writing div
 	return divWriting

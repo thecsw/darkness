@@ -79,7 +79,8 @@ Sorry, your browser doesn't support embedded videos.
 )
 
 // link returns an html representation of a link even if it's an embed command
-func (e ExporterHTML) Link(content *yunyun.Content) string {
+func (e *ExporterHTML) Link(content *yunyun.Content) string {
+	e.linkWasNotEmbed = false
 	switch {
 	case yunyun.ImageExtRegexp.MatchString(content.Link):
 		return fmt.Sprintf(imageEmbedTemplate, content.Link, content.Link,
@@ -97,6 +98,7 @@ func (e ExporterHTML) Link(content *yunyun.Content) string {
 	case strings.HasPrefix(content.Link, spotifyPlaylistEmbedPrefix):
 		return fmt.Sprintf(spotifyPlaylistEmbedTemplate, content.Link[len(spotifyPlaylistEmbedPrefix):])
 	default:
+		e.linkWasNotEmbed = true
 		return fmt.Sprintf(`<a href="%s">%s</a>`, content.Link, processText(content.LinkTitle))
 	}
 }
