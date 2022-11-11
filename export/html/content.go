@@ -13,7 +13,7 @@ import (
 // and does some funky logic to balance div openings and closures.
 func (e *ExporterHTML) buildContent(i int, v *yunyun.Content) string {
 	built := e.contentFunctions[v.Type](v)
-	divv := whatDivType(v)
+	divv := e.whatDivType(v)
 	if e.inHeading {
 		if i == e.contentsNum-1 {
 			built += "</div>\n</div>"
