@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 const (
@@ -79,16 +79,16 @@ Sorry, your browser doesn't support embedded videos.
 )
 
 // link returns an html representation of a link even if it's an embed command
-func (e *ExporterHTML) link(content *internals.Content) string {
+func (e *ExporterHTML) link(content *yunyun.Content) string {
 	switch {
-	case internals.ImageExtRegexp.MatchString(content.Link):
+	case yunyun.ImageExtRegexp.MatchString(content.Link):
 		return fmt.Sprintf(imageEmbedTemplate, content.Link, content.Link,
 			content.LinkTitle, processText(content.LinkTitle))
-	case internals.AudioFileExtRegexp.MatchString(content.Link):
+	case yunyun.AudioFileExtRegexp.MatchString(content.Link):
 		return fmt.Sprintf(audioEmbedTemplate, content.Link)
-	case internals.VideoFileExtRegexp.MatchString(content.Link):
+	case yunyun.VideoFileExtRegexp.MatchString(content.Link):
 		return fmt.Sprintf(videoEmbedTemplate, content.Link, func(v string) string {
-			return internals.VideoFileExtRegexp.FindAllStringSubmatch(v, 1)[0][1]
+			return yunyun.VideoFileExtRegexp.FindAllStringSubmatch(v, 1)[0][1]
 		}(content.Link), content.LinkTitle)
 	case strings.HasPrefix(content.Link, youtubeEmbedPrefix):
 		return fmt.Sprintf(youtubeEmbedTemplate, content.Link[len(youtubeEmbedPrefix):])

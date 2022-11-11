@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/echidna"
 )
 
@@ -56,7 +56,7 @@ const metaTopTag = `<meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">`
 
 // addBasic adds the basic meta tags
-func addBasic(page *internals.Page, description string) string {
+func addBasic(page *yunyun.Page, description string) string {
 	return metaTopTag + strings.Join(echidna.Map(metaTag, []meta{
 		{"viewport", "viewport", "width=device-width, initial-scale=1.0"},
 		{"generator", "generator", "Darkness"},
@@ -67,7 +67,7 @@ func addBasic(page *internals.Page, description string) string {
 }
 
 // addOpenGraph adds the opengraph preview meta tags
-func addOpenGraph(page *internals.Page, description string) string {
+func addOpenGraph(page *yunyun.Page, description string) string {
 	return strings.Join(echidna.Map(metaTag, []meta{
 		{"og:title", "og:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"og:site_name", "og:site_name", html.EscapeString(emilia.Config.Title)},
@@ -83,7 +83,7 @@ func addOpenGraph(page *internals.Page, description string) string {
 }
 
 // addTwitterMeta adds the twitter preview meta tags
-func addTwitterMeta(page *internals.Page, description string) string {
+func addTwitterMeta(page *yunyun.Page, description string) string {
 	return strings.Join(echidna.Map(metaTag, []meta{
 		{"twitter:card", "twitter:card", "summary_large_image"},
 		{"twitter:site", "twitter:site", html.EscapeString(emilia.Config.Title)},

@@ -3,13 +3,13 @@ package emilia
 import (
 	"strings"
 
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/echidna"
 )
 
 // WithSourceCodeTrimmedLeftWhitespace removes leading whitespace from source code blocks
-func WithSourceCodeTrimmedLeftWhitespace() internals.PageOption {
-	return func(page *internals.Page) {
+func WithSourceCodeTrimmedLeftWhitespace() yunyun.PageOption {
+	return func(page *yunyun.Page) {
 		for i, content := range page.Contents {
 			if !content.IsSourceCode() {
 				continue

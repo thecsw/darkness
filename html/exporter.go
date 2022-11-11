@@ -1,13 +1,13 @@
 package html
 
 import (
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 // ExporterHTML will consume a `Page` and emit final HTML representation of it.
 type ExporterHTML struct {
 	// Page is the source data that will be used for HTML building.
-	Page *internals.Page
+	Page *yunyun.Page
 	// contentsNum is a pre-computed value of how many contents there are in Page.
 	contentsNum int
 	// currentDiv is used as a state variable for internal processing.
@@ -17,7 +17,7 @@ type ExporterHTML struct {
 	// inWriting is used as a state variable for internal processing.
 	inWriting bool
 	// contentFunctions is dictionary of rules to execute on content types.
-	contentFunctions []func(*internals.Content) string
+	contentFunctions []func(*yunyun.Content) string
 }
 
 // ExporterOption defines options that can be passed to `NewExporterHTML`.
@@ -32,7 +32,7 @@ func NewExporterHTML(options ...ExporterOption) *ExporterHTML {
 	}
 
 	// contentFunctions is a map of functions that process content
-	e.contentFunctions = []func(*internals.Content) string{
+	e.contentFunctions = []func(*yunyun.Content) string{
 		e.headings, e.paragraph, e.list, e.listNumbered, e.link,
 		e.sourceCode, e.rawHTML, e.horizontalLine, e.attentionBlock,
 		e.table, e.details,
@@ -42,7 +42,7 @@ func NewExporterHTML(options ...ExporterOption) *ExporterHTML {
 
 // WithPage is an option that gives `ExporterHTML` the `Page` to consume
 // and run some processes to pre-compute frequently used values.
-func WithPage(page *internals.Page) ExporterOption {
+func WithPage(page *yunyun.Page) ExporterOption {
 	return func(e *ExporterHTML) {
 		e.Page = page
 		e.contentsNum = len(page.Contents)

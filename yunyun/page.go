@@ -1,4 +1,4 @@
-package internals
+package yunyun
 
 // Page is a struct for holding the page contents.
 type Page struct {

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 // quotesReplace is the map to replace
@@ -33,23 +33,23 @@ func fancyQuotes(text string) string {
 
 // markupHTMLMapping maps the regex markup to html replacements
 var markupHTMLMapping = map[*regexp.Regexp]string{
-	internals.ItalicText:        `$1<em>$2</em>$3`,
-	internals.BoldText:          `$1<strong>$2</strong>$3`,
-	internals.VerbatimText:      `$1<code>$2</code>$3`,
-	internals.StrikethroughText: `$1<s>$2</s>$3`,
-	internals.UnderlineText:     `$1<u>$2</u>$3`,
+	yunyun.ItalicText:        `$1<em>$2</em>$3`,
+	yunyun.BoldText:          `$1<strong>$2</strong>$3`,
+	yunyun.VerbatimText:      `$1<code>$2</code>$3`,
+	yunyun.StrikethroughText: `$1<s>$2</s>$3`,
+	yunyun.UnderlineText:     `$1<u>$2</u>$3`,
 }
 
 // markupHTML replaces the markup regexes defined in internal with HTML tags
 func markupHTML(text string) string {
-	text = internals.FixBoldItalicMarkups(text)
+	text = yunyun.FixBoldItalicMarkups(text)
 	for source, replacement := range markupHTMLMapping {
 		text = source.ReplaceAllString(text, replacement)
 	}
 	// We only need to run bold text repacement again
-	text = internals.BoldText.ReplaceAllString(text, markupHTMLMapping[internals.BoldText])
-	text = internals.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
-	text = internals.NewLineRegexp.ReplaceAllString(text, `$1<br>`)
+	text = yunyun.BoldText.ReplaceAllString(text, markupHTMLMapping[yunyun.BoldText])
+	text = yunyun.KeyboardRegexp.ReplaceAllString(text, `<kbd>$1</kbd>`)
+	text = yunyun.NewLineRegexp.ReplaceAllString(text, `$1<br>`)
 	return text
 }
 
@@ -57,9 +57,9 @@ func markupHTML(text string) string {
 func processText(text string) string {
 	text = markupHTML(html.EscapeString(fancyQuotes(text)))
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
-	text = internals.LinkRegexp.ReplaceAllString(text, `<a href="$1">$2</a>`)
-	text = internals.MathRegexp.ReplaceAllString(text, `\($1\)`)
-	text = internals.FootnotePostProcessingRegexp.ReplaceAllStringFunc(text, func(what string) string {
+	text = yunyun.LinkRegexp.ReplaceAllString(text, `<a href="$1">$2</a>`)
+	text = yunyun.MathRegexp.ReplaceAllString(text, `\($1\)`)
+	text = yunyun.FootnotePostProcessingRegexp.ReplaceAllStringFunc(text, func(what string) string {
 		num, _ := strconv.Atoi(strings.ReplaceAll(what, "!", ""))
 		// get the footnote HTML body
 		footnote := fmt.Sprintf(
@@ -78,10 +78,10 @@ func processText(text string) string {
 
 // processTitle returns a properly formatted HTML of a title
 func processTitle(title string) string {
-	return internals.MathRegexp.ReplaceAllString(markupHTML(fancyQuotes(title)), `\($1\)`)
+	return yunyun.MathRegexp.ReplaceAllString(markupHTML(fancyQuotes(title)), `\($1\)`)
 }
 
 // flattenFormatting returns a plain-text to be fit into the description
 func flattenFormatting(what string) string {
-	return internals.RemoveFormatting(fancyQuotes(what))
+	return yunyun.RemoveFormatting(fancyQuotes(what))
 }

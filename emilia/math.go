@@ -3,7 +3,7 @@ package emilia
 import (
 	"strings"
 
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 const (
@@ -50,8 +50,8 @@ const (
 )
 
 // WithMathSupport adds math support to the page using javascript injection
-func WithMathSupport() internals.PageOption {
-	return func(page *internals.Page) {
+func WithMathSupport() yunyun.PageOption {
+	return func(page *yunyun.Page) {
 		// If we found math-related tags, add the scripts
 		if hasMathEquations(page) {
 			page.Scripts = append(page.Scripts, mathJs)
@@ -61,7 +61,7 @@ func WithMathSupport() internals.PageOption {
 
 // hasMathEquations returns true if the page has any math equations and
 // returns false otherwise
-func hasMathEquations(page *internals.Page) bool {
+func hasMathEquations(page *yunyun.Page) bool {
 	// Find any match of the math regexp, if found, add the math script
 	for _, content := range page.Contents {
 		// If it's in our paragraph
@@ -70,14 +70,14 @@ func hasMathEquations(page *internals.Page) bool {
 				return true
 			}
 			// If found, add the script and leave
-			if internals.MathRegexp.MatchString(content.Paragraph) {
+			if yunyun.MathRegexp.MatchString(content.Paragraph) {
 				return true
 			}
 		}
 		// Or in the heading
 		if content.IsHeading() {
 			// If found, add the script and leave
-			if internals.MathRegexp.MatchString(content.Heading) {
+			if yunyun.MathRegexp.MatchString(content.Heading) {
 				return true
 			}
 		}
@@ -85,7 +85,7 @@ func hasMathEquations(page *internals.Page) bool {
 		if content.IsList() {
 			for _, item := range content.List {
 				// If found, add the script and leave
-				if internals.MathRegexp.MatchString(item) {
+				if yunyun.MathRegexp.MatchString(item) {
 					return true
 				}
 

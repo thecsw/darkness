@@ -1,4 +1,4 @@
-package internals
+package yunyun
 
 // TypeContent is the type of content, used for enums
 type TypeContent uint8

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 // Preprocess preprocesses the input string to be parser-friendly
@@ -26,18 +26,18 @@ func Preprocess(data string) string {
 }
 
 // Parse parses the input string and returns a list of elements
-func Parse(data string, filename string) *internals.Page {
+func Parse(data string, filename string) *yunyun.Page {
 	// Split the data into lines
 	lines := strings.Split(Preprocess(data), "\n")
 
-	page := internals.NewPage(
-		internals.WithFilename(filename),
-		internals.WithURL(emilia.JoinPath(filepath.Dir(filename))),
-		internals.WithContents(make([]internals.Content, 0, 16)),
+	page := yunyun.NewPage(
+		yunyun.WithFilename(filename),
+		yunyun.WithURL(emilia.JoinPath(filepath.Dir(filename))),
+		yunyun.WithContents(make([]yunyun.Content, 0, 16)),
 	)
 
 	// currentFlags uses flags to set options
-	currentFlags := internals.Bits(0)
+	currentFlags := yunyun.Bits(0)
 	// sourceCodeLanguage is the language of the source code block
 	sourceCodeLang := ""
 	// caption is the current caption we can read
@@ -47,9 +47,9 @@ func Parse(data string, filename string) *internals.Page {
 	// Our context is a parody of a state machine
 	currentContext := ""
 
-	addFlag, removeFlag, flipFlag, hasFlag := internals.LatchFlags(&currentFlags)
+	addFlag, removeFlag, flipFlag, hasFlag := yunyun.LatchFlags(&currentFlags)
 	// addContent is a helper function to add content to the page
-	addContent := func(content internals.Content) {
+	addContent := func(content yunyun.Content) {
 		content.Options = currentFlags
 		content.Summary = additionalContext
 		content.Caption = caption
@@ -57,28 +57,28 @@ func Parse(data string, filename string) *internals.Page {
 		currentContext = ""
 	}
 	optionsActions := map[string]func(line string){
-		optionDropCap:     func(line string) { addFlag(internals.InDropCapFlag) },
-		optionBeginQuote:  func(line string) { addFlag(internals.InQuoteFlag) },
-		optionEndQuote:    func(line string) { removeFlag(internals.InQuoteFlag) },
-		optionBeginCenter: func(line string) { addFlag(internals.InCenterFlag) },
-		optionEndCenter:   func(line string) { removeFlag(internals.InCenterFlag) },
+		optionDropCap:     func(line string) { addFlag(yunyun.InDropCapFlag) },
+		optionBeginQuote:  func(line string) { addFlag(yunyun.InQuoteFlag) },
+		optionEndQuote:    func(line string) { removeFlag(yunyun.InQuoteFlag) },
+		optionBeginCenter: func(line string) { addFlag(yunyun.InCenterFlag) },
+		optionEndCenter:   func(line string) { removeFlag(yunyun.InCenterFlag) },
 		optionBeginDetails: func(line string) {
-			addFlag(internals.InDetailsFlag)
+			addFlag(yunyun.InDetailsFlag)
 			additionalContext = extractDetailsSummary(line)
 			if additionalContext == "" {
 				additionalContext = "open for details"
 			}
-			addContent(internals.Content{Type: internals.TypeDetails})
+			addContent(yunyun.Content{Type: yunyun.TypeDetails})
 		},
 		optionEndDetails: func(line string) {
-			removeFlag(internals.InDetailsFlag)
-			addContent(internals.Content{Type: internals.TypeDetails})
+			removeFlag(yunyun.InDetailsFlag)
+			addContent(yunyun.Content{Type: yunyun.TypeDetails})
 		},
 		optionBeginGallery: func(line string) {
-			addFlag(internals.InGalleryFlag)
+			addFlag(yunyun.InGalleryFlag)
 			additionalContext = extractGalleryFolder(line)
 		},
-		optionEndGallery: func(line string) { removeFlag(internals.InGalleryFlag) },
+		optionEndGallery: func(line string) { removeFlag(yunyun.InGalleryFlag) },
 		optionCaption:    func(line string) { caption = extractCaptionTitle(line) },
 		optionDate:       func(line string) { page.Date = extractDate(line) },
 	}
@@ -93,14 +93,14 @@ func Parse(data string, filename string) *internals.Page {
 		currentContext = currentContext + line
 
 		// If we are in a raw html envoronment
-		if hasFlag(internals.InRawHTMLFlag) {
+		if hasFlag(yunyun.InRawHTMLFlag) {
 			// Maybe it's time to leave it?
 			if isHTMLExportEnd(line) {
 				// Mark the leave
-				removeFlag(internals.InRawHTMLFlag)
+				removeFlag(yunyun.InRawHTMLFlag)
 				// Save the raw html
-				addContent(internals.Content{
-					Type:    internals.TypeRawHTML,
+				addContent(yunyun.Content{
+					Type:    yunyun.TypeRawHTML,
 					RawHTML: previousContext,
 				})
 				continue
@@ -111,22 +111,22 @@ func Parse(data string, filename string) *internals.Page {
 		}
 		// Now, check if we can enter a raw html environment
 		if isHTMLExportBegin(line) {
-			addFlag(internals.InRawHTMLFlag)
+			addFlag(yunyun.InRawHTMLFlag)
 			if strings.HasSuffix(line, "unsafe") {
-				addFlag(internals.InRawHtmlFlagUnsafe)
+				addFlag(yunyun.InRawHtmlFlagUnsafe)
 			}
 			currentContext = previousContext
 			continue
 		}
 		// If we are in a source code block?
-		if hasFlag(internals.InSourceCodeFlag) {
+		if hasFlag(yunyun.InSourceCodeFlag) {
 			// Check if it's time to leave
 			if isSourceCodeEnd(line) {
 				// Mark the leave
-				removeFlag(internals.InSourceCodeFlag)
+				removeFlag(yunyun.InSourceCodeFlag)
 				// Save the source code
-				addContent(internals.Content{
-					Type:           internals.TypeSourceCode,
+				addContent(yunyun.Content{
+					Type:           yunyun.TypeSourceCode,
 					SourceCodeLang: sourceCodeLang,
 					SourceCode:     strings.TrimRight(previousContext, "\n\t\r\f\b"),
 					Caption:        caption,
@@ -140,7 +140,7 @@ func Parse(data string, filename string) *internals.Page {
 		// Should we enter a source code environment?
 		if isSourceCodeBegin(line) {
 			sourceCodeLang = extractSourceCodeLanguage(line)
-			addFlag(internals.InSourceCodeFlag)
+			addFlag(yunyun.InSourceCodeFlag)
 			currentContext = ""
 			continue
 		}
@@ -179,13 +179,13 @@ func Parse(data string, filename string) *internals.Page {
 			}
 			// Add a horizontal line divider
 			if isHorizonalLine(previousContext) {
-				addContent(internals.Content{
-					Type: internals.TypeHorizontalLine,
+				addContent(yunyun.Content{
+					Type: yunyun.TypeHorizontalLine,
 				})
 				continue
 			}
 			// If we were in a list, save it as a list
-			if hasFlag(internals.InListFlag) {
+			if hasFlag(yunyun.InListFlag) {
 				matches := strings.Split(previousContext, listSeparatorWS)[1:]
 				for i, match := range matches {
 					matches[i] = strings.Replace(match, "- ", "", 1)
@@ -195,15 +195,15 @@ func Parse(data string, filename string) *internals.Page {
 					continue
 				}
 				// Add the list
-				addContent(internals.Content{
-					Type: internals.TypeList,
+				addContent(yunyun.Content{
+					Type: yunyun.TypeList,
 					List: matches,
 				})
-				flipFlag(internals.InListFlag)
+				flipFlag(yunyun.InListFlag)
 				continue
 			}
 			// If we were in a table, save it as such
-			if hasFlag(internals.InTableFlag) {
+			if hasFlag(yunyun.InTableFlag) {
 				rows := strings.Split(previousContext, tableSeparatorWS)[1:]
 				tableData := make([][]string, len(rows))
 				for i, row := range rows {
@@ -221,12 +221,12 @@ func Parse(data string, filename string) *internals.Page {
 					}
 					tableData[i] = columns
 				}
-				addContent(internals.Content{
-					Type:         internals.TypeTable,
+				addContent(yunyun.Content{
+					Type:         yunyun.TypeTable,
 					Table:        tableData,
-					TableHeaders: hasFlag(internals.InTableHasHeadersFlag),
+					TableHeaders: hasFlag(yunyun.InTableHasHeadersFlag),
 				})
-				removeFlag(internals.InTableFlag | internals.InTableHasHeadersFlag)
+				removeFlag(yunyun.InTableFlag | yunyun.InTableHasHeadersFlag)
 				continue
 			}
 			// Let's see if our context is a standalone link
@@ -242,18 +242,18 @@ func Parse(data string, filename string) *internals.Page {
 			// By default, save whatever we have as a paragraph
 			addContent(*formParagraph(previousContext, additionalContext, currentFlags))
 			// Reset the drop cap flag
-			removeFlag(internals.InDropCapFlag)
+			removeFlag(yunyun.InDropCapFlag)
 			continue
 		}
 		if isList(line) {
-			addFlag(internals.InListFlag)
+			addFlag(yunyun.InListFlag)
 			currentContext = previousContext + listSeparatorWS + line
 		}
 		if isTable(line) {
-			addFlag(internals.InTableFlag)
+			addFlag(yunyun.InTableFlag)
 			// If it's a delimeter, save it and move on
 			if isTableHeaderDelimeter(line) {
-				addFlag(internals.InTableHasHeadersFlag)
+				addFlag(yunyun.InTableHasHeadersFlag)
 				currentContext = previousContext
 				continue
 			}
@@ -268,7 +268,7 @@ func Parse(data string, filename string) *internals.Page {
 	return page
 }
 
-func fillHolosceneDate(page *internals.Page) {
+func fillHolosceneDate(page *yunyun.Page) {
 	// No contents found?
 	if len(page.Contents) < 1 {
 		return

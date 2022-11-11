@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/internals"
 	"github.com/thecsw/darkness/orgmode"
+	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/echidna"
 )
 
@@ -85,12 +85,12 @@ func build() {
 	}, 1, *customChannelCapacity)
 
 	// Create the workers for parsing and converting orgmode to Page.
-	pages := echidna.GenericWorkers(orgmodes, func(v *bundle) *internals.Page {
+	pages := echidna.GenericWorkers(orgmodes, func(v *bundle) *yunyun.Page {
 		return orgmode.Parse(v.Data, v.File)
 	}, *customNumWorkers, *customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
-	results := echidna.GenericWorkers(pages, func(v *internals.Page) *bundle {
+	results := echidna.GenericWorkers(pages, func(v *yunyun.Page) *bundle {
 		return &bundle{
 			File: getTarget(v.File),
 			Data: exportAndEnrich(v),

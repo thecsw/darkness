@@ -5,13 +5,13 @@ import (
 	"html"
 	"strings"
 
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/echidna"
 )
 
 // buildContent runs the givent `*Content` against known protocols/policies
 // and does some funky logic to balance div openings and closures.
-func (e *ExporterHTML) buildContent(i int, v *internals.Content) string {
+func (e *ExporterHTML) buildContent(i int, v *yunyun.Content) string {
 	built := e.contentFunctions[v.Type](v)
 	divv := whatDivType(v)
 	if e.inHeading {
@@ -47,7 +47,7 @@ done2:
 }
 
 // headings gives us a heading html representation
-func (e *ExporterHTML) headings(content *internals.Content) string {
+func (e *ExporterHTML) headings(content *yunyun.Content) string {
 	start := ``
 	// Automatically close whatever you had before
 	if e.inHeading {
@@ -68,7 +68,7 @@ func (e *ExporterHTML) headings(content *internals.Content) string {
 }
 
 // paragraph gives us a paragraph html representation
-func (e *ExporterHTML) paragraph(content *internals.Content) string {
+func (e *ExporterHTML) paragraph(content *yunyun.Content) string {
 	return fmt.Sprintf(
 		`
 <div class="paragraph%s">
@@ -104,9 +104,9 @@ func makeListItem(s string) string {
 }
 
 // list gives us a list html representation
-func (e *ExporterHTML) list(content *internals.Content) string {
+func (e *ExporterHTML) list(content *yunyun.Content) string {
 	// Hijack this type for galleries
-	if internals.HasFlag(&content.Options, internals.InGalleryFlag) {
+	if yunyun.HasFlag(&content.Options, yunyun.InGalleryFlag) {
 		return e.gallery(content)
 	}
 	return fmt.Sprintf(`
@@ -124,7 +124,7 @@ func makeFlexItem(s string, folder string) string {
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
-func (e *ExporterHTML) gallery(content *internals.Content) string {
+func (e *ExporterHTML) gallery(content *yunyun.Content) string {
 	makeFlexItemWithFolder := func(f string) func(string) string {
 		return func(s string) string {
 			return makeFlexItem(s, f)
@@ -145,7 +145,7 @@ func (e *ExporterHTML) gallery(content *internals.Content) string {
 }
 
 // listNumbered gives us a numbered list html representation
-func (e *ExporterHTML) listNumbered(content *internals.Content) string {
+func (e *ExporterHTML) listNumbered(content *yunyun.Content) string {
 	// TODO
 	return ""
 }
@@ -167,7 +167,7 @@ func mapSourceCodeLang(s string) string {
 }
 
 // sourceCode gives us a source code html representation
-func (e *ExporterHTML) sourceCode(content *internals.Content) string {
+func (e *ExporterHTML) sourceCode(content *yunyun.Content) string {
 	lang := mapSourceCodeLang(content.SourceCodeLang)
 	return fmt.Sprintf(`
 <div class="listingblock">
@@ -185,9 +185,9 @@ func (e *ExporterHTML) sourceCode(content *internals.Content) string {
 }
 
 // rawHTML gives us a raw html representation
-func (e *ExporterHTML) rawHTML(content *internals.Content) string {
+func (e *ExporterHTML) rawHTML(content *yunyun.Content) string {
 	// If the unsafe flag is enabled, don't even wrap it in `mediablock`
-	if internals.HasFlag(&content.Options, internals.InRawHtmlFlagUnsafe) {
+	if yunyun.HasFlag(&content.Options, yunyun.InRawHtmlFlagUnsafe) {
 		return content.RawHTML
 	}
 	return fmt.Sprintf(rawHTMLTemplate, content.RawHTML, content.Caption)
@@ -195,12 +195,12 @@ func (e *ExporterHTML) rawHTML(content *internals.Content) string {
 }
 
 // horizontalLine gives us a horizontal line html representation
-func (e *ExporterHTML) horizontalLine(content *internals.Content) string {
+func (e *ExporterHTML) horizontalLine(content *yunyun.Content) string {
 	return `<hr>`
 }
 
 // attentionBlock gives us a attention block html representation
-func (e *ExporterHTML) attentionBlock(content *internals.Content) string {
+func (e *ExporterHTML) attentionBlock(content *yunyun.Content) string {
 	return fmt.Sprintf(`
 <div class="admonitionblock note">
 <table>
@@ -217,7 +217,7 @@ func (e *ExporterHTML) attentionBlock(content *internals.Content) string {
 }
 
 // table gives an HTML formatted table
-func (e *ExporterHTML) table(content *internals.Content) string {
+func (e *ExporterHTML) table(content *yunyun.Content) string {
 	rows := make([]string, len(content.Table))
 	for i := range content.Table {
 		for j, v := range content.Table[i] {
@@ -234,8 +234,8 @@ func (e *ExporterHTML) table(content *internals.Content) string {
 }
 
 // table gives an HTML formatted table
-func (e *ExporterHTML) details(content *internals.Content) string {
-	if internals.HasFlag(&content.Options, internals.InDetailsFlag) {
+func (e *ExporterHTML) details(content *yunyun.Content) string {
+	if yunyun.HasFlag(&content.Options, yunyun.InDetailsFlag) {
 		return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
 	}
 	return "</details>"

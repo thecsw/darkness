@@ -3,7 +3,7 @@ package emilia
 import (
 	"fmt"
 
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 const (
@@ -14,8 +14,8 @@ const (
 	highlightJsAction            = `<script>hljs.highlightAll();</script>`
 )
 
-func WithSyntaxHighlighting() internals.PageOption {
-	return func(page *internals.Page) {
+func WithSyntaxHighlighting() yunyun.PageOption {
+	return func(page *yunyun.Page) {
 		if !Config.Website.SyntaxHighlighting {
 			return
 		}
@@ -30,7 +30,7 @@ func WithSyntaxHighlighting() internals.PageOption {
 	}
 }
 
-func hasCodeBlocks(page *internals.Page) bool {
+func hasCodeBlocks(page *yunyun.Page) bool {
 	for _, content := range page.Contents {
 		if !content.IsSourceCode() && len(content.SourceCodeLang) > 0 {
 			return true

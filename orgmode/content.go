@@ -3,12 +3,12 @@ package orgmode
 import (
 	"strings"
 
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/echidna"
 )
 
 // isHeader returns a non-nil object if the line is a header
-func isHeader(line string) *internals.Content {
+func isHeader(line string) *yunyun.Content {
 	level := 0
 	switch {
 	case strings.HasPrefix(line, sectionLevelOne):
@@ -29,8 +29,8 @@ func isHeader(line string) *internals.Content {
 		return nil
 	}
 	// Is a header
-	return &internals.Content{
-		Type:         internals.TypeHeading,
+	return &yunyun.Content{
+		Type:         yunyun.TypeHeading,
 		HeadingLevel: level,
 		Heading:      line[level+1:],
 	}
@@ -47,7 +47,7 @@ func isOption(line string) bool {
 }
 
 // isLink returns a non-nil object if the line is a link
-func isLink(line string) *internals.Content {
+func isLink(line string) *yunyun.Content {
 	line = strings.TrimSpace(line)
 	// Not a link
 	if !linkRegexp.MatchString(line) {
@@ -67,21 +67,21 @@ func isLink(line string) *internals.Content {
 	if len(match) != len(line) {
 		return nil
 	}
-	return &internals.Content{
-		Type:      internals.TypeLink,
+	return &yunyun.Content{
+		Type:      yunyun.TypeLink,
 		Link:      link,
 		LinkTitle: text,
 	}
 }
 
 // formParagraph builds a proper paragraph-oriented `Content` object.
-func formParagraph(text, extra string, options internals.Bits) *internals.Content {
-	val := &internals.Content{
-		Type:      internals.TypeParagraph,
+func formParagraph(text, extra string, options yunyun.Bits) *yunyun.Content {
+	val := &yunyun.Content{
+		Type:      yunyun.TypeParagraph,
 		Paragraph: strings.TrimSpace(text),
 		Options:   options,
 	}
-	if internals.HasFlag(&options, internals.InDetailsFlag) {
+	if yunyun.HasFlag(&options, yunyun.InDetailsFlag) {
 		val.Summary = extra
 	}
 	return val
@@ -135,13 +135,13 @@ func isHorizonalLine(line string) bool {
 
 // isAttentionBlock returns *Content object if we have fonud an attention block
 // with filled values, nil otherwise.
-func isAttentionBlock(line string) *internals.Content {
+func isAttentionBlock(line string) *yunyun.Content {
 	matches := attentionBlockRegexp.FindAllStringSubmatch(line, 1)
 	if len(matches) < 1 {
 		return nil
 	}
-	return &internals.Content{
-		Type:           internals.TypeAttentionText,
+	return &yunyun.Content{
+		Type:           yunyun.TypeAttentionText,
 		AttentionTitle: matches[0][1],
 		AttentionText:  matches[0][2],
 	}

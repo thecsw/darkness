@@ -3,13 +3,13 @@ package emilia
 import (
 	"strings"
 
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 // WithEnrichedHeadings shifts heading levels to their correct layouts and
 // adds some additional information to the headings for later export
-func WithEnrichedHeadings() internals.PageOption {
-	return func(page *internals.Page) {
+func WithEnrichedHeadings() yunyun.PageOption {
+	return func(page *yunyun.Page) {
 		// Normalizing headings
 		if Config.Website.NormalizeHeadings {
 			minHeadingLevel := 999
@@ -37,8 +37,8 @@ func WithEnrichedHeadings() internals.PageOption {
 
 // WithResolvedComments resolves heading comments and cleans up the page if
 // COMMENT headings are encountered
-func WithResolvedComments() internals.PageOption {
-	return func(page *internals.Page) {
+func WithResolvedComments() yunyun.PageOption {
+	return func(page *yunyun.Page) {
 		start, headingLevel, searching := -1, -1, false
 		for i, content := range page.Contents {
 			if !content.IsHeading() {

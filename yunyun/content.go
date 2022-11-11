@@ -1,4 +1,4 @@
-package internals
+package yunyun
 
 // Content is a piece of content of a page.
 type Content struct {

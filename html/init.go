@@ -3,22 +3,22 @@ package html
 import (
 	"fmt"
 
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 func init() {
-	if internals.TypeContent(len(divTypes)) !=
-		internals.TypeShouldBeLastDoNotTouch {
+	if yunyun.TypeContent(len(divTypes)) !=
+		yunyun.TypeShouldBeLastDoNotTouch {
 		panic(fmt.Sprintf("len(html.divTypes) should be %d",
-			internals.TypeShouldBeLastDoNotTouch))
+			yunyun.TypeShouldBeLastDoNotTouch))
 	}
 }
 
 func init() {
 	e := NewExporterHTML()
-	if internals.TypeContent(len(e.contentFunctions)) !=
-		internals.TypeShouldBeLastDoNotTouch {
+	if yunyun.TypeContent(len(e.contentFunctions)) !=
+		yunyun.TypeShouldBeLastDoNotTouch {
 		panic(fmt.Sprintf("len(html.contentFunctions) should be %d",
-			internals.TypeShouldBeLastDoNotTouch))
+			yunyun.TypeShouldBeLastDoNotTouch))
 	}
 }

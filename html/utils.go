@@ -3,13 +3,13 @@ package html
 import (
 	"unicode"
 
-	"github.com/thecsw/darkness/internals"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 // extractID returns a properly formatted ID for a heading title
 func extractID(heading string) string {
 	// Check if heading is a link
-	match := internals.LinkRegexp.FindStringSubmatch(heading)
+	match := yunyun.LinkRegexp.FindStringSubmatch(heading)
 	if len(match) > 0 {
 		heading = match[2] // 0 is whole match, 1 is link, 2 is title
 	}
@@ -39,27 +39,27 @@ const (
 
 var (
 	divTypes = []divType{
-		divWriting, // internals.TypeHeading
-		divWriting, // internals.TypeParagraph
-		divSpecial, // internals.TypeList
-		divWriting, // internals.TypeListNumbered
-		divOutside, // internals.TypeLink
-		divWriting, // internals.TypeSourceCode
-		divOutside, // internals.TypeRawHTML
-		divOutside, // internals.TypeHorizontalLine
-		divWriting, // internals.TypeAttentionText
-		divOutside, // internals.TypeTable
-		divWriting, // internals.TypeDetails
+		divWriting, // yunyun.TypeHeading
+		divWriting, // yunyun.TypeParagraph
+		divSpecial, // yunyun.TypeList
+		divWriting, // yunyun.TypeListNumbered
+		divOutside, // yunyun.TypeLink
+		divWriting, // yunyun.TypeSourceCode
+		divOutside, // yunyun.TypeRawHTML
+		divOutside, // yunyun.TypeHorizontalLine
+		divWriting, // yunyun.TypeAttentionText
+		divOutside, // yunyun.TypeTable
+		divWriting, // yunyun.TypeDetails
 	}
 )
 
-func whatDivType(content *internals.Content) divType {
+func whatDivType(content *yunyun.Content) divType {
 	dt := divTypes[int(content.Type)]
 	if dt != divSpecial {
 		return dt
 	}
 	if content.IsList() {
-		if internals.HasFlag(&content.Options, internals.InGalleryFlag) {
+		if yunyun.HasFlag(&content.Options, yunyun.InGalleryFlag) {
 			return divOutside
 		}
 		return divWriting

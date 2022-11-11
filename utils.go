@@ -10,8 +10,8 @@ import (
 	"github.com/sanity-io/litter"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/html"
-	"github.com/thecsw/darkness/internals"
 	"github.com/thecsw/darkness/orgmode"
+	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/echidna"
 )
 
@@ -63,7 +63,7 @@ func orgToHTML(file string) string {
 
 // exportAndEnrich automatically applies all the emilia enhancements
 // and converts Page into an html document.
-func exportAndEnrich(page *internals.Page) string {
+func exportAndEnrich(page *yunyun.Page) string {
 	result := html.NewExporterHTML(html.WithPage(applyEmilia(page))).Export()
 	result = emilia.AddHolosceneTitles(result, func() int {
 		if strings.HasSuffix(page.URL, "quotes") {
@@ -75,7 +75,7 @@ func exportAndEnrich(page *internals.Page) string {
 }
 
 // applyEmilia applies common emilia enhancements.
-func applyEmilia(page *internals.Page) *internals.Page {
+func applyEmilia(page *yunyun.Page) *yunyun.Page {
 	return page.Options(
 		emilia.WithResolvedComments(),
 		emilia.WithEnrichedHeadings(),
