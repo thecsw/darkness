@@ -87,30 +87,20 @@ func applyEmilia(page *yunyun.Page) *yunyun.Page {
 	)
 }
 
-const (
-	parserDefaultKey   = ".org"
-	exporterDefaultKey = ".html"
-)
-
-var (
-	parserMap = map[string]parse.Parser{
-		".org": &orgmode.ParserOrgmode{},
-	}
-	exporterMap = map[string]export.Exporter{
-		".html": &html.ExporterHTML{},
-	}
-)
-
+// getParser returns a new parser object.
 func getParser() parse.Parser {
-	if v, ok := parserMap[emilia.Config.Project.Input]; ok {
-		return v
+	switch emilia.Config.Project.Input {
+	case ".org":
+		return &orgmode.ParserOrgmode{}
 	}
-	return parserMap[parserDefaultKey]
+	return &orgmode.ParserOrgmode{}
 }
 
+// getExporter returns a new exporter object.
 func getExporter() export.Exporter {
-	if v, ok := exporterMap[emilia.Config.Project.Output]; ok {
-		return v
+	switch emilia.Config.Project.Output {
+	case ".html":
+		return &html.ExporterHTML{}
 	}
-	return exporterMap[exporterDefaultKey]
+	return &html.ExporterHTML{}
 }
