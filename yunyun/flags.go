@@ -31,23 +31,39 @@ const (
 	TypeShouldBeLastDoNotTouch
 )
 
+// Bits is aliased to `uint16` to store flags.
 type Bits uint16
 
 const (
+	// InListFlag is used internally to mark list states.
 	InListFlag Bits = 1 << iota
+	// InTableFlag is used internally to mark table states.
 	InTableFlag
+	// InTableHasHeadersFlag is used internally to mark table
+	// delimiter states.
 	InTableHasHeadersFlag
+	// InSourceCodeFlag is used internally to mark source code
+	// states.
 	InSourceCodeFlag
+	// InRawHTMLFlag is used internally to mark raw html states.
 	InRawHTMLFlag
+	// InRawHtmlFlagUnsafe is used internally to mark unsafe html states.
 	InRawHtmlFlagUnsafe
+	// InQuoteFlag is used internally to mark quote states.
 	InQuoteFlag
+	// InCenterFlag is used internally to mark center states.
 	InCenterFlag
+	// InDetailsFlag is used internally to mark details states.
 	InDetailsFlag
+	// InDropCapFlag is used internally to make drop cap states.
 	InDropCapFlag
+	// InGalleryFlag is used internally to mark gallery states.
 	InGalleryFlag
 )
 
 var (
+	// LatchFlags returns four functions: add, remove, flip, and has
+	// for the flag container.
 	LatchFlags = func(v *Bits) (
 		func(f Bits), func(f Bits), func(f Bits), func(f Bits) bool) {
 		return func(f Bits) { AddFlag(v, f) },
@@ -55,9 +71,12 @@ var (
 			func(f Bits) { FlipFlag(v, f) },
 			func(f Bits) bool { return HasFlag(v, f) }
 	}
-
-	AddFlag    = func(v *Bits, f Bits) { *v |= f }
+	// AddFlag marks the flag in the first argument.
+	AddFlag = func(v *Bits, f Bits) { *v |= f }
+	// RemoveFlag removes the flag in the first argument.
 	RemoveFlag = func(v *Bits, f Bits) { *v &^= f }
-	FlipFlag   = func(v *Bits, f Bits) { *v ^= f }
-	HasFlag    = func(v *Bits, f Bits) bool { return *v&f != 0 }
+	// FlipFlag flips the flag in the first argument.
+	FlipFlag = func(v *Bits, f Bits) { *v ^= f }
+	// HasFlag returns true if the flag is found, false otherwise.
+	HasFlag = func(v *Bits, f Bits) bool { return *v&f != 0 }
 )

@@ -60,7 +60,7 @@ func (e ExporterHTML) Export() string {
 }
 
 // leftHeading leaves the heading.
-func (e ExporterHTML) leftHeading() {
+func (e *ExporterHTML) leftHeading() {
 	e.inHeading = false
 }
 
