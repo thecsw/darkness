@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/echidna"
+	"github.com/thecsw/gana"
 )
 
 // WithSourceCodeTrimmedLeftWhitespace removes leading whitespace from source code blocks
@@ -28,7 +28,7 @@ func WithSourceCodeTrimmedLeftWhitespace() yunyun.PageOption {
 				if len(line)-len(strings.TrimLeft(line, " ")) < offset {
 					return
 				}
-				lines[i] = line[echidna.Min(len(lines[i]), offset):]
+				lines[i] = line[gana.Min(len(lines[i]), offset):]
 			}
 			(&page.Contents[i]).SourceCode = strings.Join(lines, "\n")
 		}

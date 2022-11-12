@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/echidna"
+	"github.com/thecsw/gana"
 )
 
 // buildContent runs the givent `*Content` against known protocols/policies
@@ -115,7 +115,7 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 %s
 </ul>
 </div>
-`, strings.Join(echidna.Map(makeListItem, content.List), "\n"))
+`, strings.Join(gana.Map(makeListItem, content.List), "\n"))
 }
 
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
@@ -141,7 +141,7 @@ func (e ExporterHTML) gallery(content *yunyun.Content) string {
 %s
 </div>
 </center>
-`, strings.Join(echidna.Map(makeFlexItemWithFolder, content.List), "\n"))
+`, strings.Join(gana.Map(makeFlexItemWithFolder, content.List), "\n"))
 }
 
 // listNumbered gives us a numbered list html representation

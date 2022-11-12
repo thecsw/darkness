@@ -13,7 +13,7 @@ import (
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/orgmode"
 	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/echidna"
+	"github.com/thecsw/gana"
 )
 
 const (
@@ -74,7 +74,7 @@ func build() {
 	orgfiles := make(chan string, *customChannelCapacity)
 
 	// Create the worker that will read files and push bundles.
-	orgmodes := echidna.GenericWorkers(orgfiles, func(v string) *bundle {
+	orgmodes := gana.GenericWorkers(orgfiles, func(v string) *bundle {
 		data, err := ioutil.ReadFile(v)
 		if err != nil {
 			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
@@ -86,12 +86,12 @@ func build() {
 	}, 1, *customChannelCapacity)
 
 	// Create the workers for parsing and converting orgmode to Page.
-	pages := echidna.GenericWorkers(orgmodes, func(v *bundle) *yunyun.Page {
+	pages := gana.GenericWorkers(orgmodes, func(v *bundle) *yunyun.Page {
 		return orgmode.Parse(v.Data, v.File)
 	}, *customNumWorkers, *customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
-	results := echidna.GenericWorkers(pages, func(v *yunyun.Page) *bundle {
+	results := gana.GenericWorkers(pages, func(v *yunyun.Page) *bundle {
 		return &bundle{
 			File: getTarget(v.File),
 			Data: exportAndEnrich(v),

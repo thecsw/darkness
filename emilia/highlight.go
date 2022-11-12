@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/echidna"
+	"github.com/thecsw/gana"
 )
 
 const (
@@ -22,7 +22,7 @@ func WithSyntaxHighlighting() yunyun.PageOption {
 			return
 		}
 		// Check if any content has a source code and if not, no highlighting.
-		if !echidna.Anyf(func(v yunyun.Content) bool { return v.IsSourceCode() }, page.Contents) {
+		if !gana.Anyf(func(v yunyun.Content) bool { return v.IsSourceCode() }, page.Contents) {
 			return
 		}
 		page.Stylesheets = append(page.Stylesheets,

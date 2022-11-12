@@ -9,10 +9,8 @@ require (
 
 require (
 	github.com/stretchr/testify v1.8.0 // indirect
-	golang.org/x/exp v0.0.0-20221110155412-d0897a79cd37 // indirect
+	github.com/thecsw/gana v0.0.0-20221112064451-7ab02ad7d002 // indirect
+	golang.org/x/exp v0.0.0-20221111204811-129d8d6c17ab // indirect
 )
 
-require (
-	github.com/karrick/godirwalk v1.17.0
-	github.com/thecsw/echidna v0.0.0-20221111022134-ceb2efc81ce9
-)
+require github.com/karrick/godirwalk v1.17.0

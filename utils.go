@@ -12,7 +12,7 @@ import (
 	"github.com/thecsw/darkness/export/html"
 	"github.com/thecsw/darkness/orgmode"
 	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/echidna"
+	"github.com/thecsw/gana"
 )
 
 // bundle is a struct that hold filename and contents -- used for
@@ -30,7 +30,7 @@ func findFilesByExt(orgfiles chan<- string, wg *sync.WaitGroup) {
 				return nil
 			}
 			if emilia.Config.Project.ExcludeRegex.MatchString(osPathname) ||
-				echidna.First([]rune(de.Name())) == rune('.') {
+				gana.First([]rune(de.Name())) == rune('.') {
 				return filepath.SkipDir
 			}
 			wg.Add(1)
@@ -104,7 +104,7 @@ var (
 )
 
 func initExporter[T export.Exporter]() export.Exporter {
-	return echidna.ZeroValue[T]()
+	return gana.ZeroValue[T]()
 }
 
 func getExporterCreator() func() export.Exporter {

@@ -4,7 +4,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/echidna"
+	"github.com/thecsw/gana"
 )
 
 const (
@@ -63,7 +63,7 @@ func WithMathSupport() yunyun.PageOption {
 // hasMathEquations returns true if the page has any math equations and
 // returns false otherwise.
 func hasMathEquations(page *yunyun.Page) bool {
-	return echidna.Anyf(hasEquationInContent, echidna.Map(echidna.GetPointer[yunyun.Content], page.Contents))
+	return gana.Anyf(hasEquationInContent, gana.Map(gana.GetPointer[yunyun.Content], page.Contents))
 }
 
 // hasEquationInContent returns true if the content has math equations in it.
@@ -89,7 +89,7 @@ func hasEquationInList(content *yunyun.Content) bool {
 	if !content.IsList() {
 		return false
 	}
-	return echidna.Anyf(yunyun.MathRegexp.MatchString, content.List)
+	return gana.Anyf(yunyun.MathRegexp.MatchString, content.List)
 }
 
 // hasEquationsInHeading returns true if the heading has an equation.
