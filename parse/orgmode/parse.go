@@ -8,8 +8,8 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
-// Preprocess preprocesses the input string to be parser-friendly
-func Preprocess(data string) string {
+// preprocess preprocesses the input string to be parser-friendly
+func preprocess(data string) string {
 	// Add a newline before every heading just in case if
 	// there is no terminating empty line before each one
 	data = headingRegexp.ReplaceAllString(data, "\n$1")
@@ -26,9 +26,9 @@ func Preprocess(data string) string {
 }
 
 // Parse parses the input string and returns a list of elements
-func Parse(data string, filename string) *yunyun.Page {
+func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 	// Split the data into lines
-	lines := strings.Split(Preprocess(data), "\n")
+	lines := strings.Split(preprocess(data), "\n")
 
 	page := yunyun.NewPage(
 		yunyun.WithFilename(filename),

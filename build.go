@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/orgmode"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -41,7 +40,7 @@ func oneFile() {
 	fileCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	fileCmd.Parse(os.Args[2:])
 	emilia.InitDarkness(darknessToml)
-	fmt.Println(orgToHTML(filename))
+	fmt.Println(inputToOutput(filename))
 }
 
 // build builds the entire directory.
@@ -56,7 +55,6 @@ func build() {
 
 	// Read the config and initialize emilia settings.
 	emilia.InitDarkness(darknessToml)
-	exporterCreator = getExporterCreator()
 
 	var err error
 	workDir, err = filepath.Abs(workDir)
@@ -71,10 +69,10 @@ func build() {
 	}
 
 	// Create the channel to feed read files.
-	orgfiles := make(chan string, *customChannelCapacity)
+	inputFilenames := make(chan string, *customChannelCapacity)
 
 	// Create the worker that will read files and push bundles.
-	orgmodes := gana.GenericWorkers(orgfiles, func(v string) *bundle {
+	inputFiles := gana.GenericWorkers(inputFilenames, func(v string) *bundle {
 		data, err := ioutil.ReadFile(v)
 		if err != nil {
 			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
@@ -86,8 +84,8 @@ func build() {
 	}, 1, *customChannelCapacity)
 
 	// Create the workers for parsing and converting orgmode to Page.
-	pages := gana.GenericWorkers(orgmodes, func(v *bundle) *yunyun.Page {
-		return orgmode.Parse(v.Data, v.File)
+	pages := gana.GenericWorkers(inputFiles, func(v *bundle) *yunyun.Page {
+		return getParser().Parse(v.Data, v.File)
 	}, *customNumWorkers, *customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
@@ -109,7 +107,7 @@ func build() {
 	start := time.Now()
 
 	// Run a discovery for files and feed to the reader worker.
-	go findFilesByExt(orgfiles, wg)
+	go findFilesByExt(inputFilenames, wg)
 
 	// Build a wait group to ensure we always read and write the same
 	// number of files, such that after the file has been read, parsed,

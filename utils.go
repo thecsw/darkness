@@ -10,7 +10,8 @@ import (
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/export"
 	"github.com/thecsw/darkness/export/html"
-	"github.com/thecsw/darkness/orgmode"
+	"github.com/thecsw/darkness/parse"
+	"github.com/thecsw/darkness/parse/orgmode"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -23,7 +24,7 @@ type bundle struct {
 }
 
 // findFilesByExt finds all files with a given extension
-func findFilesByExt(orgfiles chan<- string, wg *sync.WaitGroup) {
+func findFilesByExt(inputFilenames chan<- string, wg *sync.WaitGroup) {
 	godirwalk.Walk(workDir, &godirwalk.Options{
 		Callback: func(osPathname string, de *godirwalk.Dirent) error {
 			if filepath.Ext(osPathname) != emilia.Config.Project.Input {
@@ -35,12 +36,12 @@ func findFilesByExt(orgfiles chan<- string, wg *sync.WaitGroup) {
 			}
 			wg.Add(1)
 			relPath, err := filepath.Rel(workDir, osPathname)
-			orgfiles <- relPath
+			inputFilenames <- relPath
 			return err
 		},
 		Unsorted: true, // (optional) set true for faster yet non-deterministic enumeration (see godoc)
 	})
-	close(orgfiles)
+	close(inputFilenames)
 }
 
 // getTarget returns the target file name
@@ -50,26 +51,20 @@ func getTarget(file string) string {
 	return filepath.Join(filepath.Dir(file), htmlFilename)
 }
 
-// orgToHTML converts an org file to html
-func orgToHTML(file string) string {
+// inputToOutput converts an org file to html
+func inputToOutput(file string) string {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}
-	page := orgmode.Parse(string(data), file)
+	page := getParser().Parse(string(data), file)
 	return exportAndEnrich(applyEmilia(page))
 }
 
 // exportAndEnrich automatically applies all the emilia enhancements
 // and converts Page into an html document.
 func exportAndEnrich(page *yunyun.Page) string {
-	// exporter := exporterCreator()
-	// litter.Dump(exporterCreator)
-	// litter.Dump(exporter)
-	// exporter := initExporter[*html.ExporterHTML]()
-	// fmt.Println(initExporter[*html.ExporterHTML]())
-	// fmt.Println(exporter)
-	exporter := &html.ExporterHTML{}
+	exporter := getExporter()
 	exporter.SetPage(applyEmilia(page))
 	result := emilia.AddHolosceneTitles(exporter.Export(), func() int {
 		if strings.HasSuffix(page.URL, "quotes") {
@@ -93,22 +88,28 @@ func applyEmilia(page *yunyun.Page) *yunyun.Page {
 }
 
 const (
+	parserDefaultKey   = ".org"
 	exporterDefaultKey = ".html"
 )
 
 var (
-	exporterCreator func() export.Exporter
-	exporterMap     = map[string]func() export.Exporter{
-		".html": initExporter[*html.ExporterHTML],
+	parserMap = map[string]parse.Parser{
+		".org": &orgmode.ParserOrgmode{},
+	}
+	exporterMap = map[string]export.Exporter{
+		".html": &html.ExporterHTML{},
 	}
 )
 
-func initExporter[T export.Exporter]() export.Exporter {
-	return gana.ZeroValue[T]()
+func getParser() parse.Parser {
+	if v, ok := parserMap[emilia.Config.Project.Input]; ok {
+		return v
+	}
+	return parserMap[parserDefaultKey]
 }
 
-func getExporterCreator() func() export.Exporter {
-	if v, ok := exporterMap[emilia.Config.Project.Input]; ok {
+func getExporter() export.Exporter {
+	if v, ok := exporterMap[emilia.Config.Project.Output]; ok {
 		return v
 	}
 	return exporterMap[exporterDefaultKey]
