@@ -6,6 +6,7 @@ import (
 
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/gana"
 )
 
 // preprocess preprocesses the input string to be parser-friendly
@@ -273,13 +274,14 @@ func fillHolosceneDate(page *yunyun.Page) {
 	if len(page.Contents) < 1 {
 		return
 	}
+	first := gana.First(page.Contents)
 	// Needs to be a simple text
-	if !page.Contents[0].IsParagraph() {
+	if !first.IsParagraph() {
 		return
 	}
-	if !strings.HasSuffix(page.Contents[0].Paragraph, "H.E.") {
+	if !strings.HasSuffix(first.Paragraph, "H.E.") {
 		return
 	}
-	page.Date = page.Contents[0].Paragraph
+	page.Date = first.Paragraph
 	page.DateHoloscene = true
 }

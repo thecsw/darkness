@@ -11,6 +11,10 @@ type ExporterHTML struct {
 	page *yunyun.Page
 	// contentsNum is a pre-computed value of how many contents there are in Page.
 	contentsNum int
+	// currentContentIndex is the index of the content that exporter is currently working on.
+	currentContentIndex int
+	// currentContent is the pointer to the current `Content` object that is being processed.
+	currentContent *yunyun.Content
 	// currentDiv is used as a state variable for internal processing.
 	currentDiv divType
 	// inHeading is used as a state variable for internal processing.

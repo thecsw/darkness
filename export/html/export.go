@@ -22,9 +22,11 @@ func (e ExporterHTML) Export() string {
 		}
 	}
 	// Build the HTML (string) representation of each content
-	content := make([]string, 0, e.contentsNum)
+	content := make([]string, e.contentsNum)
 	for i, v := range e.page.Contents {
-		content = append(content, e.buildContent(i, &v))
+		e.currentContentIndex = i
+		e.currentContent = &v
+		content[i] = e.buildContent()
 	}
 
 	return fmt.Sprintf(`<!DOCTYPE html>

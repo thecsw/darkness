@@ -13,6 +13,8 @@ const (
 	// linkWasNotSpecialFlag is used internally to mark that the read link
 	// content was not an embed and should be treated as simple text.
 	linkWasNotSpecialFlag yunyun.Bits = yunyun.YunYunStartCustomFlags << iota
+	// thisContentOpensWritingFlag shows that we are entering the `.writing` tag.
+	thisContentOpensWritingFlag
 	// ThisContentClosesWriting shows that we have to close the `.writing` tag.
 	thisContentClosesWritingFlag
 	// ThisContentClosesDivSection shows that we have to close the previously
@@ -20,24 +22,56 @@ const (
 	thisContentClosesDivSectionFlag
 )
 
+// setContentFlags sets the content flags.
+func (e *ExporterHTML) setContentFlags(v *yunyun.Content) {
+	contentDivType := whatDivType(v)
+	// Mark situations when we have to leave writing
+	if e.inWriting &&
+		(contentDivType != divWriting || e.currentContentIndex == e.contentsNum) {
+		yunyun.AddFlag(&v.Options, thisContentClosesWritingFlag)
+		e.inWriting = false
+	}
+	// Mark situations when we have to enter writing
+	if contentDivType == divWriting && !e.inWriting {
+		yunyun.AddFlag(&v.Options, thisContentOpensWritingFlag)
+		e.inWriting = true
+	}
+}
+
+// resolveDivBusiness adds missing div tags.
+func resolveDivBusiness(v *yunyun.Content) {
+
+}
+
 // buildContent runs the givent `*Content` against known protocols/policies
 // and does some funky logic to balance div openings and closures.
-func (e *ExporterHTML) buildContent(i int, v *yunyun.Content) string {
-	built := e.contentFunctions[v.Type](v)
+func (e *ExporterHTML) buildContent() string {
+	e.setContentFlags(e.currentContent)
+	built := e.contentFunctions[e.currentContent.Type](e.currentContent)
+	return e.resolveDivTags(built)
+}
+
+func (e *ExporterHTML) resolveDivTags(built string) string {
+	if yunyun.HasFlag(&e.currentContent.Options, thisContentOpensWritingFlag) {
+		built = `<div class="writing">` + "\n" + built
+	}
+	if yunyun.HasFlag(&e.currentContent.Options, thisContentClosesWritingFlag) {
+		if e.currentContentIndex == e.contentsNum {
+			built += "</div>\n"
+		} else {
+			built = "</div>\n" + built
+		}
+	}
 	return built
 }
 
 // headings gives us a heading html representation
 func (e *ExporterHTML) Heading(content *yunyun.Content) string {
-	start := ``
-	// Automatically close whatever you had before
-	if e.inHeading {
-		start = "</div>\n</div>"
-	}
-	toReturn := fmt.Sprintf(start+`
+	toReturn := fmt.Sprintf(`
 <div class="sect%d">
 <h%d id="%s">%s</h%d>
-<div class="sectionbody">`,
+</div>`,
+		//<div class="sectionbody">`,
 		content.HeadingLevel-1,       // CSS class
 		content.HeadingLevel,         // HTML open tag
 		extractID(content.Heading),   // ID
