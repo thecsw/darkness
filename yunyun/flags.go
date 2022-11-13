@@ -59,6 +59,8 @@ const (
 	InDropCapFlag
 	// InGalleryFlag is used internally to mark gallery states.
 	InGalleryFlag
+	// YunYunStartCustomFlags is used internally to mark last flag.
+	YunYunStartCustomFlags
 )
 
 var (

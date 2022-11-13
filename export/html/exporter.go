@@ -17,8 +17,6 @@ type ExporterHTML struct {
 	inHeading bool
 	// inWriting is used as a state variable for internal processing.
 	inWriting bool
-	// linkWasNotEmbed is true if the last evaluated link was not special.
-	linkWasNotEmbed bool
 	// contentFunctions is dictionary of rules to execute on content types.
 	contentFunctions []func(*yunyun.Content) string
 }

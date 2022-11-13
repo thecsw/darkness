@@ -53,7 +53,7 @@ var (
 	}
 )
 
-func (e ExporterHTML) whatDivType(content *yunyun.Content) divType {
+func whatDivType(content *yunyun.Content) divType {
 	dt := divTypes[int(content.Type)]
 	if dt != divSpecial {
 		return dt
@@ -67,7 +67,7 @@ func (e ExporterHTML) whatDivType(content *yunyun.Content) divType {
 	}
 	// If the link was not an embed, wrap it in writing.
 	if content.IsLink() {
-		if e.linkWasNotEmbed {
+		if yunyun.HasFlag(&content.Options, linkWasNotSpecialFlag) {
 			return divWriting
 		}
 		return divOutside

@@ -9,40 +9,21 @@ import (
 	"github.com/thecsw/gana"
 )
 
+const (
+	// linkWasNotSpecialFlag is used internally to mark that the read link
+	// content was not an embed and should be treated as simple text.
+	linkWasNotSpecialFlag yunyun.Bits = yunyun.YunYunStartCustomFlags << iota
+	// ThisContentClosesWriting shows that we have to close the `.writing` tag.
+	thisContentClosesWritingFlag
+	// ThisContentClosesDivSection shows that we have to close the previously
+	// opened `.sectionbody`
+	thisContentClosesDivSectionFlag
+)
+
 // buildContent runs the givent `*Content` against known protocols/policies
 // and does some funky logic to balance div openings and closures.
 func (e *ExporterHTML) buildContent(i int, v *yunyun.Content) string {
 	built := e.contentFunctions[v.Type](v)
-	divv := e.whatDivType(v)
-	if e.inHeading {
-		if i == e.contentsNum-1 {
-			built += "</div>\n</div>"
-			goto done
-		}
-		if divv != divOutside {
-			goto done
-		}
-		built = "</div>\n</div>" + built
-		e.inHeading = false
-	}
-done:
-	if e.inWriting {
-		if divv != divOutside {
-			e.inWriting = divv == divWriting
-			goto done2
-		}
-		built = "</div>" + built
-		e.inWriting = false
-	} else {
-		if divv == divWriting {
-			built = `<div class="writing">` + built
-			e.inWriting = true
-		}
-	}
-done2:
-	if divv == divWriting && i == e.contentsNum-1 {
-		built += "</div>"
-	}
 	return built
 }
 
