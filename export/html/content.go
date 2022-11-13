@@ -38,11 +38,6 @@ func (e *ExporterHTML) setContentFlags(v *yunyun.Content) {
 	}
 }
 
-// resolveDivBusiness adds missing div tags.
-func resolveDivBusiness(v *yunyun.Content) {
-
-}
-
 // buildContent runs the givent `*Content` against known protocols/policies
 // and does some funky logic to balance div openings and closures.
 func (e *ExporterHTML) buildContent() string {
@@ -51,6 +46,7 @@ func (e *ExporterHTML) buildContent() string {
 	return e.resolveDivTags(built)
 }
 
+// resolveDivTags applies results from `setContentFlags` by modifying the DOM.
 func (e *ExporterHTML) resolveDivTags(built string) string {
 	if yunyun.HasFlag(&e.currentContent.Options, thisContentOpensWritingFlag) {
 		built = `<div class="writing">` + "\n" + built
