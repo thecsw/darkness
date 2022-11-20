@@ -19,7 +19,7 @@ func BenchmarkAParseHome(b *testing.B) {
 		b.Fatal(err)
 	}
 	for i := 0; i < b.N; i++ {
-		ParserOrgmode{}.Parse(testFileHome, string(data))
+		parserBuilder.BuildParser(testFileHome, string(data)).Parse()
 	}
 }
 
@@ -30,6 +30,6 @@ func BenchmarkBParseArch(b *testing.B) {
 		b.Fatal(err)
 	}
 	for i := 0; i < b.N; i++ {
-		ParserOrgmode{}.Parse(testFileArch, string(data))
+		parserBuilder.BuildParser(testFileArch, string(data)).Parse()
 	}
 }
