@@ -7,7 +7,7 @@ sandyuraz
 darkness
 .idea
 secrets
-*~undo-tree~
+.*.~undo-tree~
 
 # Binaries for programs and plugins
 *.exe
