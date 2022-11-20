@@ -53,7 +53,7 @@ func getTarget(file string) string {
 
 // inputToOutput converts a single input file to its output.
 func inputToOutput(file string) string {
-	data, err := ioutil.ReadFile(file)
+	data, err := ioutil.ReadFile(filepath.Clean(file))
 	if err != nil {
 		panic(err)
 	}

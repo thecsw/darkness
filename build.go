@@ -78,7 +78,7 @@ func build() {
 
 	// Create the worker that will read files and push tuples.
 	inputFiles := gana.GenericWorkers(inputFilenames, func(v string) gana.Tuple[string, string] {
-		data, err := ioutil.ReadFile(v)
+		data, err := ioutil.ReadFile(filepath.Clean(v))
 		if err != nil {
 			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
 		}

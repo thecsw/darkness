@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/thecsw/darkness/emilia"
 )
@@ -76,7 +77,7 @@ func newDarkness() {
 		return
 	}
 	dirName := os.Args[2]
-	f, err := os.Open(dirName)
+	f, err := os.Open(filepath.Clean(dirName))
 	if err == nil {
 		fmt.Println("this directory already exists, bailing")
 		f.Close()

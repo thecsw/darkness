@@ -26,7 +26,10 @@ func Untar(reader io.Reader, dirName string) error {
 			continue
 		}
 
-		file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, info.Mode())
+		file, err := os.OpenFile(
+			filepath.Clean(path),
+			os.O_CREATE|os.O_TRUNC|os.O_WRONLY,
+			info.Mode())
 		if err != nil {
 			return err
 		}
