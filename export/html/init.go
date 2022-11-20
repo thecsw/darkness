@@ -10,8 +10,9 @@ import (
 
 var (
 	// Make sure that this exporter implements `export.Exporter`.
-	exporter                 = &ExporterHTML{}
-	_        export.Exporter = exporter
+	exporter                        = &ExporterHTML{}
+	_        export.Exporter        = exporter
+	_        export.ExporterBuilder = exporter
 )
 
 // This init makes sure there are no discrepancies in html defs.

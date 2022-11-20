@@ -10,8 +10,8 @@ type ParserTemplate struct {
 	Data string
 }
 
-// WithFilenameData will create a new parser object and return it
-func (p ParserTemplate) WithFilenameData(filename, data string) parse.Parser {
+// BuildParser will create a new parser object and return it.
+func (p ParserTemplate) BuildParser(filename, data string) parse.Parser {
 	return &ParserTemplate{
 		Filename: filename,
 		Data:     data,

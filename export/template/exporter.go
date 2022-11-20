@@ -12,7 +12,7 @@ type ExporterTemplate struct {
 }
 
 // SetPage creates a new Exporter object and returns it with data filled.
-func (e *ExporterTemplate) SetPage(page *yunyun.Page) export.Exporter {
+func (e *ExporterTemplate) BuildExporter(page *yunyun.Page) export.Exporter {
 	what := &ExporterTemplate{
 		page: page,
 	}

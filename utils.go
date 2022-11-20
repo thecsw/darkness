@@ -43,21 +43,21 @@ func getTarget(file string) string {
 	return filepath.Join(filepath.Dir(file), htmlFilename)
 }
 
-// inputToOutput converts an org file to html
+// inputToOutput converts a single input file to its output.
 func inputToOutput(file string) string {
 	data, err := ioutil.ReadFile(file)
 	if err != nil {
 		panic(err)
 	}
-	page := getParser().WithFilenameData(file, string(data)).Parse()
+	page := getParserBuilder().BuildParser(file, string(data)).Parse()
 	return exportAndEnrich(applyEmilia(page))
 }
 
 // exportAndEnrich automatically applies all the emilia enhancements
 // and converts Page into an html document.
 func exportAndEnrich(page *yunyun.Page) string {
-	result := emilia.AddHolosceneTitles(getExporter().
-		SetPage(applyEmilia(page)).Export(), func() int {
+	result := emilia.AddHolosceneTitles(getExporterBuilder().
+		BuildExporter(applyEmilia(page)).Export(), func() int {
 		if strings.HasSuffix(page.URL, "quotes") {
 			return -1
 		}
@@ -78,16 +78,16 @@ func applyEmilia(page *yunyun.Page) *yunyun.Page {
 	)
 }
 
-// getParser returns a new parser object.
-func getParser() parse.Parser {
+// getParserBuilder returns a new parser object.
+func getParserBuilder() parse.ParserBuilder {
 	if v, ok := parse.ParserMap[emilia.Config.Project.Input]; ok {
 		return v
 	}
 	return parse.ParserMap[puck.ExtensionOrgmode]
 }
 
-// getExporter returns a new exporter object.
-func getExporter() export.Exporter {
+// getExporterBuilder returns a new exporter object.
+func getExporterBuilder() export.ExporterBuilder {
 	if v, ok := export.ExporterMap[emilia.Config.Project.Output]; ok {
 		return v
 	}

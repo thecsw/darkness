@@ -4,11 +4,15 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
+// ExporterBuilder is used to build `Exporter`.
+type ExporterBuilder interface {
+	// BuildExporter sets the import source for the exporter.
+	BuildExporter(*yunyun.Page) Exporter
+}
+
 // Exporter is a generic interface that other output extensions should
 // implement.
 type Exporter interface {
-	// SetPage sets the import source for the exporter.
-	SetPage(*yunyun.Page) Exporter
 	// Export performs the exporting with options passed in.
 	Export() string
 
@@ -54,9 +58,9 @@ func ContentBuilder(exporter Exporter) []func(*yunyun.Content) string {
 }
 
 // ExporterMap stores mappings of extensions to their exporters.
-var ExporterMap = make(map[string]Exporter)
+var ExporterMap = make(map[string]ExporterBuilder)
 
 // Register is called by exporters to register themselves.
-func Register(ext string, e Exporter) {
+func Register(ext string, e ExporterBuilder) {
 	ExporterMap[ext] = e
 }

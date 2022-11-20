@@ -7,8 +7,9 @@ import (
 
 var (
 	// Make sure that this parser implements `parse.Parser`.
-	parser              = &ParserOrgmode{}
-	_      parse.Parser = parser
+	parser                     = &ParserOrgmode{}
+	_      parse.Parser        = parser
+	_      parse.ParserBuilder = parser
 )
 
 // This init registers the parser with the root module.

@@ -2,20 +2,23 @@ package parse
 
 import "github.com/thecsw/darkness/yunyun"
 
+type ParserBuilder interface {
+	// WithFilenameData returns a new `Parser` object with
+	// filename and data set.
+	BuildParser(string, string) Parser
+}
+
 // Parser is an interface used to define import packages,
 // which convert source data into a yunyun `Page`.
 type Parser interface {
 	// Parse returns `*yunyunPage`.
 	Parse() *yunyun.Page
-	// WithFilenameData returns a new `Parser` object with
-	// filename and data set.
-	WithFilenameData(string, string) Parser
 }
 
 // ParserMap stores mappings of extensions to their parsers.
-var ParserMap = make(map[string]Parser)
+var ParserMap = make(map[string]ParserBuilder)
 
 // Register is called by parsers to register themselves.
-func Register(ext string, p Parser) {
+func Register(ext string, p ParserBuilder) {
 	ParserMap[ext] = p
 }

@@ -10,7 +10,8 @@ type ParserOrgmode struct {
 	Data string
 }
 
-func (p ParserOrgmode) WithFilenameData(filename, data string) parse.Parser {
+// BuildParser builds the `Parser` interface object.
+func (p ParserOrgmode) BuildParser(filename, data string) parse.Parser {
 	return &ParserOrgmode{
 		Filename: filename,
 		Data:     data,

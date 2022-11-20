@@ -26,7 +26,7 @@ type ExporterHTML struct {
 }
 
 // SetPage sets the internal page and creates internal content mappers.
-func (e *ExporterHTML) SetPage(page *yunyun.Page) export.Exporter {
+func (e *ExporterHTML) BuildExporter(page *yunyun.Page) export.Exporter {
 	what := &ExporterHTML{
 		page:        page,
 		contentsNum: len(page.Contents),
