@@ -64,6 +64,7 @@ func build() {
 	workDir, err = filepath.Abs(workDir)
 	if err != nil {
 		fmt.Println("Couldn't determine absolute path of", workDir)
+		os.Exit(1)
 	}
 
 	// If parallel processing is disabled, only provision one workers
@@ -114,7 +115,9 @@ func build() {
 	// save it at the right spot, marking itself Done and leaving.
 	go func(wg *sync.WaitGroup) {
 		for result := range results {
-			os.WriteFile(result.First, []byte(result.Second), savePerms)
+			if err := os.WriteFile(result.First, []byte(result.Second), savePerms); err != nil {
+				fmt.Printf("failed to write %s: %s", result.First, err.Error())
+			}
 			wg.Done()
 		}
 		// Remove the artificial block we made before discovery.
