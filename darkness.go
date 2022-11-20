@@ -80,7 +80,9 @@ func newDarkness() {
 	f, err := os.Open(filepath.Clean(dirName))
 	if err == nil {
 		fmt.Println("this directory already exists, bailing")
-		f.Close()
+		if err := f.Close(); err != nil {
+			fmt.Printf("failed to close directory: %s\n", err.Error())
+		}
 		return
 	}
 	if err := os.Mkdir(dirName, os.FileMode(0777)); err != nil {

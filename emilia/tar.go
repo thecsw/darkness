@@ -2,9 +2,13 @@ package emilia
 
 import (
 	"archive/tar"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"github.com/pkg/errors"
 )
 
 func Untar(reader io.Reader, dirName string) error {
@@ -16,8 +20,10 @@ func Untar(reader io.Reader, dirName string) error {
 		} else if err != nil {
 			return err
 		}
-
-		path := filepath.Join(dirName, header.Name)
+		path, err := SanitizeArchivePath(dirName, header.Name)
+		if err != nil {
+			return errors.Wrap(err, "untarring")
+		}
 		info := header.FileInfo()
 		if info.IsDir() {
 			if err = os.MkdirAll(path, info.Mode()); err != nil {
@@ -33,7 +39,11 @@ func Untar(reader io.Reader, dirName string) error {
 		if err != nil {
 			return err
 		}
-		defer file.Close()
+		defer func() {
+			if err := file.Close(); err != nil {
+				fmt.Printf("failed to close file in untar: %s\n", err.Error())
+			}
+		}()
 		for {
 			_, err = io.CopyN(file, tarReader, 1024)
 			if err != nil {
@@ -45,4 +55,14 @@ func Untar(reader io.Reader, dirName string) error {
 		}
 	}
 	return nil
+}
+
+// Sanitize archive file pathing from "G305: Zip Slip vulnerability".
+// Found in https://github.com/securego/gosec/issues/324
+func SanitizeArchivePath(d, t string) (v string, err error) {
+	v = filepath.Join(d, t)
+	if strings.HasPrefix(v, filepath.Clean(d)) {
+		return v, nil
+	}
+	return "", fmt.Errorf("%s: %s", "content filepath is tainted", t)
 }

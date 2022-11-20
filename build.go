@@ -38,7 +38,10 @@ func oneFile() {
 	fileCmd := flag.NewFlagSet("file", flag.ExitOnError)
 	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
 	fileCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	fileCmd.Parse(os.Args[2:])
+	if err := fileCmd.Parse(os.Args[2:]); err != nil {
+		fmt.Printf("failed to parse file arguments, fatal: %s", err.Error())
+		os.Exit(1)
+	}
 	emilia.InitDarkness(&emilia.EmiliaOptions{DarknessConfig: darknessToml})
 	fmt.Println(inputToOutput(filename))
 }
@@ -52,7 +55,10 @@ func build() {
 	customNumWorkers := buildCmd.Int("workers", defaultNumOfWorkers, "number of workers to spin up")
 	customChannelCapacity := buildCmd.Int("capacity", defaultNumOfWorkers, "worker channels' capacity")
 	useCurrentDirectory := buildCmd.Bool("dev", false, "use local path for urls (development)")
-	buildCmd.Parse(os.Args[2:])
+	if err := buildCmd.Parse(os.Args[2:]); err != nil {
+		fmt.Printf("failed to parse build arguments, fatal: %s", err.Error())
+		os.Exit(1)
+	}
 
 	// Read the config and initialize emilia settings.
 	emilia.InitDarkness(&emilia.EmiliaOptions{
@@ -87,7 +93,6 @@ func build() {
 
 	// Create the workers for parsing and converting orgmode to Page.
 	pages := gana.GenericWorkers(inputFiles, func(v gana.Tuple[string, string]) *yunyun.Page {
-		//return getParser().Parse()
 		return emilia.ParserBuilder.BuildParser(v.Unpack()).Parse()
 	}, *customNumWorkers, *customChannelCapacity)
 
