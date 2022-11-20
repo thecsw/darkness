@@ -22,7 +22,7 @@ func megumin() {
 	explosionCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
 	explosionCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	explosionCmd.Parse(os.Args[2:])
-	emilia.InitDarkness(darknessToml)
+	emilia.InitDarkness(&emilia.EmiliaOptions{DarknessConfig: darknessToml})
 
 	delayedLinesPrint([]string{
 		"Darker than black, darker than darkness, combine with my intense crimson.",

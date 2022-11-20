@@ -11,7 +11,7 @@ import (
 const (
 	// imageEmbedTemplate is the template for image embeds.
 	imageEmbedTemplate = `
-<div class="imageblock">
+<div class="media">
 <a class="image" href="%s"><img class="image" src="%s" alt="%s"></a>
 <div class="title">%s</div>
 <hr>
@@ -22,7 +22,7 @@ const (
 
 	// videoEmbedTemplate is the template for video embeds.
 	videoEmbedTemplate = `
-<div class="videoblock">
+<div class="media">
 <video controls class="responsive-iframe">
 <source src="%s" type="video/%s">
 Sorry, your browser doesn't support embedded videos.
@@ -34,7 +34,7 @@ Sorry, your browser doesn't support embedded videos.
 
 	// rawHTMLTemplate wraps raw html in `mediablock`.
 	rawHTMLTemplate = `
-<div class="mediablock">
+<div class="media">
 %s
 <div class="title">%s</div>
 <hr>
@@ -42,7 +42,7 @@ Sorry, your browser doesn't support embedded videos.
 
 	// tableTemplate is the template for image embeds.
 	tableTemplate = `
-<div class="mediablock">
+<div class="media">
 <div class="title">%s</div>
 %s
 </div>`
@@ -51,7 +51,7 @@ Sorry, your browser doesn't support embedded videos.
 	youtubeEmbedPrefix = "https://youtu.be/"
 	// youtubeEmbedTemplate is the template for youtube embeds.
 	youtubeEmbedTemplate = `
-<div class="videoblock">
+<div class="media">
 <iframe class="responsive-iframe" src="https://www.youtube.com/embed/%s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 <hr>
 </div>`
@@ -60,7 +60,7 @@ Sorry, your browser doesn't support embedded videos.
 	spotifyTrackEmbedPrefix = "https://open.spotify.com/track/"
 	// spotifyTrackEmbedTemplate is the template for spotify track embeds.
 	spotifyTrackEmbedTemplate = `
-<div class="mediablock">
+<div class="media">
 <iframe src="https://open.spotify.com/embed/track/%s" width="79%%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 <hr>
 </div>`
@@ -69,7 +69,7 @@ Sorry, your browser doesn't support embedded videos.
 	spotifyPlaylistEmbedPrefix = "https://open.spotify.com/playlist/"
 	// spotifyPlaylistEmbedTemplate is the template for spotify playlist embeds.
 	spotifyPlaylistEmbedTemplate = `
-<div class="mediablock">
+<div class="media">
 <iframe src="https://open.spotify.com/embed/playlist/%s" width="79%%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 <hr>
 </div>`
@@ -102,16 +102,16 @@ func (e *ExporterHTML) Link(content *yunyun.Content) string {
 	case strings.HasPrefix(content.Link, youtubeEmbedPrefix):
 		// Youtube videos
 		return fmt.Sprintf(youtubeEmbedTemplate,
-			gana.SkipString(len(youtubeEmbedPrefix), content.Link),
+			gana.SkipString(uint(len(youtubeEmbedPrefix)), content.Link),
 		)
 	case strings.HasPrefix(content.Link, spotifyTrackEmbedPrefix):
 		// Spotify songs
 		return fmt.Sprintf(spotifyTrackEmbedTemplate,
-			gana.SkipString(len(spotifyTrackEmbedPrefix), content.Link),
+			gana.SkipString(uint(len(spotifyTrackEmbedPrefix)), content.Link),
 		)
 	case strings.HasPrefix(content.Link, spotifyPlaylistEmbedPrefix):
 		return fmt.Sprintf(spotifyPlaylistEmbedTemplate,
-			gana.SkipString(len(spotifyPlaylistEmbedPrefix), content.Link),
+			gana.SkipString(uint(len(spotifyPlaylistEmbedPrefix)), content.Link),
 		)
 	default:
 		yunyun.AddFlag(&content.Options, linkWasNotSpecialFlag)

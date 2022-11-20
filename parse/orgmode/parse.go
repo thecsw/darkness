@@ -27,14 +27,14 @@ func preprocess(data string) string {
 }
 
 // Parse parses the input string and returns a list of elements
-func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
+func (p ParserOrgmode) Parse() *yunyun.Page {
 	// Split the data into lines
-	lines := strings.Split(preprocess(data), "\n")
+	lines := strings.Split(preprocess(p.Data), "\n")
 
 	page := yunyun.NewPage(
-		yunyun.WithFilename(filename),
-		yunyun.WithURL(emilia.JoinPath(filepath.Dir(filename))),
-		yunyun.WithContents(make([]yunyun.Content, 0, 16)),
+		yunyun.WithFilename(p.Filename),
+		yunyun.WithURL(emilia.JoinPath(filepath.Dir(p.Filename))),
+		yunyun.WithContents(make([]*yunyun.Content, 0, 16)),
 	)
 
 	// currentFlags uses flags to set options
@@ -50,7 +50,7 @@ func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 
 	addFlag, removeFlag, flipFlag, hasFlag := yunyun.LatchFlags(&currentFlags)
 	// addContent is a helper function to add content to the page
-	addContent := func(content yunyun.Content) {
+	addContent := func(content *yunyun.Content) {
 		content.Options = currentFlags
 		content.Summary = additionalContext
 		content.Caption = caption
@@ -69,11 +69,11 @@ func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 			if additionalContext == "" {
 				additionalContext = "open for details"
 			}
-			addContent(yunyun.Content{Type: yunyun.TypeDetails})
+			addContent(&yunyun.Content{Type: yunyun.TypeDetails})
 		},
 		optionEndDetails: func(line string) {
 			removeFlag(yunyun.InDetailsFlag)
-			addContent(yunyun.Content{Type: yunyun.TypeDetails})
+			addContent(&yunyun.Content{Type: yunyun.TypeDetails})
 		},
 		optionBeginGallery: func(line string) {
 			addFlag(yunyun.InGalleryFlag)
@@ -100,7 +100,7 @@ func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 				// Mark the leave
 				removeFlag(yunyun.InRawHTMLFlag)
 				// Save the raw html
-				addContent(yunyun.Content{
+				addContent(&yunyun.Content{
 					Type:    yunyun.TypeRawHTML,
 					RawHTML: previousContext,
 				})
@@ -126,7 +126,7 @@ func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 				// Mark the leave
 				removeFlag(yunyun.InSourceCodeFlag)
 				// Save the source code
-				addContent(yunyun.Content{
+				addContent(&yunyun.Content{
 					Type:           yunyun.TypeSourceCode,
 					SourceCodeLang: sourceCodeLang,
 					SourceCode:     strings.TrimRight(previousContext, "\n\t\r\f\b"),
@@ -169,7 +169,7 @@ func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 				currentContext = ""
 				continue
 			}
-			addContent(*header)
+			addContent(header)
 			continue
 		}
 		// If we hit an empty line, end the whatever context we had
@@ -180,7 +180,7 @@ func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 			}
 			// Add a horizontal line divider
 			if isHorizonalLine(previousContext) {
-				addContent(yunyun.Content{
+				addContent(&yunyun.Content{
 					Type: yunyun.TypeHorizontalLine,
 				})
 				continue
@@ -196,7 +196,7 @@ func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 					continue
 				}
 				// Add the list
-				addContent(yunyun.Content{
+				addContent(&yunyun.Content{
 					Type: yunyun.TypeList,
 					List: matches,
 				})
@@ -222,7 +222,7 @@ func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 					}
 					tableData[i] = columns
 				}
-				addContent(yunyun.Content{
+				addContent(&yunyun.Content{
 					Type:         yunyun.TypeTable,
 					Table:        tableData,
 					TableHeaders: hasFlag(yunyun.InTableHasHeadersFlag),
@@ -232,16 +232,16 @@ func (ParserOrgmode) Parse(data, filename string) *yunyun.Page {
 			}
 			// Let's see if our context is a standalone link
 			if link := isLink(previousContext); link != nil {
-				addContent(*link)
+				addContent(link)
 				continue
 			}
 			// Also check if this is an attention block, like "NOTE:..." or "WARNING:..."
 			if attention := isAttentionBlock(previousContext); attention != nil {
-				addContent(*attention)
+				addContent(attention)
 				continue
 			}
 			// By default, save whatever we have as a paragraph
-			addContent(*formParagraph(previousContext, additionalContext, currentFlags))
+			addContent(formParagraph(previousContext, additionalContext, currentFlags))
 			// Reset the drop cap flag
 			removeFlag(yunyun.InDropCapFlag)
 			continue

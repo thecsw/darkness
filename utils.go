@@ -8,20 +8,12 @@ import (
 
 	"github.com/karrick/godirwalk"
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/export"
-	"github.com/thecsw/darkness/export/html"
 	"github.com/thecsw/darkness/parse"
-	"github.com/thecsw/darkness/parse/orgmode"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
-
-// bundle is a struct that hold filename and contents -- used for
-// reading files and passing context or writing them too.
-type bundle struct {
-	File string
-	Data string
-}
 
 // findFilesByExt finds all files with a given extension
 func findFilesByExt(inputFilenames chan<- string, wg *sync.WaitGroup) {
@@ -57,16 +49,15 @@ func inputToOutput(file string) string {
 	if err != nil {
 		panic(err)
 	}
-	page := getParser().Parse(string(data), file)
+	page := getParser().WithFilenameData(file, string(data)).Parse()
 	return exportAndEnrich(applyEmilia(page))
 }
 
 // exportAndEnrich automatically applies all the emilia enhancements
 // and converts Page into an html document.
 func exportAndEnrich(page *yunyun.Page) string {
-	exporter := getExporter()
-	exporter.SetPage(applyEmilia(page))
-	result := emilia.AddHolosceneTitles(exporter.Export(), func() int {
+	result := emilia.AddHolosceneTitles(getExporter().
+		SetPage(applyEmilia(page)).Export(), func() int {
 		if strings.HasSuffix(page.URL, "quotes") {
 			return -1
 		}
@@ -89,18 +80,16 @@ func applyEmilia(page *yunyun.Page) *yunyun.Page {
 
 // getParser returns a new parser object.
 func getParser() parse.Parser {
-	switch emilia.Config.Project.Input {
-	case ".org":
-		return &orgmode.ParserOrgmode{}
+	if v, ok := parse.ParserMap[emilia.Config.Project.Input]; ok {
+		return v
 	}
-	return &orgmode.ParserOrgmode{}
+	return parse.ParserMap[puck.ExtensionOrgmode]
 }
 
 // getExporter returns a new exporter object.
 func getExporter() export.Exporter {
-	switch emilia.Config.Project.Output {
-	case ".html":
-		return &html.ExporterHTML{}
+	if v, ok := export.ExporterMap[emilia.Config.Project.Output]; ok {
+		return v
 	}
-	return &html.ExporterHTML{}
+	return export.ExporterMap[puck.ExtensionHtml]
 }

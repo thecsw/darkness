@@ -9,41 +9,53 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/gana"
 )
 
 var (
-	// Config is the global darkness config
+	// Config is the global darkness config.
 	Config *DarknessConfig
 )
 
-// InitDarkness initializes the darkness config
-func InitDarkness(file string) {
+// EmiliaOptions is used for passing options when initiating emilia.
+type EmiliaOptions struct {
+	// DarknessConfig is the location of darkness's toml config file.
+	DarknessConfig string
+	// Dev enables URL generation through local paths.
+	Dev bool
+	// Test enables test environment, where darkness config is not needed
+	Test bool
+}
+
+// InitDarkness initializes the darkness config.
+func InitDarkness(options *EmiliaOptions) {
 	Config = &DarknessConfig{}
-	data, err := ioutil.ReadFile(file)
-	if err != nil {
-		fmt.Printf("failed to open the config %s: %s", file, err.Error())
+	data, err := ioutil.ReadFile(options.DarknessConfig)
+	if err != nil && !options.Test {
+		fmt.Printf("failed to open the config %s: %s", options.DarknessConfig, err.Error())
 		os.Exit(1)
 	}
 	_, err = toml.Decode(string(data), Config)
 	if err != nil {
-		fmt.Printf("failed to decode the config %s: %s", file, err.Error())
+		fmt.Printf("failed to decode the config %s: %s", options.DarknessConfig, err.Error())
 		os.Exit(1)
 	}
-	// If input/output formats are empty, default to .org/.html respectively
-	if undef(Config.Project.Input) {
-		Config.Project.Input = ".org"
+	// If input/output formats are empty, default to .org/.html respectively.
+	if isZero(Config.Project.Input) {
+		Config.Project.Input = puck.ExtensionOrgmode
 	}
-	if undef(Config.Project.Output) {
-		Config.Project.Output = ".html"
+	if isZero(Config.Project.Output) {
+		Config.Project.Output = puck.ExtensionHtml
 	}
-	if undef(Config.Website.Preview) {
-		Config.Website.Preview = "preview.png"
+	if isZero(Config.Website.Preview) {
+		Config.Website.Preview = puck.DefaultPreviewFile
 	}
 	if Config.Website.DescriptionLength < 1 {
 		Config.Website.DescriptionLength = 100
 	}
-	// If the URL is empty, then plug in the current directory
-	if len(Config.URL) < 1 {
+	// If the URL is empty, then plug in the current directory.
+	if len(Config.URL) < 1 || options.Dev {
 		Config.URL, err = os.Getwd()
 		if err != nil {
 			fmt.Printf("failed to get current directory because config url was not given: %s", err.Error())
@@ -60,7 +72,7 @@ func InitDarkness(file string) {
 		os.Exit(1)
 	}
 	// Set the default syntax highlighting theme
-	if undef(Config.Website.SyntaxHighlightingTheme) {
+	if isZero(Config.Website.SyntaxHighlightingTheme) {
 		Config.Website.SyntaxHighlightingTheme = highlightJsThemeDefaultPath
 	}
 	// Build the regex that will be used to exclude files that
@@ -73,18 +85,23 @@ func InitDarkness(file string) {
 			"\nFailed with error:", err.Error())
 		os.Exit(1)
 	}
-	// Monkey patch the function if we're using the roman footnotes
+	// Monkey patch the function if we're using the roman footnotes.
 	if Config.Website.RomanFootnotes {
 		FootnoteLabeler = numberToRoman
 	}
 }
 
-// JoinPath joins a path to the darkness config URL
+// JoinPath joins a path to the darkness config URL.
 func JoinPath(elem string) string {
 	u, _ := url.Parse(elem)
+	// if err != nil {
+	// 	fmt.Printf("Failde to parse target %s: %s", elem, err.Error())
+	// 	os.Exit(1)
+	// }
 	return Config.URLPath.ResolveReference(u).String()
 }
 
-func undef(what string) bool {
-	return what == ""
+// isZero returns true if the passed value is a zero value of its type.
+func isZero[T comparable](what T) bool {
+	return what == gana.ZeroValue[T]()
 }

@@ -1,6 +1,7 @@
 package html
 
 import (
+	"strings"
 	"unicode"
 
 	"github.com/thecsw/darkness/yunyun"
@@ -13,17 +14,17 @@ func extractID(heading string) string {
 	if len(match) > 0 {
 		heading = match[2] // 0 is whole match, 1 is link, 2 is title
 	}
-	res := "_"
+	res := ""
 	for _, c := range heading {
 		if unicode.IsSpace(c) || unicode.IsPunct(c) || unicode.IsSymbol(c) {
-			res += "_"
+			res += "-"
 			continue
 		}
 		if c <= unicode.MaxASCII {
 			res += string(unicode.ToLower(c))
 		}
 	}
-	return res
+	return strings.TrimRight(res, "-")
 }
 
 type divType uint8

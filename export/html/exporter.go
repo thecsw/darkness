@@ -26,13 +26,12 @@ type ExporterHTML struct {
 }
 
 // SetPage sets the internal page and creates internal content mappers.
-func (e *ExporterHTML) SetPage(page *yunyun.Page) {
-	// Set up the content functions.
-	e.contentFunctions = export.ContentBuilder(e)
-	// If nil passed, it's used as a test and should be ignored.
-	if page == nil {
-		return
+func (e *ExporterHTML) SetPage(page *yunyun.Page) export.Exporter {
+	what := &ExporterHTML{
+		page:        page,
+		contentsNum: len(page.Contents),
 	}
-	e.page = page
-	e.contentsNum = len(page.Contents)
+	// Set up the content functions.
+	what.contentFunctions = export.ContentBuilder(what)
+	return what
 }

@@ -17,6 +17,7 @@ var quotesReplace = map[string]string{
 	"'m":  "’m",
 	"n't": "n’t",
 	"'re": "’re",
+	"'ve": "’ve",
 	"'ll": "’ll",
 	"``":  "“",
 	"''":  "”",

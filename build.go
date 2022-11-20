@@ -39,7 +39,7 @@ func oneFile() {
 	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
 	fileCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	fileCmd.Parse(os.Args[2:])
-	emilia.InitDarkness(darknessToml)
+	emilia.InitDarkness(&emilia.EmiliaOptions{DarknessConfig: darknessToml})
 	fmt.Println(inputToOutput(filename))
 }
 
@@ -51,10 +51,14 @@ func build() {
 	disableParallel := buildCmd.Bool("disable-parallel", false, "disable parallel build (only use one worker)")
 	customNumWorkers := buildCmd.Int("workers", defaultNumOfWorkers, "number of workers to spin up")
 	customChannelCapacity := buildCmd.Int("capacity", defaultNumOfWorkers, "worker channels' capacity")
+	useCurrentDirectory := buildCmd.Bool("dev", false, "use local path for urls (development)")
 	buildCmd.Parse(os.Args[2:])
 
 	// Read the config and initialize emilia settings.
-	emilia.InitDarkness(darknessToml)
+	emilia.InitDarkness(&emilia.EmiliaOptions{
+		DarknessConfig: darknessToml,
+		Dev:            *useCurrentDirectory,
+	})
 
 	var err error
 	workDir, err = filepath.Abs(workDir)
@@ -71,29 +75,24 @@ func build() {
 	// Create the channel to feed read files.
 	inputFilenames := make(chan string, *customChannelCapacity)
 
-	// Create the worker that will read files and push bundles.
-	inputFiles := gana.GenericWorkers(inputFilenames, func(v string) *bundle {
+	// Create the worker that will read files and push tuples.
+	inputFiles := gana.GenericWorkers(inputFilenames, func(v string) gana.Tuple[string, string] {
 		data, err := ioutil.ReadFile(v)
 		if err != nil {
 			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
 		}
-		return &bundle{
-			File: v,
-			Data: string(data),
-		}
+		return gana.NewTuple(v, string(data))
 	}, 1, *customChannelCapacity)
 
 	// Create the workers for parsing and converting orgmode to Page.
-	pages := gana.GenericWorkers(inputFiles, func(v *bundle) *yunyun.Page {
-		return getParser().Parse(v.Data, v.File)
+	pages := gana.GenericWorkers(inputFiles, func(v gana.Tuple[string, string]) *yunyun.Page {
+		//return getParser().Parse()
+		return getParser().WithFilenameData(v.Unpack()).Parse()
 	}, *customNumWorkers, *customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
-	results := gana.GenericWorkers(pages, func(v *yunyun.Page) *bundle {
-		return &bundle{
-			File: getTarget(v.File),
-			Data: exportAndEnrich(v),
-		}
+	results := gana.GenericWorkers(pages, func(v *yunyun.Page) gana.Tuple[string, string] {
+		return gana.NewTuple(getTarget(v.File), exportAndEnrich(v))
 	}, *customNumWorkers, *customChannelCapacity)
 
 	// This will block darkness from exiting until all the files are done.
@@ -115,7 +114,7 @@ func build() {
 	// save it at the right spot, marking itself Done and leaving.
 	go func(wg *sync.WaitGroup) {
 		for result := range results {
-			os.WriteFile(result.File, []byte(result.Data), savePerms)
+			os.WriteFile(result.First, []byte(result.Second), savePerms)
 			wg.Done()
 		}
 		// Remove the artificial block we made before discovery.

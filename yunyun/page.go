@@ -14,7 +14,7 @@ type Page struct {
 	// URL is the URL of the page.
 	URL string
 	// Contents is the contents of the page.
-	Contents []Content
+	Contents []*Content
 	// Footnotes is the footnotes of the page.
 	Footnotes []string
 	// Scripts is the scripts of the page.

@@ -9,6 +9,8 @@ type Content struct {
 	Options Bits
 	// HeadingLevel is the heading level of the content (1 being the title, starts at 2).
 	HeadingLevel int
+	// HeadingLevelAdjusted is adjusted `HeadingLevel` by `emilia`.
+	HeadingLevelAdjusted int
 	// HeadingChild tells us if the current heading is a child of some previous heading.
 	HeadingChild bool
 	// HeadingFirst tells us if the current heading is the first heading on the page.

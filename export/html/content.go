@@ -26,8 +26,7 @@ const (
 func (e *ExporterHTML) setContentFlags(v *yunyun.Content) {
 	contentDivType := whatDivType(v)
 	// Mark situations when we have to leave writing
-	if e.inWriting &&
-		(contentDivType != divWriting || e.currentContentIndex == e.contentsNum) {
+	if e.inWriting && (contentDivType != divWriting) {
 		yunyun.AddFlag(&v.Options, thisContentClosesWritingFlag)
 		e.inWriting = false
 	}
@@ -52,11 +51,10 @@ func (e *ExporterHTML) resolveDivTags(built string) string {
 		built = `<div class="writing">` + "\n" + built
 	}
 	if yunyun.HasFlag(&e.currentContent.Options, thisContentClosesWritingFlag) {
-		if e.currentContentIndex == e.contentsNum {
-			built += "</div>\n"
-		} else {
-			built = "</div>\n" + built
-		}
+		built = "</div>\n" + built
+	}
+	if e.inWriting && e.currentContentIndex == e.contentsNum-1 {
+		built = built + "\n</div>\n"
 	}
 	return built
 }
@@ -64,15 +62,12 @@ func (e *ExporterHTML) resolveDivTags(built string) string {
 // headings gives us a heading html representation
 func (e *ExporterHTML) Heading(content *yunyun.Content) string {
 	toReturn := fmt.Sprintf(`
-<div class="sect%d">
-<h%d id="%s">%s</h%d>
-</div>`,
-		//<div class="sectionbody">`,
-		content.HeadingLevel-1,       // CSS class
-		content.HeadingLevel,         // HTML open tag
+<h%d id="%s" class="section-%d">%s</h%d>`,
+		content.HeadingLevelAdjusted, // HTML open tag
 		extractID(content.Heading),   // ID
+		content.HeadingLevel,         // section class
 		processText(content.Heading), // Actual title
-		content.HeadingLevel,         // HTML close tag
+		content.HeadingLevelAdjusted, // HTML close tag
 	)
 	e.inHeading = true
 	return toReturn

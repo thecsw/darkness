@@ -1,12 +1,14 @@
 package export
 
-import "github.com/thecsw/darkness/yunyun"
+import (
+	"github.com/thecsw/darkness/yunyun"
+)
 
 // Exporter is a generic interface that other output extensions should
 // implement.
 type Exporter interface {
 	// SetPage sets the import source for the exporter.
-	SetPage(*yunyun.Page)
+	SetPage(*yunyun.Page) Exporter
 	// Export performs the exporting with options passed in.
 	Export() string
 
@@ -49,4 +51,12 @@ func ContentBuilder(exporter Exporter) []func(*yunyun.Content) string {
 		exporter.Table,
 		exporter.Details,
 	}
+}
+
+// ExporterMap stores mappings of extensions to their exporters.
+var ExporterMap = make(map[string]Exporter)
+
+// Register is called by exporters to register themselves.
+func Register(ext string, e Exporter) {
+	ExporterMap[ext] = e
 }

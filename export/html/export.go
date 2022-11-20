@@ -2,6 +2,7 @@ package html
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
@@ -13,6 +14,10 @@ const (
 
 // Export runs the process of exporting
 func (e ExporterHTML) Export() string {
+	if e.page == nil {
+		fmt.Println("Export should be called after SetPage")
+		os.Exit(1)
+	}
 	// Add the red tomb to the last paragraph on given directories
 	// from the config
 	for _, tombPage := range emilia.Config.Website.Tombs {
@@ -25,7 +30,7 @@ func (e ExporterHTML) Export() string {
 	content := make([]string, e.contentsNum)
 	for i, v := range e.page.Contents {
 		e.currentContentIndex = i
-		e.currentContent = &v
+		e.currentContent = v
 		content[i] = e.buildContent()
 	}
 
@@ -95,7 +100,7 @@ func (e ExporterHTML) scriptTags() string {
 func (e ExporterHTML) authorHeader() string {
 	content := fmt.Sprintf(`
 <div class="header">
-<h1>%s%s</h1>
+<h1 class="section-1">%s%s</h1>
 <div class="details">
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
@@ -138,7 +143,7 @@ func (e ExporterHTML) addTomb() {
 	if e.contentsNum < 1 {
 		return
 	}
-	last := &e.page.Contents[e.contentsNum-1]
+	last := e.page.Contents[e.contentsNum-1]
 	// Only add it to paragraphs
 	if !last.IsParagraph() {
 		return

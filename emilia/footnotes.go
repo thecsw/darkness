@@ -13,7 +13,7 @@ func WithFootnotes() yunyun.PageOption {
 	return func(page *yunyun.Page) {
 		footnotes := make([]string, 0, 4)
 		for i := range page.Contents {
-			c := &page.Contents[i]
+			c := page.Contents[i]
 			// Replace footnotes in paragraphs
 			if c.IsParagraph() {
 				c.Paragraph = findFootnotes(c.Paragraph, &footnotes)

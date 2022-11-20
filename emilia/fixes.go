@@ -11,13 +11,13 @@ import (
 func WithEnrichedHeadings() yunyun.PageOption {
 	return func(page *yunyun.Page) {
 		// Normalizing headings
-		if !Config.Website.NormalizeHeadings {
-			return
-		}
+		// if !Config.Website.NormalizeHeadings {
+		// 	return
+		// }
 		minHeadingLevel := 999
 		// Find the smallest heading
 		for i := range page.Contents {
-			c := &page.Contents[i]
+			c := page.Contents[i]
 			if !c.IsHeading() {
 				continue
 			}
@@ -26,12 +26,12 @@ func WithEnrichedHeadings() yunyun.PageOption {
 			}
 		}
 		// Shift everything over
-		for i := range page.Contents {
-			c := &page.Contents[i]
+		for i, v := range page.Contents {
+			c := page.Contents[i]
 			if !c.IsHeading() {
 				continue
 			}
-			c.HeadingLevel -= (minHeadingLevel - 2)
+			c.HeadingLevelAdjusted = v.HeadingLevel - minHeadingLevel + 1
 		}
 	}
 }

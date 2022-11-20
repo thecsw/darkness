@@ -149,7 +149,7 @@ func isAttentionBlock(line string) *yunyun.Content {
 
 // extractOptionLabel is a utility function used to extract option values.
 func extractOptionLabel(given string, option string) string {
-	return strings.TrimSpace(gana.SkipString(len(optionPrefix)+len(option), given))
+	return strings.TrimSpace(gana.SkipString(uint(len(optionPrefix)+len(option)), given))
 }
 
 // extractSourceCodeLanguage extracts language `LANG` from `#+begin_src LANG`.

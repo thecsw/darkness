@@ -30,7 +30,7 @@ func WithSourceCodeTrimmedLeftWhitespace() yunyun.PageOption {
 				}
 				lines[i] = line[gana.Min(len(lines[i]), offset):]
 			}
-			(&page.Contents[i]).SourceCode = strings.Join(lines, "\n")
+			page.Contents[i].SourceCode = strings.Join(lines, "\n")
 		}
 	}
 }

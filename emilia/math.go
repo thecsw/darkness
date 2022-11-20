@@ -63,7 +63,7 @@ func WithMathSupport() yunyun.PageOption {
 // hasMathEquations returns true if the page has any math equations and
 // returns false otherwise.
 func hasMathEquations(page *yunyun.Page) bool {
-	return gana.Anyf(hasEquationInContent, gana.Map(gana.GetPointer[yunyun.Content], page.Contents))
+	return gana.Anyf(hasEquationInContent, page.Contents)
 }
 
 // hasEquationInContent returns true if the content has math equations in it.
