@@ -31,9 +31,14 @@ func Untar(reader io.Reader, dirName string) error {
 			return err
 		}
 		defer file.Close()
-		_, err = io.Copy(file, tarReader)
-		if err != nil {
-			return err
+		for {
+			_, err = io.CopyN(file, tarReader, 1024)
+			if err != nil {
+				if err == io.EOF {
+					break
+				}
+				return err
+			}
 		}
 	}
 	return nil
