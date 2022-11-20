@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -19,13 +20,17 @@ import (
 
 // findFilesByExt finds all files with a given extension
 func findFilesByExt(inputFilenames chan<- string, wg *sync.WaitGroup) {
-	godirwalk.Walk(workDir, &godirwalk.Options{
+	if err := godirwalk.Walk(workDir, &godirwalk.Options{
+		ErrorCallback: func(osPathname string, err error) godirwalk.ErrorAction {
+			fmt.Printf("Encountered an error while traversing %s: %s\n", osPathname, err.Error())
+			return godirwalk.SkipNode
+		},
+		Unsorted: true,
 		Callback: func(osPathname string, de *godirwalk.Dirent) error {
 			if filepath.Ext(osPathname) != emilia.Config.Project.Input {
 				return nil
 			}
-			if emilia.Config.Project.ExcludeRegex.MatchString(osPathname) ||
-				gana.First([]rune(de.Name())) == rune('.') {
+			if emilia.Config.Project.ExcludeRegex.MatchString(osPathname) || gana.First([]rune(de.Name())) == rune('.') {
 				return filepath.SkipDir
 			}
 			wg.Add(1)
@@ -33,8 +38,9 @@ func findFilesByExt(inputFilenames chan<- string, wg *sync.WaitGroup) {
 			inputFilenames <- relPath
 			return err
 		},
-		Unsorted: true, // (optional) set true for faster yet non-deterministic enumeration (see godoc)
-	})
+	}); err != nil {
+		fmt.Printf("File traversal returned an error: %s\n", err.Error())
+	}
 	close(inputFilenames)
 }
 
