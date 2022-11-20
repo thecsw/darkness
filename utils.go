@@ -10,6 +10,11 @@ import (
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
+
+	_ "github.com/thecsw/darkness/export/html"
+	_ "github.com/thecsw/darkness/export/template"
+	_ "github.com/thecsw/darkness/parse/orgmode"
+	_ "github.com/thecsw/darkness/parse/template"
 )
 
 // findFilesByExt finds all files with a given extension
