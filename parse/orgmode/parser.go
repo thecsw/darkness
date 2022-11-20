@@ -2,6 +2,9 @@ package orgmode
 
 import "github.com/thecsw/darkness/parse"
 
+// ParserOrgmodeBuilder builds `ParserOrgmode`.
+type ParserOrgmodeBuilder struct{}
+
 // ParserOrgmode implements `parse.Parser`.
 type ParserOrgmode struct {
 	// Filename is the filename of the source input.
@@ -11,7 +14,7 @@ type ParserOrgmode struct {
 }
 
 // BuildParser builds the `Parser` interface object.
-func (p ParserOrgmode) BuildParser(filename, data string) parse.Parser {
+func (ParserOrgmodeBuilder) BuildParser(filename, data string) parse.Parser {
 	return &ParserOrgmode{
 		Filename: filename,
 		Data:     data,

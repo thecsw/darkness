@@ -5,6 +5,9 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
+// ExporterTemplateBuilder builds `ExporterTemplate`.
+type ExporterTemplateBuilder struct{}
+
 // ExporterTemplate is a template exporter
 type ExporterTemplate struct {
 	page             *yunyun.Page
@@ -12,7 +15,7 @@ type ExporterTemplate struct {
 }
 
 // SetPage creates a new Exporter object and returns it with data filled.
-func (e *ExporterTemplate) BuildExporter(page *yunyun.Page) export.Exporter {
+func (ExporterTemplateBuilder) BuildExporter(page *yunyun.Page) export.Exporter {
 	what := &ExporterTemplate{
 		page: page,
 	}

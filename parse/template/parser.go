@@ -2,6 +2,9 @@ package template
 
 import "github.com/thecsw/darkness/parse"
 
+// ParserTemplateBuilder builds `ParserTemplate`.
+type ParserTemplateBuilder struct{}
+
 // ParserTemplate implements `parse.Parser`.
 type ParserTemplate struct {
 	// Filename is the filename of the source input.
@@ -11,7 +14,7 @@ type ParserTemplate struct {
 }
 
 // BuildParser will create a new parser object and return it.
-func (p ParserTemplate) BuildParser(filename, data string) parse.Parser {
+func (ParserTemplateBuilder) BuildParser(filename, data string) parse.Parser {
 	return &ParserTemplate{
 		Filename: filename,
 		Data:     data,

@@ -87,7 +87,7 @@ func build() {
 	// Create the workers for parsing and converting orgmode to Page.
 	pages := gana.GenericWorkers(inputFiles, func(v gana.Tuple[string, string]) *yunyun.Page {
 		//return getParser().Parse()
-		return getParserBuilder().BuildParser(v.Unpack()).Parse()
+		return emilia.ParserBuilder.BuildParser(v.Unpack()).Parse()
 	}, *customNumWorkers, *customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.

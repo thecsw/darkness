@@ -5,13 +5,15 @@ import (
 )
 
 var (
-	// Make sure that this parser implements `parse.Parser`.
-	parser                     = &ParserTemplate{}
-	_      parse.Parser        = parser
-	_      parse.ParserBuilder = parser
+	// Make sure this parser implements `parse.Parser`.
+	parser              = &ParserTemplate{}
+	_      parse.Parser = parser
+	// Make sure this parser implements `parse.ParserBuilder`.
+	parserBuilder                     = &ParserTemplateBuilder{}
+	_             parse.ParserBuilder = parserBuilder
 )
 
 // This init registers the parser with the root module.
 func init() {
-	parse.Register("TEMPLATE PARSER", parser)
+	parse.Register("TEMPLATE PARSER", parserBuilder)
 }

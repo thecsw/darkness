@@ -9,10 +9,12 @@ import (
 )
 
 var (
-	// Make sure that this exporter implements `export.Exporter`.
-	exporter                        = &ExporterHTML{}
-	_        export.Exporter        = exporter
-	_        export.ExporterBuilder = exporter
+	// Make sure this exporter implements `export.Exporter`.
+	exporter                 = &ExporterHTML{}
+	_        export.Exporter = exporter
+	// Make sure this exporter builder implements `export.ExporterBuilder`.
+	exporterBuilder                        = &ExporterHTMLBuilder{}
+	_               export.ExporterBuilder = exporterBuilder
 )
 
 // This init makes sure there are no discrepancies in html defs.
@@ -26,5 +28,5 @@ func init() {
 
 // This init registers the exporter with the root module.
 func init() {
-	export.Register(puck.ExtensionHtml, exporter)
+	export.Register(puck.ExtensionHtml, exporterBuilder)
 }

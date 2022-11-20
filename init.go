@@ -7,6 +7,3 @@ import (
 	_ "github.com/thecsw/darkness/parse/orgmode"
 	_ "github.com/thecsw/darkness/parse/template"
 )
-
-func init() {
-}

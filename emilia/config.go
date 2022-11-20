@@ -10,12 +10,18 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/export"
+	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/gana"
 )
 
 var (
 	// Config is the global darkness config.
 	Config *DarknessConfig
+	// ParserBuilder returns the parser builder.
+	ParserBuilder parse.ParserBuilder
+	// ExporterBuilder returns the exporter builder.
+	ExporterBuilder export.ExporterBuilder
 )
 
 // EmiliaOptions is used for passing options when initiating emilia.
@@ -24,7 +30,7 @@ type EmiliaOptions struct {
 	DarknessConfig string
 	// Dev enables URL generation through local paths.
 	Dev bool
-	// Test enables test environment, where darkness config is not needed
+	// Test enables test environment, where darkness config is not needed.
 	Test bool
 }
 
@@ -48,6 +54,11 @@ func InitDarkness(options *EmiliaOptions) {
 	if isZero(Config.Project.Output) {
 		Config.Project.Output = puck.ExtensionHtml
 	}
+	// Build the parser and exporter builders.
+	ParserBuilder = getParserBuilder()
+	ExporterBuilder = getExporterBuilder()
+
+	// Define the preview filename.
 	if isZero(Config.Website.Preview) {
 		Config.Website.Preview = puck.DefaultPreviewFile
 	}
@@ -104,4 +115,20 @@ func JoinPath(elem string) string {
 // isZero returns true if the passed value is a zero value of its type.
 func isZero[T comparable](what T) bool {
 	return what == gana.ZeroValue[T]()
+}
+
+// getParserBuilder returns a new parser object.
+func getParserBuilder() parse.ParserBuilder {
+	if v, ok := parse.ParserMap[Config.Project.Input]; ok {
+		return v
+	}
+	return parse.ParserMap[puck.ExtensionOrgmode]
+}
+
+// getExporterBuilder returns a new exporter object.
+func getExporterBuilder() export.ExporterBuilder {
+	if v, ok := export.ExporterMap[Config.Project.Output]; ok {
+		return v
+	}
+	return export.ExporterMap[puck.ExtensionHtml]
 }

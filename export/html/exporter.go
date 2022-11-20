@@ -5,6 +5,9 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
+// ExporterHTMLBuilder builds `ExporterHTML`.
+type ExporterHTMLBuilder struct{}
+
 // ExporterHTML will consume a `Page` and emit final HTML representation of it.
 type ExporterHTML struct {
 	// page is the source data that will be used for HTML building.
@@ -26,7 +29,7 @@ type ExporterHTML struct {
 }
 
 // SetPage sets the internal page and creates internal content mappers.
-func (e *ExporterHTML) BuildExporter(page *yunyun.Page) export.Exporter {
+func (ExporterHTMLBuilder) BuildExporter(page *yunyun.Page) export.Exporter {
 	what := &ExporterHTML{
 		page:        page,
 		contentsNum: len(page.Contents),

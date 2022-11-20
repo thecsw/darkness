@@ -8,9 +8,6 @@ import (
 
 	"github.com/karrick/godirwalk"
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/export"
-	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -49,14 +46,14 @@ func inputToOutput(file string) string {
 	if err != nil {
 		panic(err)
 	}
-	page := getParserBuilder().BuildParser(file, string(data)).Parse()
+	page := emilia.ParserBuilder.BuildParser(file, string(data)).Parse()
 	return exportAndEnrich(applyEmilia(page))
 }
 
 // exportAndEnrich automatically applies all the emilia enhancements
 // and converts Page into an html document.
 func exportAndEnrich(page *yunyun.Page) string {
-	result := emilia.AddHolosceneTitles(getExporterBuilder().
+	result := emilia.AddHolosceneTitles(emilia.ExporterBuilder.
 		BuildExporter(applyEmilia(page)).Export(), func() int {
 		if strings.HasSuffix(page.URL, "quotes") {
 			return -1
@@ -76,20 +73,4 @@ func applyEmilia(page *yunyun.Page) *yunyun.Page {
 		emilia.WithSourceCodeTrimmedLeftWhitespace(),
 		emilia.WithSyntaxHighlighting(),
 	)
-}
-
-// getParserBuilder returns a new parser object.
-func getParserBuilder() parse.ParserBuilder {
-	if v, ok := parse.ParserMap[emilia.Config.Project.Input]; ok {
-		return v
-	}
-	return parse.ParserMap[puck.ExtensionOrgmode]
-}
-
-// getExporterBuilder returns a new exporter object.
-func getExporterBuilder() export.ExporterBuilder {
-	if v, ok := export.ExporterMap[emilia.Config.Project.Output]; ok {
-		return v
-	}
-	return export.ExporterMap[puck.ExtensionHtml]
 }
