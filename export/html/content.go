@@ -41,8 +41,8 @@ func (e *ExporterHTML) setContentFlags(v *yunyun.Content) {
 // buildContent runs the givent `*Content` against known protocols/policies
 // and does some funky logic to balance div openings and closures.
 func (e *ExporterHTML) buildContent() string {
-	e.setContentFlags(e.currentContent)
 	built := e.contentFunctions[e.currentContent.Type](e.currentContent)
+	e.setContentFlags(e.currentContent)
 	return e.resolveDivTags(built)
 }
 
