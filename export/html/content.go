@@ -177,9 +177,7 @@ func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
 	lang := mapSourceCodeLang(content.SourceCodeLang)
 	return fmt.Sprintf(`
 <div class="listingblock">
-<div class="content">
 <pre class="highlight"><code class="language-%s" data-lang="%s">%s</code></pre>
-</div>
 </div>
 `, lang, lang, func() string {
 		// Remove the nested parser blockers
