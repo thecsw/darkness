@@ -33,13 +33,7 @@ func fancyQuotes(text string) string {
 }
 
 // markupHTMLMapping maps the regex markup to html replacements
-var markupHTMLMapping = map[*regexp.Regexp]string{
-	yunyun.ItalicText:        `$1<em>$2</em>$3`,
-	yunyun.BoldText:          `$1<strong>$2</strong>$3`,
-	yunyun.VerbatimText:      `$1<code>$2</code>$3`,
-	yunyun.StrikethroughText: `$1<s>$2</s>$3`,
-	yunyun.UnderlineText:     `$1<u>$2</u>$3`,
-}
+var markupHTMLMapping map[*regexp.Regexp]string
 
 // markupHTML replaces the markup regexes defined in internal with HTML tags
 func markupHTML(text string) string {
@@ -58,7 +52,8 @@ func markupHTML(text string) string {
 func processText(text string) string {
 	text = markupHTML(html.EscapeString(fancyQuotes(text)))
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
-	text = yunyun.LinkRegexp.ReplaceAllString(text, `<a href="$1">$2</a>`)
+	text = yunyun.LinkRegexp.ReplaceAllString(text,
+		fmt.Sprintf(`<a href="%s">%s</a>`, yunyun.ActiveMarkings.LinkTarget, yunyun.ActiveMarkings.LinkTitle))
 	text = yunyun.MathRegexp.ReplaceAllString(text, `\($1\)`)
 	text = yunyun.FootnotePostProcessingRegexp.ReplaceAllStringFunc(text, func(what string) string {
 		num, _ := strconv.Atoi(strings.ReplaceAll(what, "!", ""))

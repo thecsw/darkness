@@ -1,4 +1,4 @@
-package orgmode
+package markdown
 
 import (
 	"path/filepath"
@@ -14,12 +14,6 @@ func preprocess(data string) string {
 	// Add a newline before every heading just in case if
 	// there is no terminating empty line before each one
 	data = headingRegexp.ReplaceAllString(data, "\n$1")
-	// Center and quote delimeters need a new line around
-	for _, v := range surroundWithNewlines {
-		data = strings.ReplaceAll(data,
-			optionPrefix+v,
-			"\n"+optionPrefix+v)
-	}
 	// Pad a newline so that last elements can be processed
 	// properly before an EOF is encountered during parsing
 	data += "\n"
@@ -27,7 +21,7 @@ func preprocess(data string) string {
 }
 
 // Parse parses the input string and returns a list of elements
-func (p ParserOrgmode) Parse() *yunyun.Page {
+func (p ParserMarkdown) Parse() *yunyun.Page {
 	// Split the data into lines
 	lines := strings.Split(preprocess(p.Data), "\n")
 
@@ -57,34 +51,13 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
 	}
-	optionsActions := map[string]func(line string){
-		optionDropCap:     func(line string) { addFlag(yunyun.InDropCapFlag) },
-		optionBeginQuote:  func(line string) { addFlag(yunyun.InQuoteFlag) },
-		optionEndQuote:    func(line string) { removeFlag(yunyun.InQuoteFlag) },
-		optionBeginCenter: func(line string) { addFlag(yunyun.InCenterFlag) },
-		optionEndCenter:   func(line string) { removeFlag(yunyun.InCenterFlag) },
-		optionBeginDetails: func(line string) {
-			addFlag(yunyun.InDetailsFlag)
-			additionalContext = extractDetailsSummary(line)
-			if additionalContext == "" {
-				additionalContext = "open for details"
-			}
-			addContent(&yunyun.Content{Type: yunyun.TypeDetails})
-		},
-		optionEndDetails: func(line string) {
-			removeFlag(yunyun.InDetailsFlag)
-			addContent(&yunyun.Content{Type: yunyun.TypeDetails})
-		},
-		optionBeginGallery: func(line string) {
-			addFlag(yunyun.InGalleryFlag)
-			additionalContext = extractGalleryFolder(line)
-		},
-		optionEndGallery: func(line string) { removeFlag(yunyun.InGalleryFlag) },
-		optionCaption:    func(line string) { caption = extractCaptionTitle(line) },
-		optionDate:       func(line string) { page.Date = extractDate(line) },
-	}
 
-	// Yunyun's markings default to orgmode
+	yunyun.ActiveMarkings.Bold = `\*\*`
+	yunyun.ActiveMarkings.Italic = `[\*|_]`
+	yunyun.ActiveMarkings.Verbatim = "`"
+	yunyun.ActiveMarkings.Link = `!?\[([^\]]+)\]\(([^\\]+)\)`
+	yunyun.ActiveMarkings.LinkTitle = `$1`
+	yunyun.ActiveMarkings.LinkTarget = `$2`
 	yunyun.ActiveMarkings.BuildRegex()
 	linkRegexp = yunyun.LinkRegexp
 
@@ -152,17 +125,6 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		// Ignore orgmode comments and options, where source code blocks
 		// and export block options are exceptions to this rule
 		if isComment(line) {
-			currentContext = previousContext
-			continue
-		}
-		// isOption is a sink for any options that darkness
-		// does not support, hence will be ignored
-		if isOption(line) {
-			givenLine := line[2:]
-			option := strings.Split(givenLine, " ")[0]
-			if action, ok := optionsActions[option]; ok {
-				action(rawLine)
-			}
 			currentContext = previousContext
 			continue
 		}

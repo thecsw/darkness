@@ -132,7 +132,10 @@ func build() {
 	// Wait for all the files to get saved and then leave.
 	wg.Wait()
 
-	// Report back on some of the results
-	fmt.Printf("Processed in %d ms\n", time.Since(start).Milliseconds())
-	fmt.Println("farewell")
+	// Check that we actually processed some files before reporting.
+	if numFiles > 0 {
+		// Report back on some of the results
+		fmt.Printf("Processed in %d ms\n", time.Since(start).Milliseconds())
+		fmt.Println("farewell")
+	}
 }

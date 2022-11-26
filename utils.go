@@ -14,8 +14,13 @@ import (
 
 	_ "github.com/thecsw/darkness/export/html"
 	_ "github.com/thecsw/darkness/export/template"
+	_ "github.com/thecsw/darkness/parse/markdown"
 	_ "github.com/thecsw/darkness/parse/orgmode"
 	_ "github.com/thecsw/darkness/parse/template"
+)
+
+var (
+	numFiles = 0
 )
 
 // findFilesByExt finds all files with a given extension
@@ -36,10 +41,14 @@ func findFilesByExt(inputFilenames chan<- string, wg *sync.WaitGroup) {
 			wg.Add(1)
 			relPath, err := filepath.Rel(workDir, osPathname)
 			inputFilenames <- filepath.Join(workDir, relPath)
+			numFiles++
 			return err
 		},
 	}); err != nil {
 		fmt.Printf("File traversal returned an error: %s\n", err.Error())
+	}
+	if numFiles == 0 {
+		fmt.Println("No files found")
 	}
 	close(inputFilenames)
 }

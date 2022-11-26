@@ -1,8 +1,9 @@
 package puck
 
 const (
-	ExtensionOrgmode = ".org"
-	ExtensionHtml    = ".html"
+	ExtensionOrgmode  = ".org"
+	ExtensionMarkdown = ".md"
+	ExtensionHtml     = ".html"
 
 	DefaultPreviewFile = "preview.png"
 )

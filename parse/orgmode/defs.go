@@ -2,8 +2,6 @@ package orgmode
 
 import (
 	"regexp"
-
-	"github.com/thecsw/darkness/yunyun"
 )
 
 const (
@@ -46,7 +44,7 @@ var (
 		optionBeginGallery, optionEndGallery,
 	}
 	// linkRegexp is the regexp for matching links
-	linkRegexp = yunyun.LinkRegexp
+	linkRegexp *regexp.Regexp
 	// attentionBlockRegexp is the regexp for matching attention blocks
 	attentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP|IMPORTANT|CAUTION):\s*(.+)`)
 	// unorderedListRegexp is the regexp for matching unordered lists

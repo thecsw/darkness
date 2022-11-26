@@ -127,6 +127,8 @@ func getParserBuilder() parse.ParserBuilder {
 	if v, ok := parse.ParserMap[Config.Project.Input]; ok {
 		return v
 	}
+	fmt.Printf("No'%s parser, defaulting to %s\n", Config.Project.Input, puck.ExtensionOrgmode)
+	Config.Project.Input = puck.ExtensionOrgmode
 	return parse.ParserMap[puck.ExtensionOrgmode]
 }
 
@@ -135,9 +137,13 @@ func getExporterBuilder() export.ExporterBuilder {
 	if v, ok := export.ExporterMap[Config.Project.Output]; ok {
 		return v
 	}
+	fmt.Printf("No %s exporter, defaulting to %s\n", Config.Project.Output, puck.ExtensionHtml)
+	Config.Project.Output = puck.ExtensionHtml
 	return export.ExporterMap[puck.ExtensionHtml]
 }
 
+// setupHighlightJsLanguages logs all the languages we support through
+// the directory included in the config.
 func setupHighlightJsLanguages(dir string) {
 	languages, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -153,6 +159,8 @@ func setupHighlightJsLanguages(dir string) {
 	}
 }
 
+// trimExt trims extension of a file (only top level, so `file.min.js`
+// will be `file.min`)
 func trimExt(s string) string {
 	return strings.TrimSuffix(s, filepath.Ext(s))
 }

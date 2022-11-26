@@ -4,9 +4,11 @@ import (
 	_ "embed"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 const (
@@ -26,6 +28,16 @@ func (e ExporterHTML) Export() string {
 		fmt.Println("Export should be called after SetPage")
 		os.Exit(1)
 	}
+
+	// Initialize the html mapping after yunyun built regexes.
+	markupHTMLMapping = map[*regexp.Regexp]string{
+		yunyun.ItalicText:        `$1<em>$2</em>$3`,
+		yunyun.BoldText:          `$1<strong>$2</strong>$3`,
+		yunyun.VerbatimText:      `$1<code>$2</code>$3`,
+		yunyun.StrikethroughText: `$1<s>$2</s>$3`,
+		yunyun.UnderlineText:     `$1<u>$2</u>$3`,
+	}
+
 	// Add the red tomb to the last paragraph on given directories
 	// from the config
 	for _, tombPage := range emilia.Config.Website.Tombs {
