@@ -35,7 +35,7 @@ func findFilesByExt(inputFilenames chan<- string, wg *sync.WaitGroup) {
 			}
 			wg.Add(1)
 			relPath, err := filepath.Rel(workDir, osPathname)
-			inputFilenames <- relPath
+			inputFilenames <- filepath.Join(workDir, relPath)
 			return err
 		},
 	}); err != nil {
