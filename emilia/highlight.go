@@ -36,10 +36,11 @@ func WithSyntaxHighlighting() yunyun.PageOption {
 		// Add the basic processing scripts.
 		page.Stylesheets = append(page.Stylesheets,
 			fmt.Sprintf(highlightJsTheme, JoinPath(Config.Website.SyntaxHighlightingTheme)))
+		page.Scripts = append(page.Scripts,
+			fmt.Sprintf(highlightJsScript, JoinPath(highlightJsScriptDefaultPath)))
+		// Trigger the action after all the highlight scripts are imported.
 		defer func() {
-			page.Scripts = append(page.Scripts,
-				fmt.Sprintf(highlightJsScript, JoinPath(highlightJsScriptDefaultPath)),
-				highlightJsAction)
+			page.Scripts = append(page.Scripts, highlightJsAction)
 		}()
 		// If language lookup table was not filled, skip the next step.
 		if AvailableLanguages == nil {
