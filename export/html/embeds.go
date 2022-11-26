@@ -52,7 +52,9 @@ Sorry, your browser doesn't support embedded videos.
 	// youtubeEmbedTemplate is the template for youtube embeds.
 	youtubeEmbedTemplate = `
 <div class="media">
-<iframe class="responsive-iframe" src="https://www.youtube.com/embed/%s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<div class="yt-container">
+<iframe src="https://www.youtube.com/embed/%s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</div>
 <hr>
 </div>`
 
