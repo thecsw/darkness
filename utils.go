@@ -86,3 +86,8 @@ func applyEmilia(page *yunyun.Page) *yunyun.Page {
 		emilia.WithSyntaxHighlighting(),
 	)
 }
+
+// fdb cleans the filename from absolute workspace prefix.
+func fdb(filename, data *string) (string, string) {
+	return strings.TrimPrefix(*filename, workDir+"/"), *data
+}
