@@ -36,26 +36,32 @@ func WithSyntaxHighlighting() yunyun.PageOption {
 		// Add the basic processing scripts.
 		page.Stylesheets = append(page.Stylesheets,
 			fmt.Sprintf(highlightJsTheme, JoinPath(Config.Website.SyntaxHighlightingTheme)))
-		page.Scripts = append(page.Scripts,
-			fmt.Sprintf(highlightJsScript, JoinPath(highlightJsScriptDefaultPath)),
-			highlightJsAction)
+		defer func() {
+			page.Scripts = append(page.Scripts,
+				fmt.Sprintf(highlightJsScript, JoinPath(highlightJsScriptDefaultPath)),
+				highlightJsAction)
+		}()
 		// If language lookup table was not filled, skip the next step.
 		if AvailableLanguages == nil {
 			return
 		}
+		addedLanguages := map[string]bool{}
 		// For each codeblock, look up the language and see if we have a
 		// highlight.js processor for it. If we don't simply skip, otherwise,
 		// build a new script import and inject it into the page.
 		for _, sourceCode := range sourceCodes {
 			lang := MapSourceCodeLang(sourceCode.SourceCodeLang)
 			if _, ok := AvailableLanguages[lang]; !ok {
+				lang = defaultHighlightLanguage
+			}
+			if _, alreadyAdded := addedLanguages[lang]; alreadyAdded {
 				continue
 			}
 			page.Scripts = append(page.Scripts, fmt.Sprintf(highlightJsScript,
 				JoinPath(filepath.Join(
 					Config.Website.SyntaxHighlightingLanguages,
 					lang+".min.js"))))
-
+			addedLanguages[lang] = true
 		}
 	}
 }
@@ -73,11 +79,11 @@ var sourceCodeLang = map[string]string{
 }
 
 // MapSourceCodeLang tries to map the simple source code language
-// to the one that highlight.js would accept
+// to the one that highlight.js would accept.
 func MapSourceCodeLang(s string) string {
 	if v, ok := sourceCodeLang[s]; ok {
 		return v
 	}
-	// Default to plaintext
-	return defaultHighlightLanguage
+	// Default to whatever was passed.
+	return s
 }
