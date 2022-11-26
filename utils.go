@@ -35,7 +35,8 @@ func findFilesByExt(inputFilenames chan<- string, wg *sync.WaitGroup) {
 			if filepath.Ext(osPathname) != emilia.Config.Project.Input {
 				return nil
 			}
-			if emilia.Config.Project.ExcludeRegex.MatchString(osPathname) || gana.First([]rune(de.Name())) == rune('.') {
+			if (emilia.Config.Project.ExcludeEnabled && emilia.Config.Project.ExcludeRegex.MatchString(osPathname)) ||
+				gana.First([]rune(de.Name())) == rune('.') {
 				return filepath.SkipDir
 			}
 			wg.Add(1)
@@ -47,7 +48,7 @@ func findFilesByExt(inputFilenames chan<- string, wg *sync.WaitGroup) {
 	}); err != nil {
 		fmt.Printf("File traversal returned an error: %s\n", err.Error())
 	}
-	if numFiles == 0 {
+	if numFiles < 1 {
 		fmt.Println("No files found")
 	}
 	close(inputFilenames)

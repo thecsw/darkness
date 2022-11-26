@@ -50,9 +50,11 @@ func InitDarkness(options *EmiliaOptions) {
 	}
 	// If input/output formats are empty, default to .org/.html respectively.
 	if isZero(Config.Project.Input) {
+		fmt.Println("Input format not found, defaulting to", puck.ExtensionOrgmode)
 		Config.Project.Input = puck.ExtensionOrgmode
 	}
 	if isZero(Config.Project.Output) {
+		fmt.Println("Output format not found, defaulting to", puck.ExtensionHtml)
 		Config.Project.Output = puck.ExtensionHtml
 	}
 	// Build the parser and exporter builders.
@@ -93,6 +95,9 @@ func InitDarkness(options *EmiliaOptions) {
 	}
 	// Build the regex that will be used to exclude files that
 	// have been denoted in emilia darkness config.
+	if len(Config.Project.Exclude) < 1 {
+		Config.Project.ExcludeEnabled = false
+	}
 	excludePattern := fmt.Sprintf("(?mU)(%s)/.*",
 		strings.Join(Config.Project.Exclude, "|"))
 	Config.Project.ExcludeRegex, err = regexp.Compile(excludePattern)
