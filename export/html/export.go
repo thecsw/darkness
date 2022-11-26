@@ -109,7 +109,7 @@ func (e ExporterHTML) authorHeader() string {
 	content := fmt.Sprintf(`
 <div class="header">
 <h1 class="section-1">%s%s</h1>
-<div class="details">
+<div class="menu">
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
 `,
@@ -129,7 +129,7 @@ func (e ExporterHTML) authorHeader() string {
 	content += strings.Join(navLinks, " | ") + `</span>`
 	content += `
 </div>
-<div id="hetime" class="details"></div>
+<div id="hetime" class="menu"></div>
 </div>`
 
 	return content
