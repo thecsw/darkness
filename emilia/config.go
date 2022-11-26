@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/url"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -82,6 +83,10 @@ func InitDarkness(options *EmiliaOptions) {
 		fmt.Printf("failed to parse url from config %s: %s", Config.URL, err.Error())
 		os.Exit(1)
 	}
+	// Set up the custom highlight languages
+	if !isZero(Config.Website.SyntaxHighlightingLanguages) {
+		setupHighlightJsLanguages(Config.Website.SyntaxHighlightingLanguages)
+	}
 	// Set the default syntax highlighting theme
 	if isZero(Config.Website.SyntaxHighlightingTheme) {
 		Config.Website.SyntaxHighlightingTheme = highlightJsThemeDefaultPath
@@ -131,4 +136,23 @@ func getExporterBuilder() export.ExporterBuilder {
 		return v
 	}
 	return export.ExporterMap[puck.ExtensionHtml]
+}
+
+func setupHighlightJsLanguages(dir string) {
+	languages, err := ioutil.ReadDir(dir)
+	if err != nil {
+		fmt.Printf("Failed to open %s: %s", dir, err.Error())
+		AvailableLanguages = nil
+		return
+	}
+	for _, language := range languages {
+		if !strings.HasSuffix(language.Name(), ".min.js") {
+			continue
+		}
+		AvailableLanguages[strings.TrimSuffix(language.Name(), ".min.js")] = true
+	}
+}
+
+func trimExt(s string) string {
+	return strings.TrimSuffix(s, filepath.Ext(s))
 }

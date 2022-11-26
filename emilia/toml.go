@@ -59,6 +59,8 @@ type WebsiteConfig struct {
 	// SyntaxHighlighting decides whether to enable code blocks'
 	// syntax highlighting with highlight.js
 	SyntaxHighlighting bool `toml:"syntax_highlighting"`
+	// SyntaxHighlightingLanguages is the location of highlight.js languages
+	SyntaxHighlightingLanguages string `toml:"syntax_highlighting_languages"`
 	// SyntaxHighlightingTheme decides what theme to use from highlight.js
 	SyntaxHighlightingTheme string `toml:"syntax_highlighting_theme"`
 	// ExtraHead is the list of html directives to insert in <head>

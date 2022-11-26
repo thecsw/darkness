@@ -5,6 +5,7 @@ import (
 	"html"
 	"strings"
 
+	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -156,30 +157,13 @@ func (e ExporterHTML) ListNumbered(content *yunyun.Content) string {
 	return ""
 }
 
-// sourceCodeLang maps our source code language name to the
-// name that highlight.js will need when coloring code
-var sourceCodeLang = map[string]string{
-	"":   "plaintext",
-	"sh": "bash",
-}
-
-// mapSourceCodeLang tries to map the simple source code language
-// to the one that highlight.js would accept
-func mapSourceCodeLang(s string) string {
-	if v, ok := sourceCodeLang[s]; ok {
-		return v
-	}
-	return s
-}
-
 // sourceCode gives us a source code html representation
 func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
-	lang := mapSourceCodeLang(content.SourceCodeLang)
 	return fmt.Sprintf(`
 <div class="listingblock">
 <pre class="highlight"><code class="language-%s" data-lang="%s">%s</code></pre>
 </div>
-`, lang, lang, func() string {
+`, emilia.MapSourceCodeLang(content.SourceCodeLang), content.SourceCodeLang, func() string {
 		// Remove the nested parser blockers
 		s := strings.ReplaceAll(content.SourceCode, ",#", "#")
 		// Escape the whatever HTML that is found in source code
