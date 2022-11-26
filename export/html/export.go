@@ -1,6 +1,7 @@
 package html
 
 import (
+	_ "embed"
 	"fmt"
 	"os"
 	"strings"
@@ -10,6 +11,13 @@ import (
 
 const (
 	tombEnding = " ◼"
+)
+
+var (
+	//go:embed banner.txt
+	darknessBannerSource string
+	// darknessBanner wrapes `darknessBannerSource` in a comment block.
+	darknessBanner = "<!--\n" + darknessBannerSource + "\n-->\n"
 )
 
 // Export runs the process of exporting
@@ -34,7 +42,7 @@ func (e ExporterHTML) Export() string {
 		content[i] = e.buildContent()
 	}
 
-	return fmt.Sprintf(`<!DOCTYPE html>
+	return fmt.Sprintf(`%s<!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Links -->
@@ -59,7 +67,7 @@ func (e ExporterHTML) Export() string {
 %s
 </body>
 </html>`,
-		e.linkTags(), e.metaTags(), e.scriptTags(),
+		darknessBanner, e.linkTags(), e.metaTags(), e.scriptTags(),
 		strings.Join(emilia.Config.Website.ExtraHead, "\n"),
 		processTitle(flattenFormatting(e.page.Title)), e.styleTags(),
 		e.authorHeader(), strings.Join(content, ""), e.addFootnotes(),
