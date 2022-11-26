@@ -64,13 +64,14 @@ func inputToOutput(file string) string {
 // exportAndEnrich automatically applies all the emilia enhancements
 // and converts Page into an html document.
 func exportAndEnrich(page *yunyun.Page) string {
-	result := emilia.AddHolosceneTitles(emilia.ExporterBuilder.
-		BuildExporter(applyEmilia(page)).Export(), func() int {
-		if strings.HasSuffix(page.URL, "quotes") {
-			return -1
-		}
-		return 1
-	}())
+	result := emilia.AddHolosceneTitles(
+		emilia.ExporterBuilder.BuildExporter(applyEmilia(page)).Export(),
+		func() int {
+			if strings.HasSuffix(page.URL, "quotes") {
+				return -1
+			}
+			return 1
+		}())
 	return result
 }
 
