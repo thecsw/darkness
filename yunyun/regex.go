@@ -1,6 +1,9 @@
 package yunyun
 
-import "regexp"
+import (
+	"regexp"
+	"strings"
+)
 
 // Markings is used to store the regex patterns for
 // our formatting, like bold, italics, etc.
@@ -44,6 +47,29 @@ func (m Markings) BuildRegex() {
 	SpecialTextMarkups = []*regexp.Regexp{
 		BoldText, ItalicText, VerbatimText, StrikethroughText, UnderlineText,
 	}
+}
+
+// ExtractLink uses `linkRegexp` and returns match length,
+// link, title, and description. Description defaults to
+// title if it's not provided, as it is optional.
+func ExtractLink(line string) (int, string, string, string) {
+	if !LinkRegexp.MatchString(line) {
+		return -1, "", "", ""
+	}
+	submatches := LinkRegexp.FindAllStringSubmatch(line, 1)
+	// Sanity check
+	if len(submatches) < 1 {
+		return -1, "", "", ""
+	}
+	match := strings.TrimSpace(submatches[0][0])
+	link := strings.TrimSpace(submatches[0][LinkRegexp.SubexpIndex("link")])
+	text := strings.TrimSpace(submatches[0][LinkRegexp.SubexpIndex("text")])
+	desc := strings.TrimSpace(submatches[0][LinkRegexp.SubexpIndex("desc")])
+	if len(desc) < 1 {
+		desc = text
+	}
+
+	return len(match), link, text, desc
 }
 
 var (

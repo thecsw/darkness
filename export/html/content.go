@@ -3,6 +3,7 @@ package html
 import (
 	"fmt"
 	"html"
+	"path/filepath"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
@@ -127,21 +128,22 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
 func makeFlexItem(s string, folder string) string {
-	return fmt.Sprintf(`<img class="item" height="33%%" width="33%%" src="%s">`, folder+s)
+	matchLen, link, text, desc := yunyun.ExtractLink(s)
+	// Maybe they just didn't use a proper link pattern? Stub the value in instead then.
+	if matchLen < 0 {
+		link = s
+	}
+	return fmt.Sprintf(`<img class="item" height="33%%" width="33%%" src="%s" title="%s" alt="%s">`,
+		filepath.Join(folder, strings.TrimSpace(link)), desc, text)
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
 func (e ExporterHTML) gallery(content *yunyun.Content) string {
-	makeFlexItemWithFolder := func(f string) func(string) string {
-		return func(s string) string {
-			return makeFlexItem(s, f)
-		}
-	}(func() string {
-		if len(content.Summary) > 0 {
-			return content.Summary + "/"
-		}
-		return ""
-	}())
+	galleryFolder := ""
+	if len(content.Summary) > 0 {
+		galleryFolder = content.Summary
+	}
+	makeFlexItemWithFolder := func(s string) string { return makeFlexItem(s, galleryFolder) }
 	return fmt.Sprintf(`
 <center>
 <div class="gallery">

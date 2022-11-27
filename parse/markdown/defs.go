@@ -30,5 +30,5 @@ var (
 	// unorderedListRegexp is the regexp for matching unordered lists
 	unorderedListRegexp = regexp.MustCompile(`(?mU)- (.+) ` + listSeparator)
 	// headingRegexp is the regexp for matching headlines
-	headingRegexp = regexp.MustCompile(`(?m)^(#####|####|###|##|#\s+)`)
+	headingRegexp = regexp.MustCompile(`(?m)^(#{1,5}\s+)`)
 )

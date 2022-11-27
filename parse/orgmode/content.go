@@ -49,26 +49,15 @@ func isOption(line string) bool {
 // getLink returns a non-nil object if the line is a link
 func getLink(line string) *yunyun.Content {
 	line = strings.TrimSpace(line)
-	// Not a link
-	if !linkRegexp.MatchString(line) {
+	matchLen, link, text, desc := yunyun.ExtractLink(line)
+	// Extraction didn't yield any results.
+	if matchLen < 0 {
 		return nil
-	}
-	submatches := linkRegexp.FindAllStringSubmatch(line, 1)
-	// Sanity check
-	if len(submatches) < 1 {
-		return nil
-	}
-	match := strings.TrimSpace(submatches[0][0])
-	link := strings.TrimSpace(submatches[0][linkRegexp.SubexpIndex("link")])
-	text := strings.TrimSpace(submatches[0][linkRegexp.SubexpIndex("text")])
-	desc := strings.TrimSpace(submatches[0][linkRegexp.SubexpIndex("desc")])
-	if len(desc) < 1 {
-		desc = text
 	}
 	// Check if this is a standalone link (just by itself on a line)
 	// If it's not, then it's a simple link in a paragraph, deal with
 	// it later in `htmlize`
-	if len(match) != len(line) {
+	if matchLen != len(line) {
 		return nil
 	}
 	return &yunyun.Content{
