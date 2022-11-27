@@ -53,8 +53,8 @@ func isLink(line string) *yunyun.Content {
 		return nil
 	}
 	match := strings.TrimSpace(submatches[0][0])
-	link := strings.TrimSpace(submatches[0][2])
-	text := strings.TrimSpace(submatches[0][1])
+	link := strings.TrimSpace(submatches[0][linkRegexp.SubexpIndex("link")])
+	text := strings.TrimSpace(submatches[0][linkRegexp.SubexpIndex("text")])
 	// Check if this is a standalone link (just by itself on a line)
 	// If it's not, then it's a simple link in a paragraph, deal with
 	// it later in `htmlize`

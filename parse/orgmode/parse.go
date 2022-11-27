@@ -235,7 +235,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 				continue
 			}
 			// Let's see if our context is a standalone link
-			if link := isLink(previousContext); link != nil {
+			if link := getLink(previousContext); link != nil {
 				addContent(link)
 				continue
 			}

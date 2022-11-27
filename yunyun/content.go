@@ -29,6 +29,8 @@ type Content struct {
 	Link string
 	// LinkTitle is the link title.
 	LinkTitle string
+	// LinkDescription is the optional description of the link.
+	LinkDescription string
 	// SourceCode is the source code.
 	SourceCode string
 	// SourceCodeLanguage is the language of the source code.

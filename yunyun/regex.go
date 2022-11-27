@@ -17,10 +17,6 @@ type Markings struct {
 	Underline string
 	// Link is the whole regexp pattern.
 	Link string
-	// LinkTarget is the group number of the link's target.
-	LinkTarget string
-	// LinkTitle is the group number of the link's title.
-	LinkTitle string
 }
 
 var (
@@ -31,9 +27,7 @@ var (
 		Verbatim:      `[~=]`,
 		Strikethrough: `\+`,
 		Underline:     `_`,
-		Link:          `\[\[([^][]+)\]\[([^][]+)\]\]`,
-		LinkTarget:    `$1`,
-		LinkTitle:     `$2`,
+		Link:          `(?mU)\[\[(?P<link>[^][]+)\]\[(?P<text>[^][]+)(?: "(?P<desc>[^"]+)")?\]\]`,
 	}
 )
 
@@ -101,7 +95,7 @@ func FixBoldItalicMarkups(input string) string {
 func RemoveFormatting(what string) string {
 	what = FixBoldItalicMarkups(what)
 	for _, source := range SpecialTextMarkups {
-		what = source.ReplaceAllString(what, `$1$2$3`)
+		what = source.ReplaceAllString(what, `$l$text$r`)
 	}
 	what = KeyboardRegexp.ReplaceAllString(what, `$1`)
 	what = NewLineRegexp.ReplaceAllString(what, `$1`)
@@ -111,7 +105,7 @@ func RemoveFormatting(what string) string {
 // MarkupRegex is a useful tool to create simple text markups.
 func MarkupRegex(delimeter string) *regexp.Regexp {
 	return regexp.MustCompile(
-		`(?mU)(^|[ ()\[\]_%>])` + delimeter +
-			`(\S|\S\S|\S.+\S)` + delimeter +
-			`($|[ ()\[\],.!?:;&_%<“”])`)
+		`(?mU)(?P<l>^|[ ()\[\]_%>])` + delimeter +
+			`(?P<text>\S|\S\S|\S.+\S)` + delimeter +
+			`(?P<r>$|[ ()\[\],.!?:;&_%<“”])`)
 }

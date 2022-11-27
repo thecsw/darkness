@@ -53,7 +53,7 @@ func processText(text string) string {
 	text = markupHTML(html.EscapeString(fancyQuotes(text)))
 	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
 	text = yunyun.LinkRegexp.ReplaceAllString(text,
-		fmt.Sprintf(`<a href="%s">%s</a>`, yunyun.ActiveMarkings.LinkTarget, yunyun.ActiveMarkings.LinkTitle))
+		fmt.Sprintf(`<a href="%s" title="%s">%s</a>`, `$link`, `$desc`, `$text`))
 	text = yunyun.MathRegexp.ReplaceAllString(text, `\($1\)`)
 	text = yunyun.FootnotePostProcessingRegexp.ReplaceAllStringFunc(text, func(what string) string {
 		num, _ := strconv.Atoi(strings.ReplaceAll(what, "!", ""))

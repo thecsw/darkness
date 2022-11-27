@@ -12,7 +12,7 @@ const (
 	// imageEmbedTemplate is the template for image embeds.
 	imageEmbedTemplate = `
 <div class="media">
-<a class="image" href="%s"><img class="image" src="%s" alt="%s"></a>
+<a class="image" href="%s"><img class="image" src="%s" title="%s" alt="%s"></a>
 <div class="title">%s</div>
 <hr>
 </div>`
@@ -85,7 +85,8 @@ func (e *ExporterHTML) Link(content *yunyun.Content) string {
 		return fmt.Sprintf(imageEmbedTemplate,
 			content.Link,
 			content.Link,
-			content.LinkTitle,
+			yunyun.RemoveFormatting(content.LinkDescription),
+			yunyun.RemoveFormatting(content.LinkTitle),
 			processText(content.LinkTitle),
 		)
 	case yunyun.AudioFileExtRegexp.MatchString(content.Link):
@@ -99,7 +100,7 @@ func (e *ExporterHTML) Link(content *yunyun.Content) string {
 			content.Link, func(v string) string {
 				return yunyun.VideoFileExtRegexp.FindAllStringSubmatch(v, 1)[0][1]
 			}(content.Link),
-			content.LinkTitle,
+			processText(content.LinkTitle),
 		)
 	case strings.HasPrefix(content.Link, youtubeEmbedPrefix):
 		// Youtube videos
@@ -117,8 +118,9 @@ func (e *ExporterHTML) Link(content *yunyun.Content) string {
 		)
 	default:
 		yunyun.AddFlag(&content.Options, linkWasNotSpecialFlag)
-		return fmt.Sprintf(`<a href="%s">%s</a>`,
+		return fmt.Sprintf(`<a href="%s" title="%s">%s</a>`,
 			content.Link,
+			yunyun.RemoveFormatting(content.LinkDescription),
 			processText(content.LinkTitle),
 		)
 	}

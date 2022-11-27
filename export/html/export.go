@@ -31,11 +31,11 @@ func (e ExporterHTML) Export() string {
 
 	// Initialize the html mapping after yunyun built regexes.
 	markupHTMLMapping = map[*regexp.Regexp]string{
-		yunyun.ItalicText:        `$1<em>$2</em>$3`,
-		yunyun.BoldText:          `$1<strong>$2</strong>$3`,
-		yunyun.VerbatimText:      `$1<code>$2</code>$3`,
-		yunyun.StrikethroughText: `$1<s>$2</s>$3`,
-		yunyun.UnderlineText:     `$1<u>$2</u>$3`,
+		yunyun.ItalicText:        `$l<em>$text</em>$r`,
+		yunyun.BoldText:          `$l<strong>$text</strong>$r`,
+		yunyun.VerbatimText:      `$l<code>$text</code>$r`,
+		yunyun.StrikethroughText: `$l<s>$text</s>$r`,
+		yunyun.UnderlineText:     `$l<u>$text</u>$r`,
 	}
 
 	// Add the red tomb to the last paragraph on given directories

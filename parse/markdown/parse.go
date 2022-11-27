@@ -55,9 +55,7 @@ func (p ParserMarkdown) Parse() *yunyun.Page {
 	yunyun.ActiveMarkings.Bold = `\*\*`
 	yunyun.ActiveMarkings.Italic = `[\*|_]`
 	yunyun.ActiveMarkings.Verbatim = "`"
-	yunyun.ActiveMarkings.Link = `!?\[([^\]]+)\]\(([^\\]+)\)`
-	yunyun.ActiveMarkings.LinkTitle = `$1`
-	yunyun.ActiveMarkings.LinkTarget = `$2`
+	yunyun.ActiveMarkings.Link = `!?\[(?P<text>[^\]]+)\]\((?P<link>[^\\]+)\)`
 	yunyun.ActiveMarkings.BuildRegex()
 	linkRegexp = yunyun.LinkRegexp
 
