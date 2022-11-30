@@ -43,7 +43,7 @@ func oneFile() {
 		os.Exit(1)
 	}
 	emilia.InitDarkness(&emilia.EmiliaOptions{DarknessConfig: darknessToml})
-	fmt.Println(inputToOutput(filename))
+	fmt.Println(emilia.InputToOutput(filename))
 }
 
 // build builds the entire directory.
@@ -98,7 +98,7 @@ func build() {
 
 	// Create the workers for building Page's into html documents.
 	results := gana.GenericWorkers(pages, func(v *yunyun.Page) gana.Tuple[string, string] {
-		return gana.NewTuple(getTarget(v.File), exportAndEnrich(v))
+		return gana.NewTuple(emilia.InputFilenameToOutput(v.File), emilia.EnrichAndExportPage(v))
 	}, *customNumWorkers, *customChannelCapacity)
 
 	// This will block darkness from exiting until all the files are done.
@@ -112,7 +112,7 @@ func build() {
 	start := time.Now()
 
 	// Run a discovery for files and feed to the reader worker.
-	go findFilesByExt(inputFilenames, wg)
+	go emilia.FindFilesByExt(inputFilenames, workDir, wg)
 
 	// Build a wait group to ensure we always read and write the same
 	// number of files, such that after the file has been read, parsed,
@@ -133,9 +133,12 @@ func build() {
 	wg.Wait()
 
 	// Check that we actually processed some files before reporting.
-	if numFiles > 0 {
-		// Report back on some of the results
-		fmt.Printf("Processed in %d ms\n", time.Since(start).Milliseconds())
-		fmt.Println("farewell")
+	if emilia.NumFoundFiles < 0 {
+		fmt.Println("no files found")
+		return
 	}
+
+	// Report back on some of the results
+	fmt.Printf("Processed in %d ms\n", time.Since(start).Milliseconds())
+	fmt.Println("farewell")
 }

@@ -17,8 +17,8 @@ var (
 
 // main is the entry point for the program
 func main() {
-	//defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
-	//defer profile.Start(profile.MemProfile, profile.MemProfileRate(1), profile.ProfilePath(".")).Stop()
+	// defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+	// defer profile.Start(profile.MemProfile, profile.MemProfileRate(1), profile.ProfilePath(".")).Stop()
 
 	if len(os.Args) == 1 {
 		help()

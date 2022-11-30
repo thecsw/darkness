@@ -41,9 +41,9 @@ func megumin() {
 	orgfiles := make(chan string, defaultNumOfWorkers)
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
-	go findFilesByExt(orgfiles, wg)
+	go emilia.FindFilesByExt(orgfiles, workDir, wg)
 	for orgfile := range orgfiles {
-		toRemove := getTarget(orgfile)
+		toRemove := emilia.InputFilenameToOutput(orgfile)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to blow up!!")
 		}
