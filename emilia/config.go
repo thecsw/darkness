@@ -110,6 +110,9 @@ func InitDarkness(options *EmiliaOptions) {
 	if Config.Website.RomanFootnotes {
 		FootnoteLabeler = numberToRoman
 	}
+
+	// Init the math script
+	InitMathJS()
 }
 
 // JoinPath joins a path to the darkness config URL.
