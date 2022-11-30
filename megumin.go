@@ -27,6 +27,8 @@ func megumin() {
 	}
 	emilia.InitDarkness(&emilia.EmiliaOptions{DarknessConfig: darknessToml})
 
+	removeOutputFiles()
+
 	delayedLinesPrint([]string{
 		"Darker than black, darker than darkness, combine with my intense crimson.",
 		"Time to wake up, descend to these borders and appear as an intangible distortion.",
@@ -38,6 +40,15 @@ func megumin() {
 		"It is the ultimate magical attack!",
 		"Explosion!",
 	})
+
+	delayedLinesPrint([]string{
+		"Wahahahahaha!",
+		"My name is Megumin, the number one mage of Axel!",
+		"Come, you shall all become my experience points today!",
+	})
+}
+
+func removeOutputFiles() {
 	orgfiles := make(chan string, defaultNumOfWorkers)
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
@@ -55,11 +66,6 @@ func megumin() {
 	}
 	wg.Done()
 	wg.Wait()
-	delayedLinesPrint([]string{
-		"Wahahahahaha!",
-		"My name is Megumin, the number one mage of Axel!",
-		"Come, you shall all become my experience points today!",
-	})
 }
 
 // delayedLinesPrint prints lines with a delay.

@@ -31,7 +31,9 @@ func main() {
 	case "file":
 		oneFile()
 	case "build":
-		build()
+		buildCommand()
+	case "serve":
+		serve()
 	case "clean":
 		isQuietMegumin = true
 		megumin()

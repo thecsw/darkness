@@ -33,6 +33,8 @@ type EmiliaOptions struct {
 	Dev bool
 	// Test enables test environment, where darkness config is not needed.
 	Test bool
+	// URL is a custom website url, usually used for serving from localhost.
+	URL string
 }
 
 // InitDarkness initializes the darkness config.
@@ -75,6 +77,10 @@ func InitDarkness(options *EmiliaOptions) {
 			fmt.Printf("failed to get current directory because config url was not given: %s", err.Error())
 			os.Exit(1)
 		}
+	}
+	// Check if custom URL has been passed
+	if len(options.URL) > 0 {
+		Config.URL = options.URL
 	}
 	// URL must end with a trailing forward slash
 	if !strings.HasSuffix(Config.URL, "/") {

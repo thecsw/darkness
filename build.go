@@ -30,7 +30,11 @@ var (
 	filename = "index.org"
 	// defaultNumOfWorkers gives us the number of workers to
 	// spin up in each stage: parsing and processing.
-	defaultNumOfWorkers = 14
+	defaultNumOfWorkers   = 14
+	disableParallel       bool
+	customNumWorkers      int
+	customChannelCapacity int
+	useCurrentDirectory   bool
 )
 
 // oneFile builds a single file.
@@ -47,14 +51,14 @@ func oneFile() {
 }
 
 // build builds the entire directory.
-func build() {
+func buildCommand() {
 	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
 	buildCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
 	buildCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	disableParallel := buildCmd.Bool("disable-parallel", false, "disable parallel build (only use one worker)")
-	customNumWorkers := buildCmd.Int("workers", defaultNumOfWorkers, "number of workers to spin up")
-	customChannelCapacity := buildCmd.Int("capacity", defaultNumOfWorkers, "worker channels' capacity")
-	useCurrentDirectory := buildCmd.Bool("dev", false, "use local path for urls (development)")
+	buildCmd.BoolVar(&disableParallel, "disable-parallel", false, "disable parallel build (only use one worker)")
+	buildCmd.IntVar(&customNumWorkers, "workers", defaultNumOfWorkers, "number of workers to spin up")
+	buildCmd.IntVar(&customChannelCapacity, "capacity", defaultNumOfWorkers, "worker channels' capacity")
+	buildCmd.BoolVar(&useCurrentDirectory, "dev", false, "use local path for urls (development)")
 	if err := buildCmd.Parse(os.Args[2:]); err != nil {
 		fmt.Printf("failed to parse build arguments, fatal: %s", err.Error())
 		os.Exit(1)
@@ -63,9 +67,24 @@ func build() {
 	// Read the config and initialize emilia settings.
 	emilia.InitDarkness(&emilia.EmiliaOptions{
 		DarknessConfig: darknessToml,
-		Dev:            *useCurrentDirectory,
+		Dev:            useCurrentDirectory,
 	})
 
+	start := time.Now()
+	build()
+
+	// Check that we actually processed some files before reporting.
+	if emilia.NumFoundFiles < 0 {
+		fmt.Println("no files found")
+		return
+	}
+
+	// Report back on some of the results
+	fmt.Printf("Processed in %d ms\n", time.Since(start).Milliseconds())
+	fmt.Println("farewell")
+}
+
+func build() {
 	var err error
 	workDir, err = filepath.Abs(workDir)
 	if err != nil {
@@ -75,12 +94,12 @@ func build() {
 
 	// If parallel processing is disabled, only provision one workers
 	// per each processing stage.
-	if *disableParallel {
-		*customNumWorkers = 1
+	if disableParallel {
+		customNumWorkers = 1
 	}
 
 	// Create the channel to feed read files.
-	inputFilenames := make(chan string, *customChannelCapacity)
+	inputFilenames := make(chan string, customChannelCapacity)
 
 	// Create the worker that will read files and push tuples.
 	inputFiles := gana.GenericWorkers(inputFilenames, func(v string) gana.Tuple[string, string] {
@@ -89,17 +108,17 @@ func build() {
 			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
 		}
 		return gana.NewTuple(v, string(data))
-	}, 1, *customChannelCapacity)
+	}, 1, customChannelCapacity)
 
 	// Create the workers for parsing and converting orgmode to Page.
 	pages := gana.GenericWorkers(inputFiles, func(v gana.Tuple[string, string]) *yunyun.Page {
 		return emilia.ParserBuilder.BuildParser(fdb(v.UnpackRef())).Parse()
-	}, *customNumWorkers, *customChannelCapacity)
+	}, customNumWorkers, customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
 	results := gana.GenericWorkers(pages, func(v *yunyun.Page) gana.Tuple[string, string] {
 		return gana.NewTuple(emilia.InputFilenameToOutput(v.File), emilia.EnrichAndExportPage(v))
-	}, *customNumWorkers, *customChannelCapacity)
+	}, customNumWorkers, customChannelCapacity)
 
 	// This will block darkness from exiting until all the files are done.
 	wg := &sync.WaitGroup{}
@@ -107,9 +126,6 @@ func build() {
 	// Add a block here so the file explorer has a bit of time to spin
 	// up and start filling up its channel.
 	wg.Add(1)
-
-	// Find all the appropriate orgmode files and save the list.
-	start := time.Now()
 
 	// Run a discovery for files and feed to the reader worker.
 	go emilia.FindFilesByExt(inputFilenames, workDir, wg)
@@ -131,14 +147,4 @@ func build() {
 
 	// Wait for all the files to get saved and then leave.
 	wg.Wait()
-
-	// Check that we actually processed some files before reporting.
-	if emilia.NumFoundFiles < 0 {
-		fmt.Println("no files found")
-		return
-	}
-
-	// Report back on some of the results
-	fmt.Printf("Processed in %d ms\n", time.Since(start).Milliseconds())
-	fmt.Println("farewell")
 }
