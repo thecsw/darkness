@@ -133,7 +133,7 @@ func makeFlexItem(s string, folder string) string {
 	if matchLen < 0 {
 		link = s
 	}
-	return fmt.Sprintf(`<img class="item" height="33%%" width="33%%" src="%s" title="%s" alt="%s">`,
+	return fmt.Sprintf(`<img class="item lazyload flex-3" src="%s" title="%s" alt="%s">`,
 		filepath.Join(folder, strings.TrimSpace(link)), desc, text)
 }
 
