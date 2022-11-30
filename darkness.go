@@ -39,6 +39,8 @@ func main() {
 		megumin()
 	case "megumin":
 		megumin()
+	case "tools":
+		tools()
 	case "lalatina":
 		fmt.Println("DONT CALL ME THAT (╥︣﹏᷅╥)")
 	case "aqua":

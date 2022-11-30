@@ -41,35 +41,13 @@ var (
 func oneFile() {
 	fileCmd := flag.NewFlagSet("file", flag.ExitOnError)
 	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
-	fileCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	if err := fileCmd.Parse(os.Args[2:]); err != nil {
-		fmt.Printf("failed to parse file arguments, fatal: %s", err.Error())
-		os.Exit(1)
-	}
-	emilia.InitDarkness(&emilia.EmiliaOptions{DarknessConfig: darknessToml})
+	emilia.InitDarkness(getEmiliaOptions(fileCmd))
 	fmt.Println(emilia.InputToOutput(filename))
 }
 
 // build builds the entire directory.
 func buildCommand() {
-	buildCmd := flag.NewFlagSet("build", flag.ExitOnError)
-	buildCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
-	buildCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	buildCmd.BoolVar(&disableParallel, "disable-parallel", false, "disable parallel build (only use one worker)")
-	buildCmd.IntVar(&customNumWorkers, "workers", defaultNumOfWorkers, "number of workers to spin up")
-	buildCmd.IntVar(&customChannelCapacity, "capacity", defaultNumOfWorkers, "worker channels' capacity")
-	buildCmd.BoolVar(&useCurrentDirectory, "dev", false, "use local path for urls (development)")
-	if err := buildCmd.Parse(os.Args[2:]); err != nil {
-		fmt.Printf("failed to parse build arguments, fatal: %s", err.Error())
-		os.Exit(1)
-	}
-
-	// Read the config and initialize emilia settings.
-	emilia.InitDarkness(&emilia.EmiliaOptions{
-		DarknessConfig: darknessToml,
-		Dev:            useCurrentDirectory,
-	})
-
+	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet("build", flag.ExitOnError)))
 	start := time.Now()
 	build()
 
@@ -85,19 +63,6 @@ func buildCommand() {
 }
 
 func build() {
-	var err error
-	workDir, err = filepath.Abs(workDir)
-	if err != nil {
-		fmt.Println("Couldn't determine absolute path of", workDir)
-		os.Exit(1)
-	}
-
-	// If parallel processing is disabled, only provision one workers
-	// per each processing stage.
-	if disableParallel {
-		customNumWorkers = 1
-	}
-
 	// Create the channel to feed read files.
 	inputFilenames := make(chan string, customChannelCapacity)
 

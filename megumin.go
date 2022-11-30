@@ -18,17 +18,7 @@ var (
 
 // megumin blows up the directory.
 func megumin() {
-	explosionCmd := flag.NewFlagSet("megumin", flag.ExitOnError)
-	explosionCmd.StringVar(&workDir, "dir", ".", "where do I look for files")
-	explosionCmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
-	if err := explosionCmd.Parse(os.Args[2:]); err != nil {
-		fmt.Printf("failed to parse megumin flags, fatal: %s\n", err.Error())
-		os.Exit(1)
-	}
-	emilia.InitDarkness(&emilia.EmiliaOptions{DarknessConfig: darknessToml})
-
-	removeOutputFiles()
-
+	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet("megumin", flag.ExitOnError)))
 	delayedLinesPrint([]string{
 		"Darker than black, darker than darkness, combine with my intense crimson.",
 		"Time to wake up, descend to these borders and appear as an intangible distortion.",
@@ -40,7 +30,7 @@ func megumin() {
 		"It is the ultimate magical attack!",
 		"Explosion!",
 	})
-
+	removeOutputFiles()
 	delayedLinesPrint([]string{
 		"Wahahahahaha!",
 		"My name is Megumin, the number one mage of Axel!",
