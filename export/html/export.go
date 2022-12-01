@@ -61,6 +61,8 @@ func (e ExporterHTML) Export() string {
 %s
 <!-- Meta -->
 %s
+<!-- Styling -->
+%s
 <!-- Scripts -->
 %s
 <!-- Extra -->
@@ -68,8 +70,6 @@ func (e ExporterHTML) Export() string {
 <!-- Title -->
 <title>%s</title>
 </head>
-<!-- Styling -->
-%s
 <body class="article">
 <!-- Header -->
 %s
@@ -79,10 +79,10 @@ func (e ExporterHTML) Export() string {
 %s
 </body>
 </html>`,
-		darknessBanner, e.linkTags(), e.metaTags(), e.scriptTags(),
-		strings.Join(emilia.Config.Website.ExtraHead, "\n"),
-		processTitle(flattenFormatting(e.page.Title)), e.styleTags(),
-		e.authorHeader(), strings.Join(content, ""), e.addFootnotes(),
+		darknessBanner, e.linkTags(), e.metaTags(), e.styleTags(),
+		e.scriptTags(), strings.Join(emilia.Config.Website.ExtraHead, "\n"),
+		processTitle(flattenFormatting(e.page.Title)), e.authorHeader(),
+		strings.Join(content, ""), e.addFootnotes(),
 	)
 }
 
