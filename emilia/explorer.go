@@ -15,7 +15,7 @@ var (
 )
 
 // FindFilesByExt finds all files with a given extension.
-func FindFilesByExt(inputFilenames chan<- string, workDir string, wg *sync.WaitGroup) {
+func FindFilesByExt(inputFilenames chan<- string, workDir string, ext string, wg *sync.WaitGroup) {
 	NumFoundFiles = 0
 	if err := godirwalk.Walk(workDir, &godirwalk.Options{
 		ErrorCallback: func(osPathname string, err error) godirwalk.ErrorAction {
@@ -24,7 +24,7 @@ func FindFilesByExt(inputFilenames chan<- string, workDir string, wg *sync.WaitG
 		},
 		Unsorted: true,
 		Callback: func(osPathname string, de *godirwalk.Dirent) error {
-			if filepath.Ext(osPathname) != Config.Project.Input {
+			if filepath.Ext(osPathname) != ext {
 				return nil
 			}
 			if (Config.Project.ExcludeEnabled && Config.Project.ExcludeRegex.MatchString(osPathname)) ||

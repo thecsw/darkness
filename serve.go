@@ -11,13 +11,24 @@ import (
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
 )
 
-func serve() {
-	serveCmd := flag.NewFlagSet("serve", flag.ExitOnError)
-	port := serveCmd.Int("port", 8080, "port number to use (default 8080)")
+const (
+	// defaultServePort is the default port used when serving
+	// local files.
+	defaultServePort = 8080
+)
+
+// serveCommandFunc builds the website, local serves it on 8080 and then
+// cleans the files.
+func serveCommandFunc() {
+	serveCmd := flag.NewFlagSet(serveCommand, flag.ExitOnError)
+	port := serveCmd.Int("port", defaultServePort, "port number to use (default 8080)")
 	options := getEmiliaOptions(serveCmd)
 	options.URL = "http://127.0.0.1:" + strconv.Itoa(*port)
+	// Override the output extension to .html
+	options.OutputExtension = puck.ExtensionHtml
 	emilia.InitDarkness(options)
 	start := time.Now()
 	build()

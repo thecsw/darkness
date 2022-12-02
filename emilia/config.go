@@ -35,6 +35,8 @@ type EmiliaOptions struct {
 	Test bool
 	// URL is a custom website url, usually used for serving from localhost.
 	URL string
+	// OutputExtension overrides whatever is in the file
+	OutputExtension string
 }
 
 // InitDarkness initializes the darkness config.
@@ -55,9 +57,14 @@ func InitDarkness(options *EmiliaOptions) {
 		fmt.Println("Input format not found, defaulting to", puck.ExtensionOrgmode)
 		Config.Project.Input = puck.ExtensionOrgmode
 	}
+	// Output section.
 	if isZero(Config.Project.Output) {
 		fmt.Println("Output format not found, defaulting to", puck.ExtensionHtml)
 		Config.Project.Output = puck.ExtensionHtml
+	}
+	if !isZero(options.OutputExtension) && Config.Project.Output != options.OutputExtension {
+		fmt.Println("Got an instruction to override the output extension to", options.OutputExtension)
+		Config.Project.Output = options.OutputExtension
 	}
 	// Build the parser and exporter builders.
 	ParserBuilder = getParserBuilder()

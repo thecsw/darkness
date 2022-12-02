@@ -16,9 +16,9 @@ var (
 	isQuietMegumin = false
 )
 
-// megumin blows up the directory.
-func megumin() {
-	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet("megumin", flag.ExitOnError)))
+// meguminCommandFunc blows up the directory.
+func meguminCommandFunc() {
+	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet(meguminCommand, flag.ExitOnError)))
 	delayedLinesPrint([]string{
 		"Darker than black, darker than darkness, combine with my intense crimson.",
 		"Time to wake up, descend to these borders and appear as an intangible distortion.",
@@ -38,11 +38,19 @@ func megumin() {
 	})
 }
 
+// cleanCommandFunc cleans the files like `megumin` but without any output (except for errors).
+func cleanCommandFunc() {
+	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet(cleanCommand, flag.ExitOnError)))
+	isQuietMegumin = true
+	removeOutputFiles()
+}
+
+// removeOutputFiles is the low-level command to be used when cleaning data.
 func removeOutputFiles() {
 	orgfiles := make(chan string, defaultNumOfWorkers)
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
-	go emilia.FindFilesByExt(orgfiles, workDir, wg)
+	go emilia.FindFilesByExt(orgfiles, workDir, emilia.Config.Project.Input, wg)
 	for orgfile := range orgfiles {
 		toRemove := emilia.InputFilenameToOutput(orgfile)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {

@@ -21,32 +21,16 @@ const (
 	savePerms = fs.FileMode(0644)
 )
 
-var (
-	// workDir is the directory to look for files.
-	workDir = "."
-	// darknessToml is the location of `darkness.toml`.
-	darknessToml = "darkness.toml"
-	// filename is the file to build.
-	filename = "index.org"
-	// defaultNumOfWorkers gives us the number of workers to
-	// spin up in each stage: parsing and processing.
-	defaultNumOfWorkers   = 14
-	disableParallel       bool
-	customNumWorkers      int
-	customChannelCapacity int
-	useCurrentDirectory   bool
-)
-
-// oneFile builds a single file.
-func oneFile() {
-	fileCmd := flag.NewFlagSet("file", flag.ExitOnError)
-	fileCmd.StringVar(&filename, "i", "index.org", "file on input")
+// oneFileCommandFunc builds a single file.
+func oneFileCommandFunc() {
+	fileCmd := flag.NewFlagSet(oneFileCommand, flag.ExitOnError)
+	fileCmd.StringVar(&filename, "input", "index.org", "file on input")
 	emilia.InitDarkness(getEmiliaOptions(fileCmd))
 	fmt.Println(emilia.InputToOutput(filename))
 }
 
 // build builds the entire directory.
-func buildCommand() {
+func buildCommandFunc() {
 	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet("build", flag.ExitOnError)))
 	start := time.Now()
 	build()
@@ -58,10 +42,11 @@ func buildCommand() {
 	}
 
 	// Report back on some of the results
-	fmt.Printf("Processed in %d ms\n", time.Since(start).Milliseconds())
+	fmt.Printf("Processed %d files in %d ms\n", emilia.NumFoundFiles, time.Since(start).Milliseconds())
 	fmt.Println("farewell")
 }
 
+// build uses set flags and emilia data to build the local directory.
 func build() {
 	// Create the channel to feed read files.
 	inputFilenames := make(chan string, customChannelCapacity)
@@ -93,7 +78,7 @@ func build() {
 	wg.Add(1)
 
 	// Run a discovery for files and feed to the reader worker.
-	go emilia.FindFilesByExt(inputFilenames, workDir, wg)
+	go emilia.FindFilesByExt(inputFilenames, workDir, emilia.Config.Project.Input, wg)
 
 	// Build a wait group to ensure we always read and write the same
 	// number of files, such that after the file has been read, parsed,

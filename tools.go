@@ -12,8 +12,10 @@ import (
 	"github.com/thecsw/gana"
 )
 
-func tools() {
-	options := getEmiliaOptions(flag.NewFlagSet("tools", flag.ExitOnError))
+// toolsCommandFunc will support many different tools that darkness can support,
+// such as creating gallery previews, etc. WIP.
+func toolsCommandFunc() {
+	options := getEmiliaOptions(flag.NewFlagSet(toolsCommand, flag.ExitOnError))
 	options.Dev = true
 	emilia.InitDarkness(options)
 	inputFilenames := make(chan string, customChannelCapacity)
@@ -31,7 +33,7 @@ func tools() {
 
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
-	go emilia.FindFilesByExt(inputFilenames, workDir, wg)
+	go emilia.FindFilesByExt(inputFilenames, workDir, emilia.Config.Project.Input, wg)
 	galleryDirs := map[string]bool{}
 	go func(wg *sync.WaitGroup) {
 		for page := range pages {
@@ -45,7 +47,16 @@ func tools() {
 
 	wg.Wait()
 
+	// Launch a second discovery for gallery files
+	galleryFiles := make(chan string, customChannelCapacity)
+
 	for key := range galleryDirs {
-		fmt.Println(key)
+		go emilia.FindFilesByExt(galleryFiles, key, ".png", wg)
 	}
+
+	for galleryFile := range galleryFiles {
+		fmt.Println(galleryFile)
+		wg.Done()
+	}
+	wg.Wait()
 }

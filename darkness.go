@@ -15,45 +15,60 @@ var (
 	defaultDarknessTemplate []byte
 )
 
+const (
+	newDarknessCommand = `new`
+	oneFileCommand     = `file`
+	buildCommand       = `build`
+	serveCommand       = `serve`
+	cleanCommand       = `clean`
+	meguminCommand     = `megumin`
+	toolsCommand       = `tools`
+	lalatinaCommand    = `lalatina`
+	aquaCommand        = `aqua`
+)
+
+var (
+	commandFuncs = map[string]func(){
+		newDarknessCommand: newDarknessCommandFunc,
+		oneFileCommand:     oneFileCommandFunc,
+		buildCommand:       buildCommandFunc,
+		serveCommand:       serveCommandFunc,
+		cleanCommand:       cleanCommandFunc,
+		meguminCommand:     meguminCommandFunc,
+		toolsCommand:       toolsCommandFunc,
+		lalatinaCommand:    lalatinaCommandFunc,
+		aquaCommand:        aquaCommandFunc,
+
+		// All the help commands
+		`-h`:     helpCommandFunc,
+		`help`:   helpCommandFunc,
+		`-help`:  helpCommandFunc,
+		`--help`: helpCommandFunc,
+	}
+)
+
 // main is the entry point for the program
 func main() {
 	// defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
 	// defer profile.Start(profile.MemProfile, profile.MemProfileRate(1), profile.ProfilePath(".")).Stop()
 
-	if len(os.Args) == 1 {
-		help()
+	if len(os.Args) < 2 {
+		helpCommandFunc()
 		return
 	}
 
-	switch os.Args[1] {
-	case "new":
-		newDarkness()
-	case "file":
-		oneFile()
-	case "build":
-		buildCommand()
-	case "serve":
-		serve()
-	case "clean":
-		isQuietMegumin = true
-		megumin()
-	case "megumin":
-		megumin()
-	case "tools":
-		tools()
-	case "lalatina":
-		fmt.Println("DONT CALL ME THAT (╥︣﹏᷅╥)")
-	case "aqua":
-		os.Exit(1)
-	case "-h", "--help", "-help", "help":
-		help()
-	default:
+	commandFunc, ok := commandFuncs[os.Args[1]]
+	if !ok {
+		fmt.Println("command not found?")
 		fmt.Println("see help, you pathetic excuse of a man")
+		return
 	}
+
+	commandFunc()
 }
 
-// help shows default darkness help message
-func help() {
+// helpCommandFunc shows default darkness helpCommandFunc message
+func helpCommandFunc() {
 	fmt.Println(`My name is Darkness.
 My calling is that of a crusader.
 Do Shometing Gwazy!
@@ -66,16 +81,18 @@ creating it with new followed by the directory name
 Here are the commands you can use, -help is supported:
   file - build a single input file and output to stdout
   build - build the entire directory
+  serve - build HTTP and serve them
   megumin - blow up the directory
+  clean - megumin but quiet
   lalatina - DO NOT
   aqua - ...
 
 Don't hold back! You have no choice!`)
 }
 
-// newDarkness creates a default darkness config in the current directory
+// newDarknessCommandFunc creates a default darkness config in the current directory
 // if one already exists, nothing will happen, except a notice of that
-func newDarkness() {
+func newDarknessCommandFunc() {
 	if len(os.Args) != 3 {
 		fmt.Println("you forgot to add a directory name after new")
 		return
@@ -103,6 +120,11 @@ func newDarkness() {
 	fmt.Printf("Done! Go to %s and start creating!\n(run darkness build in there)\n", dirName)
 }
 
-func aqua() {
+func aquaCommandFunc() {
 	// KAZUMAAA-SAAAAAAAAN
+	os.Exit(1)
+}
+
+func lalatinaCommandFunc() {
+	fmt.Println("DONT CALL ME THAT (╥︣﹏᷅╥)")
 }

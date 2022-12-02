@@ -9,6 +9,31 @@ import (
 	"github.com/thecsw/darkness/emilia"
 )
 
+var (
+	// workDir is the directory to look for files.
+	workDir = "."
+	// darknessToml is the location of `darkness.toml`.
+	darknessToml = "darkness.toml"
+	// filename is the file to build.
+	filename = "index.org"
+	// defaultNumOfWorkers gives us the number of workers to
+	// spin up in each stage: parsing and processing.
+	defaultNumOfWorkers = 14
+	// disableParallel sets the number of workers to 1.
+	disableParallel bool
+	// customNumWorkers sets the custom number of workers.
+	customNumWorkers int
+	// customChannelCapacity low-level sets the capacity of
+	// workers' input/output capacity, defaults to the default
+	// number of workers.
+	customChannelCapacity int
+	// useCurrentDirectory is used for development and local
+	// serving, such that you can browse the url files locally.
+	useCurrentDirectory bool
+)
+
+// getEmiliaOptions takes a cmd subcommand and parses general flags
+// and returns emilia options that should be used when initializing emilia.
 func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	cmd.StringVar(&workDir, "dir", ".", "where do I look for files")
 	cmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
@@ -21,6 +46,7 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 		os.Exit(1)
 	}
 
+	// Find the absolute path of the work directory to stub in the files.
 	var err error
 	workDir, err = filepath.Abs(workDir)
 	if err != nil {
