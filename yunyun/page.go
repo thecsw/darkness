@@ -1,5 +1,7 @@
 package yunyun
 
+import "github.com/thecsw/gana"
+
 // Page is a struct for holding the page contents.
 type Page struct {
 	// File is the original filename of the page (optional).
@@ -14,13 +16,19 @@ type Page struct {
 	// URL is the URL of the page.
 	URL string
 	// Contents is the contents of the page.
-	Contents []*Content
+	Contents Contents
 	// Footnotes is the footnotes of the page.
 	Footnotes []string
 	// Scripts is the scripts of the page.
 	Scripts []string
 	// Stylesheets is the list of css of the page.
 	Stylesheets []string
+}
+
+type Contents []*Content
+
+func (c Contents) Galleries() Contents {
+	return gana.Filter(func(v *Content) bool { return v.IsGallery() && v.IsList() }, c)
 }
 
 // MetaTag is a struct for holding the meta tag.

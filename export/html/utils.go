@@ -61,7 +61,7 @@ func whatDivType(content *yunyun.Content) divType {
 	}
 	// If the list has the gallery flag on, do not wrap it writing.
 	if content.IsList() {
-		if yunyun.HasFlag(&content.Options, yunyun.InGalleryFlag) {
+		if content.IsGallery() {
 			return divOutside
 		}
 		return divWriting

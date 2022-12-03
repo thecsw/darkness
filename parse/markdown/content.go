@@ -69,7 +69,7 @@ func formParagraph(text, extra string, options yunyun.Bits) *yunyun.Content {
 		Paragraph: strings.TrimSpace(text),
 		Options:   options,
 	}
-	if yunyun.HasFlag(&options, yunyun.InDetailsFlag) {
+	if val.IsDetails() {
 		val.Summary = extra
 	}
 	return val

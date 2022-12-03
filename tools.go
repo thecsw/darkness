@@ -37,8 +37,11 @@ func toolsCommandFunc() {
 	galleryDirs := map[string]bool{}
 	go func(wg *sync.WaitGroup) {
 		for page := range pages {
-			for _, gc := range gana.Filter(func(v *yunyun.Content) bool { return v.IsGallery() }, page.Contents) {
-				galleryDirs[emilia.JoinPath(filepath.Join(page.URL, gc.Summary))] = true
+			for _, gc := range page.Contents.Galleries() {
+				for _, item := range gc.List {
+					_, link, _, _ := yunyun.ExtractLink(item)
+					fmt.Println(emilia.JoinPath(filepath.Join(gc.Summary, link)))
+				}
 			}
 			wg.Done()
 		}

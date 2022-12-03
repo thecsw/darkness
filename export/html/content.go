@@ -114,7 +114,7 @@ func makeListItem(s string) string {
 // list gives us a list html representation
 func (e ExporterHTML) List(content *yunyun.Content) string {
 	// Hijack this type for galleries
-	if yunyun.HasFlag(&content.Options, yunyun.InGalleryFlag) {
+	if content.IsGallery() {
 		return e.gallery(content)
 	}
 	return fmt.Sprintf(`
@@ -177,7 +177,7 @@ func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
 // rawHTML gives us a raw html representation
 func (e ExporterHTML) RawHTML(content *yunyun.Content) string {
 	// If the unsafe flag is enabled, don't even wrap it in `mediablock`
-	if yunyun.HasFlag(&content.Options, yunyun.InRawHtmlFlagUnsafe) {
+	if content.IsRawHTMLUnsafe() {
 		return content.RawHTML
 	}
 	return fmt.Sprintf(rawHTMLTemplate, content.RawHTML, content.Caption)
@@ -225,7 +225,7 @@ func (e ExporterHTML) Table(content *yunyun.Content) string {
 
 // table gives an HTML formatted table
 func (e ExporterHTML) Details(content *yunyun.Content) string {
-	if yunyun.HasFlag(&content.Options, yunyun.InDetailsFlag) {
+	if content.IsDetails() {
 		return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
 	}
 	return "</details>"
