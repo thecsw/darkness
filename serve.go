@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -26,6 +27,7 @@ func serveCommandFunc() {
 	serveCmd := darknessFlagset(serveCommand)
 	port := serveCmd.Int("port", defaultServePort, "port number to use (default 8080)")
 	options := getEmiliaOptions(serveCmd)
+	options.Dev = true
 	options.URL = "http://127.0.0.1:" + strconv.Itoa(*port)
 	// Override the output extension to .html
 	options.OutputExtension = puck.ExtensionHtml
@@ -43,6 +45,7 @@ func serveCommandFunc() {
 	log.Println("Shutting down the server + cleaning up")
 	isQuietMegumin = true
 	removeOutputFiles()
+	removeGalleryFiles()
 	log.Println("farewell")
 }
 
@@ -61,7 +64,9 @@ func launchWatcher() {
 		for {
 			select {
 			case event, ok := <-watcher.Events:
+				// fmt.Println(event)
 				if !ok {
+					fmt.Println("stopped watching")
 					return
 				}
 				filename := relPathToWorkdir(event.Name)
@@ -74,31 +79,36 @@ func launchWatcher() {
 					continue
 				}
 				if event.Has(fsnotify.Write) {
-					log.Println("modified file:", event.Name)
+					fmt.Println("modified file:", filename)
 				}
 				if event.Has(fsnotify.Create) {
-					log.Println("created file:", event.Name)
+					fmt.Println("created file:", filename)
 				}
 				if event.Has(fsnotify.Remove) {
-					log.Println("removed file:", event.Name)
+					fmt.Println("removed file:", filename)
 				}
 				if event.Has(fsnotify.Rename) {
-					log.Println("renamed file:", event.Name)
+					fmt.Println("renamed file:", filename)
 				}
 				build()
 			case err, ok := <-watcher.Errors:
 				if !ok {
+					fmt.Println("finished watching")
 					return
 				}
-				log.Println("watcher error:", err)
+				fmt.Println("watcher error:", err)
 			}
 		}
 	}()
 
 	// Add a path.
-	err = watcher.Add(workDir)
-	if err != nil {
-		log.Fatal(err)
+	fmt.Println("Listening to everything in", workDir)
+	// start adding all the source files
+	for _, toWatch := range emilia.FindFilesByExtSimple(workDir, emilia.Config.Project.Input) {
+		err = watcher.Add(toWatch)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	// Block main goroutine forever.
 	<-make(chan struct{})

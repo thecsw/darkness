@@ -45,8 +45,14 @@ const (
 // buildGalleryFiles finds all the gallery entries and build a resized
 // preview version of it.
 func buildGalleryFiles() {
-	for _, galleryFile := range getGalleryFiles() {
+	galleryFiles := getGalleryFiles()
+	for i, galleryFile := range galleryFiles {
+		fmt.Printf("[%d/%d] ", i+1, len(galleryFiles))
 		newFile := emilia.GalleryPreview(galleryFile)
+		if info, err := os.Stat(newFile); info != nil && !os.IsNotExist(err) {
+			fmt.Printf("%s already exists -- skipping\n", relPathToWorkdir(newFile))
+			continue
+		}
 		fmt.Printf("Building %s... ", relPathToWorkdir(newFile))
 		img, err := imaging.Open(galleryFile, imaging.AutoOrientation(false))
 		if err != nil {

@@ -42,3 +42,19 @@ func FindFilesByExt(inputFilenames chan<- string, workDir string, ext string, wg
 	}
 	close(inputFilenames)
 }
+
+// FindFilesByExitSimple is the same as `FindFilesByExt` but it simply blocks the
+// parent goroutine until it processes all the results.
+func FindFilesByExtSimple(workDir string, ext string) []string {
+	inputFilenames := make(chan string, 1)
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go FindFilesByExt(inputFilenames, workDir, ext, wg)
+	toReturn := make([]string, 0, 64)
+	for inputFilename := range inputFilenames {
+		toReturn = append(toReturn, inputFilename)
+		wg.Done()
+	}
+	wg.Done()
+	return toReturn
+}

@@ -151,11 +151,13 @@ func (e ExporterHTML) gallery(content *yunyun.Content) string {
 		return makeFlexItem(s, galleryFolder, content.GalleryImagesPerRow)
 	}
 	return fmt.Sprintf(`
+<div class="gallery-container">
 <center>
 <div class="gallery">
 %s
 </div>
 </center>
+</div>
 `, strings.Join(gana.Map(makeFlexItemWithFolder, content.List), "\n"))
 }
 
