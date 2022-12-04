@@ -5,6 +5,8 @@ import (
 	"html"
 	"net/url"
 	"path/filepath"
+	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
@@ -127,6 +129,27 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 `, strings.Join(gana.Map(makeListItem, content.List), "\n"))
 }
 
+var (
+	flexOptionPattern = `:flex ([12345])`
+	flexOptionRegexp  = regexp.MustCompile(flexOptionPattern)
+)
+
+// extractCustomFlex extract custom flex class `:flex [1,5]`
+func extractCustomFlex(s string) uint {
+	matches := flexOptionRegexp.FindAllStringSubmatch(s, -1)
+	if len(matches) < 1 {
+		return 0
+	}
+	if len(matches[0]) < 1 {
+		return 0
+	}
+	ret, err := strconv.Atoi(matches[0][1])
+	if err != nil {
+		return 0
+	}
+	return uint(ret)
+}
+
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
 func makeFlexItem(s string, folder string, width uint) string {
 	matchLen, link, text, desc := yunyun.ExtractLink(s)
@@ -137,6 +160,9 @@ func makeFlexItem(s string, folder string, width uint) string {
 	fullImage := filepath.Join(folder, url.PathEscape(strings.TrimSpace(link)))
 	ext := filepath.Ext(fullImage)
 	previewImage := strings.TrimSuffix(fullImage, ext) + "_preview" + ext
+	if customFlex := extractCustomFlex(s); customFlex != 0 {
+		width = customFlex
+	}
 	return fmt.Sprintf(`<img class="item lazyload flex-%d" src="%s" data-src="%s" title="%s" alt="%s">`,
 		width, previewImage, fullImage, desc, text)
 }
