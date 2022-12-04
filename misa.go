@@ -3,11 +3,8 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
-	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 
 	"github.com/disintegration/imaging"
