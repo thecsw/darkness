@@ -2,14 +2,15 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strconv"
-	"time"
+	"strings"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
 )
@@ -30,18 +31,75 @@ func serveCommandFunc() {
 	// Override the output extension to .html
 	options.OutputExtension = puck.ExtensionHtml
 	emilia.InitDarkness(options)
-	start := time.Now()
 	build()
-	fmt.Printf("Built in %d ms\n\n", time.Since(start).Milliseconds())
-	fmt.Println("Serving on", options.URL)
+	log.Println("Serving on", options.URL)
 	go func() {
 		log.Fatal(http.ListenAndServe(":"+strconv.Itoa(*port), http.FileServer(http.Dir(workDir))))
 	}()
+	go launchWatcher()
+	log.Println("Launched file watcher")
 	sigint := make(chan os.Signal, 1)
 	signal.Notify(sigint, os.Interrupt)
 	<-sigint
-	fmt.Println("Shutting down the server + cleaning up")
+	log.Println("Shutting down the server + cleaning up")
 	isQuietMegumin = true
 	removeOutputFiles()
-	fmt.Println("farewell")
+	log.Println("farewell")
+}
+
+// launchWatcher watches for any file creations, changes, modifications, deletions
+// and rebuilds the directory as that happens.
+func launchWatcher() {
+	// Create new watcher.
+	watcher, err := fsnotify.NewWatcher()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer watcher.Close()
+
+	// Start listening for events.
+	go func() {
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				if strings.HasSuffix(event.Name, emilia.Config.Project.Output) ||
+					strings.HasPrefix(filepath.Base(event.Name), `.`) {
+					continue
+				}
+				// Skip CHMOD events that IDE and editors do by default
+				if event.Has(fsnotify.Chmod) {
+					continue
+				}
+				if event.Has(fsnotify.Write) {
+					log.Println("modified file:", event.Name)
+				}
+				if event.Has(fsnotify.Create) {
+					log.Println("created file:", event.Name)
+				}
+				if event.Has(fsnotify.Remove) {
+					log.Println("removed file:", event.Name)
+				}
+				if event.Has(fsnotify.Rename) {
+					log.Println("renamed file:", event.Name)
+				}
+				build()
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.Println("watcher error:", err)
+			}
+		}
+	}()
+
+	// Add a path.
+	err = watcher.Add(workDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Block main goroutine forever.
+	<-make(chan struct{})
 }

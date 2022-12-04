@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -32,22 +33,20 @@ func oneFileCommandFunc() {
 // build builds the entire directory.
 func buildCommandFunc() {
 	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet(buildCommand, flag.ExitOnError)))
-	start := time.Now()
 	build()
-
 	// Check that we actually processed some files before reporting.
 	if emilia.NumFoundFiles < 0 {
 		fmt.Println("no files found")
 		return
 	}
 
-	// Report back on some of the results
-	fmt.Printf("Processed %d files in %d ms\n", emilia.NumFoundFiles, time.Since(start).Milliseconds())
 	fmt.Println("farewell")
 }
 
 // build uses set flags and emilia data to build the local directory.
 func build() {
+	start := time.Now()
+
 	// Create the channel to feed read files.
 	inputFilenames := make(chan string, customChannelCapacity)
 
@@ -97,4 +96,7 @@ func build() {
 
 	// Wait for all the files to get saved and then leave.
 	wg.Wait()
+
+	// Report back on some of the results
+	log.Printf("Processed %d files in %d ms\n", emilia.NumFoundFiles, time.Since(start).Milliseconds())
 }
