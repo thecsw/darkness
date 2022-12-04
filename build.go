@@ -31,7 +31,7 @@ func oneFileCommandFunc() {
 
 // build builds the entire directory.
 func buildCommandFunc() {
-	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet("build", flag.ExitOnError)))
+	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet(buildCommand, flag.ExitOnError)))
 	start := time.Now()
 	build()
 

@@ -1,8 +1,12 @@
 package orgmode
 
 import (
+	"fmt"
+	"regexp"
+	"strconv"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -168,5 +172,60 @@ func extractDate(line string) string {
 
 // extractGalleryFolder extracts gallery `FOLDER` from `#+begin_gallery FOLDER`.
 func extractGalleryFolder(line string) string {
-	return extractOptionLabel(line, optionBeginGallery)
+	path, err := extractCustomBlockOption(line, `path`, regexpPatternNoWhitespace)
+	if err != nil {
+		if err != errNoMatches {
+			fmt.Println("gallery path extraction failed:", err.Error())
+		}
+		return ""
+	}
+	return *path
+}
+
+func extractGalleryImagesPerRow(line string) uint {
+	num, err := extractCustomBlockOption(line, `num`, regexpPatternOnlyDigits)
+	if err != nil {
+		if err != errNoMatches {
+			fmt.Println("gallery path extraction failed:", err.Error())
+		}
+		return defaultGalleryImagesPerRow
+	}
+	ans, err := strconv.Atoi(*num)
+	if err != nil {
+		fmt.Println("failed to format gallery width of", line, ", defaulting to", defaultGalleryImagesPerRow)
+		return defaultGalleryImagesPerRow
+	}
+	if ans < 1 {
+		fmt.Println("gallery width should be at least 1, defaulting to", defaultGalleryImagesPerRow)
+		return defaultGalleryImagesPerRow
+	}
+	return uint(ans)
+}
+
+type regexpPattern string
+
+const (
+	regexpPatternNoWhitespace regexpPattern = `([^\s]+)`
+	regexpPatternOnlyDigits   regexpPattern = `(\d+)`
+	regexpPatternNumber       regexpPattern = `(-?\d+)`
+)
+
+var (
+	errNoMatches = errors.New(`no matches found`)
+)
+
+func extractCustomBlockOption(target, optionName string, pattern regexpPattern) (*string, error) {
+	optP := fmt.Sprintf(`:%s %s`, optionName, pattern)
+	optR, err := regexp.Compile(optP)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to make regex "+optP)
+	}
+	matches := optR.FindAllStringSubmatch(target, 1)
+	if len(matches) < 1 {
+		return nil, errNoMatches
+	}
+	if len(matches[0]) < 1 {
+		return nil, errNoMatches
+	}
+	return &matches[0][1], nil
 }

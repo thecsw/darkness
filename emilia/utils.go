@@ -51,3 +51,10 @@ func EnrichPage(page *yunyun.Page) *yunyun.Page {
 		WithLazyGalleries(),
 	)
 }
+
+// GalleryPreview takes an original image's path and returns
+// the preview path of it.
+func GalleryPreview(img string) string {
+	ext := filepath.Ext(img)
+	return strings.TrimSuffix(img, ext) + "_preview" + ext
+}

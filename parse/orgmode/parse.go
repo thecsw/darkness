@@ -26,6 +26,10 @@ func preprocess(data string) string {
 	return data
 }
 
+const (
+	defaultGalleryImagesPerRow uint = 3
+)
+
 // Parse parses the input string and returns a list of elements
 func (p ParserOrgmode) Parse() *yunyun.Page {
 	// Split the data into lines
@@ -45,6 +49,10 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	caption := ""
 	// detailsSummary is the current details' summary
 	additionalContext := ""
+	// galleryPath stores the gallery's declared path
+	galleryPath := ""
+	// galleryWidth dictates on how many items per row we will have
+	galleryWidth := defaultGalleryImagesPerRow
 	// Our context is a parody of a state machine
 	currentContext := ""
 
@@ -53,9 +61,15 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	addContent := func(content *yunyun.Content) {
 		content.Options = currentFlags
 		content.Summary = additionalContext
+		content.GalleryPath = galleryPath
+		content.GalleryPathIsExternal = strings.HasPrefix(galleryPath, "http")
+		content.GalleryImagesPerRow = galleryWidth
 		content.Caption = caption
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
+		galleryPath = ""
+		galleryWidth = defaultGalleryImagesPerRow
+		additionalContext = ""
 	}
 	optionsActions := map[string]func(line string){
 		optionDropCap:     func(line string) { addFlag(yunyun.InDropCapFlag) },
@@ -77,7 +91,8 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		},
 		optionBeginGallery: func(line string) {
 			addFlag(yunyun.InGalleryFlag)
-			additionalContext = extractGalleryFolder(line)
+			galleryPath = extractGalleryFolder(line)
+			galleryWidth = extractGalleryImagesPerRow(line)
 		},
 		optionEndGallery: func(line string) { removeFlag(yunyun.InGalleryFlag) },
 		optionCaption:    func(line string) { caption = extractCaptionTitle(line) },

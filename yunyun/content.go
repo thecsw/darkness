@@ -49,9 +49,18 @@ type Content struct {
 	// Caption is the current caption.
 	Caption string
 	// Summary is the current summary, used by details to denote
-	// the title of the summary block and by gallery as the folder name,
-	// which is optional.
+	// the title of the summary block.
 	Summary string
+	// GalleryPath stores the path declared by the gallery directive,
+	// it can either be the relative path (to the page that it was
+	// declared on) or some other http/absolute link.
+	GalleryPath string
+	// GalleryPathIsExternal is true if the path is from external resource,
+	// like http:// links, etc.
+	GalleryPathIsExternal bool
+	// GalleryImagesPerRow stores the number of default images per row,
+	// therefore what flex class to use -- defaults to 3.
+	GalleryImagesPerRow uint
 }
 
 // IsHeading tells us if the content is a heading.

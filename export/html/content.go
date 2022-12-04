@@ -127,23 +127,28 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 }
 
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
-func makeFlexItem(s string, folder string) string {
+func makeFlexItem(s string, folder string, width uint) string {
 	matchLen, link, text, desc := yunyun.ExtractLink(s)
 	// Maybe they just didn't use a proper link pattern? Stub the value in instead then.
 	if matchLen < 0 {
 		link = s
 	}
-	return fmt.Sprintf(`<img class="item lazyload flex-3" data-src="%s" title="%s" alt="%s">`,
-		filepath.Join(folder, strings.TrimSpace(link)), desc, text)
+	fullImage := filepath.Join(folder, strings.TrimSpace(link))
+	ext := filepath.Ext(fullImage)
+	previewImage := strings.TrimSuffix(fullImage, ext) + "_preview" + ext
+	return fmt.Sprintf(`<img class="item lazyload flex-%d" src="%s" data-src="%s" title="%s" alt="%s">`,
+		width, previewImage, fullImage, desc, text)
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
 func (e ExporterHTML) gallery(content *yunyun.Content) string {
 	galleryFolder := ""
-	if len(content.Summary) > 0 {
-		galleryFolder = content.Summary
+	if len(content.GalleryPath) > 0 {
+		galleryFolder = content.GalleryPath
 	}
-	makeFlexItemWithFolder := func(s string) string { return makeFlexItem(s, galleryFolder) }
+	makeFlexItemWithFolder := func(s string) string {
+		return makeFlexItem(s, galleryFolder, content.GalleryImagesPerRow)
+	}
 	return fmt.Sprintf(`
 <center>
 <div class="gallery">

@@ -20,7 +20,7 @@ func NewPage(options ...PageOption) *Page {
 		Date:          defaultDate,
 		DateHoloscene: defaulteDateHoloscene,
 		URL:           defaultURL,
-		Contents:      []*Content{},
+		Contents:      Contents{},
 		Footnotes:     []string{},
 		Scripts:       []string{},
 		Stylesheets:   []string{},
@@ -51,7 +51,7 @@ func WithURL(url string) PageOption {
 }
 
 // WithContents sets the contents.
-func WithContents(contents []*Content) PageOption {
+func WithContents(contents Contents) PageOption {
 	return func(p *Page) {
 		p.Contents = contents
 	}

@@ -22,7 +22,7 @@ const (
 	serveCommand       = `serve`
 	cleanCommand       = `clean`
 	meguminCommand     = `megumin`
-	toolsCommand       = `tools`
+	misaCommand        = `misa`
 	lalatinaCommand    = `lalatina`
 	aquaCommand        = `aqua`
 )
@@ -35,7 +35,7 @@ var (
 		serveCommand:       serveCommandFunc,
 		cleanCommand:       cleanCommandFunc,
 		meguminCommand:     meguminCommandFunc,
-		toolsCommand:       toolsCommandFunc,
+		misaCommand:        misaCommandFunc,
 		lalatinaCommand:    lalatinaCommandFunc,
 		aquaCommand:        aquaCommandFunc,
 
@@ -84,6 +84,7 @@ Here are the commands you can use, -help is supported:
   serve - build HTTP and serve them
   megumin - blow up the directory
   clean - megumin but quiet
+  misa - services to make your website even cooler
   lalatina - DO NOT
   aqua - ...
 

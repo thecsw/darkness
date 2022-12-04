@@ -9,6 +9,7 @@ require (
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/disintegration/imaging v1.6.2 // indirect
 	github.com/felixge/fgprof v0.9.3 // indirect
 	github.com/google/pprof v0.0.0-20211214055906-6f57359322fd // indirect
 	github.com/pkg/profile v1.7.0 // indirect
@@ -17,6 +18,7 @@ require (
 	github.com/stretchr/testify v1.8.1 // indirect
 	github.com/thecsw/gana v0.0.0-20221119221619-ec55f13e6a5d // indirect
 	golang.org/x/exp v0.0.0-20221114191408-850992195362 // indirect
+	golang.org/x/image v0.1.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 

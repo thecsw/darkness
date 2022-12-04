@@ -18,7 +18,9 @@ var (
 
 // meguminCommandFunc blows up the directory.
 func meguminCommandFunc() {
-	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet(meguminCommand, flag.ExitOnError)))
+	options := getEmiliaOptions(flag.NewFlagSet(meguminCommand, flag.ExitOnError))
+	options.Dev = true
+	emilia.InitDarkness(options)
 	delayedLinesPrint([]string{
 		"Darker than black, darker than darkness, combine with my intense crimson.",
 		"Time to wake up, descend to these borders and appear as an intangible distortion.",
@@ -36,13 +38,18 @@ func meguminCommandFunc() {
 		"My name is Megumin, the number one mage of Axel!",
 		"Come, you shall all become my experience points today!",
 	})
+	// Also clean gallery previews
+	removeGalleryFiles()
 }
 
 // cleanCommandFunc cleans the files like `megumin` but without any output (except for errors).
 func cleanCommandFunc() {
-	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet(cleanCommand, flag.ExitOnError)))
+	options := getEmiliaOptions(flag.NewFlagSet(cleanCommand, flag.ExitOnError))
+	options.Dev = true
+	emilia.InitDarkness(options)
 	isQuietMegumin = true
 	removeOutputFiles()
+	removeGalleryFiles()
 }
 
 // removeOutputFiles is the low-level command to be used when cleaning data.
