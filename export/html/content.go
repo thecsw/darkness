@@ -134,11 +134,11 @@ func makeFlexItem(s string, folder string, width uint) string {
 	if matchLen < 0 {
 		link = s
 	}
-	fullImage := filepath.Join(folder, strings.TrimSpace(link))
+	fullImage := filepath.Join(folder, url.PathEscape(strings.TrimSpace(link)))
 	ext := filepath.Ext(fullImage)
 	previewImage := strings.TrimSuffix(fullImage, ext) + "_preview" + ext
 	return fmt.Sprintf(`<img class="item lazyload flex-%d" src="%s" data-src="%s" title="%s" alt="%s">`,
-		width, url.PathEscape(previewImage), url.PathEscape(fullImage), desc, text)
+		width, previewImage, fullImage, desc, text)
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
