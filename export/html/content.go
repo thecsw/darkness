@@ -3,6 +3,7 @@ package html
 import (
 	"fmt"
 	"html"
+	"net/url"
 	"path/filepath"
 	"strings"
 
@@ -137,7 +138,7 @@ func makeFlexItem(s string, folder string, width uint) string {
 	ext := filepath.Ext(fullImage)
 	previewImage := strings.TrimSuffix(fullImage, ext) + "_preview" + ext
 	return fmt.Sprintf(`<img class="item lazyload flex-%d" src="%s" data-src="%s" title="%s" alt="%s">`,
-		width, previewImage, fullImage, desc, text)
+		width, url.PathEscape(previewImage), url.PathEscape(fullImage), desc, text)
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
