@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"sync"
@@ -18,7 +17,7 @@ var (
 
 // meguminCommandFunc blows up the directory.
 func meguminCommandFunc() {
-	options := getEmiliaOptions(flag.NewFlagSet(meguminCommand, flag.ExitOnError))
+	options := getEmiliaOptions(darknessFlagset(meguminCommand))
 	options.Dev = true
 	emilia.InitDarkness(options)
 	delayedLinesPrint([]string{
@@ -44,7 +43,7 @@ func meguminCommandFunc() {
 
 // cleanCommandFunc cleans the files like `megumin` but without any output (except for errors).
 func cleanCommandFunc() {
-	options := getEmiliaOptions(flag.NewFlagSet(cleanCommand, flag.ExitOnError))
+	options := getEmiliaOptions(darknessFlagset(cleanCommand))
 	options.Dev = true
 	emilia.InitDarkness(options)
 	isQuietMegumin = true

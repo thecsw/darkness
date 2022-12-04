@@ -66,3 +66,8 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 		Dev:            useCurrentDirectory,
 	}
 }
+
+// darknessFlagset returns flagset based on darkness command.
+func darknessFlagset(command darknessCommand) *flag.FlagSet {
+	return flag.NewFlagSet(string(command), flag.ExitOnError)
+}

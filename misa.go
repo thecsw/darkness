@@ -1,9 +1,10 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sync"
@@ -17,7 +18,7 @@ import (
 // misaCommandFunc will support many different tools that darkness can support,
 // such as creating gallery previews, etc. WIP.
 func misaCommandFunc() {
-	misaCmd := flag.NewFlagSet(misaCommand, flag.ExitOnError)
+	misaCmd := darknessFlagset(misaCommand)
 
 	buildGalleryPreviews := misaCmd.Bool("gallery-previews", false, "build gallery previews")
 	removeGalleryPreviews := misaCmd.Bool("no-gallery-previews", false, "delete gallery previews")
@@ -34,6 +35,7 @@ func misaCommandFunc() {
 		removeGalleryFiles()
 		return
 	}
+
 	fmt.Println("I don't know what you want me to do, see -help")
 }
 

@@ -1,11 +1,9 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"io/fs"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -24,7 +22,7 @@ const (
 
 // oneFileCommandFunc builds a single file.
 func oneFileCommandFunc() {
-	fileCmd := flag.NewFlagSet(oneFileCommand, flag.ExitOnError)
+	fileCmd := darknessFlagset(oneFileCommand)
 	fileCmd.StringVar(&filename, "input", "index.org", "file on input")
 	emilia.InitDarkness(getEmiliaOptions(fileCmd))
 	fmt.Println(emilia.InputToOutput(filename))
@@ -32,7 +30,7 @@ func oneFileCommandFunc() {
 
 // build builds the entire directory.
 func buildCommandFunc() {
-	emilia.InitDarkness(getEmiliaOptions(flag.NewFlagSet(buildCommand, flag.ExitOnError)))
+	emilia.InitDarkness(getEmiliaOptions(darknessFlagset(buildCommand)))
 	build()
 	// Check that we actually processed some files before reporting.
 	if emilia.NumFoundFiles < 0 {
@@ -98,5 +96,5 @@ func build() {
 	wg.Wait()
 
 	// Report back on some of the results
-	log.Printf("Processed %d files in %d ms\n", emilia.NumFoundFiles, time.Since(start).Milliseconds())
+	fmt.Printf("Processed %d files in %d ms\n", emilia.NumFoundFiles, time.Since(start).Milliseconds())
 }

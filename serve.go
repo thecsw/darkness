@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -24,7 +23,7 @@ const (
 // serveCommandFunc builds the website, local serves it on 8080 and then
 // cleans the files.
 func serveCommandFunc() {
-	serveCmd := flag.NewFlagSet(serveCommand, flag.ExitOnError)
+	serveCmd := darknessFlagset(serveCommand)
 	port := serveCmd.Int("port", defaultServePort, "port number to use (default 8080)")
 	options := getEmiliaOptions(serveCmd)
 	options.URL = "http://127.0.0.1:" + strconv.Itoa(*port)

@@ -15,20 +15,22 @@ var (
 	defaultDarknessTemplate []byte
 )
 
+type darknessCommand string
+
 const (
-	newDarknessCommand = `new`
-	oneFileCommand     = `file`
-	buildCommand       = `build`
-	serveCommand       = `serve`
-	cleanCommand       = `clean`
-	meguminCommand     = `megumin`
-	misaCommand        = `misa`
-	lalatinaCommand    = `lalatina`
-	aquaCommand        = `aqua`
+	newDarknessCommand darknessCommand = `new`
+	oneFileCommand     darknessCommand = `file`
+	buildCommand       darknessCommand = `build`
+	serveCommand       darknessCommand = `serve`
+	cleanCommand       darknessCommand = `clean`
+	meguminCommand     darknessCommand = `megumin`
+	misaCommand        darknessCommand = `misa`
+	lalatinaCommand    darknessCommand = `lalatina`
+	aquaCommand        darknessCommand = `aqua`
 )
 
 var (
-	commandFuncs = map[string]func(){
+	commandFuncs = map[darknessCommand]func(){
 		newDarknessCommand: newDarknessCommandFunc,
 		oneFileCommand:     oneFileCommandFunc,
 		buildCommand:       buildCommandFunc,
@@ -57,7 +59,7 @@ func main() {
 		return
 	}
 
-	commandFunc, ok := commandFuncs[os.Args[1]]
+	commandFunc, ok := commandFuncs[darknessCommand(os.Args[1])]
 	if !ok {
 		fmt.Println("command not found?")
 		fmt.Println("see help, you pathetic excuse of a man")
