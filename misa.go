@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/disintegration/imaging"
@@ -48,6 +49,8 @@ const (
 // preview version of it.
 func buildGalleryFiles() {
 	for _, galleryFile := range getGalleryFiles() {
+		newFile := emilia.GalleryPreview(galleryFile)
+		fmt.Printf("Building %s... ", relPathToWorkdir(newFile))
 		img, err := imaging.Open(galleryFile, imaging.AutoOrientation(false))
 		if err != nil {
 			fmt.Println("failed to open", galleryFile, ":", err.Error())
@@ -58,13 +61,12 @@ func buildGalleryFiles() {
 		img = imaging.Resize(img, galleryPreviewImageSize, 0, imaging.Lanczos)
 
 		blurred := imaging.Blur(img, galleryPreviewImageBlur)
-		newFile := emilia.GalleryPreview(galleryFile)
-		fmt.Println("Saving", newFile)
 		err = imaging.Save(blurred, newFile)
 		if err != nil {
-			fmt.Println("failed to save", newFile)
+			fmt.Println("failed to save", relPathToWorkdir(newFile))
 			continue
 		}
+		fmt.Println("done")
 	}
 }
 

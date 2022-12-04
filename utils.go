@@ -12,5 +12,10 @@ import (
 
 // fdb cleans the filename from absolute workspace prefix.
 func fdb(filename, data *string) (string, string) {
-	return strings.TrimPrefix(*filename, workDir+"/"), *data
+	return strings.TrimPrefix(*filename, workDir+`/`), *data
+}
+
+// relPathToWorkdir returns path trimmed by the workspace
+func relPathToWorkdir(filename string) string {
+	return strings.TrimPrefix(filename, workDir+`/`)
 }

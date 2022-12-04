@@ -64,8 +64,9 @@ func launchWatcher() {
 				if !ok {
 					return
 				}
-				if strings.HasSuffix(event.Name, emilia.Config.Project.Output) ||
-					strings.HasPrefix(filepath.Base(event.Name), `.`) {
+				filename := relPathToWorkdir(event.Name)
+				if strings.HasSuffix(filename, emilia.Config.Project.Output) ||
+					strings.HasPrefix(filepath.Base(filename), `.`) {
 					continue
 				}
 				// Skip CHMOD events that IDE and editors do by default
