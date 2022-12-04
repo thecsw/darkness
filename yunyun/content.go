@@ -1,5 +1,7 @@
 package yunyun
 
+import "github.com/thecsw/gana"
+
 // Content is a piece of content of a page.
 type Content struct {
 	// Type is the type of content.
@@ -61,6 +63,25 @@ type Content struct {
 	// GalleryImagesPerRow stores the number of default images per row,
 	// therefore what flex class to use -- defaults to 3.
 	GalleryImagesPerRow uint
+}
+
+// Contents is a type of contents
+type Contents []*Content
+
+// Galleries returns all contents that are galleries AND proper list types.
+func (c Contents) Galleries() Contents {
+	return gana.Filter(func(v *Content) bool { return v.IsGallery() && v.IsList() }, c)
+}
+
+// Headings only returns headings of contents, useful for bulding tables
+// of contents and alike.
+func (c Contents) Headings() Contents {
+	return gana.Filter(func(v *Content) bool { return v.IsHeading() }, c)
+}
+
+// SourceCodeBlocks returns all source code blocks from contents.
+func (c Contents) SourceCodeBlocks() Contents {
+	return gana.Filter(func(v *Content) bool { return v.IsSourceCode() }, c)
 }
 
 // IsHeading tells us if the content is a heading.

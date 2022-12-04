@@ -12,7 +12,9 @@ const (
 	lazysizesJS   = `scripts/lazysizes.min.js`
 )
 
-// WithLazyGalleries adds the
+// WithLazyGalleries adds the lazy image loading scripts
+// (thanks to https://afarkas.github.io/lazysizes/index.html) if any
+// gallery blocks are found.
 func WithLazyGalleries() yunyun.PageOption {
 	return func(page *yunyun.Page) {
 		if gana.Anyf(func(v *yunyun.Content) bool { return v.IsGallery() }, page.Contents) {

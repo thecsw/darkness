@@ -5,7 +5,6 @@ import (
 	"path/filepath"
 
 	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/gana"
 )
 
 const (
@@ -28,7 +27,7 @@ func WithSyntaxHighlighting() yunyun.PageOption {
 			return
 		}
 		// Find all the code blocks.
-		sourceCodes := gana.Filter(func(v *yunyun.Content) bool { return v.IsSourceCode() }, page.Contents)
+		sourceCodes := page.Contents.SourceCodeBlocks()
 		// If there are none, the page doesn't require highlighting.
 		if len(sourceCodes) < 1 {
 			return
