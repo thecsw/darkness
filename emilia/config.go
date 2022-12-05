@@ -84,6 +84,7 @@ func InitDarkness(options *EmiliaOptions) {
 			fmt.Printf("failed to get current directory because config url was not given: %s", err.Error())
 			os.Exit(1)
 		}
+		Config.URLIsLocal = true
 	}
 	// Check if custom URL has been passed
 	if len(options.URL) > 0 {
@@ -93,10 +94,12 @@ func InitDarkness(options *EmiliaOptions) {
 	if !strings.HasSuffix(Config.URL, "/") {
 		Config.URL += "/"
 	}
-	Config.URLPath, err = url.Parse(Config.URL)
-	if err != nil {
-		fmt.Printf("failed to parse url from config %s: %s", Config.URL, err.Error())
-		os.Exit(1)
+	if !Config.URLIsLocal {
+		Config.URLPath, err = url.Parse(Config.URL)
+		if err != nil {
+			fmt.Printf("failed to parse url from config %s: %s", Config.URL, err.Error())
+			os.Exit(1)
+		}
 	}
 	// Set up the custom highlight languages
 	if !isZero(Config.Website.SyntaxHighlightingLanguages) {
@@ -130,12 +133,11 @@ func InitDarkness(options *EmiliaOptions) {
 
 // JoinPath joins a path to the darkness config URL.
 func JoinPath(elem string) string {
-	u, _ := url.Parse(elem)
-	// if err != nil {
-	// 	fmt.Printf("Failde to parse target %s: %s", elem, err.Error())
-	// 	os.Exit(1)
-	// }
-	return Config.URLPath.ResolveReference(u).String()
+	if !Config.URLIsLocal {
+		u, _ := url.Parse(elem)
+		return Config.URLPath.ResolveReference(u).String()
+	}
+	return filepath.Join(Config.URL, elem)
 }
 
 // isZero returns true if the passed value is a zero value of its type.

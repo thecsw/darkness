@@ -27,7 +27,6 @@ func serveCommandFunc() {
 	serveCmd := darknessFlagset(serveCommand)
 	port := serveCmd.Int("port", defaultServePort, "port number to use (default 8080)")
 	options := getEmiliaOptions(serveCmd)
-	options.Dev = true
 	options.URL = "http://127.0.0.1:" + strconv.Itoa(*port)
 	// Override the output extension to .html
 	options.OutputExtension = puck.ExtensionHtml

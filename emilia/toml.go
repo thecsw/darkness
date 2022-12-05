@@ -11,6 +11,8 @@ type DarknessConfig struct {
 	Title string `toml:"title"`
 	// URL is the URL of the site
 	URL string `toml:"url"`
+	// URLIsLocal is true if URL is the file path, not url.
+	URLIsLocal bool `toml:"-"`
 	// Project is the project section of the config
 	Project ProjectConfig
 	// Website is the website section of the config
