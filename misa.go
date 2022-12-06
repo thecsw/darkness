@@ -109,9 +109,8 @@ func getGalleryFiles() []string {
 				}
 				for _, item := range gc.List {
 					_, link, _, _ := yunyun.ExtractLink(item)
-					galleryFiles = append(galleryFiles, emilia.JoinPath(
-						filepath.Join(page.URL, gc.GalleryPath, link),
-					))
+					galleryFiles = append(galleryFiles,
+						filepath.Join(page.URL, gc.GalleryPath, link))
 				}
 			}
 			wg.Done()
