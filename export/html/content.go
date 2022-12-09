@@ -220,7 +220,9 @@ func (e ExporterHTML) RawHTML(content *yunyun.Content) string {
 
 // horizontalLine gives us a horizontal line html representation
 func (e ExporterHTML) HorizontalLine(content *yunyun.Content) string {
-	return `<hr>`
+	return `<center>
+<hr>
+</center>`
 }
 
 // attentionBlock gives us a attention block html representation
