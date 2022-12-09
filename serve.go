@@ -100,8 +100,6 @@ func launchWatcher() {
 		}
 	}()
 
-	// Add a path.
-	fmt.Println("Listening to everything in", workDir)
 	// start adding all the source files
 	for _, toWatch := range emilia.FindFilesByExtSimple(workDir, emilia.Config.Project.Input) {
 		err = watcher.Add(toWatch)
@@ -109,6 +107,7 @@ func launchWatcher() {
 			log.Fatal(err)
 		}
 	}
+	fmt.Printf("Listening to %d files in %s\n", len(watcher.WatchList()), workDir)
 	// Block main goroutine forever.
 	<-make(chan struct{})
 }
