@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	JSPlaceholder = `<script src="%s" async=""></script>`
-	lazysizesJS   = `scripts/lazysizes.min.js`
+	JSPlaceholder                         = `<script src="%s" async=""></script>`
+	lazysizesJS   yunyun.RelativePathFile = `scripts/lazysizes.min.js`
 )
 
 // WithLazyGalleries adds the lazy image loading scripts

@@ -25,7 +25,7 @@ func oneFileCommandFunc() {
 	fileCmd := darknessFlagset(oneFileCommand)
 	fileCmd.StringVar(&filename, "input", "index.org", "file on input")
 	emilia.InitDarkness(getEmiliaOptions(fileCmd))
-	fmt.Println(emilia.InputToOutput(filename))
+	fmt.Println(emilia.InputToOutput(emilia.JoinWorkdir(yunyun.RelativePathFile(filename))))
 }
 
 // build builds the entire directory.
@@ -46,11 +46,11 @@ func build() {
 	start := time.Now()
 
 	// Create the channel to feed read files.
-	inputFilenames := make(chan string, customChannelCapacity)
+	inputFilenames := make(chan yunyun.FullPathFile, customChannelCapacity)
 
 	// Create the worker that will read files and push tuples.
-	inputFiles := gana.GenericWorkers(inputFilenames, func(v string) gana.Tuple[string, string] {
-		data, err := ioutil.ReadFile(filepath.Clean(v))
+	inputFiles := gana.GenericWorkers(inputFilenames, func(v yunyun.FullPathFile) gana.Tuple[yunyun.FullPathFile, string] {
+		data, err := ioutil.ReadFile(filepath.Clean(string(v)))
 		if err != nil {
 			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
 		}
@@ -58,13 +58,13 @@ func build() {
 	}, 1, customChannelCapacity)
 
 	// Create the workers for parsing and converting orgmode to Page.
-	pages := gana.GenericWorkers(inputFiles, func(v gana.Tuple[string, string]) *yunyun.Page {
-		return emilia.ParserBuilder.BuildParser(fdb(v.UnpackRef())).Parse()
+	pages := gana.GenericWorkers(inputFiles, func(v gana.Tuple[yunyun.FullPathFile, string]) *yunyun.Page {
+		return emilia.ParserBuilder.BuildParser(emilia.PackRef(v.UnpackRef())).Parse()
 	}, customNumWorkers, customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
 	results := gana.GenericWorkers(pages, func(v *yunyun.Page) gana.Tuple[string, string] {
-		return gana.NewTuple(emilia.InputFilenameToOutput(v.File), emilia.EnrichAndExportPage(v))
+		return gana.NewTuple(emilia.InputFilenameToOutput(emilia.JoinWorkdir(v.File)), emilia.EnrichAndExportPage(v))
 	}, customNumWorkers, customChannelCapacity)
 
 	// This will block darkness from exiting until all the files are done.
@@ -75,7 +75,7 @@ func build() {
 	wg.Add(1)
 
 	// Run a discovery for files and feed to the reader worker.
-	go emilia.FindFilesByExt(inputFilenames, workDir, emilia.Config.Project.Input, wg)
+	go emilia.FindFilesByExt(inputFilenames, emilia.Config.Project.Input, wg)
 
 	// Build a wait group to ensure we always read and write the same
 	// number of files, such that after the file has been read, parsed,

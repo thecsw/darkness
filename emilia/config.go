@@ -13,6 +13,7 @@ import (
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/export"
 	"github.com/thecsw/darkness/parse"
+	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
 
@@ -37,11 +38,17 @@ type EmiliaOptions struct {
 	URL string
 	// OutputExtension overrides whatever is in the file
 	OutputExtension string
+	// WorkDir is the working directory of the darkness project.
+	WorkDir string
 }
 
 // InitDarkness initializes the darkness config.
 func InitDarkness(options *EmiliaOptions) {
 	Config = &DarknessConfig{}
+	if isZero(options.WorkDir) {
+		Config.WorkDir = filepath.Dir(options.DarknessConfig)
+		fmt.Println("guessed the working directory as:", Config.WorkDir)
+	}
 	data, err := ioutil.ReadFile(options.DarknessConfig)
 	if err != nil && !options.Test {
 		fmt.Printf("failed to open the config %s: %s", options.DarknessConfig, err.Error())
@@ -101,6 +108,7 @@ func InitDarkness(options *EmiliaOptions) {
 			os.Exit(1)
 		}
 	}
+	Config.URLSlice = []string{Config.URL}
 	// Set up the custom highlight languages
 	if !isZero(Config.Website.SyntaxHighlightingLanguages) {
 		setupHighlightJsLanguages(Config.Website.SyntaxHighlightingLanguages)
@@ -115,7 +123,7 @@ func InitDarkness(options *EmiliaOptions) {
 		Config.Project.ExcludeEnabled = false
 	}
 	excludePattern := fmt.Sprintf("(?mU)(%s)/.*",
-		strings.Join(Config.Project.Exclude, "|"))
+		strings.Join(yunyun.AnyPathsToStrings(Config.Project.Exclude), "|"))
 	Config.Project.ExcludeRegex, err = regexp.Compile(excludePattern)
 	if err != nil {
 		fmt.Println("Bad exclude regex, made", excludePattern,
@@ -131,13 +139,26 @@ func InitDarkness(options *EmiliaOptions) {
 	InitMathJS()
 }
 
-// JoinPath joins a path to the darkness config URL.
-func JoinPath(elem string) string {
+func JoinPathGeneric[
+	relative yunyun.RelativePath,
+	full yunyun.FullPath,
+](what ...relative) full {
 	if !Config.URLIsLocal {
-		u, _ := url.Parse(elem)
-		return Config.URLPath.ResolveReference(u).String()
+		return full(Config.URLPath.JoinPath(yunyun.AnyPathsToStrings(what)...).Path)
 	}
-	return filepath.Join(Config.URL, elem)
+	return full(filepath.Join(append(Config.URLSlice, yunyun.AnyPathsToStrings(what)...)...))
+}
+
+func JoinPath(relative ...yunyun.RelativePathFile) yunyun.FullPathFile {
+	return JoinPathGeneric[yunyun.RelativePathFile, yunyun.FullPathFile](relative...)
+}
+
+func JoinWorkdirGeneric[R yunyun.RelativePath, F yunyun.FullPath](target R) F {
+	return F(filepath.Join(Config.WorkDir, string(target)))
+}
+
+func JoinWorkdir(target yunyun.RelativePathFile) yunyun.FullPathFile {
+	return JoinWorkdirGeneric[yunyun.RelativePathFile, yunyun.FullPathFile](target)
 }
 
 // isZero returns true if the passed value is a zero value of its type.
@@ -167,8 +188,8 @@ func getExporterBuilder() export.ExporterBuilder {
 
 // setupHighlightJsLanguages logs all the languages we support through
 // the directory included in the config.
-func setupHighlightJsLanguages(dir string) {
-	languages, err := ioutil.ReadDir(dir)
+func setupHighlightJsLanguages(dir yunyun.RelativePathDir) {
+	languages, err := ioutil.ReadDir(string(dir))
 	if err != nil {
 		fmt.Printf("Failed to open %s: %s", dir, err.Error())
 		AvailableLanguages = nil

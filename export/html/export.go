@@ -41,7 +41,10 @@ func (e ExporterHTML) Export() string {
 	// Add the red tomb to the last paragraph on given directories
 	// from the config
 	for _, tombPage := range emilia.Config.Website.Tombs {
-		if strings.HasPrefix(e.page.URL, emilia.JoinPath(tombPage)) {
+		if strings.HasPrefix(
+			string(e.page.Location),
+			string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathFile](tombPage)),
+		) {
 			e.addTomb()
 			break
 		}
@@ -96,8 +99,7 @@ func (e ExporterHTML) styleTags() string {
 	content := make([]string, len(emilia.Config.Website.Styles)+len(e.page.Stylesheets))
 	for i, style := range emilia.Config.Website.Styles {
 		content[i] = fmt.Sprintf(
-			`<link rel="stylesheet" type="text/css" href="%s">`+"\n",
-			emilia.JoinPath(style),
+			`<link rel="stylesheet" type="text/css" href="%s">`+"\n", emilia.JoinPath(style),
 		)
 	}
 	content = append(content, e.page.Stylesheets...)
@@ -133,10 +135,12 @@ func (e ExporterHTML) authorHeader() string {
 	navLinks := make([]string, 0, len(emilia.Config.Navigation))
 	for i := 1; i <= len(emilia.Config.Navigation); i++ {
 		v := emilia.Config.Navigation[fmt.Sprintf("%d", i)]
-		if e.page.URL == emilia.Config.URL && v.Link == v.Hide {
+		if string(e.page.Location) == emilia.Config.URL && v.Link == v.Hide {
 			continue
 		}
-		navLinks = append(navLinks, fmt.Sprintf(`<a href="%s">%s</a>`, emilia.JoinPath(v.Link), v.Title))
+		navLinks = append(navLinks, fmt.Sprintf(`<a href="%s">%s</a>`,
+			emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](v.Link),
+			v.Title))
 	}
 	content += strings.Join(navLinks, " | ") + `</span>`
 	content += `
@@ -153,8 +157,7 @@ func authorImage() string {
 	if emilia.Config.Author.Image == "" {
 		return ""
 	}
-	return fmt.Sprintf(`<img id="myface" src="%s" width="112" alt="Top Face" height="112">`,
-		emilia.JoinPath(emilia.Config.Author.Image))
+	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`, emilia.JoinPath(emilia.Config.Author.Image))
 }
 
 // addTomb adds the tomb to the last paragraph.

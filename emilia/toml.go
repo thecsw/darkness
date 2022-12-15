@@ -3,6 +3,8 @@ package emilia
 import (
 	"net/url"
 	"regexp"
+
+	"github.com/thecsw/darkness/yunyun"
 )
 
 // DarknessConfig is the global darkness config
@@ -11,6 +13,8 @@ type DarknessConfig struct {
 	Title string `toml:"title"`
 	// URL is the URL of the site
 	URL string `toml:"url"`
+	// Slice with just `URL` in it.
+	URLSlice []string `tom:"-"`
 	// URLIsLocal is true if URL is the file path, not url.
 	URLIsLocal bool `toml:"-"`
 	// Project is the project section of the config
@@ -23,6 +27,8 @@ type DarknessConfig struct {
 	Navigation map[string]NavigationConfig
 	// URLPath is the parsed URL of the site
 	URLPath *url.URL `toml:"-"`
+	// WorkDir is the directory of where darkness project lives.
+	WorkDir string `toml:"-"`
 }
 
 // ProjectConfig is the project section of the config
@@ -32,9 +38,9 @@ type ProjectConfig struct {
 	// Output is the output format (defaulte ".html")
 	Output string `toml:"output"`
 	// Excludes is the list of relative paths to exclude from the project
-	Exclude        []string       `toml:"exclude"`
-	ExcludeRegex   *regexp.Regexp `toml:"-"`
-	ExcludeEnabled bool           `toml:"-"`
+	Exclude        []yunyun.RelativePathDir `toml:"exclude"`
+	ExcludeRegex   *regexp.Regexp           `toml:"-"`
+	ExcludeEnabled bool                     `toml:"-"`
 }
 
 // WebsiteConfig is the website section of the config
@@ -46,9 +52,9 @@ type WebsiteConfig struct {
 	// Twitter is the twitter handle of the site
 	Twitter string `toml:"twitter"`
 	// Styles is the list of relative paths to css files for the site
-	Styles []string `toml:"styles"`
+	Styles []yunyun.RelativePathFile `toml:"styles"`
 	// Tombs is the list of relative paths where to include the tombstones
-	Tombs []string `toml:"tombs"`
+	Tombs []yunyun.RelativePathDir `toml:"tombs"`
 	// Preview is the filename of the picture in the
 	// same directory to use as a page preview. defaults to preview.png
 	Preview string `toml:"preview"`
@@ -63,9 +69,9 @@ type WebsiteConfig struct {
 	// syntax highlighting with highlight.js
 	SyntaxHighlighting bool `toml:"syntax_highlighting"`
 	// SyntaxHighlightingLanguages is the location of highlight.js languages
-	SyntaxHighlightingLanguages string `toml:"syntax_highlighting_languages"`
+	SyntaxHighlightingLanguages yunyun.RelativePathDir `toml:"syntax_highlighting_languages"`
 	// SyntaxHighlightingTheme decides what theme to use from highlight.js
-	SyntaxHighlightingTheme string `toml:"syntax_highlighting_theme"`
+	SyntaxHighlightingTheme yunyun.RelativePathFile `toml:"syntax_highlighting_theme"`
 	// ExtraHead is the list of html directives to insert in <head>
 	ExtraHead []string `toml:"extra_head"`
 }
@@ -73,7 +79,7 @@ type WebsiteConfig struct {
 // AuthorConfig is the author section of the config
 type AuthorConfig struct {
 	// AuthorImage is the header image (can be empty)
-	Image string `toml:"image"`
+	Image yunyun.RelativePathFile `toml:"image"`
 	// Name is the name of the author
 	Name string `toml:"name"`
 	// Email is the email of the author
@@ -83,9 +89,9 @@ type AuthorConfig struct {
 // NavigationConfig is the navigation section of the config
 type NavigationConfig struct {
 	// Link is the link of the navigation item
-	Link string `toml:"link"`
+	Link yunyun.RelativePathDir `toml:"link"`
 	// Title is the title of the navigation item
 	Title string `toml:"title"`
 	// Hide is the path where to hide the element
-	Hide string `toml:"hide"`
+	Hide yunyun.RelativePathDir `toml:"hide"`
 }

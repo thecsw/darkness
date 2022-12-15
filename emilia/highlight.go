@@ -2,17 +2,16 @@ package emilia
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"github.com/thecsw/darkness/yunyun"
 )
 
 const (
-	highlightJsTheme             = `<link rel="stylesheet" href="%s">`
-	highlightJsThemeDefaultPath  = `scripts/highlight/styles/agate.min.css`
-	highlightJsScript            = `<script src="%s"></script>`
-	highlightJsScriptDefaultPath = `scripts/highlight/highlight.min.js`
-	highlightJsAction            = `<script>hljs.highlightAll();</script>`
+	highlightJsTheme                                     = `<link rel="stylesheet" href="%s">`
+	highlightJsThemeDefaultPath  yunyun.RelativePathFile = `scripts/highlight/styles/agate.min.css`
+	highlightJsScript                                    = `<script src="%s"></script>`
+	highlightJsScriptDefaultPath yunyun.RelativePathFile = `scripts/highlight/highlight.min.js`
+	highlightJsAction                                    = `<script>hljs.highlightAll();</script>`
 )
 
 var (
@@ -37,15 +36,18 @@ func WithSyntaxHighlighting() yunyun.PageOption {
 			fmt.Sprintf(highlightJsTheme, JoinPath(Config.Website.SyntaxHighlightingTheme)))
 		page.Scripts = append(page.Scripts,
 			fmt.Sprintf(highlightJsScript, JoinPath(highlightJsScriptDefaultPath)))
+
 		// Trigger the action after all the highlight scripts are imported.
 		defer func() {
 			page.Scripts = append(page.Scripts, highlightJsAction)
 		}()
+
 		// If language lookup table was not filled, skip the next step.
 		if AvailableLanguages == nil {
 			return
 		}
 		addedLanguages := map[string]bool{}
+
 		// For each codeblock, look up the language and see if we have a
 		// highlight.js processor for it. If we don't simply skip, otherwise,
 		// build a new script import and inject it into the page.
@@ -58,9 +60,11 @@ func WithSyntaxHighlighting() yunyun.PageOption {
 				continue
 			}
 			page.Scripts = append(page.Scripts, fmt.Sprintf(highlightJsScript,
-				JoinPath(filepath.Join(
+				JoinPath(yunyun.JoinRelativePaths(
 					Config.Website.SyntaxHighlightingLanguages,
-					lang+".min.js"))))
+					yunyun.RelativePathFile(lang+".min.js")),
+				),
+			))
 			addedLanguages[lang] = true
 		}
 	}

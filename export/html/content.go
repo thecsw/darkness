@@ -3,8 +3,6 @@ package html
 import (
 	"fmt"
 	"html"
-	"net/url"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -130,8 +128,7 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 }
 
 var (
-	flexOptionPattern = `:flex ([12345])`
-	flexOptionRegexp  = regexp.MustCompile(flexOptionPattern)
+	flexOptionRegexp = regexp.MustCompile(`:flex ([12345])`)
 )
 
 // extractCustomFlex extract custom flex class `:flex [1,5]`
@@ -151,30 +148,20 @@ func extractCustomFlex(s string) uint {
 }
 
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
-func makeFlexItem(s string, folder string, width uint) string {
-	matchLen, link, text, desc := yunyun.ExtractLink(s)
-	// Maybe they just didn't use a proper link pattern? Stub the value in instead then.
-	if matchLen < 0 {
-		link = s
-	}
-	fullImage := filepath.Join(folder, url.PathEscape(strings.TrimSpace(link)))
-	ext := filepath.Ext(fullImage)
-	previewImage := strings.TrimSuffix(fullImage, ext) + "_preview" + ext
-	if customFlex := extractCustomFlex(s); customFlex != 0 {
+func makeFlexItem(item *emilia.GalleryItem, width uint) string {
+	// See if there is a custom flex width requested for the item.
+	if customFlex := extractCustomFlex(string(item.Item)); customFlex != 0 {
 		width = customFlex
 	}
+	// Return the flex-friendly image tag.
 	return fmt.Sprintf(`<img class="item lazyload flex-%d" src="%s" data-src="%s" title="%s" alt="%s">`,
-		width, previewImage, fullImage, desc, text)
+		width, emilia.GalleryPreview(item), emilia.GalleryImage(item), item.Description, item.Text)
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
 func (e ExporterHTML) gallery(content *yunyun.Content) string {
-	galleryFolder := ""
-	if len(content.GalleryPath) > 0 {
-		galleryFolder = content.GalleryPath
-	}
 	makeFlexItemWithFolder := func(s string) string {
-		return makeFlexItem(s, galleryFolder, content.GalleryImagesPerRow)
+		return makeFlexItem(emilia.NewGalleryItem(e.page, content, s), content.GalleryImagesPerRow)
 	}
 	return fmt.Sprintf(`
 <div class="gallery-container">

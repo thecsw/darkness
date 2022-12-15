@@ -1,10 +1,8 @@
 package orgmode
 
 import (
-	"path/filepath"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -37,7 +35,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 
 	page := yunyun.NewPage(
 		yunyun.WithFilename(p.Filename),
-		yunyun.WithURL(emilia.JoinPath(filepath.Dir(p.Filename))),
+		yunyun.WithLocation(yunyun.RelativePathTrim(p.Filename)),
 		yunyun.WithContents(make([]*yunyun.Content, 0, 16)),
 	)
 
@@ -61,8 +59,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	addContent := func(content *yunyun.Content) {
 		content.Options = currentFlags
 		content.Summary = additionalContext
-		content.GalleryPath = galleryPath
-		content.GalleryPathIsExternal = strings.HasPrefix(galleryPath, "http")
+		content.GalleryPath = yunyun.RelativePathDir(galleryPath)
 		content.GalleryImagesPerRow = galleryWidth
 		content.Caption = caption
 		page.Contents = append(page.Contents, content)

@@ -18,9 +18,9 @@ const (
 	katexCdnJS         = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js`
 	katexCdnAutoRender = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js`
 
-	katexLocalCSS        = `scripts/katex/katex.min.css`
-	katexLocalJS         = `scripts/katex/katex.min.js`
-	katexLocalAutoRender = `scripts/katex/auto-render.min.js`
+	katexLocalCSS        yunyun.RelativePathFile = `scripts/katex/katex.min.css`
+	katexLocalJS         yunyun.RelativePathFile = `scripts/katex/katex.min.js`
+	katexLocalAutoRender yunyun.RelativePathFile = `scripts/katex/auto-render.min.js`
 
 	katexJs = `
 <link rel="stylesheet" href="%s" integrity="sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB" crossorigin="anonymous">
@@ -113,9 +113,7 @@ func hasEquationsInHeading(content *yunyun.Content) bool {
 }
 
 func InitMathJS() {
-	mathJs = fmt.Sprintf(katexJs,
-		JoinPath(katexLocalCSS), JoinPath(katexLocalJS), JoinPath(katexLocalAutoRender),
-	)
+	mathJs = fmt.Sprintf(katexJs, JoinPath(katexLocalCSS), JoinPath(katexLocalJS), JoinPath(katexLocalAutoRender))
 
 	// Uncomment this if you want to use CDN-provided Katex instead of local.
 	// mathJs = fmt.Sprintf(katexJs, katexCdnCSS, katexCdnJS, katexCdnAutoRender)

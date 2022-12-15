@@ -8,6 +8,7 @@ import (
 	"unicode"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 var (
@@ -53,10 +54,10 @@ func cleanCommandFunc() {
 
 // removeOutputFiles is the low-level command to be used when cleaning data.
 func removeOutputFiles() {
-	orgfiles := make(chan string, defaultNumOfWorkers)
+	orgfiles := make(chan yunyun.FullPathFile, defaultNumOfWorkers)
 	wg := &sync.WaitGroup{}
 	wg.Add(1)
-	go emilia.FindFilesByExt(orgfiles, workDir, emilia.Config.Project.Input, wg)
+	go emilia.FindFilesByExt(orgfiles, emilia.Config.Project.Input, wg)
 	for orgfile := range orgfiles {
 		toRemove := emilia.InputFilenameToOutput(orgfile)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {

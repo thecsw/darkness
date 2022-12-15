@@ -13,6 +13,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 const (
@@ -68,7 +69,7 @@ func launchWatcher() {
 					fmt.Println("stopped watching")
 					return
 				}
-				filename := relPathToWorkdir(event.Name)
+				filename := string(emilia.RelPathToWorkdir(yunyun.FullPathFile(event.Name)))
 				if strings.HasSuffix(filename, emilia.Config.Project.Output) ||
 					strings.HasPrefix(filepath.Base(filename), `.`) {
 					continue
@@ -101,8 +102,8 @@ func launchWatcher() {
 	}()
 
 	// start adding all the source files
-	for _, toWatch := range emilia.FindFilesByExtSimple(workDir, emilia.Config.Project.Input) {
-		err = watcher.Add(toWatch)
+	for _, toWatch := range emilia.FindFilesByExtSimple(emilia.Config.Project.Input) {
+		err = watcher.Add(string(toWatch))
 		if err != nil {
 			log.Fatal(err)
 		}

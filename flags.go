@@ -64,6 +64,7 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	return &emilia.EmiliaOptions{
 		DarknessConfig: darknessToml,
 		Dev:            useCurrentDirectory,
+		WorkDir:        workDir,
 	}
 }
 

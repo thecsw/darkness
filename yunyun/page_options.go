@@ -19,7 +19,7 @@ func NewPage(options ...PageOption) *Page {
 		Title:         defaultPageTitle,
 		Date:          defaultDate,
 		DateHoloscene: defaulteDateHoloscene,
-		URL:           defaultURL,
+		Location:      defaultURL,
 		Contents:      Contents{},
 		Footnotes:     []string{},
 		Scripts:       []string{},
@@ -37,16 +37,16 @@ func (p *Page) Options(options ...PageOption) *Page {
 }
 
 // WithFilename sets the filename.
-func WithFilename(filename string) PageOption {
+func WithFilename(filename RelativePathFile) PageOption {
 	return func(p *Page) {
 		p.File = filename
 	}
 }
 
-// WithURL sets the URL.
-func WithURL(url string) PageOption {
+// WithLocation sets the URL.
+func WithLocation(url RelativePathDir) PageOption {
 	return func(p *Page) {
-		p.URL = url
+		p.Location = url
 	}
 }
 

@@ -5,13 +5,14 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
 
 // rel is a struct for holding the rel and href of a link
 type rel struct {
 	Rel  string
-	Href string
+	Href yunyun.FullPathFile
 	Type string
 }
 
@@ -23,7 +24,7 @@ func linkTag(val rel) string {
 // linkTags returns a string of the form <link rel="..." href="..." /> for an entire page
 func (e ExporterHTML) linkTags() string {
 	return strings.Join(gana.Map(linkTag, []rel{
-		{"canonical", e.page.URL, ""},
+		{"canonical", emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathFile](e.page.Location), ""},
 		{"shortcut icon", emilia.JoinPath("assets/favicon.ico"), "image/x-icon"},
 		{"apple-touch-icon", emilia.JoinPath("assets/apple-touch-icon.png"), "image/png"},
 		{"image_src", emilia.JoinPath("assets/android-chrome-512x512.png"), "image/png"},

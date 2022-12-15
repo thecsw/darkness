@@ -1,10 +1,8 @@
 package markdown
 
 import (
-	"path/filepath"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -27,7 +25,7 @@ func (p ParserMarkdown) Parse() *yunyun.Page {
 
 	page := yunyun.NewPage(
 		yunyun.WithFilename(p.Filename),
-		yunyun.WithURL(emilia.JoinPath(filepath.Dir(p.Filename))),
+		yunyun.WithLocation(yunyun.RelativePathTrim(p.Filename)),
 		yunyun.WithContents(make([]*yunyun.Content, 0, 16)),
 	)
 
