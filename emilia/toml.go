@@ -57,7 +57,7 @@ type WebsiteConfig struct {
 	Tombs []yunyun.RelativePathDir `toml:"tombs"`
 	// Preview is the filename of the picture in the
 	// same directory to use as a page preview. defaults to preview.png
-	Preview string `toml:"preview"`
+	Preview yunyun.RelativePathFile `toml:"preview"`
 	// Description length dictates on how many characters do we extract
 	// from the page to show in the web prewies, like OpenGraph and Twitter
 	DescriptionLength int `toml:"description_length"`
