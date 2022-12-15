@@ -150,7 +150,7 @@ func extractCustomFlex(s string) uint {
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
 func makeFlexItem(item *emilia.GalleryItem, width uint) string {
 	// See if there is a custom flex width requested for the item.
-	if customFlex := extractCustomFlex(string(item.Item)); customFlex != 0 {
+	if customFlex := extractCustomFlex(string(item.OriginalLine)); customFlex != 0 {
 		width = customFlex
 	}
 	// Return the flex-friendly image tag.

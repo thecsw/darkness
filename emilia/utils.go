@@ -82,6 +82,8 @@ type GalleryItem struct {
 	Text string
 	// Description found through the link regexp.
 	Description string
+	// OriginalLine is the original line that include org options.
+	OriginalLine string
 }
 
 // NewGalleryItem creates a new helper `GalleryItem` and
@@ -93,11 +95,12 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 		link = wholeLine
 	}
 	return &GalleryItem{
-		Item:        yunyun.RelativePathFile(link),
-		Path:        yunyun.JoinPaths(page.Location, content.GalleryPath),
-		IsExternal:  yunyun.URLRegexp.MatchString(link),
-		Text:        text,
-		Description: desc,
+		Item:         yunyun.RelativePathFile(link),
+		Path:         yunyun.JoinPaths(page.Location, content.GalleryPath),
+		IsExternal:   yunyun.URLRegexp.MatchString(link),
+		Text:         text,
+		Description:  desc,
+		OriginalLine: wholeLine,
 	}
 }
 
@@ -120,8 +123,7 @@ func GalleryPreview(item *GalleryItem) yunyun.FullPathFile {
 	ext := filepath.Ext(filename)
 	return JoinPath(yunyun.JoinRelativePaths(item.Path,
 		yunyun.RelativePathFile(strings.TrimSuffix(filename, ext)+"_preview"+ext),
-	),
-	)
+	))
 }
 
 func md5String(what string) string {

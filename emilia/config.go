@@ -45,7 +45,8 @@ type EmiliaOptions struct {
 // InitDarkness initializes the darkness config.
 func InitDarkness(options *EmiliaOptions) {
 	Config = &DarknessConfig{}
-	if isZero(options.WorkDir) {
+	Config.WorkDir = options.WorkDir
+	if isZero(Config.WorkDir) {
 		Config.WorkDir = filepath.Dir(options.DarknessConfig)
 		fmt.Println("guessed the working directory as:", Config.WorkDir)
 	}
@@ -91,8 +92,8 @@ func InitDarkness(options *EmiliaOptions) {
 			fmt.Printf("failed to get current directory because config url was not given: %s", err.Error())
 			os.Exit(1)
 		}
-		Config.URLIsLocal = true
 	}
+	Config.URLIsLocal = !yunyun.URLRegexp.MatchString(Config.URL)
 	// Check if custom URL has been passed
 	if len(options.URL) > 0 {
 		Config.URL = options.URL
@@ -144,7 +145,7 @@ func JoinPathGeneric[
 	full yunyun.FullPath,
 ](what ...relative) full {
 	if !Config.URLIsLocal {
-		return full(Config.URLPath.JoinPath(yunyun.AnyPathsToStrings(what)...).Path)
+		return full(Config.URLPath.JoinPath(yunyun.AnyPathsToStrings(what)...).String())
 	}
 	return full(filepath.Join(append(Config.URLSlice, yunyun.AnyPathsToStrings(what)...)...))
 }

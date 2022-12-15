@@ -71,10 +71,10 @@ func addOpenGraph(page *yunyun.Page, description string) string {
 	return "\n" + strings.Join(gana.Map(metaTag, []meta{
 		{"og:title", "og:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"og:site_name", "og:site_name", html.EscapeString(emilia.Config.Title)},
-		{"og:url", "og:url", string(page.Location)},
+		{"og:url", "og:url", string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](page.Location))},
 		{"og:locale", "og:locale", emilia.Config.Website.Locale},
 		{"og:type", "og:type", "website"},
-		{"og:image", "og:image", strings.TrimRight(string(page.Location), "/") + "/" + emilia.Config.Website.Preview},
+		{"og:image", "og:image", emilia.Config.Website.Preview},
 		{"og:image:alt", "og:image:alt", "Preview"},
 		{"og:image:type", "og:image:type", "image/" + strings.TrimLeft(filepath.Ext(emilia.Config.Website.Preview), ".")},
 		{"og:image:width", "og:image:width", "1280"},
@@ -88,8 +88,8 @@ func addTwitterMeta(page *yunyun.Page, description string) string {
 		{"twitter:card", "twitter:card", "summary_large_image"},
 		{"twitter:site", "twitter:site", html.EscapeString(emilia.Config.Title)},
 		{"twitter:creator", "twitter:creator", emilia.Config.Website.Twitter},
-		{"twitter:image:src", "twitter:image:src", strings.TrimRight(string(page.Location), "/") + "/" + emilia.Config.Website.Preview},
-		{"twitter:url", "twitter:url", string(page.Location)},
+		{"twitter:image:src", "twitter:image:src", emilia.Config.Website.Preview},
+		{"twitter:url", "twitter:url", string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](page.Location))},
 		{"twitter:title", "twitter:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"twitter:description", "twitter:description", html.EscapeString(description)}}), "\n")
 }
