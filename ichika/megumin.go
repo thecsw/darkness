@@ -1,4 +1,4 @@
-package main
+package ichika
 
 import (
 	"fmt"
@@ -16,8 +16,8 @@ var (
 	isQuietMegumin = false
 )
 
-// meguminCommandFunc blows up the directory.
-func meguminCommandFunc() {
+// MeguminCommandFunc blows up the directory.
+func MeguminCommandFunc() {
 	options := getEmiliaOptions(darknessFlagset(meguminCommand))
 	options.Dev = true
 	emilia.InitDarkness(options)

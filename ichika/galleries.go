@@ -1,4 +1,4 @@
-package main
+package ichika
 
 import (
 	"bytes"

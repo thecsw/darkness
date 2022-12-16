@@ -1,0 +1,79 @@
+# This is the title of your website
+title = "Ishmael's Moby 🐋"
+
+# This is the url, which darkness will use to create links
+# and all the relative paths. You can leave this off and
+# darkness will default to your current path, so you can
+# test the website locally and everything
+url = ""
+
+# UNCOMMENT WHEN DEPLOYING
+# url = "https://example.com"
+
+# This section will be about specific project settings
+[project]
+# The input file format, defaults to ".org"
+input = ".org"
+# The output file format, defaults to ".html"
+output = ".html"
+# Relative paths of directories, which will be excluded
+exclude = ["do_not_look_here"]
+
+# This is everything regarding website and some tags 
+[website]
+# Locale of your website
+locale = "en_GB"
+# Color scheme of your website
+color = "#fffff4"
+# Twitter handle for twitter previews, can be left off
+twitter = "@twitter"
+# The css files to include in HTML files, my css provided
+# has the styles and everything that should look good
+styles = ["css/darkness.css"]
+# The relative paths of directories to include a tomb
+# symbol to the last paragraph to signify its end
+tombs = ["blog"]
+# Preview is the filename of the picture in the
+# same directory to use as a page preview. defaults to preview.png
+preview = "preview.jpg"
+# Description length dictates on how many characters do we extract
+# from the page to show in the web prewies, like OpenGraph and Twitter
+description_length = 137
+# Normalize headings will shift heading levels if enabled
+normalize_headings = false
+# Roman Footnotes tells if we have to use roman numerals for footnotes
+roman_footnotes = true
+# Decide whether to use brackets on footnotes
+footnote_brackets = true
+
+# This is the author header section
+[author]
+# Picture to use on top of the website. This part will be
+# omitted from the website if found empty
+image = "https://sandyuraz.com/ishmael/profile.webp"
+# Name of the author, looks like "name - email"
+name = "Ishmael"
+# Email of the author, looks like "name - email"
+email = "ishmael@moby.dick"
+
+# Navigation portion of your website
+# Simply add new sections as a map/array, with
+# [navigation.N], providing link and title
+# for each element.
+# You can give a hide value to give it the path
+# where to hide the element. Like don't show the
+# "Go back home" button on the home page
+[navigation]
+
+[navigation.1]
+link = "about"
+title = "About me 🤔"
+
+[navigation.2]
+link = "blog"
+title = "Blog 🖋"
+
+[navigation.3]
+link = ""
+title = "Home 🏠"
+hide = ""
