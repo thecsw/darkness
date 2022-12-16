@@ -22,9 +22,9 @@ const (
 	defaultServePort = 8080
 )
 
-// serveCommandFunc builds the website, local serves it on 8080 and then
+// ServeCommandFunc builds the website, local serves it on 8080 and then
 // cleans the files.
-func serveCommandFunc() {
+func ServeCommandFunc() {
 	serveCmd := darknessFlagset(serveCommand)
 	port := serveCmd.Int("port", defaultServePort, "port number to use (default 8080)")
 	options := getEmiliaOptions(serveCmd)

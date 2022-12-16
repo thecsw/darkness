@@ -28,15 +28,15 @@ var (
 	// CommandFuncs maps supplied darkness command to the function
 	// that needs to get executed.
 	CommandFuncs = map[DarknessCommand]func(){
-		newDarknessCommand: newDarknessCommandFunc,
-		oneFileCommand:     oneFileCommandFunc,
-		buildCommand:       buildCommandFunc,
-		serveCommand:       serveCommandFunc,
-		cleanCommand:       cleanCommandFunc,
+		newDarknessCommand: NewDarknessCommandFunc,
+		oneFileCommand:     OneFileCommandFunc,
+		buildCommand:       BuildCommandFunc,
+		serveCommand:       ServeCommandFunc,
+		cleanCommand:       CleanCommandFunc,
 		meguminCommand:     MeguminCommandFunc,
-		misaCommand:        misaCommandFunc,
-		lalatinaCommand:    lalatinaCommandFunc,
-		aquaCommand:        aquaCommandFunc,
+		misaCommand:        MisaCommandFunc,
+		lalatinaCommand:    LalatinaCommandFunc,
+		aquaCommand:        AquaCommandFunc,
 
 		// All the help commands
 		`-h`:     HelpCommandFunc,

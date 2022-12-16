@@ -9,9 +9,9 @@ import (
 	"github.com/thecsw/darkness/emilia"
 )
 
-// newDarknessCommandFunc creates a default darkness config in the current directory
+// NewDarknessCommandFunc creates a default darkness config in the current directory
 // if one already exists, nothing will happen, except a notice of that
-func newDarknessCommandFunc() {
+func NewDarknessCommandFunc() {
 	if len(os.Args) != 3 {
 		fmt.Println("you forgot to add a directory name after new")
 		return

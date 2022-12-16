@@ -42,8 +42,8 @@ func MeguminCommandFunc() {
 	removeGalleryFiles()
 }
 
-// cleanCommandFunc cleans the files like `megumin` but without any output (except for errors).
-func cleanCommandFunc() {
+// CleanCommandFunc cleans the files like `megumin` but without any output (except for errors).
+func CleanCommandFunc() {
 	options := getEmiliaOptions(darknessFlagset(cleanCommand))
 	options.Dev = true
 	emilia.InitDarkness(options)

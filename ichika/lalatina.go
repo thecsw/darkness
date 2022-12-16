@@ -2,6 +2,6 @@ package ichika
 
 import "fmt"
 
-func lalatinaCommandFunc() {
+func LalatinaCommandFunc() {
 	fmt.Println("DONT CALL ME THAT (╥︣﹏᷅╥)")
 }

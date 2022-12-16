@@ -2,7 +2,7 @@ package ichika
 
 import "os"
 
-func aquaCommandFunc() {
+func AquaCommandFunc() {
 	// KAZUMAAA-SAAAAAAAAN
 	os.Exit(1)
 }

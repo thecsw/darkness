@@ -20,8 +20,8 @@ const (
 	savePerms = fs.FileMode(0644)
 )
 
-// oneFileCommandFunc builds a single file.
-func oneFileCommandFunc() {
+// OneFileCommandFunc builds a single file.
+func OneFileCommandFunc() {
 	fileCmd := darknessFlagset(oneFileCommand)
 	fileCmd.StringVar(&filename, "input", "index.org", "file on input")
 	emilia.InitDarkness(getEmiliaOptions(fileCmd))
@@ -29,7 +29,7 @@ func oneFileCommandFunc() {
 }
 
 // build builds the entire directory.
-func buildCommandFunc() {
+func BuildCommandFunc() {
 	emilia.InitDarkness(getEmiliaOptions(darknessFlagset(buildCommand)))
 	build()
 	// Check that we actually processed some files before reporting.

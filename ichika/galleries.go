@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/disintegration/imaging"
 	"github.com/pkg/errors"
@@ -16,31 +17,6 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
-
-// misaCommandFunc will support many different tools that darkness can support,
-// such as creating gallery previews, etc. WIP.
-func misaCommandFunc() {
-	misaCmd := darknessFlagset(misaCommand)
-
-	buildGalleryPreviews := misaCmd.Bool("gallery-previews", false, "build gallery previews")
-	removeGalleryPreviews := misaCmd.Bool("no-gallery-previews", false, "delete gallery previews")
-	dryRun := misaCmd.Bool("dry-run", false, "skip writing files (but do the reading)")
-
-	options := getEmiliaOptions(misaCmd)
-	options.Dev = true
-	emilia.InitDarkness(options)
-
-	if *buildGalleryPreviews {
-		buildGalleryFiles(*dryRun)
-		return
-	}
-	if *removeGalleryPreviews {
-		removeGalleryFiles()
-		return
-	}
-
-	fmt.Println("I don't know what you want me to do, see -help")
-}
 
 const (
 	galleryPreviewImageSize = 500
@@ -55,10 +31,13 @@ func buildGalleryFiles(dryRun bool) {
 		fmt.Printf("[%d/%d] ", i+1, len(galleryFiles))
 		newFile := emilia.GalleryPreview(galleryFile)
 		if info, err := os.Stat(string(newFile)); info != nil && !os.IsNotExist(err) {
-			fmt.Printf("%s already exists -- skipping\n", emilia.RelPathToWorkdir(newFile))
+			fmt.Printf("%s already exists\n", emilia.RelPathToWorkdir(newFile))
 			continue
 		}
-		fmt.Printf("Building %s... ", emilia.RelPathToWorkdir(newFile))
+		fmt.Printf("%s... ", emilia.RelPathToWorkdir(newFile))
+
+		// Mark the processing start time.
+		start := time.Now()
 
 		// Retrieve image contents reader:
 		// - For local files, it's a reader of the file.
@@ -92,7 +71,7 @@ func buildGalleryFiles(dryRun bool) {
 			}
 		}
 
-		fmt.Println("done")
+		fmt.Printf("%d ms\n", time.Since(start).Milliseconds())
 	}
 }
 
