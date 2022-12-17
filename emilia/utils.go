@@ -84,23 +84,32 @@ type GalleryItem struct {
 	Description string
 	// OriginalLine is the original line that include org options.
 	OriginalLine string
+	// Link is an optional parameter that the gallery item should
+	// also link to something.
+	Link string
 }
 
 // NewGalleryItem creates a new helper `GalleryItem` and
 // decides whether the passed item is an external link or not.
 func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string) *GalleryItem {
-	len, link, text, desc := yunyun.ExtractLink(wholeLine)
-	// If link wasn't found, then the whole line should be counted as the image path.
-	if len < 1 {
-		link = wholeLine
+	extractedLinks := yunyun.ExtractLinks(wholeLine)
+	// If image wasn't found, then the whole line should be counted as the image path.
+	image := wholeLine
+	if len(extractedLinks) > 0 {
+		image = extractedLinks[0].Link
+	}
+	optionalLink := ""
+	if len(extractedLinks) > 1 {
+		optionalLink = extractedLinks[1].Link
 	}
 	return &GalleryItem{
-		Item:         yunyun.RelativePathFile(link),
+		Item:         yunyun.RelativePathFile(image),
 		Path:         yunyun.JoinPaths(page.Location, content.GalleryPath),
-		IsExternal:   yunyun.URLRegexp.MatchString(link),
-		Text:         text,
-		Description:  desc,
+		IsExternal:   yunyun.URLRegexp.MatchString(image),
+		Text:         extractedLinks[0].Text,
+		Description:  extractedLinks[0].Description,
 		OriginalLine: wholeLine,
+		Link:         optionalLink,
 	}
 }
 

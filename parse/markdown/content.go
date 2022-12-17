@@ -43,22 +43,22 @@ func isComment(line string) bool {
 // isLink returns a non-nil object if the line is a link
 func isLink(line string) *yunyun.Content {
 	line = strings.TrimSpace(line)
-	matchLen, link, text, desc := yunyun.ExtractLink(line)
+	extractedLink := yunyun.ExtractLink(line)
 	// Extraction didn't yield any results.
-	if matchLen < 0 {
+	if extractedLink == nil {
 		return nil
 	}
 	// Check if this is a standalone link (just by itself on a line)
 	// If it's not, then it's a simple link in a paragraph, deal with
 	// it later in `htmlize`
-	if matchLen != len(line) {
+	if extractedLink.MatchLength != len(line) {
 		return nil
 	}
 	return &yunyun.Content{
 		Type:            yunyun.TypeLink,
-		Link:            link,
-		LinkTitle:       text,
-		LinkDescription: desc,
+		Link:            extractedLink.Link,
+		LinkTitle:       extractedLink.Text,
+		LinkDescription: extractedLink.Description,
 	}
 }
 

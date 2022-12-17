@@ -2,7 +2,6 @@ package yunyun
 
 import (
 	"regexp"
-	"strings"
 )
 
 // Markings is used to store the regex patterns for
@@ -32,6 +31,8 @@ var (
 		Underline:     `_`,
 		Link:          `(?mU)\[\[(?P<link>[^][]+)\]\[(?P<text>[^][]+)(?: "(?P<desc>[^"]+)")?\]\]`,
 	}
+
+	linkLinkIndex, linkTextIndex, linkDescIndex = -1, -1, -1
 )
 
 // BuildRegex uses patterns from `ActiveMarkings` to build Yunyun's regexes.
@@ -43,33 +44,58 @@ func (m Markings) BuildRegex() {
 	VerbatimText = MarkupRegex(m.Verbatim)
 	StrikethroughText = MarkupRegex(m.Strikethrough)
 	UnderlineText = MarkupRegex(m.Underline)
+
 	LinkRegexp = regexp.MustCompile(m.Link)
+	linkLinkIndex = LinkRegexp.SubexpIndex("link")
+	linkTextIndex = LinkRegexp.SubexpIndex("text")
+	linkDescIndex = LinkRegexp.SubexpIndex("desc")
+
 	SpecialTextMarkups = []*regexp.Regexp{
 		BoldText, ItalicText, VerbatimText, StrikethroughText, UnderlineText,
 	}
 }
 
-// ExtractLink uses `linkRegexp` and returns match length,
-// link, title, and description. Description defaults to
-// title if it's not provided, as it is optional.
-func ExtractLink(line string) (int, string, string, string) {
+// ExtractedLink represents the link that was extracted with
+// `ExtractLink` or `ExtractLinks`.
+type ExtractedLink struct {
+	MatchLength int
+	Link        string
+	Text        string
+	Description string
+}
+
+// ExtractLink uses `linkRegexp` and returns an array of
+// extracted links, if any.
+func ExtractLinks(line string) []*ExtractedLink {
 	if !LinkRegexp.MatchString(line) {
-		return -1, "", "", ""
+		return nil
 	}
-	submatches := LinkRegexp.FindAllStringSubmatch(line, 1)
+	submatches := LinkRegexp.FindAllStringSubmatch(line, -1)
 	// Sanity check
 	if len(submatches) < 1 {
-		return -1, "", "", ""
+		return nil
 	}
-	match := strings.TrimSpace(submatches[0][0])
-	link := strings.TrimSpace(submatches[0][LinkRegexp.SubexpIndex("link")])
-	text := strings.TrimSpace(submatches[0][LinkRegexp.SubexpIndex("text")])
-	desc := strings.TrimSpace(submatches[0][LinkRegexp.SubexpIndex("desc")])
-	if len(desc) < 1 {
-		desc = text
+	extractedLinks := make([]*ExtractedLink, len(submatches))
+	for i, submatch := range submatches {
+		extractedLinks[i] = &ExtractedLink{
+			MatchLength: len(submatch[0]),
+			Link:        submatch[linkLinkIndex],
+			Text:        submatch[linkTextIndex],
+			Description: submatch[linkDescIndex],
+		}
+		if extractedLinks[i].Description == "" {
+			extractedLinks[i].Description = extractedLinks[i].Text
+		}
 	}
+	return extractedLinks
+}
 
-	return len(match), link, text, desc
+// ExtractLink uses `linkRegexp` and returns first extracted link.
+func ExtractLink(line string) *ExtractedLink {
+	if links := ExtractLinks(line); len(links) > 0 {
+		return links[0]
+	}
+	return nil
 }
 
 var (

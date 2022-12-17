@@ -147,15 +147,27 @@ func extractCustomFlex(s string) uint {
 	return uint(ret)
 }
 
+// hrefGalleryTagIfLinkGiven returns an href tag if gallery link is found,
+// an empty string otherwise.
+func hrefGalleryTagIfLinkGiven(item *emilia.GalleryItem) string {
+	if item.Link == "" {
+		return ""
+	}
+	return fmt.Sprintf(` href="%s"`, item.Link)
+}
+
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
 func makeFlexItem(item *emilia.GalleryItem, width uint) string {
 	// See if there is a custom flex width requested for the item.
 	if customFlex := extractCustomFlex(string(item.OriginalLine)); customFlex != 0 {
 		width = customFlex
 	}
-	// Return the flex-friendly image tag.
-	return fmt.Sprintf(`<img class="item lazyload flex-%d" src="%s" data-src="%s" title="%s" alt="%s">`,
-		width, emilia.GalleryPreview(item), emilia.GalleryImage(item), item.Description, item.Text)
+	return fmt.Sprintf(`<div class="flex-%d">
+<a%s class="gallery-item">
+<img class="item lazyload" src="%s" data-src="%s" title="%s" alt="%s">
+</a>
+</div>`, width, hrefGalleryTagIfLinkGiven(item), emilia.GalleryPreview(item),
+		emilia.GalleryImage(item), item.Description, item.Text)
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class

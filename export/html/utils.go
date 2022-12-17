@@ -10,9 +10,9 @@ import (
 // extractID returns a properly formatted ID for a heading title
 func extractID(heading string) string {
 	// Check if heading is a link
-	matchLen, _, title, _ := yunyun.ExtractLink(heading)
-	if matchLen > 0 {
-		heading = title // 0 is whole match, 1 is link, 2 is title
+	extractedLink := yunyun.ExtractLink(heading)
+	if extractedLink != nil {
+		heading = extractedLink.Text // 0 is whole match, 1 is link, 2 is title
 	}
 
 	res := ""
