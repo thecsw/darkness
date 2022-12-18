@@ -108,7 +108,9 @@ func launchWatcher() {
 			log.Fatal(err)
 		}
 	}
-	fmt.Printf("Listening to %d files in %s\n", len(watcher.WatchList()), workDir)
+	log.Printf("Listening to %d files in %s\n\n", len(watcher.WatchList()), workDir)
+
+	fmt.Println("Press Ctrl-C to stop the server")
 	// Block main goroutine forever.
 	<-make(chan struct{})
 }
