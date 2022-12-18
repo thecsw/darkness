@@ -19,8 +19,8 @@ func main() {
 	}
 
 	// Find the supplied command or show a snarky error message otherwise.
-	commandFunc, ok := ichika.CommandFuncs[ichika.DarknessCommand(os.Args[1])]
-	if !ok {
+	commandFunc := ichika.GetDarknessFunc(os.Args[1])
+	if commandFunc == nil {
 		fmt.Println("command not found?")
 		fmt.Println("see help, you pathetic excuse of a man")
 		return
