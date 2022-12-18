@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
@@ -130,24 +131,34 @@ func (e ExporterHTML) authorHeader() string {
 		authorImage(), processTitle(e.page.Title),
 		emilia.Config.Author.Name, emilia.Config.Author.Email,
 	)
-
 	content += `<span id="revdate">` + "\n"
+
+	// Build the navigation links.
 	navLinks := make([]string, 0, len(emilia.Config.Navigation))
+
+	// Go through elements.
 	for i := 1; i <= len(emilia.Config.Navigation); i++ {
-		v := emilia.Config.Navigation[fmt.Sprintf("%d", i)]
-		if string(e.page.Location) == emilia.Config.URL && v.Link == v.Hide {
+		// Get the navigation element read from Darkness' toml.
+		v := emilia.Config.Navigation[strconv.FormatInt(int64(i), 10)]
+		// If the nav element wants to hide in this location, then skip it.
+		if e.page.Location == v.Hide {
 			continue
 		}
+		// Build each of the navlinks and concat the hrefs.
 		navLinks = append(navLinks, fmt.Sprintf(`<a href="%s">%s</a>`,
 			emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](v.Link),
 			v.Title))
 	}
+
+	// Close the navigation links span.
 	content += strings.Join(navLinks, " | ") + `</span>`
+
+	// Add the Holoscene time element.
 	content += `
 </div>
 <div id="hetime" class="menu"></div>
 </div>`
-
+	// Return the website header.
 	return content
 }
 
