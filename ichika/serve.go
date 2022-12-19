@@ -66,7 +66,7 @@ func launchWatcher() {
 			case event, ok := <-watcher.Events:
 				// fmt.Println(event)
 				if !ok {
-					fmt.Println("stopped watching")
+					log.Println("stopped watching")
 					return
 				}
 				filename := string(emilia.RelPathToWorkdir(yunyun.FullPathFile(event.Name)))
@@ -79,21 +79,21 @@ func launchWatcher() {
 					continue
 				}
 				if event.Has(fsnotify.Write) {
-					fmt.Println("modified file:", filename)
+					log.Println("modified file:", filename)
 				}
 				if event.Has(fsnotify.Create) {
-					fmt.Println("created file:", filename)
+					log.Println("created file:", filename)
 				}
 				if event.Has(fsnotify.Remove) {
-					fmt.Println("removed file:", filename)
+					log.Println("removed file:", filename)
 				}
 				if event.Has(fsnotify.Rename) {
-					fmt.Println("renamed file:", filename)
+					log.Println("renamed file:", filename)
 				}
 				build()
 			case err, ok := <-watcher.Errors:
 				if !ok {
-					fmt.Println("finished watching")
+					log.Println("finished watching")
 					return
 				}
 				fmt.Println("watcher error:", err)
