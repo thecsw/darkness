@@ -18,14 +18,13 @@ func main() {
 		return
 	}
 
-	// Find the supplied command or show a snarky error message otherwise.
-	commandFunc := ichika.GetDarknessFunc(os.Args[1])
-	if commandFunc == nil {
-		fmt.Println("command not found?")
-		fmt.Println("see help, you pathetic excuse of a man")
+	// Find the supplied command...
+	if commandFunc := ichika.GetDarknessFunc(os.Args[1]); commandFunc != nil {
+		commandFunc()
 		return
 	}
 
-	// Execute the retrieved command from Ichika.
-	commandFunc()
+	// or show a snarky error message
+	fmt.Println("command not found?")
+	fmt.Println("see help, you pathetic excuse of a man")
 }
