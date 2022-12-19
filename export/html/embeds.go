@@ -18,7 +18,9 @@ const (
 </div>`
 	// audioEmbedTemplate is the template for audio embeds.
 	audioEmbedTemplate = `
-<audio controls><source src="%s" type="audio/mpeg">music is good for the soul</audio>`
+<div class="media">
+<audio controls><source src="%s" type="audio/mpeg">music is good for the soul</audio>
+</div>`
 
 	// videoEmbedTemplate is the template for video embeds.
 	videoEmbedTemplate = `
