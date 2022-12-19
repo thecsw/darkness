@@ -46,7 +46,7 @@ var (
 		divSpecial, // yunyun.TypeList
 		divWriting, // yunyun.TypeListNumbered
 		divSpecial, // yunyun.TypeLink
-		divWriting, // yunyun.TypeSourceCode
+		divOutside, // yunyun.TypeSourceCode
 		divOutside, // yunyun.TypeRawHTML
 		divOutside, // yunyun.TypeHorizontalLine
 		divWriting, // yunyun.TypeAttentionText

@@ -195,8 +195,10 @@ func (e ExporterHTML) ListNumbered(content *yunyun.Content) string {
 // sourceCode gives us a source code html representation
 func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
 	return fmt.Sprintf(`
+<div class="media">
 <div class="listingblock">
 <pre class="highlight"><code class="language-%s" data-lang="%s">%s</code></pre>
+</div>
 </div>
 `, emilia.MapSourceCodeLang(content.SourceCodeLang), content.SourceCodeLang, func() string {
 		// Remove the nested parser blockers
