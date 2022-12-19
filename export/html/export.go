@@ -42,10 +42,7 @@ func (e ExporterHTML) Export() string {
 	// Add the red tomb to the last paragraph on given directories
 	// from the config
 	for _, tombPage := range emilia.Config.Website.Tombs {
-		if strings.HasPrefix(
-			string(e.page.Location),
-			string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathFile](tombPage)),
-		) {
+		if strings.HasPrefix(string(e.page.Location), string(tombPage)) {
 			e.addTomb()
 			break
 		}
