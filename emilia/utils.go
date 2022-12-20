@@ -95,8 +95,12 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 	extractedLinks := yunyun.ExtractLinks(wholeLine)
 	// If image wasn't found, then the whole line should be counted as the image path.
 	image := wholeLine
+	text := ""
+	description := ""
 	if len(extractedLinks) > 0 {
 		image = extractedLinks[0].Link
+		text = extractedLinks[0].Text
+		description = extractedLinks[0].Description
 	}
 	optionalLink := ""
 	if len(extractedLinks) > 1 {
@@ -106,8 +110,8 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 		Item:         yunyun.RelativePathFile(image),
 		Path:         yunyun.JoinPaths(page.Location, content.GalleryPath),
 		IsExternal:   yunyun.URLRegexp.MatchString(image),
-		Text:         extractedLinks[0].Text,
-		Description:  extractedLinks[0].Description,
+		Text:         text,
+		Description:  description,
 		OriginalLine: wholeLine,
 		Link:         optionalLink,
 	}
