@@ -128,7 +128,7 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 }
 
 var (
-	flexOptionRegexp = regexp.MustCompile(`:flex ([12345])`)
+	flexOptionRegexp = regexp.MustCompile(`:flex (\d+)`)
 )
 
 // extractCustomFlex extract custom flex class `:flex [1,5]`
