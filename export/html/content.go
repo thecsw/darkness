@@ -162,7 +162,7 @@ func makeFlexItem(item *emilia.GalleryItem, width uint) string {
 	if customFlex := extractCustomFlex(string(item.OriginalLine)); customFlex != 0 {
 		width = customFlex
 	}
-	return fmt.Sprintf(`<div class="flex-%d hide-overflow">
+	return fmt.Sprintf(`<div class="flex-%d hide-overflow ease-transition">
 <a%s class="gallery-item">
 <img class="item lazyload" src="%s" data-src="%s" title="%s" alt="%s">
 </a>
