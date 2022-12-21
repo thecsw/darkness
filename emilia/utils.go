@@ -1,7 +1,7 @@
 package emilia
 
 import (
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"io/ioutil"
 	"path/filepath"
@@ -129,17 +129,17 @@ func GalleryImage(item *GalleryItem) yunyun.FullPathFile {
 func GalleryPreview(item *GalleryItem) yunyun.FullPathFile {
 	if item.IsExternal {
 		return JoinPath(yunyun.JoinRelativePaths(item.Path,
-			yunyun.RelativePathFile(md5String(string(item.Item))+"_preview.jpeg"),
+			yunyun.RelativePathFile(sha256String(string(item.Item))[:7]+".jpeg"),
 		))
 	}
 	filename := filepath.Base(string(item.Item))
 	ext := filepath.Ext(filename)
 	return JoinPath(yunyun.JoinRelativePaths(item.Path,
-		yunyun.RelativePathFile(strings.TrimSuffix(filename, ext)+"_preview"+ext),
+		yunyun.RelativePathFile(strings.TrimSuffix(filename, ext)+"_small"+ext),
 	))
 }
 
-func md5String(what string) string {
-	ans := md5.Sum([]byte(what))
+func sha256String(what string) string {
+	ans := sha256.Sum256([]byte(what))
 	return hex.EncodeToString(ans[:])
 }

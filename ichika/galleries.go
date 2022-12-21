@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	galleryPreviewImageSize = 500
+	galleryPreviewImageSize = 250
 	galleryPreviewImageBlur = 20
 )
 
