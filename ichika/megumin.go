@@ -38,8 +38,6 @@ func MeguminCommandFunc() {
 		"My name is Megumin, the number one mage of Axel!",
 		"Come, you shall all become my experience points today!",
 	})
-	// Also clean gallery previews
-	removeGalleryFiles()
 }
 
 // CleanCommandFunc cleans the files like `megumin` but without any output (except for errors).
