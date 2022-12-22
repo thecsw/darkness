@@ -45,7 +45,6 @@ func ServeCommandFunc() {
 	log.Println("Shutting down the server + cleaning up")
 	isQuietMegumin = true
 	removeOutputFiles()
-	removeGalleryFiles()
 	log.Println("farewell")
 }
 
