@@ -79,4 +79,6 @@ darkness new ishmael
 
 Go and run the website locally with `darkness serve` and explore Darkness in action!
 
+Here is the [web version of ishmael](https://sandyuraz.com/ishmael) to browse around!
+
 Okay, **go, go**! I'll see you later 😘
