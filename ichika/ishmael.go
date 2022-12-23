@@ -13,7 +13,7 @@ import (
 )
 
 var (
-	//go:embed ishmael/ishmael.tar.gz
+	//go:embed ishmael.tar.gz
 	defaultDarknessTemplate []byte
 )
 
