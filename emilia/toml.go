@@ -80,6 +80,8 @@ type WebsiteConfig struct {
 type AuthorConfig struct {
 	// AuthorImage is the header image (can be empty)
 	Image yunyun.RelativePathFile `toml:"image"`
+	// ImagePreComputed is what actually gets stubbed in.
+	ImagePreComputed yunyun.FullPathFile `toml:"-"`
 	// Name is the name of the author
 	Name string `toml:"name"`
 	// Email is the email of the author

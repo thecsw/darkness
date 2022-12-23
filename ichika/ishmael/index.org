@@ -18,7 +18,7 @@ of an empty line as a delimeter. You should always add it between different
 types of blocks you add to your page.
 
 Simple formatting is supported as well, you can do some *bold* text, maybe even
-/italics/, and =verbatim=. For =*bold*=, surround your text with astericks, for
+/italics/, and =verbatim=. For *bold*, surround your text with astericks, for
 =/italics/=, surround with forward slashes, and verbatim with equal signs,
 ==verbatim= = or =~code~=
 
@@ -33,15 +33,55 @@ can be inserted as an embed (image, youtube, spotify song/playlist, video,
 audio).
 
 *** Images
+
 See for example, below is a link on its line with an image path
 
-[[evangelion.webp][/CUT/, August 2009 issue. Art by Tadashi Hiramatsu]]
+[[https://sandyuraz.com/ishmael/evangelion.webp][/CUT/, August 2009 issue. Art by Tadashi Hiramatsu]]
 
 *** Songs
+
 Depending on the link type, darkness will intelligently stub in a preview if
 it's a standalone link (not inlined within text). One more example
 
 [[https://open.spotify.com/track/4cPnNnTMkJ6soUOUzEtmcp?si=ba1730fdb66642b9][Last Surprise]]
+
+*** YouTube videos
+
+If you just have a youtube link by itself on a line, it will embed the video
+player in a responsive container and everything! (embeds might not work locally,
+you would need to push it somewhere)
+
+[[https://youtu.be/OBqw818mQ1E][SiM – The Rumbling (OFFICIAL VIDEO)]]
+
+
+** Galleries
+
+You can begin galleries with =#+begin_gallery= and =#+end_gallery= environment. Each
+image should be in a list. You can pass an optional =:num N= to the =begin_gallery=
+to define the custom number of flex elements per row (defaults to 3). You can
+even change the width of each list element manually by passing =:flex W= parameter
+in the list line, where =W= is the percentage in increments of 5 starting from 30.
+
+#+begin_gallery
+- [[https://bnz05pap002files.storage.live.com/y4mwc5jct5UCk9J9dtORR3xTJCEjXoexN3i5F8_GvZi93nX7ivKMQDuuVXwoXVkrjaJBs_n2hHzrrejjGIoToSnxiDAnpJQHGZb3SMW2wNd2ox44AlRZyE2LSgVoj9SrxOnM9IM8_0NO4b-zqILc_3KligZe7r7UbuQRVlrmZnLCqSohehZ-lQ0Zp3-ZtzcyB3u?width=1000&height=1000&cropmode=none][Miso cookies "longer description"]]
+- [[https://bnz05pap002files.storage.live.com/y4m2Hjf-ik3kZS8fgSAAGhARP4ZoPxsKy0rWg4FtrW6ZfCs0YRDeWGisdZTd75eBhOo1AIiVGhLXh6kbXfsW343iVSgAmWR3uUfYIlZmmKycaNkolT7PKUd0v-dB9eQPUc1g54TFXw2HR3ZFW2Eo4DT_84KtaKM-YlVqB9PMc8gzmBYxLuRophmLWni5ErQfaF-?width=1000&height=1000&cropmode=none][Little rice dish "the salmon was good"]]
+- [[https://bnz05pap002files.storage.live.com/y4mmXVickVuPPoE0DBeWQkJ7KvmGwheSZW_-chbRW25qNNUFRCnOHxLzR-TedT2xIeha4dnOqgO9V4gMoRsnpoNUNhCn5RTVxKBO8LlzSXF5sezRJW5JBCl-7_Byr-4goU3ycYxbJumdIp3pJpOjmDuhUQUg3mUkHEWmc7Ti5PfNSPJ7XOJMPvdjOxDBs8iuTcl?width=1000&height=1000&cropmode=none][Home sushi "I really want to try ehomaki"]]
+#+end_gallery
+
+Here is an example of a custom width element to have that *woah* effect.
+
+#+begin_gallery
+- [[https://bnz05pap002files.storage.live.com/y4m2HWgOkw9eIONyUXY6lP323tw0bR2D4A7YRfhNJAtItxq4STIVSH7Hgc00i31jovKBbtj-82oOVywmYEVo1uDsi7DkFcCkAjxd0X14zmFMthLpP47I2ibRxeZlL7TmrdFk0v8z29sG4v_xsfChi4OzISy2ooorY0QEpO_XNhlt9w-PBKn1oxCWneGXs8iy2c-?width=4032&height=2268&cropmode=none][Rem and Ram "custom flex width here"]] :flex 95
+#+end_gallery
+
+You can also improve user's experience by generating /very cheap/ (around 10KB
+size) preview images, so that the DOM space is cheaply laid out before the full
+image has a chance to load. =misa= subcommand (run =-help=) provides quality of life
+improvements that are *extra* to the build.
+
+#+begin_src sh
+  darkness misa -gallery-previews
+#+end_src
 
 ** Lists
 
@@ -68,21 +108,32 @@ Source code blocks follow [[https://orgmode.org/manual/Working-with-Source-Code.
 with =#+begin_src LANG= and =#+end_src=, where =LANG= is the language of the source
 code block. You can leave =LANG= empty as well. 
 
-#+begin_src org
-  ,#+begin_src c
-  main( ) {
-          printf("hello, world");
-  }
-  ,#+end_src
-#+end_src
-
 Will render as (hover over the block to see the language)
 
 #+begin_src c
+  /* you always say hi but it never replies */
   main( ) {
           printf("hello, world");
   }
 #+end_src
+
+** Special environments
+
+You can center text or add quotes org-mode style with =#+­begin_center=
+and =#+­end_center=, so
+
+#+begin_center
+it would look like this
+#+end_center
+
+or you can also wrap your quotes in =#+­begin_quote= with =#+­end_quote= for the
+following,
+
+#+begin_quote
+There is nothing more awful, insulting, and depressing than banality.
+
+-- Anton Chekhov
+#+end_quote
 
 ** HTML injection
 
@@ -95,13 +146,9 @@ literally into the page.
 <script src="https://gist.github.com/thecsw/c80f83c0d52c0a476e86fc9a6a980517.js"></script>
 #+end_export
 
-This is the embed source for the above
-
-#+begin_src org
-  ,#+begin_export html
-  <script src="https://gist.github.com/thecsw/c80f83c0d52c0a476e86fc9a6a980517.js"></script>
-  ,#+end_export
-#+end_src
+Simply wrap any raw HTML (like =script= tags) in =#+begin_export html= and
+=#+end_export= if you want the code injected within the ~article~ container
+or =#+begin_export html_raw= to inject it in the root DOM.
 
 ** Attention blocks
 

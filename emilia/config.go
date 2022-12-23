@@ -120,8 +120,8 @@ func InitDarkness(options *EmiliaOptions) {
 	}
 	// Build the regex that will be used to exclude files that
 	// have been denoted in emilia darkness config.
-	if len(Config.Project.Exclude) < 1 {
-		Config.Project.ExcludeEnabled = false
+	if len(Config.Project.Exclude) > 0 {
+		Config.Project.ExcludeEnabled = true
 	}
 	excludePattern := fmt.Sprintf("(?mU)(%s)/.*",
 		strings.Join(yunyun.AnyPathsToStrings(Config.Project.Exclude), "|"))
@@ -130,6 +130,14 @@ func InitDarkness(options *EmiliaOptions) {
 		fmt.Println("Bad exclude regex, made", excludePattern,
 			"\nFailed with error:", err.Error())
 		os.Exit(1)
+	}
+	// Check whether the author image is full or not by running
+	// a url regexp and just hardcode the emilia path. If it's
+	// already a URL, then do nothing.
+	if !yunyun.URLRegexp.MatchString(string(Config.Author.Image)) {
+		Config.Author.ImagePreComputed = JoinPath(Config.Author.Image)
+	} else {
+		Config.Author.ImagePreComputed = yunyun.FullPathFile(Config.Author.Image)
 	}
 	// Monkey patch the function if we're using the roman footnotes.
 	if Config.Website.RomanFootnotes {

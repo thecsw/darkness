@@ -8,6 +8,7 @@ darkness
 .idea
 secrets
 .*.~undo-tree~
+ichika/ishmael/scripts/*
 
 # Binaries for programs and plugins
 *.exe

@@ -1,14 +1,5 @@
 package ichika
 
-import (
-	_ "embed"
-)
-
-var (
-	//go:embed ishmael/ishmael.tar
-	defaultDarknessTemplate []byte
-)
-
 // DarknessCommand is a type to enforce input typing.
 type DarknessCommand string
 

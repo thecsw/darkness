@@ -165,7 +165,8 @@ func authorImage() string {
 	if emilia.Config.Author.Image == "" {
 		return ""
 	}
-	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`, emilia.JoinPath(emilia.Config.Author.Image))
+	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`,
+		emilia.Config.Author.ImagePreComputed)
 }
 
 // addTomb adds the tomb to the last paragraph.

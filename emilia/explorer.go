@@ -3,6 +3,7 @@ package emilia
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 	"sync"
 	"sync/atomic"
 
@@ -25,11 +26,11 @@ func FindFilesByExt(inputFilenames chan<- yunyun.FullPathFile, ext string, wg *s
 		},
 		Unsorted: true,
 		Callback: func(osPathname string, de *godirwalk.Dirent) error {
-			if filepath.Ext(osPathname) != ext {
+			if filepath.Ext(osPathname) != ext || strings.HasPrefix(filepath.Base(osPathname), ".") {
 				return nil
 			}
 			if (Config.Project.ExcludeEnabled && Config.Project.ExcludeRegex.MatchString(osPathname)) ||
-				gana.First([]rune(de.Name())) == rune('.') {
+				(gana.First([]rune(de.Name())) == rune('.') && de.IsDir()) {
 				return filepath.SkipDir
 			}
 			wg.Add(1)
