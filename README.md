@@ -1,7 +1,5 @@
 # I love Darkness 🥬
 
-Also [posted here](https://sandyuraz.com/darkness/)
-
 ![darkness](./darkness.png)
 
 <div id='badges' align='center'>
