@@ -40,6 +40,8 @@ social embeds ([youtube](https://sandyuraz.com/blogs/best_web),
 
 Also, did I tell you it's **super fast**?
 
+## Performance
+
 ```sh
 sandyuraz:source λ darkness build
 Processed 128 files in 112 ms
