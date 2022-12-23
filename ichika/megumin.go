@@ -47,7 +47,6 @@ func CleanCommandFunc() {
 	emilia.InitDarkness(options)
 	isQuietMegumin = true
 	removeOutputFiles()
-	removeGalleryFiles()
 }
 
 // removeOutputFiles is the low-level command to be used when cleaning data.
