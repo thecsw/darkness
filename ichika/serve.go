@@ -29,6 +29,7 @@ const (
 func ServeCommandFunc() {
 	serveCmd := darknessFlagset(serveCommand)
 	port := serveCmd.Int("port", defaultServePort, "port number to use (default 8080)")
+	noBrowser := serveCmd.Bool("no-browser", false, "do not open the browser")
 	options := getEmiliaOptions(serveCmd)
 	options.URL = "http://127.0.0.1:" + strconv.Itoa(*port)
 	// Override the output extension to .html
@@ -43,9 +44,11 @@ func ServeCommandFunc() {
 	log.Println("Launched file watcher")
 
 	// Try to open the local server with `open` command.
-	time.Sleep(500 * time.Millisecond)
-	if err := exec.Command("open", options.URL).Run(); err != nil {
-		log.Println("couldn't open the browser:", err.Error())
+	if !*noBrowser {
+		time.Sleep(500 * time.Millisecond)
+		if err := exec.Command("open", options.URL).Run(); err != nil {
+			log.Println("couldn't open the browser:", err.Error())
+		}
 	}
 
 	sigint := make(chan os.Signal, 1)
