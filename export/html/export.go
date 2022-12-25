@@ -175,10 +175,14 @@ func (e ExporterHTML) addTomb() {
 	if e.contentsNum < 1 {
 		return
 	}
-	last := e.page.Contents[e.contentsNum-1]
-	// Only add it to paragraphs
-	if !last.IsParagraph() {
-		return
+	// Find the last paragrapd and attached the tomb.
+	for i := len(e.page.Contents) - 1; i >= 0; i-- {
+		// Skip if it's not a paragraph.
+		if !e.page.Contents[i].IsParagraph() {
+			continue
+		}
+		// Add the tomb and break out.
+		e.page.Contents[i].Paragraph += tombEnding
+		break
 	}
-	last.Paragraph += tombEnding
 }
