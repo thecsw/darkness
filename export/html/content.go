@@ -156,6 +156,15 @@ func hrefGalleryTagIfLinkGiven(item *emilia.GalleryItem) string {
 	return fmt.Sprintf(` href="%s"`, item.Link)
 }
 
+// resolveCustomFlexItemClasses searches for custom support flex item classes.
+func resolveCustomFlexItemClasses(wholeLine string) string {
+	what := ""
+	if strings.Contains(wholeLine, ":no-zoom") {
+		what += " no-zoom"
+	}
+	return what
+}
+
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
 func makeFlexItem(item *emilia.GalleryItem, width uint) string {
 	// See if there is a custom flex width requested for the item.
@@ -164,10 +173,10 @@ func makeFlexItem(item *emilia.GalleryItem, width uint) string {
 	}
 	return fmt.Sprintf(`<div class="flex-%d hide-overflow ease-transition">
 <a%s class="gallery-item">
-<img class="item lazyload" src="%s" data-src="%s" title="%s" alt="%s">
+<img class="item lazyload %s" src="%s" data-src="%s" title="%s" alt="%s">
 </a>
-</div>`, width, hrefGalleryTagIfLinkGiven(item), emilia.GalleryPreview(item),
-		emilia.GalleryImage(item), item.Description, item.Text)
+</div>`, width, hrefGalleryTagIfLinkGiven(item), resolveCustomFlexItemClasses(item.OriginalLine),
+		emilia.GalleryPreview(item), emilia.GalleryImage(item), item.Description, item.Text)
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
