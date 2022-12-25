@@ -160,6 +160,11 @@ func extractDetailsSummary(line string) string {
 	return extractOptionLabel(line, optionBeginDetails)
 }
 
+// extractExtraHead extracts the html to inject in the head, like custom CSS.
+func extractExtraHead(line string) string {
+	return extractOptionLabel(line, optionExtraHead)
+}
+
 // extractCaptionTitle extracts caption `TITLE` from `#+caption: TITLE`.
 func extractCaptionTitle(line string) string {
 	return extractOptionLabel(line, optionCaption)

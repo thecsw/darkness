@@ -27,6 +27,8 @@ type Page struct {
 	Scripts []string
 	// Stylesheets is the list of css of the page.
 	Stylesheets []string
+	// ExtraHead is the list of extra HTML declaration to add in the head.
+	ExtraHead []string
 }
 
 // MetaTag is a struct for holding the meta tag.

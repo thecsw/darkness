@@ -94,6 +94,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		optionEndGallery: func(line string) { removeFlag(yunyun.InGalleryFlag) },
 		optionCaption:    func(line string) { caption = extractCaptionTitle(line) },
 		optionDate:       func(line string) { page.Date = extractDate(line) },
+		optionExtraHead:  func(line string) { page.ExtraHead = append(page.ExtraHead, extractExtraHead(line)) },
 	}
 
 	// Yunyun's markings default to orgmode

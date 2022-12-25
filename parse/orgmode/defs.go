@@ -22,6 +22,7 @@ const (
 	optionEndGallery   = "end_gallery"
 	optionCaption      = "caption:"
 	optionDate         = "date:"
+	optionExtraHead    = "extra_head:"
 	horizontalLine     = "---"
 
 	sectionLevelOne   = "* "
