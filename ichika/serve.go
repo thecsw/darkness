@@ -5,10 +5,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/thecsw/darkness/emilia"
@@ -39,6 +41,13 @@ func ServeCommandFunc() {
 	}()
 	go launchWatcher()
 	log.Println("Launched file watcher")
+
+	// Try to open the local server with `open` command.
+	time.Sleep(500 * time.Millisecond)
+	if err := exec.Command("open", options.URL).Run(); err != nil {
+		log.Println("couldn't open the browser:", err.Error())
+	}
+
 	sigint := make(chan os.Signal, 1)
 	signal.Notify(sigint, os.Interrupt)
 	<-sigint
