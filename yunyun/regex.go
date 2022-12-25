@@ -157,7 +157,7 @@ func RemoveFormatting(what string) string {
 // MarkupRegex is a useful tool to create simple text markups.
 func MarkupRegex(delimeter string) *regexp.Regexp {
 	return regexp.MustCompile(
-		`(?mU)(?P<l>^|[ ()\[\]_%>])` + delimeter +
+		`(?mU)(?P<l>^|[ ()\[\]_%>“”])` + delimeter +
 			`(?P<text>\S|\S\S|\S.+\S)` + delimeter +
 			`(?P<r>$|[ ()\[\],.!?:;&_%<“”])`)
 }
