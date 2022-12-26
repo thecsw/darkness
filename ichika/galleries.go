@@ -3,16 +3,13 @@ package ichika
 import (
 	"fmt"
 	"image"
-	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/disintegration/imaging"
-	"github.com/pkg/errors"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
@@ -48,14 +45,14 @@ func buildGalleryFiles(dryRun bool) {
 		// Retrieve image contents reader:
 		// - For local files, it's a reader of the file.
 		// - For remote files, it's a reader of the response body.
-		imgReader, err := galleryItemToReader(galleryFile)
+		sourceImage, err := galleryItemToImage(galleryFile)
 		if err != nil {
 			fmt.Println("gallery item to reader:", err.Error())
 			continue
 		}
 
 		// Encode preview image into a buffer.
-		img, err := readAndBlur(imgReader)
+		previewImage, err := resizeAndBlur(sourceImage)
 		if err != nil {
 			fmt.Println("gallery reader to writer:", err.Error())
 			continue
@@ -69,7 +66,7 @@ func buildGalleryFiles(dryRun bool) {
 				continue
 			}
 			// Write the final preview image file.
-			if err := imaging.Encode(file, img, imaging.JPEG); err != nil {
+			if err := imaging.Encode(file, previewImage, imaging.JPEG); err != nil {
 				fmt.Printf("failed to encode image: %s", err.Error())
 				continue
 			}
@@ -80,38 +77,27 @@ func buildGalleryFiles(dryRun bool) {
 	}
 }
 
-// galleryItemToReader takes in a gallery item and returns an `io.ReadCloser`
-// for the image's contents.
-func galleryItemToReader(item *emilia.GalleryItem) (io.ReadCloser, error) {
+// galleryItemToImage takes in a gallery item and returns an image object.
+func galleryItemToImage(item *emilia.GalleryItem) (image.Image, error) {
 	// If it's a local file, simply open the os file.
 	if !item.IsExternal {
 		file := emilia.JoinWorkdir(yunyun.JoinRelativePaths(item.Path, item.Item))
-		return os.Open(string(file))
+		return emilia.OpenImage(string(file))
 	}
+
 	// Check if the item has been vendored by any chance?
 	vendorPath := filepath.Join(emilia.Config.WorkDir, string(emilia.GalleryVendored(item)))
 	if emilia.FileExists(vendorPath) {
 		fmt.Printf(" (vendored) ")
-		return os.Open(vendorPath)
+		return emilia.OpenImage(vendorPath)
 	}
-	// If it's a remote file, then run a get request and return
-	// the body reader.
-	resp, err := http.Get(string(item.Item))
-	if err != nil {
-		return nil, errors.Wrap(err, "couldn't retrieve external gallery item ("+string(item.Item)+")")
-	}
-	return resp.Body, nil
+
+	// If it's a remote file, then ask Emilia to try and fetch it.
+	return emilia.DownloadImage(string(item.Item))
 }
 
-// readAndBlur decodes image from `source`, makes a preview out of it,
-// and finally encodes it into `target`.
-func readAndBlur(source io.ReadCloser) (*image.NRGBA, error) {
-	// Respect EXIF flags with AutoOrientation turned on.
-	img, err := imaging.Decode(source, imaging.AutoOrientation(true))
-	defer source.Close()
-	if err != nil {
-		return nil, errors.Wrap(err, "couldn't read the image")
-	}
+// resizeAndBlur takes an image object and modifies it to preview standards.
+func resizeAndBlur(img image.Image) (*image.NRGBA, error) {
 	// Resize the image to save up on storage.
 	img = imaging.Resize(img, galleryPreviewImageSize, 0, imaging.Lanczos)
 	blurred := imaging.Blur(img, galleryPreviewImageBlur)

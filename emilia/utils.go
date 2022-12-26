@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
+	"image"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -13,6 +14,7 @@ import (
 	"time"
 
 	"github.com/disintegration/imaging"
+	"github.com/pkg/errors"
 	"github.com/thecsw/darkness/yunyun"
 )
 
@@ -202,30 +204,9 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 	start := time.Now()
 	fmt.Printf("Vendoring %s... ", vendoredImagePath)
 
-	req, err := http.NewRequest(http.MethodGet, string(item.Item), nil)
+	img, err := DownloadImage(string(item.Item))
 	if err != nil {
-		fmt.Printf("Failed to create a request: %s", err.Error())
-		return fallbackReturn
-	}
-
-	resp, err := vendorClient.Do(req)
-	// resp, err := http.Get(string(item.Item))
-	if err != nil {
-		fmt.Printf("Failed to vendor %s: %s\n", vendoredImagePath, err.Error())
-		return fallbackReturn
-	}
-	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
-		fmt.Printf("Got status %d: %s\n", resp.StatusCode, resp.Status)
-		return fallbackReturn
-	}
-	defer resp.Body.Close()
-
-	// Read the image with imaging and convert it by force to jpeg.
-	//
-	// Respect EXIF flags with AutoOrientation turned on.
-	img, err := imaging.Decode(resp.Body, imaging.AutoOrientation(true))
-	if err != nil {
-		fmt.Printf("Failed to decode %s: %s\n", vendoredImagePath, err.Error())
+		fmt.Printf("failed to vendor: %s\n", err.Error())
 		return fallbackReturn
 	}
 
@@ -248,6 +229,47 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 
 	// Finally.
 	return expectedReturn
+}
+
+// OpenImage opens local path image and returns decoded image.
+func OpenImage(path string) (image.Image, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, errors.Wrap(err, "OpenImage: opening file "+path)
+	}
+	// Respect the EXIF orientation flags.
+	return imaging.Decode(file, imaging.AutoOrientation(true))
+}
+
+// DownloadImage attempts to download an image and returns it
+// with any fatal errors (if occured).
+func DownloadImage(link string) (image.Image, error) {
+	// Build the request.
+	req, err := http.NewRequest(http.MethodGet, link, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "DownloadImage: create request")
+	}
+
+	// Attempt to make the request.
+	resp, err := vendorClient.Do(req)
+	if err != nil {
+		return nil, errors.Wrap(err, "DownloadImage: Do request")
+	}
+
+	// If we got not found or server issue, bail.
+	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
+		return nil, errors.Wrap(err,
+			fmt.Sprintf("DownloadImage: Bad status: %d", resp.StatusCode))
+	}
+	defer resp.Body.Close()
+
+	// Attempt to decode.
+	img, err := imaging.Decode(resp.Body, imaging.AutoOrientation(true))
+	if err != nil {
+		return nil, errors.Wrap(err, "DownloadImage: failed to decode")
+	}
+
+	return img, nil
 }
 
 // galleryItemHash returns a hashed name of a gallery item link.
