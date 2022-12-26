@@ -37,13 +37,13 @@ var (
 
 // BuildRegex uses patterns from `ActiveMarkings` to build Yunyun's regexes.
 func (m Markings) BuildRegex() {
-	BoldText = MarkupRegex(m.Bold)
-	ItalicText = MarkupRegex(m.Italic)
+	BoldText = SymmetricEmphasis(m.Bold)
+	ItalicText = SymmetricEmphasis(m.Italic)
 	BoldItalicTextBegin = regexp.MustCompile(`(?mU)(^|[ ()_%<>])` + m.Bold + m.Italic)
 	BoldItalicTextEnd = regexp.MustCompile(`(?mU)` + m.Italic + m.Bold + `($|[ (),.!?;&_%><])`)
-	VerbatimText = MarkupRegex(m.Verbatim)
-	StrikethroughText = MarkupRegex(m.Strikethrough)
-	UnderlineText = MarkupRegex(m.Underline)
+	VerbatimText = SymmetricEmphasis(m.Verbatim)
+	StrikethroughText = SymmetricEmphasis(m.Strikethrough)
+	UnderlineText = SymmetricEmphasis(m.Underline)
 
 	LinkRegexp = regexp.MustCompile(m.Link)
 	linkLinkIndex = LinkRegexp.SubexpIndex("link")
@@ -154,10 +154,27 @@ func RemoveFormatting(what string) string {
 	return what
 }
 
-// MarkupRegex is a useful tool to create simple text markups.
-func MarkupRegex(delimeter string) *regexp.Regexp {
-	return regexp.MustCompile(
-		`(?mU)(?P<l>^|[ ()\[\]_%>“”])` + delimeter +
-			`(?P<text>\S|\S\S|\S.+\S)` + delimeter +
-			`(?P<r>$|[ ()\[\],.!?:;&_%<“”])`)
+const (
+	// darknessPunct is our altornative to [[:punct:]] re2 class.
+	darknessPunctLeft  = `[!(\[%><&"'“„‘{]`
+	darknessPunctRight = `[!()\[\]%><&'"“”„‘’;:?.,{}]`
+)
+
+// SymmetricEmphasis is a useful tool to create simple text markups.
+func SymmetricEmphasis(delimeter string) *regexp.Regexp {
+	return AsymmetricEmphasis(delimeter, delimeter)
+}
+
+// AsymmetricEmphasis returns regexp with asymmetric borders.
+func AsymmetricEmphasis(left, right string) *regexp.Regexp {
+	return regexp.MustCompile(emphasisPattern(left, right))
+}
+
+// emphasisPattern returns pattern given left and right delimeters.
+func emphasisPattern(left, right string) string {
+	return `(?m)` +
+		`(?P<l>[[:space:]]|` + darknessPunctLeft + `|^)` +
+		left +
+		`(?P<text>(?:[^ \n\t]|[^ \n\t](?:.|\n[^\n])*?[^ ]))` +
+		right + `(?P<r>[[:space:]]|` + darknessPunctRight + `|$)`
 }
