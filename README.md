@@ -59,7 +59,9 @@ and other flags you can use by calling `darkness -help`!
 It's simple! If you have go1.18 installed, you can install it through `go` tool with
 
 ```sh
-go install -v github.com/thecsw/darkness@latest
+git clone https://github.com/thecsw/darkness
+cd darkness
+go install -v .
 ```
 
 Or you can also grab pre-built binaries from the 
