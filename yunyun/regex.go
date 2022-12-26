@@ -178,10 +178,10 @@ func RemoveFormatting(what string) string {
 const (
 	// darknessPunctLeft is our altornative to [[:punct:]] re2
 	// class for matching left punctuation symbols.
-	darknessPunctLeft = `[!(\[%><&"'“„‘{]`
+	darknessPunctLeft = `[ ()\[\]_%>“”]`
 	// darknessPunctRight is our altornative to [[:punct:]] re2
 	// class for matching right punctuation symbols.
-	darknessPunctRight = `[!()\[\]%><&'"“”„‘’;:?.,{}]`
+	darknessPunctRight = `[ ()\[\],.!?:;&_%<“”]`
 )
 
 // SymmetricEmphasis is a useful tool to create simple text markups.
@@ -196,10 +196,10 @@ func AsymmetricEmphasis(left, right string) *regexp.Regexp {
 
 // emphasisPattern returns pattern given left and right delimeters.
 func emphasisPattern(left, right string) string {
-	return `(?m)` +
+	return `(?mU)` +
 		`(?P<l>[[:space:]]|` + darknessPunctLeft + `|^)` +
 		`(?:` + left + `)` +
-		`(?P<text>(?:[^ \n\t]|[^ \n\t](?:.|\n[^\n])*?[^ ]))` +
+		`(?P<text>\S|\S\S|\S.+\S)` +
 		`(?:` + right + `)` +
 		`(?P<r>[[:space:]]|` + darknessPunctRight + `|$)`
 }
