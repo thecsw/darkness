@@ -37,6 +37,8 @@ func (e ExporterHTML) Export() string {
 		yunyun.VerbatimText:      `$l<code>$text</code>$r`,
 		yunyun.StrikethroughText: `$l<s>$text</s>$r`,
 		yunyun.UnderlineText:     `$l<u>$text</u>$r`,
+		yunyun.SuperscriptText:   `$l<sup>$text</sup>$r`,
+		yunyun.SubscriptText:     `$l<sub>$text</sub>$r`,
 	}
 
 	// Add the red tomb to the last paragraph on given directories

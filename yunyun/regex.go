@@ -19,19 +19,32 @@ type Markings struct {
 	Underline string
 	// Link is the whole regexp pattern.
 	Link string
+	// SuperscriptStart is the pattern to start superscript.
+	SuperscriptStart string
+	// SuperscriptEnd is the pattern to end superscript.
+	SuperscriptEnd string
+	// SubscriptStart is the pattern to start subscript.
+	SubscriptStart string
+	// SubscriptEnd is the pattern to end subscript.
+	SubscriptEnd string
 }
 
 var (
 	// ActiveMarkings can be set by parser to define custom markings.
 	ActiveMarkings = Markings{
-		Bold:          `\*`,
-		Italic:        `/`,
-		Verbatim:      `[~=]`,
-		Strikethrough: `\+`,
-		Underline:     `_`,
-		Link:          `(?mU)\[\[(?P<link>[^][]+)\]\[(?P<text>[^][]+)(?: "(?P<desc>[^"]+)")?\]\]`,
+		Bold:             `\*`,
+		Italic:           `/`,
+		Verbatim:         `[~=]`,
+		Strikethrough:    `\+`,
+		Underline:        `_`,
+		Link:             `(?mU)\[\[(?P<link>[^][]+)\]\[(?P<text>[^][]+)(?: "(?P<desc>[^"]+)")?\]\]`,
+		SuperscriptStart: `\^\{`,
+		SuperscriptEnd:   `\}`,
+		SubscriptStart:   `_\{`,
+		SubscriptEnd:     `\}`,
 	}
 
+	// Pre-computed group indexes to use for group extraction.
 	linkLinkIndex, linkTextIndex, linkDescIndex = -1, -1, -1
 )
 
@@ -44,14 +57,18 @@ func (m Markings) BuildRegex() {
 	VerbatimText = SymmetricEmphasis(m.Verbatim)
 	StrikethroughText = SymmetricEmphasis(m.Strikethrough)
 	UnderlineText = SymmetricEmphasis(m.Underline)
+	SuperscriptText = AsymmetricEmphasis(m.SuperscriptStart, m.SuperscriptEnd)
+	SubscriptText = AsymmetricEmphasis(m.SubscriptStart, m.SubscriptEnd)
 
+	// Compile the Link regexp and pre-compute named groups' indices.
 	LinkRegexp = regexp.MustCompile(m.Link)
 	linkLinkIndex = LinkRegexp.SubexpIndex("link")
 	linkTextIndex = LinkRegexp.SubexpIndex("text")
 	linkDescIndex = LinkRegexp.SubexpIndex("desc")
 
 	SpecialTextMarkups = []*regexp.Regexp{
-		BoldText, ItalicText, VerbatimText, StrikethroughText, UnderlineText,
+		BoldText, ItalicText, VerbatimText, StrikethroughText,
+		UnderlineText, SuperscriptText, SubscriptText,
 	}
 }
 
@@ -117,6 +134,10 @@ var (
 	StrikethroughText *regexp.Regexp
 	// UnderlineText is the regexp for matching underline text.
 	UnderlineText *regexp.Regexp
+	// SuperscriptText is the regex for matching superscript text.
+	SuperscriptText *regexp.Regexp
+	// SubscriptText is the regexp for matching subscript text.
+	SubscriptText *regexp.Regexp
 	// SpecialTextMarkups simply combines some common formatting options above.
 	SpecialTextMarkups []*regexp.Regexp
 	// KeyboardRegexp is the regexp for matching keyboard text.
@@ -155,8 +176,11 @@ func RemoveFormatting(what string) string {
 }
 
 const (
-	// darknessPunct is our altornative to [[:punct:]] re2 class.
-	darknessPunctLeft  = `[!(\[%><&"'“„‘{]`
+	// darknessPunctLeft is our altornative to [[:punct:]] re2
+	// class for matching left punctuation symbols.
+	darknessPunctLeft = `[!(\[%><&"'“„‘{]`
+	// darknessPunctRight is our altornative to [[:punct:]] re2
+	// class for matching right punctuation symbols.
 	darknessPunctRight = `[!()\[\]%><&'"“”„‘’;:?.,{}]`
 )
 
@@ -174,7 +198,8 @@ func AsymmetricEmphasis(left, right string) *regexp.Regexp {
 func emphasisPattern(left, right string) string {
 	return `(?m)` +
 		`(?P<l>[[:space:]]|` + darknessPunctLeft + `|^)` +
-		left +
+		`(?:` + left + `)` +
 		`(?P<text>(?:[^ \n\t]|[^ \n\t](?:.|\n[^\n])*?[^ ]))` +
-		right + `(?P<r>[[:space:]]|` + darknessPunctRight + `|$)`
+		`(?:` + right + `)` +
+		`(?P<r>[[:space:]]|` + darknessPunctRight + `|$)`
 }
