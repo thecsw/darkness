@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/BurntSushi/toml"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/export"
 	"github.com/thecsw/darkness/parse"
@@ -136,6 +137,14 @@ func InitDarkness(options *EmiliaOptions) {
 
 	Config.VendorGalleries = options.VendorGalleries
 	if Config.VendorGalleries {
+		cmdColor := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ff50a2"))
+		yellow := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ffff00"))
+		fmt.Println("I'm going to vendor all gallery paths!")
+		fmt.Println("If this is the first time, it will take a while... otherwise,",
+			yellow.Render("an intsant"))
+		fmt.Printf("Please add %s to your .gitignore, so you don't pollute your git objects.\n",
+			cmdColor.Render(string(VendorDirectory)))
+		fmt.Println()
 		if err := Mkdir(filepath.Join(Config.WorkDir, string(VendorDirectory))); err != nil {
 			fmt.Printf("Failed to create vendor directory %s: %s\n",
 				VendorDirectory, err.Error())

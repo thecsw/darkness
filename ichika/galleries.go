@@ -28,7 +28,6 @@ const (
 func buildGalleryFiles(dryRun bool) {
 	// Make sure the preview directory exists
 	previewDirectory := filepath.Join(emilia.Config.WorkDir, string(emilia.GalleryPreviewDirectory))
-	fmt.Println("GALLERY:", previewDirectory)
 	if err := emilia.Mkdir(previewDirectory); err != nil {
 		fmt.Println("fatal: couldn't create preview directory:", err.Error())
 		os.Exit(1)
