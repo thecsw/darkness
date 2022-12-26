@@ -136,16 +136,11 @@ func InitDarkness(options *EmiliaOptions) {
 
 	Config.VendorGalleries = options.VendorGalleries
 	if Config.VendorGalleries {
-		// Make sure that the vendor directory exists.
-		err = os.Mkdir(string(vendorDirectory), 0755)
-		// If we couldn't create the vendor directory and it doesn't
-		// exist, then turn off the vendor option.
-		if err != nil && !os.IsExist(err) {
+		if err := Mkdir(filepath.Join(Config.WorkDir, string(VendorDirectory))); err != nil {
 			fmt.Printf("Failed to create vendor directory %s: %s\n",
-				vendorDirectory, err.Error())
+				VendorDirectory, err.Error())
 			fmt.Println("Disabling vendoring by force.")
 			Config.VendorGalleries = false
-
 		}
 	}
 

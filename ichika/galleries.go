@@ -26,6 +26,13 @@ const (
 // buildGalleryFiles finds all the gallery entries and build a resized
 // preview version of it.
 func buildGalleryFiles(dryRun bool) {
+	// Make sure the preview directory exists
+	previewDirectory := filepath.Join(emilia.Config.WorkDir, string(emilia.GalleryPreviewDirectory))
+	fmt.Println("GALLERY:", previewDirectory)
+	if err := emilia.Mkdir(previewDirectory); err != nil {
+		fmt.Println("fatal: couldn't create preview directory:", err.Error())
+		os.Exit(1)
+	}
 	galleryFiles := getGalleryFiles()
 	for i, galleryFile := range galleryFiles {
 		fmt.Printf("[%d/%d] ", i+1, len(galleryFiles))
@@ -81,6 +88,12 @@ func galleryItemToReader(item *emilia.GalleryItem) (io.ReadCloser, error) {
 	if !item.IsExternal {
 		file := emilia.JoinWorkdir(yunyun.JoinRelativePaths(item.Path, item.Item))
 		return os.Open(string(file))
+	}
+	// Check if the item has been vendored by any chance?
+	vendorPath := filepath.Join(emilia.Config.WorkDir, string(emilia.GalleryVendored(item)))
+	if emilia.FileExists(vendorPath) {
+		fmt.Printf(" (vendored) ")
+		return os.Open(vendorPath)
 	}
 	// If it's a remote file, then run a get request and return
 	// the body reader.

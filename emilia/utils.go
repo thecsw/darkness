@@ -135,22 +135,27 @@ func GalleryImage(item *GalleryItem) yunyun.FullPathFile {
 	return JoinPath(yunyun.JoinRelativePaths(item.Path, item.Item))
 }
 
-// GalleryPreview takes an original image's path and returns
-// the preview path of it. Previews are always .jpg
-func GalleryPreview(item *GalleryItem) yunyun.FullPathFile {
+// galleryPreviewRelative takes gallery item and returns relative path to it.
+func galleryPreviewRelative(item *GalleryItem) yunyun.RelativePathFile {
 	if item.IsExternal {
-		return JoinPath(yunyun.JoinRelativePaths(item.Path, galleryItemHash(item)))
+		return galleryItemHash(item)
 	}
 	filename := filepath.Base(string(item.Item))
 	ext := filepath.Ext(filename)
-	return JoinPath(yunyun.JoinRelativePaths(item.Path,
-		yunyun.RelativePathFile(strings.TrimSuffix(filename, ext)+"_small.jpg"),
-	))
+	return yunyun.RelativePathFile(strings.TrimSuffix(filename, ext) + "_small.jpg")
+}
+
+// GalleryPreview takes an original image's path and returns
+// the preview path of it. Previews are always .jpg
+func GalleryPreview(item *GalleryItem) yunyun.FullPathFile {
+	return JoinPath(yunyun.JoinRelativePaths(GalleryPreviewDirectory, galleryPreviewRelative(item)))
 }
 
 const (
-	// vendorDirectory is the name of the dir where vendor images are stored.
-	vendorDirectory yunyun.RelativePathDir = "darkness_vendor"
+	// VendorDirectory is the name of the dir where vendor images are stored.
+	VendorDirectory yunyun.RelativePathDir = "darkness_vendor"
+	// GalleryPreviewDirectory is the name of the dir where all gallery previews are stored.
+	GalleryPreviewDirectory yunyun.RelativePathDir = "darkness_gallery_previews"
 )
 
 var (
@@ -165,6 +170,11 @@ var (
 	vendorLock = &sync.Mutex{}
 )
 
+// GalleryVendored returns vendored local path of the gallery item.
+func GalleryVendored(item *GalleryItem) yunyun.RelativePathFile {
+	return yunyun.JoinRelativePaths(VendorDirectory, galleryItemHash(item))
+}
+
 // galleryVendorItem vendors given item and returns the full path of the file.
 //
 // Only call this function on remote images, it's up to the user to make the
@@ -177,13 +187,12 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 	// Unlock so the next vendor request can get processed.
 	defer vendorLock.Unlock()
 
-	hashedName := galleryItemHash(item)
-	vendoredPath := yunyun.JoinRelativePaths(vendorDirectory, hashedName)
-	localVendoredPath := filepath.Join(Config.WorkDir, string(vendoredPath))
+	vendoredImagePath := GalleryVendored(item)
+	localVendoredPath := filepath.Join(Config.WorkDir, string(vendoredImagePath))
 
 	// Create the two types of return.
 	fallbackReturn := yunyun.FullPathFile(item.Item)
-	expectedReturn := JoinPath(vendoredPath)
+	expectedReturn := JoinPath(vendoredImagePath)
 
 	// Check if the image was already vendored, if it was, return it immediately.
 	if FileExists(localVendoredPath) {
@@ -191,7 +200,7 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 	}
 
 	start := time.Now()
-	fmt.Printf("Vendoring %s... ", hashedName)
+	fmt.Printf("Vendoring %s... ", vendoredImagePath)
 
 	req, err := http.NewRequest(http.MethodGet, string(item.Item), nil)
 	if err != nil {
@@ -202,7 +211,7 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 	resp, err := vendorClient.Do(req)
 	// resp, err := http.Get(string(item.Item))
 	if err != nil {
-		fmt.Printf("Failed to vendor %s: %s\n", hashedName, err.Error())
+		fmt.Printf("Failed to vendor %s: %s\n", vendoredImagePath, err.Error())
 		return fallbackReturn
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
@@ -216,7 +225,7 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 	// Respect EXIF flags with AutoOrientation turned on.
 	img, err := imaging.Decode(resp.Body, imaging.AutoOrientation(true))
 	if err != nil {
-		fmt.Printf("Failed to decode %s: %s\n", hashedName, err.Error())
+		fmt.Printf("Failed to decode %s: %s\n", vendoredImagePath, err.Error())
 		return fallbackReturn
 	}
 
@@ -230,7 +239,7 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 
 	// Decode the image into the file.
 	if err := imaging.Encode(imgFile, img, imaging.JPEG); err != nil {
-		fmt.Printf("Failde to encode %s: %s\n", hashedName, err.Error())
+		fmt.Printf("Failde to encode %s: %s\n", vendoredImagePath, err.Error())
 		return fallbackReturn
 	}
 
@@ -256,4 +265,17 @@ func sha256String(what string) string {
 func FileExists(path string) bool {
 	info, err := os.Stat(string(path))
 	return info != nil && !os.IsNotExist(err)
+}
+
+// Mkdir creates a directory and reports fatal errors.
+func Mkdir(path string) error {
+	// Make sure that the vendor directory exists.
+	err := os.Mkdir(string(path), 0755)
+	fmt.Println(err)
+	// If we couldn't create the vendor directory and it doesn't
+	// exist, then turn off the vendor option.
+	if err != nil && !os.IsExist(err) {
+		return err
+	}
+	return nil
 }
