@@ -148,14 +148,14 @@ func galleryPreviewRelative(item *GalleryItem) yunyun.RelativePathFile {
 // GalleryPreview takes an original image's path and returns
 // the preview path of it. Previews are always .jpg
 func GalleryPreview(item *GalleryItem) yunyun.FullPathFile {
-	return JoinPath(yunyun.JoinRelativePaths(GalleryPreviewDirectory, galleryPreviewRelative(item)))
+	return JoinPath(yunyun.JoinRelativePaths(Config.Project.DarknessPreviewDirectory, galleryPreviewRelative(item)))
 }
 
 const (
-	// VendorDirectory is the name of the dir where vendor images are stored.
-	VendorDirectory yunyun.RelativePathDir = "darkness_vendor"
-	// GalleryPreviewDirectory is the name of the dir where all gallery previews are stored.
-	GalleryPreviewDirectory yunyun.RelativePathDir = "darkness_gallery_previews"
+	// defaultVendorDirectory is the name of the dir where vendor images are stored.
+	defaultVendorDirectory yunyun.RelativePathDir = "darkness_vendor"
+	// defaultPreviewDirectory is the name of the dir where all gallery previews are stored.
+	defaultPreviewDirectory yunyun.RelativePathDir = "darkness_gallery_previews"
 )
 
 var (
@@ -172,7 +172,7 @@ var (
 
 // GalleryVendored returns vendored local path of the gallery item.
 func GalleryVendored(item *GalleryItem) yunyun.RelativePathFile {
-	return yunyun.JoinRelativePaths(VendorDirectory, galleryItemHash(item))
+	return yunyun.JoinRelativePaths(Config.Project.DarknessVendorDirectory, galleryItemHash(item))
 }
 
 // galleryVendorItem vendors given item and returns the full path of the file.

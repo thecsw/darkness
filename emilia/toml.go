@@ -41,9 +41,13 @@ type ProjectConfig struct {
 	// Output is the output format (defaulte ".html")
 	Output string `toml:"output"`
 	// Excludes is the list of relative paths to exclude from the project
-	Exclude        []yunyun.RelativePathDir `toml:"exclude"`
-	ExcludeRegex   *regexp.Regexp           `toml:"-"`
-	ExcludeEnabled bool                     `toml:"-"`
+	Exclude []yunyun.RelativePathDir `toml:"exclude"`
+	// DarknessVendorDirectory where to vendor, default to `darkness_vendor`.
+	DarknessVendorDirectory yunyun.RelativePathDir `toml:"vendor_directory"`
+	// DarknessPreviewDirectory where to store previews, default to `darkness_preview`.
+	DarknessPreviewDirectory yunyun.RelativePathDir `toml:"preview_directory"`
+	ExcludeRegex             *regexp.Regexp         `toml:"-"`
+	ExcludeEnabled           bool                   `toml:"-"`
 }
 
 // WebsiteConfig is the website section of the config

@@ -121,6 +121,14 @@ func InitDarkness(options *EmiliaOptions) {
 	if isZero(Config.Website.SyntaxHighlightingTheme) {
 		Config.Website.SyntaxHighlightingTheme = highlightJsThemeDefaultPath
 	}
+	// Set the default vendor directory.
+	if isZero(Config.Project.DarknessVendorDirectory) {
+		Config.Project.DarknessVendorDirectory = defaultVendorDirectory
+	}
+	// Set the default preview directory.
+	if isZero(Config.Project.DarknessPreviewDirectory) {
+		Config.Project.DarknessPreviewDirectory = defaultPreviewDirectory
+	}
 	// Build the regex that will be used to exclude files that
 	// have been denoted in emilia darkness config.
 	if len(Config.Project.Exclude) > 0 {
@@ -143,11 +151,12 @@ func InitDarkness(options *EmiliaOptions) {
 		fmt.Println("If this is the first time, it will take a while... otherwise,",
 			yellow.Render("an intsant"))
 		fmt.Printf("Please add %s to your .gitignore, so you don't pollute your git objects.\n",
-			cmdColor.Render(string(VendorDirectory)))
+			cmdColor.Render(string(Config.Project.DarknessVendorDirectory)))
 		fmt.Println()
-		if err := Mkdir(filepath.Join(Config.WorkDir, string(VendorDirectory))); err != nil {
+		if err := Mkdir(filepath.Join(Config.WorkDir,
+			string(Config.Project.DarknessVendorDirectory))); err != nil {
 			fmt.Printf("Failed to create vendor directory %s: %s\n",
-				VendorDirectory, err.Error())
+				Config.Project.DarknessVendorDirectory, err.Error())
 			fmt.Println("Disabling vendoring by force.")
 			Config.VendorGalleries = false
 		}
