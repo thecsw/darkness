@@ -136,7 +136,7 @@ func GalleryImage(item *GalleryItem) yunyun.FullPathFile {
 }
 
 // GalleryPreview takes an original image's path and returns
-// the preview path of it.
+// the preview path of it. Previews are always .jpg
 func GalleryPreview(item *GalleryItem) yunyun.FullPathFile {
 	if item.IsExternal {
 		return JoinPath(yunyun.JoinRelativePaths(item.Path, galleryItemHash(item)))
@@ -144,7 +144,7 @@ func GalleryPreview(item *GalleryItem) yunyun.FullPathFile {
 	filename := filepath.Base(string(item.Item))
 	ext := filepath.Ext(filename)
 	return JoinPath(yunyun.JoinRelativePaths(item.Path,
-		yunyun.RelativePathFile(strings.TrimSuffix(filename, ext)+"_small"+ext),
+		yunyun.RelativePathFile(strings.TrimSuffix(filename, ext)+"_small.jpg"),
 	))
 }
 
@@ -243,7 +243,7 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 
 // galleryItemHash returns a hashed name of a gallery item link.
 func galleryItemHash(item *GalleryItem) yunyun.RelativePathFile {
-	return yunyun.RelativePathFile(sha256String(string(item.Item))[:7] + ".jpeg")
+	return yunyun.RelativePathFile(sha256String(string(item.Item))[:7] + ".jpg")
 }
 
 // sha256String hashes given string to sha256.

@@ -1,8 +1,8 @@
 package ichika
 
 import (
-	"bytes"
 	"fmt"
+	"image"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -44,31 +44,30 @@ func buildGalleryFiles(dryRun bool) {
 		// - For remote files, it's a reader of the response body.
 		imgReader, err := galleryItemToReader(galleryFile)
 		if err != nil {
-			fmt.Println("gallery item to reader: " + err.Error())
+			fmt.Println("gallery item to reader:", err.Error())
 			continue
 		}
 
 		// Encode preview image into a buffer.
-		buf := new(bytes.Buffer)
-		if err := blurImageForPreview(imgReader, buf); err != nil {
-			fmt.Println("gallery reader to writer: " + err.Error())
-			continue
-		}
-
-		// Read the encoded image buffer into a byte slice.
-		img, err := ioutil.ReadAll(buf)
+		img, err := readAndBlur(imgReader)
 		if err != nil {
-			fmt.Println("reading gallery buffer: " + err.Error())
+			fmt.Println("gallery reader to writer:", err.Error())
 			continue
 		}
 
 		// Don't save the file if it's in dry run mode.
 		if !dryRun {
-			// Write the final preview image file.
-			if err := os.WriteFile(string(newFile), img, os.ModePerm); err != nil {
-				fmt.Println("failed to save image: " + err.Error())
+			file, err := os.Create(string(newFile))
+			if err != nil {
+				fmt.Printf("failed to create file %s: %s\n", newFile, err.Error())
 				continue
 			}
+			// Write the final preview image file.
+			if err := imaging.Encode(file, img, imaging.JPEG); err != nil {
+				fmt.Printf("failed to encode image: %s", err.Error())
+				continue
+			}
+			file.Close()
 		}
 
 		fmt.Printf("%d ms\n", time.Since(start).Milliseconds())
@@ -92,19 +91,19 @@ func galleryItemToReader(item *emilia.GalleryItem) (io.ReadCloser, error) {
 	return resp.Body, nil
 }
 
-// blurImageForPreview decodes image from `source`, makes a preview out of it,
+// readAndBlur decodes image from `source`, makes a preview out of it,
 // and finally encodes it into `target`.
-func blurImageForPreview(source io.ReadCloser, target io.Writer) error {
+func readAndBlur(source io.ReadCloser) (*image.NRGBA, error) {
 	// Respect EXIF flags with AutoOrientation turned on.
 	img, err := imaging.Decode(source, imaging.AutoOrientation(true))
 	defer source.Close()
 	if err != nil {
-		return errors.Wrap(err, "couldn't read the image reader")
+		return nil, errors.Wrap(err, "couldn't read the image")
 	}
 	// Resize the image to save up on storage.
 	img = imaging.Resize(img, galleryPreviewImageSize, 0, imaging.Lanczos)
 	blurred := imaging.Blur(img, galleryPreviewImageBlur)
-	return imaging.Encode(target, blurred, imaging.JPEG)
+	return blurred, nil
 }
 
 // removeGalleryFiles removes all generate gallery previews.
