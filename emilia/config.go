@@ -149,7 +149,7 @@ func InitDarkness(options *EmiliaOptions) {
 		yellow := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ffff00"))
 		fmt.Println("I'm going to vendor all gallery paths!")
 		fmt.Println("If this is the first time, it will take a while... otherwise,",
-			yellow.Render("an intsant"))
+			yellow.Render("an instant"))
 		fmt.Printf("Please add %s to your .gitignore, so you don't pollute your git objects.\n",
 			cmdColor.Render(string(Config.Project.DarknessVendorDirectory)))
 		fmt.Println()
