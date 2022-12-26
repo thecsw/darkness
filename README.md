@@ -54,6 +54,15 @@ as well. Heavily optimized with [gana workers](https://github.com/thecsw/gana),
 You can play with best performance by tuning parallelization parameters with `-workers N`,
 and other flags you can use by calling `darkness -help`!
 
+Here is a benchmark with `hyperfine` on the same config as above,
+
+```sh
+sandyuraz:source λ hyperfine "darkness build"
+Benchmark 1: darkness build
+  Time (mean ± σ):     112.3 ms ±   6.6 ms    [User: 413.7 ms, System: 92.3 ms]
+  Range (min … max):   103.1 ms … 124.3 ms    26 runs
+```
+
 ## How to get it
 
 It's simple! If you have go1.18 installed, you can install it through `go` tool with
