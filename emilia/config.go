@@ -36,10 +36,12 @@ type EmiliaOptions struct {
 	Test bool
 	// URL is a custom website url, usually used for serving from localhost.
 	URL string
-	// OutputExtension overrides whatever is in the file
+	// OutputExtension overrides whatever is in the file.
 	OutputExtension string
 	// WorkDir is the working directory of the darkness project.
 	WorkDir string
+	// VendorGalleries dictates whether we should stub in local gallery images.
+	VendorGalleries bool
 }
 
 // InitDarkness initializes the darkness config.
@@ -131,6 +133,22 @@ func InitDarkness(options *EmiliaOptions) {
 			"\nFailed with error:", err.Error())
 		os.Exit(1)
 	}
+
+	Config.VendorGalleries = options.VendorGalleries
+	if Config.VendorGalleries {
+		// Make sure that the vendor directory exists.
+		err = os.Mkdir(string(vendorDirectory), 0755)
+		// If we couldn't create the vendor directory and it doesn't
+		// exist, then turn off the vendor option.
+		if err != nil && !os.IsExist(err) {
+			fmt.Printf("Failed to create vendor directory %s: %s\n",
+				vendorDirectory, err.Error())
+			fmt.Println("Disabling vendoring by force.")
+			Config.VendorGalleries = false
+
+		}
+	}
+
 	// Check whether the author image is full or not by running
 	// a url regexp and just hardcode the emilia path. If it's
 	// already a URL, then do nothing.

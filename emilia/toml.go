@@ -29,6 +29,9 @@ type DarknessConfig struct {
 	URLPath *url.URL `toml:"-"`
 	// WorkDir is the directory of where darkness project lives.
 	WorkDir string `toml:"-"`
+	// VendorGalleries tells us if we need to stub local copies
+	// of remote links in galleries.
+	VendorGalleries bool `toml:"-"`
 }
 
 // ProjectConfig is the project section of the config

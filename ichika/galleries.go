@@ -30,7 +30,7 @@ func buildGalleryFiles(dryRun bool) {
 	for i, galleryFile := range galleryFiles {
 		fmt.Printf("[%d/%d] ", i+1, len(galleryFiles))
 		newFile := emilia.GalleryPreview(galleryFile)
-		if info, err := os.Stat(string(newFile)); info != nil && !os.IsNotExist(err) {
+		if emilia.FileExists(string(newFile)) {
 			fmt.Printf("%s already exists\n", emilia.RelPathToWorkdir(newFile))
 			continue
 		}
@@ -95,6 +95,7 @@ func galleryItemToReader(item *emilia.GalleryItem) (io.ReadCloser, error) {
 // blurImageForPreview decodes image from `source`, makes a preview out of it,
 // and finally encodes it into `target`.
 func blurImageForPreview(source io.ReadCloser, target io.Writer) error {
+	// Respect EXIF flags with AutoOrientation turned on.
 	img, err := imaging.Decode(source, imaging.AutoOrientation(true))
 	defer source.Close()
 	if err != nil {

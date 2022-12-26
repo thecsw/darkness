@@ -20,6 +20,21 @@ const (
 	savePerms = fs.FileMode(0644)
 )
 
+var (
+	// vendorGalleryImages is a flag that dictates whether we should
+	// store a local copy of all remote gallery images and stub them
+	// in the gallery links instead of the remote links.
+	//
+	// Turning this option on would result in a VERY slow build the
+	// first time, as it would need to retrieve however many images
+	// from remote services.
+	//
+	// All images will be put in "darkness_vendor" directory, which
+	// will be skipped in discovery process AND should be put it
+	// .gitignore by user, so they don't pollute their git objects.
+	vendorGalleryImages bool
+)
+
 // OneFileCommandFunc builds a single file.
 func OneFileCommandFunc() {
 	fileCmd := darknessFlagset(oneFileCommand)
@@ -30,7 +45,8 @@ func OneFileCommandFunc() {
 
 // build builds the entire directory.
 func BuildCommandFunc() {
-	emilia.InitDarkness(getEmiliaOptions(darknessFlagset(buildCommand)))
+	cmd := darknessFlagset(buildCommand)
+	emilia.InitDarkness(getEmiliaOptions(cmd))
 	build()
 	// Check that we actually processed some files before reporting.
 	if emilia.NumFoundFiles < 0 {

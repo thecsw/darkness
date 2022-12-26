@@ -12,6 +12,7 @@ require (
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.13.0 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
+	github.com/sanity-io/litter v1.5.5 // indirect
 	golang.org/x/exp v0.0.0-20221114191408-850992195362 // indirect
 	golang.org/x/image v0.1.0 // indirect
 	golang.org/x/sys v0.3.0 // indirect

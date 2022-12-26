@@ -41,6 +41,7 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	cmd.IntVar(&customNumWorkers, "workers", defaultNumOfWorkers, "number of workers to spin up")
 	cmd.IntVar(&customChannelCapacity, "capacity", defaultNumOfWorkers, "worker channels' capacity")
 	cmd.BoolVar(&useCurrentDirectory, "dev", false, "use local path for urls (development)")
+	cmd.BoolVar(&vendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")
 	if err := cmd.Parse(os.Args[2:]); err != nil {
 		fmt.Printf("failed to parse build arguments, fatal: %s", err.Error())
 		os.Exit(1)
@@ -62,9 +63,10 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 
 	// Read the config and initialize emilia settings.
 	return &emilia.EmiliaOptions{
-		DarknessConfig: darknessToml,
-		Dev:            useCurrentDirectory,
-		WorkDir:        workDir,
+		DarknessConfig:  darknessToml,
+		Dev:             useCurrentDirectory,
+		WorkDir:         workDir,
+		VendorGalleries: vendorGalleryImages,
 	}
 }
 

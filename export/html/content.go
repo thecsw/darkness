@@ -3,8 +3,6 @@ package html
 import (
 	"fmt"
 	"html"
-	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
@@ -125,74 +123,6 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 </ul>
 </div>
 `, strings.Join(gana.Map(makeListItem, content.List), "\n"))
-}
-
-var (
-	flexOptionRegexp = regexp.MustCompile(`:flex (\d+)`)
-)
-
-// extractCustomFlex extract custom flex class `:flex [1,5]`
-func extractCustomFlex(s string) uint {
-	matches := flexOptionRegexp.FindAllStringSubmatch(s, -1)
-	if len(matches) < 1 {
-		return 0
-	}
-	if len(matches[0]) < 1 {
-		return 0
-	}
-	ret, err := strconv.Atoi(matches[0][1])
-	if err != nil {
-		return 0
-	}
-	return uint(ret)
-}
-
-// hrefGalleryTagIfLinkGiven returns an href tag if gallery link is found,
-// an empty string otherwise.
-func hrefGalleryTagIfLinkGiven(item *emilia.GalleryItem) string {
-	if item.Link == "" {
-		return ""
-	}
-	return fmt.Sprintf(` href="%s"`, item.Link)
-}
-
-// resolveCustomFlexItemClasses searches for custom support flex item classes.
-func resolveCustomFlexItemClasses(wholeLine string) string {
-	what := ""
-	if strings.Contains(wholeLine, ":no-zoom") {
-		what += " no-zoom"
-	}
-	return what
-}
-
-// makeFlexItem will make an item of the flexbox .gallery with 1/3 width
-func makeFlexItem(item *emilia.GalleryItem, width uint) string {
-	// See if there is a custom flex width requested for the item.
-	if customFlex := extractCustomFlex(string(item.OriginalLine)); customFlex != 0 {
-		width = customFlex
-	}
-	return fmt.Sprintf(`<div class="flex-%d hide-overflow ease-transition">
-<a%s class="gallery-item">
-<img class="item lazyload %s" src="%s" data-src="%s" title="%s" alt="%s">
-</a>
-</div>`, width, hrefGalleryTagIfLinkGiven(item), resolveCustomFlexItemClasses(item.OriginalLine),
-		emilia.GalleryPreview(item), emilia.GalleryImage(item), item.Description, item.Text)
-}
-
-// gallery will create a flexbox gallery as defined in .gallery css class
-func (e ExporterHTML) gallery(content *yunyun.Content) string {
-	makeFlexItemWithFolder := func(s string) string {
-		return makeFlexItem(emilia.NewGalleryItem(e.page, content, s), content.GalleryImagesPerRow)
-	}
-	return fmt.Sprintf(`
-<div class="gallery-container">
-<center>
-<div class="gallery">
-%s
-</div>
-</center>
-</div>
-`, strings.Join(gana.Map(makeFlexItemWithFolder, content.List), "\n"))
 }
 
 // listNumbered gives us a numbered list html representation
