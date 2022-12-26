@@ -44,8 +44,9 @@ func buildGalleryFiles(dryRun bool) {
 
 		// Retrieve image contents reader:
 		// - For local files, it's a reader of the file.
-		// - For remote files, it's a reader of the response body.
-		sourceImage, err := galleryItemToImage(galleryFile)
+		// - For remote files, it's a reader of the response body,
+		//   unless it's vendored, then it's a read of the vendored file.
+		sourceImage, err := emilia.GalleryItemToImage(galleryFile)
 		if err != nil {
 			fmt.Println("gallery item to reader:", err.Error())
 			continue
@@ -75,25 +76,6 @@ func buildGalleryFiles(dryRun bool) {
 
 		fmt.Printf("%d ms\n", time.Since(start).Milliseconds())
 	}
-}
-
-// galleryItemToImage takes in a gallery item and returns an image object.
-func galleryItemToImage(item *emilia.GalleryItem) (image.Image, error) {
-	// If it's a local file, simply open the os file.
-	if !item.IsExternal {
-		file := emilia.JoinWorkdir(yunyun.JoinRelativePaths(item.Path, item.Item))
-		return emilia.OpenImage(string(file))
-	}
-
-	// Check if the item has been vendored by any chance?
-	vendorPath := filepath.Join(emilia.Config.WorkDir, string(emilia.GalleryVendored(item)))
-	if emilia.FileExists(vendorPath) {
-		fmt.Printf(" (vendored) ")
-		return emilia.OpenImage(vendorPath)
-	}
-
-	// If it's a remote file, then ask Emilia to try and fetch it.
-	return emilia.DownloadImage(string(item.Item))
 }
 
 // resizeAndBlur takes an image object and modifies it to preview standards.

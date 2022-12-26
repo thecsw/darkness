@@ -272,6 +272,25 @@ func DownloadImage(link string) (image.Image, error) {
 	return img, nil
 }
 
+// GalleryItemToImage takes in a gallery item and returns an image object.
+func GalleryItemToImage(item *GalleryItem) (image.Image, error) {
+	// If it's a local file, simply open the os file.
+	if !item.IsExternal {
+		file := JoinWorkdir(yunyun.JoinRelativePaths(item.Path, item.Item))
+		return OpenImage(string(file))
+	}
+
+	// Check if the item has been vendored by any chance?
+	vendorPath := filepath.Join(Config.WorkDir, string(GalleryVendored(item)))
+	if FileExists(vendorPath) {
+		fmt.Printf(" (vendored) ")
+		return OpenImage(vendorPath)
+	}
+
+	// If it's a remote file, then ask Emilia to try and fetch it.
+	return DownloadImage(string(item.Item))
+}
+
 // galleryItemHash returns a hashed name of a gallery item link.
 func galleryItemHash(item *GalleryItem) yunyun.RelativePathFile {
 	return yunyun.RelativePathFile(sha256String(string(item.Item))[:7] + ".jpg")
