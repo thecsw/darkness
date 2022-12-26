@@ -65,7 +65,7 @@ Sorry, your browser doesn't support embedded videos.
 	// spotifyTrackEmbedTemplate is the template for spotify track embeds.
 	spotifyTrackEmbedTemplate = `
 <div class="media">
-<iframe src="https://open.spotify.com/embed/track/%s" width="79%%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+<iframe src="https://open.spotify.com/embed/track/%s" width="69%%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 <hr>
 </div>`
 
@@ -74,7 +74,7 @@ Sorry, your browser doesn't support embedded videos.
 	// spotifyPlaylistEmbedTemplate is the template for spotify playlist embeds.
 	spotifyPlaylistEmbedTemplate = `
 <div class="media">
-<iframe src="https://open.spotify.com/embed/playlist/%s" width="79%%" height="380" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+<iframe src="https://open.spotify.com/embed/playlist/%s" width="69%%" height="550" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 <hr>
 </div>`
 )
