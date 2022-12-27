@@ -41,8 +41,9 @@ func (e ExporterHTML) Export() string {
 		yunyun.SubscriptText:     `$l<sub>$text</sub>$r`,
 	}
 
-	// Add the red tomb to the last paragraph on given directories
-	if e.page.Accoutrement.Tomb {
+	// Add the red tomb to the last paragraph on given directories.
+	// Only trigger if the tombs were manually flipped.
+	if e.page.Accoutrement.Tomb.IsEnabled() {
 		e.addTomb()
 	}
 	// Build the HTML (string) representation of each content
@@ -79,8 +80,7 @@ func (e ExporterHTML) Export() string {
 </body>
 </html>`,
 		darknessBanner, e.linkTags(), e.metaTags(), e.styleTags(),
-		e.scriptTags(),
-		strings.Join(append(emilia.Config.Website.ExtraHead, e.page.HtmlHead...), "\n"),
+		e.scriptTags(), e.htmlHead(),
 		processTitle(flattenFormatting(e.page.Title)), e.authorHeader(),
 		strings.Join(content, ""), e.addFootnotes(),
 	)
@@ -89,6 +89,18 @@ func (e ExporterHTML) Export() string {
 // leftHeading leaves the heading.
 func (e *ExporterHTML) leftHeading() {
 	e.inHeading = false
+}
+
+// htmlHead builds the HTML head by also excluding any user-defined contains rules.
+func (e ExporterHTML) htmlHead() string {
+	htmlHeadElements := ""
+	for _, v := range append(emilia.Config.Website.ExtraHead, e.page.HtmlHead...) {
+		if e.page.Accoutrement.ExcludeHtmlHeadContains.ShouldExclude(v) {
+			continue
+		}
+		htmlHeadElements += v + "\n"
+	}
+	return htmlHeadElements
 }
 
 // styleTags is the processed style tags.
@@ -159,9 +171,9 @@ func (e ExporterHTML) authorHeader() string {
 }
 
 // authorHeader returns img element if author header image is given.
-func authorImage(enabled bool) string {
+func authorImage(authorImageFlag yunyun.AccoutrementFlip) string {
 	// Return nothing if it's not provided.
-	if emilia.Config.Author.Image == "" || !enabled {
+	if emilia.Config.Author.Image == "" || authorImageFlag.IsDisabled() {
 		return ""
 	}
 	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`,

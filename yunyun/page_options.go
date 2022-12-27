@@ -25,7 +25,9 @@ func NewPage(options ...PageOption) *Page {
 		Scripts:       []string{},
 		Stylesheets:   []string{},
 		HtmlHead:      []string{},
-		Accoutrement:  &Accoutrement{},
+		Accoutrement: &Accoutrement{
+			ExcludeHtmlHeadContains: ExcludeHtmlHeadContains{},
+		},
 	}
 	return p.Options(options...)
 }

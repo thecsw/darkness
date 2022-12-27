@@ -65,8 +65,8 @@ var (
 // WithMathSupport adds math support to the page using javascript injection
 func WithMathSupport() yunyun.PageOption {
 	return func(page *yunyun.Page) {
-		// If we found math-related tags, add the scripts
-		if hasMathEquations(page) {
+		// If we found math-related tags or forced by user
+		if hasMathEquations(page) && !page.Accoutrement.Math.IsDisabled() {
 			page.Scripts = append(page.Scripts, mathJs)
 		}
 	}
