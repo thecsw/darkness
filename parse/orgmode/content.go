@@ -165,6 +165,11 @@ func extractExtraHead(line string) string {
 	return extractOptionLabel(line, optionExtraHead)
 }
 
+// extractOptions extracts the line of options.
+func extractOptions(line string) string {
+	return extractOptionLabel(line, optionOptions)
+}
+
 // extractCaptionTitle extracts caption `TITLE` from `#+caption: TITLE`.
 func extractCaptionTitle(line string) string {
 	return extractOptionLabel(line, optionCaption)

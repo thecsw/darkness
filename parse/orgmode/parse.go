@@ -3,6 +3,7 @@ package orgmode
 import (
 	"strings"
 
+	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -54,6 +55,16 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	// Our context is a parody of a state machine
 	currentContext := ""
 
+	// optionsStrings will get populated as the page is being scanned
+	// and then parsed out before leaving this parser.
+	optionsStrings := ""
+	emilia.InitializeAccoutrement(page)
+	defer emilia.FillAccoutrement(&optionsStrings, page.Accoutrement)
+
+	// Optional parsing to see if H.E. has been left on the first line
+	// as the date
+	fillHolosceneDate(page)
+
 	addFlag, removeFlag, flipFlag, hasFlag := yunyun.LatchFlags(&currentFlags)
 	// addContent is a helper function to add content to the page
 	addContent := func(content *yunyun.Content) {
@@ -95,6 +106,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		optionCaption:    func(line string) { caption = extractCaptionTitle(line) },
 		optionDate:       func(line string) { page.Date = extractDate(line) },
 		optionExtraHead:  func(line string) { page.ExtraHead = append(page.ExtraHead, extractExtraHead(line)) },
+		optionOptions:    func(line string) { optionsStrings += extractOptions(line) + " " },
 	}
 
 	// Yunyun's markings default to orgmode
@@ -279,10 +291,6 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		}
 		currentContext += " "
 	}
-
-	// Optional parsing to see if H.E. has been left on the first line
-	// as the date
-	fillHolosceneDate(page)
 	return page
 }
 

@@ -23,6 +23,7 @@ const (
 	optionCaption      = "caption:"
 	optionDate         = "date:"
 	optionExtraHead    = "extra_head:"
+	optionOptions      = "options:"
 	horizontalLine     = "---"
 
 	sectionLevelOne   = "* "

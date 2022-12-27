@@ -42,12 +42,8 @@ func (e ExporterHTML) Export() string {
 	}
 
 	// Add the red tomb to the last paragraph on given directories
-	// from the config
-	for _, tombPage := range emilia.Config.Website.Tombs {
-		if strings.HasPrefix(string(e.page.Location), string(tombPage)) {
-			e.addTomb()
-			break
-		}
+	if e.page.Accoutrement.Tomb {
+		e.addTomb()
 	}
 	// Build the HTML (string) representation of each content
 	content := make([]string, e.contentsNum)
@@ -128,7 +124,7 @@ func (e ExporterHTML) authorHeader() string {
 <span id="author" class="author">%s</span><br>
 <span id="email" class="email">%s</span><br>
 `,
-		authorImage(), processTitle(e.page.Title),
+		authorImage(e.page.Accoutrement.AuthorImage), processTitle(e.page.Title),
 		emilia.Config.Author.Name, emilia.Config.Author.Email,
 	)
 	content += `<span id="revdate">` + "\n"
@@ -163,9 +159,9 @@ func (e ExporterHTML) authorHeader() string {
 }
 
 // authorHeader returns img element if author header image is given.
-func authorImage() string {
-	// Return nothing if it's not provided
-	if emilia.Config.Author.Image == "" {
+func authorImage(enabled bool) string {
+	// Return nothing if it's not provided.
+	if emilia.Config.Author.Image == "" || !enabled {
 		return ""
 	}
 	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`,

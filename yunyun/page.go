@@ -29,6 +29,8 @@ type Page struct {
 	Stylesheets []string
 	// ExtraHead is the list of extra HTML declaration to add in the head.
 	ExtraHead []string
+	// Accoutrement are additional options enabled on a page.
+	Accoutrement *Accoutrement
 }
 
 // MetaTag is a struct for holding the meta tag.
