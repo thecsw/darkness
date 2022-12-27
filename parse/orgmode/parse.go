@@ -58,8 +58,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	// optionsStrings will get populated as the page is being scanned
 	// and then parsed out before leaving this parser.
 	optionsStrings := ""
-	emilia.InitializeAccoutrement(page)
-	defer emilia.FillAccoutrement(&optionsStrings, page.Accoutrement)
+	defer emilia.FillAccoutrement(&optionsStrings, page)
 
 	// Optional parsing to see if H.E. has been left on the first line
 	// as the date
