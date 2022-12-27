@@ -27,8 +27,8 @@ type Page struct {
 	Scripts []string
 	// Stylesheets is the list of css of the page.
 	Stylesheets []string
-	// ExtraHead is the list of extra HTML declaration to add in the head.
-	ExtraHead []string
+	// HtmlHead is the list of extra HTML declaration to add in the head.
+	HtmlHead []string
 	// Accoutrement are additional options enabled on a page.
 	Accoutrement *Accoutrement
 }

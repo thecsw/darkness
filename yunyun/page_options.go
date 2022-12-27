@@ -24,7 +24,7 @@ func NewPage(options ...PageOption) *Page {
 		Footnotes:     []string{},
 		Scripts:       []string{},
 		Stylesheets:   []string{},
-		ExtraHead:     []string{},
+		HtmlHead:      []string{},
 		Accoutrement:  &Accoutrement{},
 	}
 	return p.Options(options...)

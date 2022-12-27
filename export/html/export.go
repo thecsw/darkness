@@ -80,7 +80,7 @@ func (e ExporterHTML) Export() string {
 </html>`,
 		darknessBanner, e.linkTags(), e.metaTags(), e.styleTags(),
 		e.scriptTags(),
-		strings.Join(append(emilia.Config.Website.ExtraHead, e.page.ExtraHead...), "\n"),
+		strings.Join(append(emilia.Config.Website.ExtraHead, e.page.HtmlHead...), "\n"),
 		processTitle(flattenFormatting(e.page.Title)), e.authorHeader(),
 		strings.Join(content, ""), e.addFootnotes(),
 	)

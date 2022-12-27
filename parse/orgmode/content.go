@@ -160,9 +160,9 @@ func extractDetailsSummary(line string) string {
 	return extractOptionLabel(line, optionBeginDetails)
 }
 
-// extractExtraHead extracts the html to inject in the head, like custom CSS.
-func extractExtraHead(line string) string {
-	return extractOptionLabel(line, optionExtraHead)
+// extractHtmlHead extracts the html to inject in the head, like custom CSS.
+func extractHtmlHead(line string) string {
+	return extractOptionLabel(line, optionHtmlHead)
 }
 
 // extractOptions extracts the line of options.
