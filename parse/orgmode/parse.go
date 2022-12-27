@@ -62,7 +62,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 
 	// Optional parsing to see if H.E. has been left on the first line
 	// as the date
-	fillHolosceneDate(page)
+	defer fillHolosceneDate(page)
 
 	addFlag, removeFlag, flipFlag, hasFlag := yunyun.LatchFlags(&currentFlags)
 	// addContent is a helper function to add content to the page
