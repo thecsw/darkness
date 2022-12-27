@@ -39,12 +39,12 @@ func InitializeAccoutrement(page *yunyun.Page) {
 
 // FillAccoutrement parses `options` and fills the `target`.
 func FillAccoutrement(options *string, page *yunyun.Page) {
+	// Let's first initialize it before filling.
+	InitializeAccoutrement(page)
 	// Exit immediately if it's an empty string.
 	if len(*options) < 1 {
 		return
 	}
-	// Let's first initialize it before filling.
-	InitializeAccoutrement(page)
 	for _, option := range strings.Split(*options, " ") {
 		elements := strings.SplitN(option, ":", 2)
 		key := gana.First(elements)
