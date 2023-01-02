@@ -10,6 +10,9 @@ import (
 // main is the entry point for the program.
 func main() {
 	// defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
+	// defer profile.Start(profile.ClockProfile, profile.ProfilePath(".")).Stop()
+	// defer profile.Start(profile.GoroutineProfile, profile.ProfilePath(".")).Stop()
+	// defer profile.Start(profile.MutexProfile, profile.ProfilePath(".")).Stop()
 	// defer profile.Start(profile.MemProfile, profile.MemProfileRate(1), profile.ProfilePath(".")).Stop()
 
 	// Darkness needs something, if nothing given, then show help.
