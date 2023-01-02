@@ -84,11 +84,10 @@ func accoutrementExcludeHtmlScript(what string, target *yunyun.Accoutrement) {
 }
 
 func accoutrementBool(what string, target *yunyun.AccoutrementFlip) {
-	cleaned := strings.TrimSpace(what)
-	if cleaned == enableOption {
+	switch strings.TrimSpace(what) {
+	case enableOption:
 		target.Enable()
-	}
-	if cleaned == disableOption {
+	case disableOption:
 		target.Disable()
 	}
 }
