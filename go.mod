@@ -6,6 +6,8 @@ require github.com/BurntSushi/toml v1.2.1
 
 require (
 	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
+	github.com/felixge/fgprof v0.9.3 // indirect
+	github.com/google/pprof v0.0.0-20211214055906-6f57359322fd // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
@@ -24,5 +26,6 @@ require (
 	github.com/fsnotify/fsnotify v1.6.0
 	github.com/karrick/godirwalk v1.17.0
 	github.com/pkg/errors v0.9.1
+	github.com/pkg/profile v1.7.0
 	github.com/thecsw/gana v0.0.0-20221119221619-ec55f13e6a5d
 )

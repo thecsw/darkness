@@ -29,6 +29,11 @@ func (e ExcludeHtmlHeadContains) ShouldExclude(what string) bool {
 	return false
 }
 
+// ShouldExclude returns true if the passed html head element should be excluded.
+func (e ExcludeHtmlHeadContains) ShouldKeep(what string) bool {
+	return !e.ShouldExclude(what)
+}
+
 // AccoutrementFlip holds the state of the flag: default, set, unset.
 type AccoutrementFlip uint8
 

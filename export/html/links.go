@@ -2,7 +2,6 @@ package html
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
@@ -22,12 +21,12 @@ func linkTag(val rel) string {
 }
 
 // linkTags returns a string of the form <link rel="..." href="..." /> for an entire page
-func (e ExporterHTML) linkTags() string {
-	return strings.Join(gana.Map(linkTag, []rel{
+func (e ExporterHTML) linkTags() []string {
+	return gana.Map(linkTag, []rel{
 		{"canonical", emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathFile](e.page.Location), ""},
 		{"shortcut icon", emilia.JoinPath("assets/favicon.ico"), "image/x-icon"},
 		{"apple-touch-icon", emilia.JoinPath("assets/apple-touch-icon.png"), "image/png"},
 		{"image_src", emilia.JoinPath("assets/android-chrome-512x512.png"), "image/png"},
 		{"icon", emilia.JoinPath("assets/favicon.ico"), ""},
-	}), "\n")
+	})
 }

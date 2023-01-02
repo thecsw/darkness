@@ -10,6 +10,7 @@ import (
 
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/gana"
 )
 
 const (
@@ -57,32 +58,21 @@ func (e ExporterHTML) Export() string {
 	return fmt.Sprintf(`%s<!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Links -->
 %s
-<!-- Meta -->
-%s
-<!-- Styling -->
-%s
-<!-- Scripts -->
-%s
-<!-- Extra -->
-%s
-<!-- Title -->
 <title>%s</title>
 </head>
 <body class="article">
-<!-- Header -->
 %s
-<!-- Content -->
 %s
-<!-- Footnotes -->
 %s
 </body>
 </html>`,
-		darknessBanner, e.linkTags(), e.metaTags(), e.styleTags(),
-		e.scriptTags(), e.htmlHead(),
-		processTitle(flattenFormatting(e.page.Title)), e.authorHeader(),
-		strings.Join(content, ""), e.addFootnotes(),
+		darknessBanner,
+		e.combineAndFilterHtmlHead(),
+		processTitle(flattenFormatting(e.page.Title)),
+		e.authorHeader(),
+		strings.Join(content, ""),
+		e.addFootnotes(),
 	)
 }
 
@@ -91,28 +81,27 @@ func (e *ExporterHTML) leftHeading() {
 	e.inHeading = false
 }
 
-// htmlHead builds the HTML head by also excluding any user-defined contains rules.
-func (e ExporterHTML) htmlHead() string {
-	htmlHeadElements := ""
-	for _, v := range append(emilia.Config.Website.ExtraHead, e.page.HtmlHead...) {
-		if e.page.Accoutrement.ExcludeHtmlHeadContains.ShouldExclude(v) {
-			continue
-		}
-		htmlHeadElements += v + "\n"
+func (e ExporterHTML) combineAndFilterHtmlHead() string {
+	// Build the array of all head elements (except page's specific head options).
+	allHead := [][]string{e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags(), emilia.Config.Website.ExtraHead}
+	// Go through all the head elements and filter them out depending on page's specific exclusion rules.
+	finalHead := ""
+	for _, head := range allHead {
+		finalHead += strings.Join(gana.Filter(e.page.Accoutrement.ExcludeHtmlHeadContains.ShouldKeep, head), "\n")
 	}
-	return htmlHeadElements
+	// Page's specific html head elements are not filtered out.
+	return finalHead + strings.Join(e.page.HtmlHead, "\n")
 }
 
 // styleTags is the processed style tags.
-func (e ExporterHTML) styleTags() string {
+func (e ExporterHTML) styleTags() []string {
 	content := make([]string, len(emilia.Config.Website.Styles)+len(e.page.Stylesheets))
 	for i, style := range emilia.Config.Website.Styles {
 		content[i] = fmt.Sprintf(
 			`<link rel="stylesheet" type="text/css" href="%s">`+"\n", emilia.JoinPath(style),
 		)
 	}
-	content = append(content, e.page.Stylesheets...)
-	return strings.Join(content, "")
+	return append(content, e.page.Stylesheets...)
 }
 
 // defaultScripts are the default scripts.
@@ -122,9 +111,8 @@ var defaultScripts = []string{
 }
 
 // scriptTags returns the script tags.
-func (e ExporterHTML) scriptTags() string {
-	allScripts := append(defaultScripts, e.page.Scripts...)
-	return strings.Join(allScripts, "\n")
+func (e ExporterHTML) scriptTags() []string {
+	return append(defaultScripts, e.page.Scripts...)
 }
 
 // authorHeader returns the author header.

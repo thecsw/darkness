@@ -12,7 +12,7 @@ import (
 )
 
 // metaTopTag is the top tag for all meta tags
-func (e ExporterHTML) metaTags() string {
+func (e ExporterHTML) metaTags() []string {
 	// Find the first paragraph for description
 	description := ""
 	for _, content := range e.page.Contents {
@@ -29,11 +29,16 @@ func (e ExporterHTML) metaTags() string {
 			paragraph[:gana.Min(len(paragraph), emilia.Config.Website.DescriptionLength)]) + "..."
 		break
 	}
-	tags := make([]string, 3)
-	tags[0] = addBasic(e.page, description)
-	tags[1] = addOpenGraph(e.page, description)
-	tags[2] = addTwitterMeta(e.page, description)
-	return strings.Join(tags, "")
+	basic := addBasic(e.page, description)
+	openGraph := addOpenGraph(e.page, description)
+	twitter := addTwitterMeta(e.page, description)
+
+	metas := make([]string, 0, len(basic)+len(openGraph)+len(twitter))
+	metas = append(metas, basic...)
+	metas = append(metas, openGraph...)
+	metas = append(metas, twitter...)
+
+	return metas
 }
 
 // meta is a struct for meta tags
@@ -51,24 +56,28 @@ func metaTag(val meta) string {
 	)
 }
 
-// metaTopTag is the top tag for all meta tags
-const metaTopTag = `<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">`
+var (
+	// metaTopTag is the top tag for all meta tags
+	metaTopTag = []string{
+		`<meta charset="UTF-8">`,
+		`<meta http-equiv="X-UA-Compatible" content="IE=edge">`,
+	}
+)
 
 // addBasic adds the basic meta tags
-func addBasic(page *yunyun.Page, description string) string {
-	return metaTopTag + "\n" + strings.Join(gana.Map(metaTag, []meta{
+func addBasic(page *yunyun.Page, description string) []string {
+	return append(metaTopTag, gana.Map(metaTag, []meta{
 		{"viewport", "viewport", "width=device-width, initial-scale=1.0"},
 		{"generator", "generator", "Darkness"},
 		{"author", "author", emilia.Config.Author.Name},
 		{"date", "date", page.Date},
 		{"theme-color", "theme-color", emilia.Config.Website.Color},
-		{"description", "description", html.EscapeString(description)}}), "\n")
+		{"description", "description", html.EscapeString(description)}})...)
 }
 
 // addOpenGraph adds the opengraph preview meta tags
-func addOpenGraph(page *yunyun.Page, description string) string {
-	return "\n" + strings.Join(gana.Map(metaTag, []meta{
+func addOpenGraph(page *yunyun.Page, description string) []string {
+	return gana.Map(metaTag, []meta{
 		{"og:title", "og:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"og:site_name", "og:site_name", html.EscapeString(emilia.Config.Title)},
 		{"og:url", "og:url", string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](page.Location))},
@@ -79,17 +88,17 @@ func addOpenGraph(page *yunyun.Page, description string) string {
 		{"og:image:type", "og:image:type", "image/" + strings.TrimLeft(filepath.Ext(string(emilia.Config.Website.Preview)), ".")},
 		{"og:image:width", "og:image:width", "1280"},
 		{"og:image:height", "og:image:height", "640"},
-		{"og:description", "og:description", html.EscapeString(description)}}), "\n")
+		{"og:description", "og:description", html.EscapeString(description)}})
 }
 
 // addTwitterMeta adds the twitter preview meta tags
-func addTwitterMeta(page *yunyun.Page, description string) string {
-	return "\n" + strings.Join(gana.Map(metaTag, []meta{
+func addTwitterMeta(page *yunyun.Page, description string) []string {
+	return gana.Map(metaTag, []meta{
 		{"twitter:card", "twitter:card", "summary_large_image"},
 		{"twitter:site", "twitter:site", html.EscapeString(emilia.Config.Title)},
 		{"twitter:creator", "twitter:creator", emilia.Config.Website.Twitter},
 		{"twitter:image:src", "twitter:image:src", string(emilia.JoinPath(yunyun.JoinRelativePaths(page.Location, emilia.Config.Website.Preview)))},
 		{"twitter:url", "twitter:url", string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](page.Location))},
 		{"twitter:title", "twitter:title", html.EscapeString(flattenFormatting(page.Title))},
-		{"twitter:description", "twitter:description", html.EscapeString(description)}}), "\n")
+		{"twitter:description", "twitter:description", html.EscapeString(description)}})
 }
