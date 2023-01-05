@@ -1,7 +1,9 @@
 package ichika
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"io/fs"
 	"io/ioutil"
 	"os"
@@ -9,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
@@ -79,8 +82,8 @@ func build() {
 	}, customNumWorkers, customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
-	results := gana.GenericWorkers(pages, func(v *yunyun.Page) gana.Tuple[string, string] {
-		return gana.NewTuple(emilia.InputFilenameToOutput(emilia.JoinWorkdir(v.File)), emilia.EnrichAndExportPage(v))
+	results := gana.GenericWorkers(pages, func(v *yunyun.Page) gana.Tuple[string, *bufio.Reader] {
+		return gana.NewTuple(emilia.InputFilenameToOutput(emilia.JoinWorkdir(v.File)), emilia.EnrichExportPageAsBufio(v))
 	}, customNumWorkers, customChannelCapacity)
 
 	// This will block darkness from exiting until all the files are done.
@@ -99,8 +102,8 @@ func build() {
 	// save it at the right spot, marking itself Done and leaving.
 	go func(wg *sync.WaitGroup) {
 		for result := range results {
-			if err := os.WriteFile(result.First, []byte(result.Second), savePerms); err != nil {
-				fmt.Printf("failed to write %s: %s", result.First, err.Error())
+			if _, err := writeFile(result.First, result.Second); err != nil {
+				fmt.Println("writing file:", err.Error())
 			}
 			wg.Done()
 		}
@@ -113,4 +116,20 @@ func build() {
 
 	// Report back on some of the results
 	fmt.Printf("Processed %d files in %d ms\n", emilia.NumFoundFiles, time.Since(start).Milliseconds())
+}
+
+// writeFile takes a filename and a bufio reader and writes it.
+func writeFile(filename string, reader *bufio.Reader) (int64, error) {
+	target, err := os.Create(filename)
+	if err != nil {
+		return -1, errors.Wrap(err, "failed to create "+filename)
+	}
+	written, err := io.Copy(target, reader)
+	if err != nil {
+		return -1, errors.Wrap(err, "failed to copy to "+filename)
+	}
+	if target.Close() != nil {
+		return -1, errors.Wrap(err, "failed to close "+filename)
+	}
+	return written, nil
 }

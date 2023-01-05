@@ -1,6 +1,8 @@
 package emilia
 
 import (
+	"bufio"
+	"bytes"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -8,18 +10,16 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
-// EnrichAndExportPage automatically applies all the emilia enhancements
+// EnrichExportPage automatically applies all the emilia enhancements
 // and converts Page into an html document.
-func EnrichAndExportPage(page *yunyun.Page) string {
-	result := AddHolosceneTitles(
-		ExporterBuilder.BuildExporter(EnrichPage(page)).Export(),
-		func() int {
-			if strings.HasSuffix(string(page.Location), "quotes") {
-				return -1
-			}
-			return 1
-		}())
-	return result
+func EnrichExportPage(page *yunyun.Page) string {
+	return ExporterBuilder.BuildExporter(EnrichPage(page)).Export()
+}
+
+// EnrichExportPageAsBufio is the same as `EnrichExportPage` but returns a
+// bufio-based buffered reader.
+func EnrichExportPageAsBufio(page *yunyun.Page) *bufio.Reader {
+	return bufio.NewReader(bytes.NewBufferString(EnrichExportPage(page)))
 }
 
 // EnrichPage applies common emilia enhancements.
@@ -49,5 +49,5 @@ func InputToOutput(file yunyun.FullPathFile) string {
 		panic(err)
 	}
 	page := ParserBuilder.BuildParser(Pack(file, string(data))).Parse()
-	return EnrichAndExportPage(EnrichPage(page))
+	return EnrichExportPage(EnrichPage(page))
 }
