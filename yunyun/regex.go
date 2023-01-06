@@ -179,7 +179,7 @@ const (
 	// darknessPunctLeft is our alternative to [[:punct:]] re2
 	// class for matching left punctuation symbols.
 	darknessPunctLeft = `[ ()\[\]_%>“”]`
-	// darknessPunctRight is our altornative to [[:punct:]] re2
+	// darknessPunctRight is our alternative to [[:punct:]] re2
 	// class for matching right punctuation symbols.
 	darknessPunctRight = `[ ()\[\],.!?:;&_%<“”]`
 )
