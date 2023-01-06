@@ -13,6 +13,7 @@ func MisaCommandFunc() {
 
 	buildGalleryPreviews := misaCmd.Bool("gallery-previews", false, "build gallery previews")
 	removeGalleryPreviews := misaCmd.Bool("no-gallery-previews", false, "delete gallery previews")
+	addHolosceneTitles := misaCmd.Bool("holoscene-titles", false, "add holoscene titles")
 	dryRun := misaCmd.Bool("dry-run", false, "skip writing files (but do the reading)")
 
 	options := getEmiliaOptions(misaCmd)
@@ -21,12 +22,15 @@ func MisaCommandFunc() {
 
 	if *buildGalleryPreviews {
 		buildGalleryFiles(*dryRun)
-		return
 	}
 	if *removeGalleryPreviews {
-		removeGalleryFiles()
-		return
+		removeGalleryFiles(*dryRun)
+	}
+	if *addHolosceneTitles {
+		updateHolosceneTitles(*dryRun)
 	}
 
-	fmt.Println("I don't know what you want me to do, see -help")
+	if misaCmd.NFlag() == 0 {
+		fmt.Println("I don't know what you want me to do, see -help")
+	}
 }

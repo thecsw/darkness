@@ -86,11 +86,19 @@ func resizeAndBlur(img image.Image) (*image.NRGBA, error) {
 	return blurred, nil
 }
 
+func dryRemove(val string) error {
+	return nil
+}
+
 // removeGalleryFiles removes all generate gallery previews.
-func removeGalleryFiles() {
+func removeGalleryFiles(dryRun bool) {
+	removeFunc := os.Remove
+	if dryRun {
+		removeFunc = dryRemove
+	}
 	for _, galleryFile := range getGalleryFiles() {
 		newFile := emilia.GalleryPreview(galleryFile)
-		if err := os.Remove(string(newFile)); err != nil && !os.IsNotExist(err) {
+		if err := removeFunc(string(newFile)); err != nil && !os.IsNotExist(err) {
 			fmt.Println("Couldn't delete", newFile, "| reason:", err.Error())
 		}
 	}
