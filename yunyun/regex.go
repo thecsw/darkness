@@ -176,7 +176,7 @@ func RemoveFormatting(what string) string {
 }
 
 const (
-	// darknessPunctLeft is our altornative to [[:punct:]] re2
+	// darknessPunctLeft is our alternative to [[:punct:]] re2
 	// class for matching left punctuation symbols.
 	darknessPunctLeft = `[ ()\[\]_%>“”]`
 	// darknessPunctRight is our altornative to [[:punct:]] re2
