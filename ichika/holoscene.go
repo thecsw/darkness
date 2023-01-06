@@ -68,12 +68,6 @@ func updateHolosceneTitles(dryRun bool) {
 			continue
 		}
 
-		if len(newOutput) == len(string(output)) {
-			fmt.Printf("Skipping %s (no changes)\n", filename)
-			file.Close()
-			continue
-		}
-
 		written, err := io.Copy(file, strings.NewReader(newOutput))
 		if err := file.Close(); err != nil {
 			fmt.Printf("Failed to close (2) %s: %s\n",
