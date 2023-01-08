@@ -1,11 +1,16 @@
 package parse
 
-import "github.com/thecsw/darkness/yunyun"
+import (
+	"io"
+
+	"github.com/thecsw/darkness/yunyun"
+)
 
 type ParserBuilder interface {
 	// WithFilenameData returns a new `Parser` object with
 	// filename and data set.
 	BuildParser(yunyun.RelativePathFile, string) Parser
+	BuildParserReader(yunyun.RelativePathFile, io.ReadCloser) Parser
 }
 
 // Parser is an interface used to define import packages,

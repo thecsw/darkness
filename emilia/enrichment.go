@@ -37,9 +37,7 @@ func EnrichPage(page *yunyun.Page) *yunyun.Page {
 
 // InputFilenameToOutput converts input filename to the filename to write.
 func InputFilenameToOutput(file yunyun.FullPathFile) string {
-	outputFilename := strings.Replace(filepath.Base(string(file)),
-		Config.Project.Input, Config.Project.Output, 1)
-	return filepath.Join(filepath.Dir(string(file)), outputFilename)
+	return strings.Replace(string(file), Config.Project.Input, Config.Project.Output, 1)
 }
 
 // InputToOutput converts a single input file to its output.

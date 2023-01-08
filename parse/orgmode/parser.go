@@ -1,6 +1,9 @@
 package orgmode
 
 import (
+	"bufio"
+	"io"
+
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 )
@@ -23,5 +26,17 @@ func (ParserOrgmodeBuilder) BuildParser(
 	return &ParserOrgmode{
 		Filename: filename,
 		Data:     data,
+	}
+}
+
+// BuildParserReader is the `BuildParser` but takes a reader instead.
+func (ParserOrgmodeBuilder) BuildParserReader(
+	filename yunyun.RelativePathFile, reader io.ReadCloser,
+) parse.Parser {
+	data, _ := io.ReadAll(bufio.NewReader(reader))
+	reader.Close()
+	return &ParserOrgmode{
+		Filename: filename,
+		Data:     string(data),
 	}
 }

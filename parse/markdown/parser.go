@@ -1,6 +1,9 @@
 package markdown
 
 import (
+	"bufio"
+	"io"
+
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 )
@@ -23,5 +26,15 @@ func (ParserMarkdownBuilder) BuildParser(
 	return &ParserMarkdown{
 		Filename: filename,
 		Data:     data,
+	}
+}
+func (ParserMarkdownBuilder) BuildParserReader(
+	filename yunyun.RelativePathFile, reader io.ReadCloser,
+) parse.Parser {
+	data, _ := io.ReadAll(bufio.NewReader(reader))
+	reader.Close()
+	return &ParserMarkdown{
+		Filename: filename,
+		Data:     string(data),
 	}
 }

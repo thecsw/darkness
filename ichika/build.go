@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"sync"
@@ -68,17 +68,13 @@ func build() {
 	inputFilenames := make(chan yunyun.FullPathFile, customChannelCapacity)
 
 	// Create the worker that will read files and push tuples.
-	inputFiles := gana.GenericWorkers(inputFilenames, func(v yunyun.FullPathFile) gana.Tuple[yunyun.FullPathFile, string] {
-		data, err := ioutil.ReadFile(filepath.Clean(string(v)))
-		if err != nil {
-			fmt.Printf("Failed to open %s: %s\n", v, err.Error())
-		}
-		return gana.NewTuple(v, string(data))
+	inputFiles := gana.GenericWorkers(inputFilenames, func(v yunyun.FullPathFile) gana.Tuple[yunyun.FullPathFile, *os.File] {
+		return openFile(v)
 	}, 1, customChannelCapacity)
 
 	// Create the workers for parsing and converting orgmode to Page.
-	pages := gana.GenericWorkers(inputFiles, func(v gana.Tuple[yunyun.FullPathFile, string]) *yunyun.Page {
-		return emilia.ParserBuilder.BuildParser(emilia.PackRef(v.UnpackRef())).Parse()
+	pages := gana.GenericWorkers(inputFiles, func(v gana.Tuple[yunyun.FullPathFile, *os.File]) *yunyun.Page {
+		return emilia.ParserBuilder.BuildParserReader(emilia.RelPathToWorkdir(v.First), v.Second).Parse()
 	}, customNumWorkers, customChannelCapacity)
 
 	// Create the workers for building Page's into html documents.
@@ -132,4 +128,14 @@ func writeFile(filename string, reader *bufio.Reader) (int64, error) {
 		return -1, errors.Wrap(err, "failed to close "+filename)
 	}
 	return written, nil
+}
+
+// openFile attemps to open the full path and return tuple, empty tuple otherwise.
+func openFile(v yunyun.FullPathFile) gana.Tuple[yunyun.FullPathFile, *os.File] {
+	file, err := os.Open(filepath.Clean(string(v)))
+	if err != nil {
+		log.Printf("failed to open %s: %s\n", v, err)
+		return gana.NewTuple[yunyun.FullPathFile, *os.File]("", nil)
+	}
+	return gana.NewTuple(v, file)
 }

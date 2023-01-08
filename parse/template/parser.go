@@ -1,6 +1,9 @@
 package template
 
 import (
+	"bufio"
+	"io"
+
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 )
@@ -23,5 +26,16 @@ func (ParserTemplateBuilder) BuildParser(
 	return &ParserTemplate{
 		Filename: filename,
 		Data:     data,
+	}
+}
+
+func (ParserTemplateBuilder) BuildParserReader(
+	filename yunyun.RelativePathFile, reader io.ReadCloser,
+) parse.Parser {
+	data, _ := io.ReadAll(bufio.NewReader(reader))
+	reader.Close()
+	return &ParserTemplate{
+		Filename: filename,
+		Data:     string(data),
 	}
 }
