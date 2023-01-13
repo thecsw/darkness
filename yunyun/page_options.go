@@ -20,13 +20,13 @@ func NewPage(options ...PageOption) *Page {
 		Date:          defaultDate,
 		DateHoloscene: defaulteDateHoloscene,
 		Location:      defaultURL,
-		Contents:      Contents{},
-		Footnotes:     []string{},
-		Scripts:       []string{},
-		Stylesheets:   []string{},
-		HtmlHead:      []string{},
+		Contents:      nil,
+		Footnotes:     make([]string, 0, 2),
+		Scripts:       make([]string, 0, 4),
+		Stylesheets:   make([]string, 0, 2),
+		HtmlHead:      make([]string, 0, 2),
 		Accoutrement: &Accoutrement{
-			ExcludeHtmlHeadContains: ExcludeHtmlHeadContains{},
+			ExcludeHtmlHeadContains: make([]string, 0, 2),
 		},
 	}
 	return p.Options(options...)

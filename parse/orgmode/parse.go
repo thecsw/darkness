@@ -37,7 +37,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	page := yunyun.NewPage(
 		yunyun.WithFilename(p.Filename),
 		yunyun.WithLocation(yunyun.RelativePathTrim(p.Filename)),
-		yunyun.WithContents(make([]*yunyun.Content, 0, 16)),
+		yunyun.WithContents(make([]*yunyun.Content, 0, 32)),
 	)
 
 	// currentFlags uses flags to set options
