@@ -66,7 +66,6 @@ Sorry, your browser doesn't support embedded videos.
 	spotifyTrackEmbedTemplate = `
 <div class="media">
 <iframe src="https://open.spotify.com/embed/track/%s" width="69%%" height="80" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-<hr>
 </div>`
 
 	// spotifyPlaylistEmbedPrefix is the prefix for spotify playlist embeds.
@@ -75,7 +74,6 @@ Sorry, your browser doesn't support embedded videos.
 	spotifyPlaylistEmbedTemplate = `
 <div class="media">
 <iframe src="https://open.spotify.com/embed/playlist/%s" width="69%%" height="550" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
-<hr>
 </div>`
 )
 
