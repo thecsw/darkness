@@ -86,6 +86,10 @@ func rssf(dryRun bool) {
 		fmt.Printf("failed to encode %s: %s\n", rssXMLFilename, err)
 		os.Exit(1)
 	}
+	if err := feedXml.Close(); err != nil {
+		fmt.Printf("failed to close %s: %s", rssXMLFilename, err)
+		os.Exit(1)
+	}
 	fmt.Printf("Created rss file in %s\n", rssXMLFilename)
 }
 
