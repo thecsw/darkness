@@ -110,6 +110,7 @@ func (p Pages) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 // Less sorts the array in descending order.
 func (p Pages) Less(i, j int) bool { return getDate(p[i]).Unix() > getDate(p[j]).Unix() }
 
+// Will return a slice of built pages.
 func rssParseout() Pages {
 	inputs := emilia.FindFilesByExtSimple(emilia.Config.Project.Input)
 	pages := make([]*yunyun.Page, 0, len(inputs))

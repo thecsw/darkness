@@ -26,13 +26,13 @@ type Image struct {
 
 	// Optional elements include <width> and <height>, numbers,
 	// indicating the width and height of the image in pixels.
-	Width int `xml:"width"`
+	Width int `xml:"width,omitempty"`
 
 	// Optional elements include <width> and <height>, numbers,
 	// indicating the width and height of the image in pixels.
-	Height int `xml:"height"`
+	Height int `xml:"height,omitempty"`
 
 	// Contains text that is included in the TITLE attribute of the
 	// link formed around the image in the HTML rendering.
-	Description string `xml:"description"`
+	Description string `xml:"description,omitempty"`
 }

@@ -23,7 +23,7 @@ type Item struct {
 	// The URL of the item.
 	//
 	// Example: "http://nytimes.com/2004/12/07FEST.html"
-	Link string `xml:"link"`
+	Link string `xml:"link,omitempty"`
 
 	// The item synopsis.
 	//
@@ -41,7 +41,7 @@ type Item struct {
 	// author of the item might be different from the managing editor or webmaster.
 	// For a weblog authored by a single individual it would make sense to omit the
 	// <author> element.
-	Author string `xml:"author"`
+	Author string `xml:"author,omitempty"`
 
 	// It has one optional attribute, domain, a string that identifies
 	// a categorization taxonomy.
@@ -57,7 +57,7 @@ type Item struct {
 	// You may include as many category elements as you need to, for different
 	// domains, and to have an item cross-referenced in different parts of the
 	// same domain.
-	Category *Category `xml:"category"`
+	Category *Category `xml:"category,omitempty"`
 
 	// URL of a page for comments relating to the item. If present, it is the
 	// url of the comments page for the item.
@@ -65,10 +65,10 @@ type Item struct {
 	// Example: "<comments>http://ekzemplo.com/entry/4403/comments</comments>"
 	//
 	// See more: https://www.rssboard.org/rss-weblog-comments-use-case
-	Comments string `xml:"comments"`
+	Comments string `xml:"comments,omitempty"`
 
 	// Describes a media object that is attached to the item.
-	Enclosure *Enclosure `xml:"enclosure"`
+	Enclosure *Enclosure `xml:"enclosure,omitempty"`
 
 	// A string that uniquely identifies the item.
 	//
@@ -77,12 +77,12 @@ type Item struct {
 	// choose to use this string to determine if an item is new.
 	//
 	// Example: "<guid>http://some.server.com/weblogItem3207</guid>"
-	Guid *Guid `xml:"guid"`
+	Guid *Guid `xml:"guid,omitempty"`
 
 	// Its value is a date, indicating when the item was published. If
 	// it's a date in the future, aggregators may choose to not display
 	// the item until that date.
-	PubDate string `xml:"pubDate"`
+	PubDate string `xml:"pubDate,omitempty"`
 
 	// The RSS channel that the item came from.
 	//
@@ -94,5 +94,5 @@ type Item struct {
 	// publicize the sources of news items. It can be used in the Post
 	// command of an aggregator. It should be generated automatically when
 	// forwarding an item from an aggregator to a weblog authoring tool.
-	Source *Source `xml:"source"`
+	Source *Source `xml:"source,omitempty"`
 }
