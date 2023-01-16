@@ -10,7 +10,7 @@ const (
 	RSSVersion = "2.0"
 
 	// The date format used in RSS spec.
-	RSSFormat = time.RFC1123Z
+	RSSFormat = time.RFC1123
 
 	// The RSS spec implemented.
 	RSSDocs = "https://www.rssboard.org/rss-specification"
