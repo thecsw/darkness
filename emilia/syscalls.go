@@ -11,7 +11,7 @@ func FileExists(path string) bool {
 // Mkdir creates a directory and reports fatal errors.
 func Mkdir(path string) error {
 	// Make sure that the vendor directory exists.
-	err := os.Mkdir(string(path), 0755)
+	err := os.Mkdir(string(path), 0750)
 	// If we couldn't create the vendor directory and it doesn't
 	// exist, then turn off the vendor option.
 	if err != nil && !os.IsExist(err) {

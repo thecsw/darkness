@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -76,21 +77,22 @@ func rssf(dryRun bool) {
 		},
 	}
 
-	feedXml, err := os.Create(string(emilia.JoinWorkdir(rssXMLFilename)))
+	xmlTarget := string(emilia.JoinWorkdir(rssXMLFilename))
+	feedXml, err := os.Create(filepath.Clean(xmlTarget))
 	if err != nil {
-		fmt.Printf("couldn't create %s: %s\n", rssXMLFilename, err)
+		fmt.Printf("couldn't create %s: %s\n", xmlTarget, err)
 		os.Exit(1)
 	}
 	encoder := xml.NewEncoder(feedXml)
 	if err := encoder.Encode(feed); err != nil {
-		fmt.Printf("failed to encode %s: %s\n", rssXMLFilename, err)
+		fmt.Printf("failed to encode %s: %s\n", xmlTarget, err)
 		os.Exit(1)
 	}
 	if err := feedXml.Close(); err != nil {
-		fmt.Printf("failed to close %s: %s", rssXMLFilename, err)
+		fmt.Printf("failed to close %s: %s", xmlTarget, err)
 		os.Exit(1)
 	}
-	fmt.Printf("Created rss file in %s\n", rssXMLFilename)
+	fmt.Printf("Created rss file in %s\n", xmlTarget)
 }
 
 // getDate takes a page and returns its date if any found.

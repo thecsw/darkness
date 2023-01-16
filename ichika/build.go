@@ -116,7 +116,7 @@ func build() {
 
 // writeFile takes a filename and a bufio reader and writes it.
 func writeFile(filename string, reader *bufio.Reader) (int64, error) {
-	target, err := os.Create(filename)
+	target, err := os.Create(filepath.Clean(filename))
 	if err != nil {
 		return -1, errors.Wrap(err, "failed to create "+filename)
 	}

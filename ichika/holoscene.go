@@ -16,7 +16,7 @@ const (
 
 func updateHolosceneTitles(dryRun bool) {
 	if dryRun {
-		if err := os.Mkdir(holosceneTitlesTempDir, 0755); err != nil {
+		if err := os.Mkdir(holosceneTitlesTempDir, 0750); err != nil {
 			fmt.Printf("Failed to create temp dir: %s", err)
 			os.Exit(1)
 		}
@@ -30,7 +30,7 @@ func updateHolosceneTitles(dryRun bool) {
 
 	actuallyFound := make([]*os.File, 0, len(outputs))
 	for _, v := range outputs {
-		file, err := os.Open(v)
+		file, err := os.Open(filepath.Clean(v))
 		if err != nil {
 			fmt.Printf("Couldn't open %s: %s\n", v, err)
 			continue
@@ -60,7 +60,7 @@ func updateHolosceneTitles(dryRun bool) {
 			file, err = os.CreateTemp(holosceneTitlesTempDir,
 				filepath.Base(filename))
 		} else {
-			file, err = os.Create(filename)
+			file, err = os.Create(filepath.Clean(filename))
 		}
 		if err != nil {
 			fmt.Printf("Failed to overwrite %s: %s\n",

@@ -5,6 +5,7 @@ import (
 	"image"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/disintegration/imaging"
 	"github.com/pkg/errors"
@@ -12,7 +13,7 @@ import (
 
 // OpenImage opens local path image and returns decoded image.
 func OpenImage(path string) (image.Image, error) {
-	file, err := os.Open(path)
+	file, err := os.Open(filepath.Clean(path))
 	if err != nil {
 		return nil, errors.Wrap(err, "OpenImage: opening file "+path)
 	}

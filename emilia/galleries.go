@@ -148,7 +148,7 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 	}
 
 	// Open the file writer and encode the image there.
-	imgFile, err := os.Create(localVendoredPath)
+	imgFile, err := os.Create(filepath.Clean(localVendoredPath))
 	if err != nil {
 		fmt.Printf("Failed to create file %s: %s\n", localVendoredPath, err.Error())
 		return fallbackReturn
