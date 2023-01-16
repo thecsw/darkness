@@ -14,10 +14,13 @@ func MisaCommandFunc() {
 	buildGalleryPreviews := misaCmd.Bool("gallery-previews", false, "build gallery previews")
 	removeGalleryPreviews := misaCmd.Bool("no-gallery-previews", false, "delete gallery previews")
 	addHolosceneTitles := misaCmd.Bool("holoscene-titles", false, "add holoscene titles")
+	rss := misaCmd.Bool("rss", false, "generate rss.xml")
 	dryRun := misaCmd.Bool("dry-run", false, "skip writing files (but do the reading)")
 
 	options := getEmiliaOptions(misaCmd)
-	options.Dev = true
+	if !*rss {
+		options.Dev = true
+	}
 	emilia.InitDarkness(options)
 
 	if *buildGalleryPreviews {
@@ -28,6 +31,9 @@ func MisaCommandFunc() {
 	}
 	if *addHolosceneTitles {
 		updateHolosceneTitles(*dryRun)
+	}
+	if *rss {
+		rssf(*dryRun)
 	}
 
 	if misaCmd.NFlag() == 0 {

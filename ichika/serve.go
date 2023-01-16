@@ -80,7 +80,7 @@ func launchWatcher() {
 					log.Println("stopped watching")
 					return
 				}
-				filename := string(emilia.RelPathToWorkdir(yunyun.FullPathFile(event.Name)))
+				filename := string(emilia.FullPathToWorkDirRel(yunyun.FullPathFile(event.Name)))
 				if strings.HasSuffix(filename, emilia.Config.Project.Output) ||
 					strings.HasPrefix(filepath.Base(filename), `.`) {
 					continue

@@ -34,10 +34,10 @@ func buildGalleryFiles(dryRun bool) {
 		fmt.Printf("[%d/%d] ", i+1, len(galleryFiles))
 		newFile := emilia.GalleryPreview(galleryFile)
 		if emilia.FileExists(string(newFile)) {
-			fmt.Printf("%s already exists\n", emilia.RelPathToWorkdir(newFile))
+			fmt.Printf("%s already exists\n", emilia.FullPathToWorkDirRel(newFile))
 			continue
 		}
-		fmt.Printf("%s... ", emilia.RelPathToWorkdir(newFile))
+		fmt.Printf("%s... ", emilia.FullPathToWorkDirRel(newFile))
 
 		// Mark the processing start time.
 		start := time.Now()

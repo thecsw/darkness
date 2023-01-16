@@ -21,8 +21,10 @@ import (
 var (
 	// Config is the global darkness config.
 	Config *DarknessConfig
+
 	// ParserBuilder returns the parser builder.
 	ParserBuilder parse.ParserBuilder
+
 	// ExporterBuilder returns the exporter builder.
 	ExporterBuilder export.ExporterBuilder
 )
@@ -31,16 +33,22 @@ var (
 type EmiliaOptions struct {
 	// DarknessConfig is the location of darkness's toml config file.
 	DarknessConfig string
+
 	// Dev enables URL generation through local paths.
 	Dev bool
+
 	// Test enables test environment, where darkness config is not needed.
 	Test bool
+
 	// URL is a custom website url, usually used for serving from localhost.
 	URL string
+
 	// OutputExtension overrides whatever is in the file.
 	OutputExtension string
+
 	// WorkDir is the working directory of the darkness project.
 	WorkDir string
+
 	// VendorGalleries dictates whether we should stub in local gallery images.
 	VendorGalleries bool
 }
@@ -143,6 +151,7 @@ func InitDarkness(options *EmiliaOptions) {
 		os.Exit(1)
 	}
 
+	// Work through the vendored galleries.
 	Config.VendorGalleries = options.VendorGalleries
 	if Config.VendorGalleries {
 		cmdColor := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ff50a2"))
@@ -179,6 +188,7 @@ func InitDarkness(options *EmiliaOptions) {
 	InitMathJS()
 }
 
+// JoinPathGeneric joins the target path with the final root path (url or local).
 func JoinPathGeneric[
 	relative yunyun.RelativePath,
 	full yunyun.FullPath,
@@ -189,14 +199,17 @@ func JoinPathGeneric[
 	return full(filepath.Join(append(Config.URLSlice, yunyun.AnyPathsToStrings(what)...)...))
 }
 
+// JoinPath joins the target path with the final root path (url or local).
 func JoinPath(relative ...yunyun.RelativePathFile) yunyun.FullPathFile {
 	return JoinPathGeneric[yunyun.RelativePathFile, yunyun.FullPathFile](relative...)
 }
 
+// JoinWorkdirGeneric joins target path with the working directory.
 func JoinWorkdirGeneric[R yunyun.RelativePath, F yunyun.FullPath](target R) F {
 	return F(filepath.Join(Config.WorkDir, string(target)))
 }
 
+// JoinWorkdir joins target path with the working directory.
 func JoinWorkdir(target yunyun.RelativePathFile) yunyun.FullPathFile {
 	return JoinWorkdirGeneric[yunyun.RelativePathFile, yunyun.FullPathFile](target)
 }
