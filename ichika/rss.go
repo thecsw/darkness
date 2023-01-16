@@ -47,7 +47,7 @@ func rssf(dryRun bool) {
 	for _, page := range pages {
 		items = append(items, &rss.Item{
 			Title:       page.Title,
-			Link:        emilia.Config.URL + "/" + string(page.Location),
+			Link:        emilia.Config.URL + string(page.Location),
 			Description: emilia.GetDescription(page),
 			Guid:        &rss.Guid{Value: emilia.Config.URL + "/" + string(page.Location), IsPermaLink: true},
 			PubDate:     getDate(page).Format(rss.RSSFormat),
