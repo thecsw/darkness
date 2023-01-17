@@ -7,7 +7,7 @@ import (
 	"github.com/thecsw/gana"
 )
 
-func GetDescription(page *yunyun.Page) string {
+func GetDescription(page *yunyun.Page, length int) string {
 	// Find the first paragraph for description
 	description := ""
 	for _, content := range page.Contents {
@@ -20,8 +20,10 @@ func GetDescription(page *yunyun.Page) string {
 		if paragraph == "" || HEregex.MatchString(paragraph) {
 			continue
 		}
-		description = yunyun.RemoveFormatting(
-			paragraph[:gana.Min(len(paragraph), Config.Website.DescriptionLength)]) + "..."
+
+		cleanText := yunyun.RemoveFormatting(paragraph[:gana.Min(len(paragraph), length+10)])
+		description = cleanText[:gana.Max(len(cleanText)-10, 0)]
+
 		break
 	}
 	return description

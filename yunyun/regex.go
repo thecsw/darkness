@@ -170,6 +170,7 @@ func RemoveFormatting(what string) string {
 	for _, source := range SpecialTextMarkups {
 		what = source.ReplaceAllString(what, `$l$text$r`)
 	}
+	what = LinkRegexp.ReplaceAllString(what, `$text ($link)`)
 	what = KeyboardRegexp.ReplaceAllString(what, `$1`)
 	what = NewLineRegexp.ReplaceAllString(what, `$1`)
 	return what

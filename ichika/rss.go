@@ -29,7 +29,7 @@ func rssf(dryRun bool) {
 	topPage := gana.First(gana.Filter(func(page *yunyun.Page) bool { return page.Location == "." }, allPages))
 	rootDescription := emilia.Config.RSS.Description
 	if topPage != nil {
-		rootDescription = emilia.GetDescription(topPage)
+		rootDescription = emilia.GetDescription(topPage, emilia.Config.Website.DescriptionLength*4)
 	}
 	// If both the top page and RSS config have no description, default to the title.
 	if len(rootDescription) < 1 {
@@ -48,8 +48,8 @@ func rssf(dryRun bool) {
 		items = append(items, &rss.Item{
 			Title:       page.Title,
 			Link:        emilia.Config.URL + string(page.Location),
-			Description: emilia.GetDescription(page),
-			Guid:        &rss.Guid{Value: emilia.Config.URL + "/" + string(page.Location), IsPermaLink: true},
+			Description: emilia.GetDescription(page, emilia.Config.Website.DescriptionLength*4),
+			Guid:        &rss.Guid{Value: emilia.Config.URL + string(page.Location), IsPermaLink: true},
 			PubDate:     getDate(page).Format(rss.RSSFormat),
 			Source:      &rss.Source{Value: emilia.Config.Title, URL: emilia.Config.URL},
 		})
@@ -84,6 +84,7 @@ func rssf(dryRun bool) {
 		os.Exit(1)
 	}
 	encoder := xml.NewEncoder(feedXml)
+	encoder.Indent("", "  ")
 	if err := encoder.Encode(feed); err != nil {
 		fmt.Printf("failed to encode %s: %s\n", xmlTarget, err)
 		os.Exit(1)
