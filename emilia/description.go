@@ -22,7 +22,7 @@ func GetDescription(page *yunyun.Page, length int) string {
 		}
 
 		cleanText := yunyun.RemoveFormatting(paragraph[:gana.Min(len(paragraph), length+10)])
-		description = cleanText[:gana.Max(len(cleanText)-10, 0)]
+		description = cleanText[:gana.Max(len(cleanText)-10, 0)] + "..."
 
 		break
 	}
