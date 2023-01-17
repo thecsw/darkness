@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
@@ -44,14 +45,25 @@ func rssf(dryRun bool) {
 
 	// Create RSS items.
 	items := make([]*rss.Item, 0, len(pages))
+
 	for _, page := range pages {
+		categoryName, categoryLocation := page.Title, page.Location
+		if categoryPage := getCategory(page, allPages); categoryPage != nil {
+			categoryName = categoryPage.Title
+			categoryLocation = categoryPage.Location
+		}
+
 		items = append(items, &rss.Item{
 			Title:       page.Title,
 			Link:        emilia.Config.URL + string(page.Location),
 			Description: emilia.GetDescription(page, emilia.Config.Website.DescriptionLength*4),
-			Guid:        &rss.Guid{Value: emilia.Config.URL + string(page.Location), IsPermaLink: true},
-			PubDate:     getDate(page).Format(rss.RSSFormat),
-			Source:      &rss.Source{Value: emilia.Config.Title, URL: emilia.Config.URL},
+			Category: &rss.Category{
+				Value:  categoryName,
+				Domain: emilia.Config.URL + string(categoryLocation),
+			},
+			Guid:    &rss.Guid{Value: emilia.Config.URL + string(page.Location), IsPermaLink: true},
+			PubDate: getDate(page).Format(rss.RSSFormat),
+			Source:  &rss.Source{Value: emilia.Config.Title, URL: emilia.Config.URL},
 		})
 	}
 
@@ -101,6 +113,24 @@ func getDate(page *yunyun.Page) *time.Time {
 	parsed := emilia.ConvertHoloscene(page.Date)
 	if parsed != nil && parsed.Day() != 31 && parsed.Year() != 2000 {
 		return parsed
+	}
+	return nil
+}
+
+var (
+	categoryCache = make(map[string]*yunyun.Page)
+)
+
+func getCategory(page *yunyun.Page, pages Pages) *yunyun.Page {
+	categoryName := strings.TrimSuffix(string(page.Location), "/"+filepath.Base(string(page.Location)))
+	if v, ok := categoryCache[categoryName]; ok {
+		return v
+	}
+	for _, allPage := range pages {
+		if allPage.Location == yunyun.RelativePathDir(categoryName) {
+			categoryCache[categoryName] = allPage
+			return allPage
+		}
 	}
 	return nil
 }
