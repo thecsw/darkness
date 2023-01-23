@@ -115,17 +115,36 @@ func (e ExporterHTML) scriptTags() []string {
 	return append(defaultScripts, e.page.Scripts...)
 }
 
+func rssLink() string {
+	if !emilia.Config.RSS.Enable {
+		return ""
+	}
+	return `<span><a href="/feed.xml" class="rss-link"><img src="/assets/rss.svg" class="rss-icon"></a></span><br>` + "\n"
+}
+
+func authorName() string {
+	if !emilia.Config.Author.NameEnable {
+		return ""
+	}
+	return `<span id="author" class="author">` + emilia.Config.Author.Name + `</span><br>` + "\n"
+}
+
+func authorEmail() string {
+	if !emilia.Config.Author.EmailEnable {
+		return ""
+	}
+	return `<span id="email" class="email">` + emilia.Config.Author.Email + `</span><br>` + "\n"
+}
+
 // authorHeader returns the author header.
 func (e ExporterHTML) authorHeader() string {
 	content := fmt.Sprintf(`
 <div class="header">
 <h1 class="section-1">%s%s</h1>
 <div class="menu">
-<span id="author" class="author">%s</span><br>
-<span id="email" class="email">%s</span><br>
-`,
+%s%s%s`,
 		authorImage(e.page.Accoutrement.AuthorImage), processTitle(e.page.Title),
-		emilia.Config.Author.Name, emilia.Config.Author.Email,
+		rssLink(), authorName(), authorEmail(),
 	)
 	content += `<span id="revdate">` + "\n"
 

@@ -123,8 +123,15 @@ type AuthorConfig struct {
 	// Name is the name of the author
 	Name string `toml:"name"`
 
+	// NameEnable will not show the name in the menu
+	// if disabled, but will use it for metadata.
+	NameEnable bool `toml:"name_enable"`
+
 	// Email is the email of the author
 	Email string `toml:"email"`
+
+	// EmailEnable will hide the email if false.
+	EmailEnable bool `toml:"email_enable"`
 }
 
 // NavigationConfig is the navigation section of the config
@@ -141,6 +148,9 @@ type NavigationConfig struct {
 
 // RSSConfig is for filling out rss stuff.
 type RSSConfig struct {
+	// If true, darkness will add the rss icon to the menu.
+	Enable bool `toml:"enable"`
+
 	// The language the channel is written in. This allows
 	// aggregators to group all Italian language sites, for
 	// example, on a single page. A list of allowable values
