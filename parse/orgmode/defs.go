@@ -24,7 +24,7 @@ const (
 	optionDate         = "date:"
 	optionHtmlHead     = "html_head:"
 	optionOptions      = "options:"
-	horizontalLine     = "---"
+	horizontalLine     = "-----"
 
 	sectionLevelOne   = "* "
 	sectionLevelTwo   = "** "
