@@ -23,7 +23,7 @@ const (
 
 func rssf(dryRun bool) {
 	// Get all all the pages we can build out.
-	allPages := rssParseout()
+	allPages := buildPagesSimple()
 
 	// Try to retrieve the top root page to get channel description. If not found, use the
 	// website's title as the description.
@@ -148,7 +148,7 @@ func (p Pages) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 func (p Pages) Less(i, j int) bool { return getDate(p[i]).Unix() > getDate(p[j]).Unix() }
 
 // Will return a slice of built pages.
-func rssParseout() Pages {
+func buildPagesSimple() Pages {
 	inputs := emilia.FindFilesByExtSimple(emilia.Config.Project.Input)
 	pages := make([]*yunyun.Page, 0, len(inputs))
 	for _, input := range inputs {

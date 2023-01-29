@@ -3,16 +3,12 @@ package ichika
 import (
 	"fmt"
 	"image"
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sync"
 	"time"
 
 	"github.com/disintegration/imaging"
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/gana"
 )
 
 const (
@@ -106,36 +102,14 @@ func removeGalleryFiles(dryRun bool) {
 
 // getGalleryFiles returns a slice of all gallery images represented as `emilia.GalleryItem`.
 func getGalleryFiles() []*emilia.GalleryItem {
-	inputFilenames := make(chan yunyun.FullPathFile, customChannelCapacity)
-	pages := gana.GenericWorkers(gana.GenericWorkers(inputFilenames,
-		func(v yunyun.FullPathFile) gana.Tuple[yunyun.FullPathFile, string] {
-			data, err := ioutil.ReadFile(filepath.Clean(string(v)))
-			if err != nil {
-				fmt.Printf("Failed to open %s: %s\n", v, err.Error())
-			}
-			return gana.NewTuple(v, string(data))
-		}, 1, customChannelCapacity), func(v gana.Tuple[yunyun.FullPathFile, string]) *yunyun.Page {
-		return emilia.ParserBuilder.BuildParser(emilia.PackRef(v.UnpackRef())).Parse()
-	}, customNumWorkers, customChannelCapacity)
-
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	go emilia.FindFilesByExt(inputFilenames, emilia.Config.Project.Input, wg)
-
-	// Launch a second discovery for gallery files.
 	galleryFiles := make([]*emilia.GalleryItem, 0, 32)
-	go func(wg *sync.WaitGroup) {
-		for page := range pages {
-			for _, gc := range page.Contents.Galleries() {
-				for _, item := range gc.List {
-					galleryFiles = append(galleryFiles, emilia.NewGalleryItem(page, gc, item))
-				}
+	for _, page := range buildPagesSimple() {
+		for _, gc := range page.Contents.Galleries() {
+			for _, item := range gc.List {
+				galleryFiles = append(galleryFiles, emilia.NewGalleryItem(page, gc, item))
 			}
-			wg.Done()
 		}
-		wg.Done()
-	}(wg)
+	}
 
-	wg.Wait()
 	return galleryFiles
 }
