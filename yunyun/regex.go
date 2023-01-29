@@ -38,10 +38,10 @@ var (
 		Strikethrough:    `\+`,
 		Underline:        `_`,
 		Link:             `(?mU)\[\[(?P<link>[^][]+)\]\[(?P<text>[^][]+)(?: "(?P<desc>[^"]+)")?\]\]`,
-		SuperscriptStart: `\^\{`,
-		SuperscriptEnd:   `\}`,
-		SubscriptStart:   `_\{`,
-		SubscriptEnd:     `\}`,
+		SuperscriptStart: `\^\{\{`,
+		SuperscriptEnd:   `\}\}`,
+		SubscriptStart:   `_\{\{`,
+		SubscriptEnd:     `\}\}`,
 	}
 
 	// Pre-computed group indexes to use for group extraction.
