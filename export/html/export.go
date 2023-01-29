@@ -97,8 +97,12 @@ func (e ExporterHTML) combineAndFilterHtmlHead() string {
 func (e ExporterHTML) styleTags() []string {
 	content := make([]string, len(emilia.Config.Website.Styles)+len(e.page.Stylesheets))
 	for i, style := range emilia.Config.Website.Styles {
+		stylePath := yunyun.FullPathFile(style)
+		if !strings.HasPrefix(string(style), "http") {
+			stylePath = emilia.JoinPath(style)
+		}
 		content[i] = fmt.Sprintf(
-			`<link rel="stylesheet" type="text/css" href="%s">`+"\n", emilia.JoinPath(style),
+			`<link rel="stylesheet" type="text/css" href="%s">`+"\n", stylePath,
 		)
 	}
 	return append(content, e.page.Stylesheets...)
