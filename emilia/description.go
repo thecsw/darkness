@@ -7,6 +7,10 @@ import (
 	"github.com/thecsw/gana"
 )
 
+const (
+	descriptionMinLength = 14
+)
+
 func GetDescription(page *yunyun.Page, length int) string {
 	// Find the first paragraph for description
 	description := ""
@@ -23,7 +27,9 @@ func GetDescription(page *yunyun.Page, length int) string {
 
 		cleanText := yunyun.RemoveFormatting(paragraph[:gana.Min(len(paragraph), length+10)])
 		description = cleanText[:gana.Max(len(cleanText)-10, 0)] + "..."
-
+		if len(description) < descriptionMinLength {
+			continue
+		}
 		break
 	}
 	return description
