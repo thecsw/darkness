@@ -7,6 +7,7 @@ require github.com/BurntSushi/toml v1.2.1
 require (
 	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
 	github.com/felixge/fgprof v0.9.3 // indirect
+	github.com/go-chi/chi/v5 v5.0.8 // indirect
 	github.com/google/pprof v0.0.0-20211214055906-6f57359322fd // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect

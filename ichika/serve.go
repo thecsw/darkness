@@ -13,6 +13,8 @@ import (
 	"time"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
@@ -37,8 +39,15 @@ func ServeCommandFunc() {
 	emilia.InitDarkness(options)
 	build()
 	log.Println("Serving on", options.URL)
+
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.NoCache)
+	r.Use(middleware.Recoverer)
+	FileServer(r, "/", http.Dir(emilia.Config.WorkDir))
+
 	go func() {
-		log.Fatal(http.ListenAndServe(":"+strconv.Itoa(*port), http.FileServer(http.Dir(workDir))))
+		log.Fatal(http.ListenAndServe(":"+strconv.Itoa(*port), r))
 	}()
 	go launchWatcher()
 	log.Println("Launched file watcher")
@@ -124,4 +133,26 @@ func launchWatcher() {
 	fmt.Println("Press Ctrl-C to stop the server")
 	// Block main goroutine forever.
 	<-make(chan struct{})
+}
+
+// FileServer conveniently sets up a http.FileServer handler to serve
+// static files from a http.FileSystem.
+// Taken from https://github.com/go-chi/chi/blob/master/_examples/fileserver/main.go
+func FileServer(r chi.Router, path string, root http.FileSystem) {
+	if strings.ContainsAny(path, "{}*") {
+		panic("FileServer does not permit any URL parameters.")
+	}
+
+	if path != "/" && path[len(path)-1] != '/' {
+		r.Get(path, http.RedirectHandler(path+"/", 301).ServeHTTP)
+		path += "/"
+	}
+	path += "*"
+
+	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
+		rctx := chi.RouteContext(r.Context())
+		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/*")
+		fs := http.StripPrefix(pathPrefix, http.FileServer(root))
+		fs.ServeHTTP(w, r)
+	})
 }
