@@ -179,10 +179,10 @@ func RemoveFormatting(what string) string {
 const (
 	// darknessPunctLeft is our alternative to [[:punct:]] re2
 	// class for matching left punctuation symbols.
-	darknessPunctLeft = `[ ()\[\]_%>“”]`
+	darknessPunctLeft = `[()\[\]_%>“”]`
 	// darknessPunctRight is our alternative to [[:punct:]] re2
 	// class for matching right punctuation symbols.
-	darknessPunctRight = `[ ()\[\],.!?:;&_%<“”]`
+	darknessPunctRight = `[()\[\],.!?:;&_%<“”]`
 )
 
 // SymmetricEmphasis is a useful tool to create simple text markups.
