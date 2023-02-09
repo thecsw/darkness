@@ -54,7 +54,7 @@ func rssf(dryRun bool) {
 		}
 
 		items = append(items, &rss.Item{
-			Title:       page.Title,
+			Title:       yunyun.RemoveFormatting(page.Title),
 			Link:        emilia.Config.URL + string(page.Location),
 			Description: emilia.GetDescription(page, emilia.Config.Website.DescriptionLength*4) + " [ Continue reading... ]",
 			Category: &rss.Category{
