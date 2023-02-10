@@ -30,7 +30,7 @@ const (
 // cleans the files.
 func ServeCommandFunc() {
 	serveCmd := darknessFlagset(serveCommand)
-	port := serveCmd.Int("port", defaultServePort, "port number to use (default 8080)")
+	port := serveCmd.Int("port", defaultServePort, "port number to use")
 	noBrowser := serveCmd.Bool("no-browser", false, "do not open the browser")
 	options := getEmiliaOptions(serveCmd)
 	options.URL = "http://127.0.0.1:" + strconv.Itoa(*port)
