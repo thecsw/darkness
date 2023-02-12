@@ -62,6 +62,8 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 	}
 }
 
+// GalleryImage takes a gallery item and returns its full path depending
+// on the option, so whether it's a full link or a vendored path.
 func GalleryImage(item *GalleryItem) yunyun.FullPathFile {
 	if item.IsExternal {
 		// If it's vendored, then retrieve a local copy (if doesn't already
@@ -138,10 +140,10 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 		return expectedReturn
 	}
 
-	start := time.Now()
-	fmt.Printf("Vendoring %s... ", vendoredImagePath)
+	//start := time.Now()
+	//fmt.Printf("Vendoring %s... ", vendoredImagePath)
 
-	img, err := DownloadImage(string(item.Item))
+	img, err := DownloadImage(string(item.Item), "vendor", "", string(galleryItemHash(item)))
 	if err != nil {
 		fmt.Printf("failed to vendor: %s\n", err.Error())
 		return fallbackReturn
@@ -161,15 +163,15 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 		return fallbackReturn
 	}
 
-	finish := time.Now()
-	fmt.Printf("done in %d ms\n", finish.Sub(start).Milliseconds())
+	//finish := time.Now()
+	//fmt.Printf("done in %d ms\n", finish.Sub(start).Milliseconds())
 
 	// Finally.
 	return expectedReturn
 }
 
 // GalleryItemToImage takes in a gallery item and returns an image object.
-func GalleryItemToImage(item *GalleryItem) (image.Image, error) {
+func GalleryItemToImage(item *GalleryItem, authority, prefix string) (image.Image, error) {
 	// If it's a local file, simply open the os file.
 	if !item.IsExternal {
 		file := JoinWorkdir(yunyun.JoinRelativePaths(item.Path, item.Item))
@@ -179,12 +181,11 @@ func GalleryItemToImage(item *GalleryItem) (image.Image, error) {
 	// Check if the item has been vendored by any chance?
 	vendorPath := filepath.Join(Config.WorkDir, string(GalleryVendored(item)))
 	if FileExists(vendorPath) {
-		fmt.Printf(" (vendored) ")
 		return OpenImage(vendorPath)
 	}
 
 	// If it's a remote file, then ask Emilia to try and fetch it.
-	return DownloadImage(string(item.Item))
+	return DownloadImage(string(item.Item), authority, prefix, string(galleryItemHash(item)))
 }
 
 // galleryItemHash returns a hashed name of a gallery item link.

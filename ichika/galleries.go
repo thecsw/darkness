@@ -5,10 +5,10 @@ import (
 	"image"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/disintegration/imaging"
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/gana"
 )
 
 const (
@@ -26,23 +26,20 @@ func buildGalleryFiles(dryRun bool) {
 		os.Exit(1)
 	}
 	galleryFiles := getGalleryFiles()
-	for i, galleryFile := range galleryFiles {
-		fmt.Printf("[%d/%d] ", i+1, len(galleryFiles))
-		newFile := emilia.GalleryPreview(galleryFile)
-		if emilia.FileExists(string(newFile)) {
-			fmt.Printf("%s already exists\n", emilia.FullPathToWorkDirRel(newFile))
-			continue
-		}
-		fmt.Printf("%s... ", emilia.FullPathToWorkDirRel(newFile))
 
-		// Mark the processing start time.
-		start := time.Now()
+	missingFiles := gana.Filter(func(item *emilia.GalleryItem) bool {
+		return !emilia.FileExists(string(emilia.GalleryPreview(item)))
+	}, galleryFiles)
+
+	for i, galleryFile := range missingFiles {
+		newFile := emilia.GalleryPreview(galleryFile)
 
 		// Retrieve image contents reader:
 		// - For local files, it's a reader of the file.
 		// - For remote files, it's a reader of the response body,
 		//   unless it's vendored, then it's a read of the vendored file.
-		sourceImage, err := emilia.GalleryItemToImage(galleryFile)
+		sourceImage, err := emilia.GalleryItemToImage(galleryFile, "preview",
+			fmt.Sprintf("[%d/%d] ", i+1, len(missingFiles)))
 		if err != nil {
 			fmt.Println("gallery item to reader:", err.Error())
 			continue
@@ -69,8 +66,6 @@ func buildGalleryFiles(dryRun bool) {
 			}
 			file.Close()
 		}
-
-		fmt.Printf("%d ms\n", time.Since(start).Milliseconds())
 	}
 }
 
