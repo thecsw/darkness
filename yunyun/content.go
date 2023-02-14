@@ -1,6 +1,8 @@
 package yunyun
 
-import "github.com/thecsw/gana"
+import (
+	"github.com/thecsw/gana"
+)
 
 // Content is a piece of content of a page.
 type Content struct {

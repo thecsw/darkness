@@ -74,6 +74,20 @@ func (e *ExporterHTML) Heading(content *yunyun.Content) string {
 	return toReturn
 }
 
+func paragraphClass(content *yunyun.Content) string {
+	if content.IsQuote() {
+		return " quote"
+	}
+	if content.IsCentered() {
+		return " center"
+	}
+	if content.IsDropCap() {
+		return " dropcap"
+	}
+	return ""
+
+}
+
 // paragraph gives us a paragraph html representation
 func (e ExporterHTML) Paragraph(content *yunyun.Content) string {
 	return fmt.Sprintf(
@@ -84,19 +98,7 @@ func (e ExporterHTML) Paragraph(content *yunyun.Content) string {
 </p>
 </div>`,
 		// div class
-		func() string {
-			if content.IsQuote() {
-				return " quote"
-			}
-			if content.IsCentered() {
-				return " center"
-			}
-			if content.IsDropCap() {
-				return " dropcap"
-			}
-			return ""
-		}(),
-		processText(content.Paragraph),
+		paragraphClass(content), processText(content.Paragraph),
 	)
 }
 

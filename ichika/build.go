@@ -111,6 +111,7 @@ func build() {
 	wg.Wait()
 
 	// Report back on some of the results
+	fmt.Print("\r\033[2K")
 	fmt.Printf("Processed %d files in %d ms\n", emilia.NumFoundFiles, time.Since(start).Milliseconds())
 }
 
