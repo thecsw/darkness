@@ -39,7 +39,6 @@ Sorry, your browser doesn't support embedded videos.
 <div class="media">
 %s
 <div class="title">%s</div>
-<hr>
 </div>`
 
 	// tableTemplate is the template for image embeds.
