@@ -62,6 +62,9 @@ type Content struct {
 	// GalleryImagesPerRow stores the number of default images per row,
 	// therefore what flex class to use -- defaults to 3.
 	GalleryImagesPerRow uint
+	// Attributes is a string given by the user to give this content some
+	// custom export mechanisms.
+	Attributes string
 }
 
 // Contents is a type of contents

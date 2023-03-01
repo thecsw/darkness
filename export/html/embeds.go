@@ -79,7 +79,7 @@ Sorry, your browser doesn't support embedded videos.
 // link returns an html representation of a link even if it's an embed command
 func (e *ExporterHTML) Link(content *yunyun.Content) string {
 	switch {
-	case yunyun.ImageExtRegexp.MatchString(content.Link):
+	case yunyun.ImageExtRegexp.MatchString(content.Link) || strings.Contains(content.Attributes, "image"):
 		// Put imageblocks.
 		return fmt.Sprintf(imageEmbedTemplate,
 			content.Link,

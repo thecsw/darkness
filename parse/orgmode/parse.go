@@ -46,6 +46,8 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	sourceCodeLang := ""
 	// caption is the current caption we can read
 	caption := ""
+	// attributes is the attributes for the current content.
+	attributes := ""
 	// detailsSummary is the current details' summary
 	additionalContext := ""
 	// galleryPath stores the gallery's declared path
@@ -72,11 +74,13 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		content.GalleryPath = yunyun.RelativePathDir(galleryPath)
 		content.GalleryImagesPerRow = galleryWidth
 		content.Caption = caption
+		content.Attributes = attributes
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
 		galleryPath = ""
 		galleryWidth = defaultGalleryImagesPerRow
 		additionalContext = ""
+		attributes = ""
 	}
 	optionsActions := map[string]func(line string){
 		optionDropCap:     func(line string) { addFlag(yunyun.InDropCapFlag) },
@@ -106,6 +110,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		optionDate:       func(line string) { page.Date = extractDate(line) },
 		optionHtmlHead:   func(line string) { page.HtmlHead = append(page.HtmlHead, extractHtmlHead(line)) },
 		optionOptions:    func(line string) { optionsStrings += extractOptions(line) + " " },
+		optionAttributes: func(line string) { attributes = extractAttributes(line) },
 	}
 
 	// Yunyun's markings default to orgmode
