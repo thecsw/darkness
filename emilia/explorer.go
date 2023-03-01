@@ -9,7 +9,7 @@ import (
 
 	"github.com/karrick/godirwalk"
 	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/gana"
+	g "github.com/thecsw/gana"
 )
 
 var (
@@ -30,7 +30,7 @@ func FindFilesByExt(inputFilenames chan<- yunyun.FullPathFile, ext string, wg *s
 				return nil
 			}
 			if (Config.Project.ExcludeEnabled && Config.Project.ExcludeRegex.MatchString(osPathname)) ||
-				(gana.First([]rune(de.Name())) == rune('.') && de.IsDir()) {
+				(g.First([]rune(de.Name())) == rune('.') && de.IsDir()) {
 				return filepath.SkipDir
 			}
 			wg.Add(1)
@@ -59,4 +59,22 @@ func FindFilesByExtSimple(ext string) []yunyun.FullPathFile {
 	}
 	wg.Done()
 	return toReturn
+}
+
+// FindFilesByExitSimple is the same as `FindFilesByExt` but it simply blocks the
+// parent goroutine until it processes all the results and returns only the results
+// which are children of the passed dirs.
+func FindFilesByExtSimpleDirs(ext string, dirs []string) []yunyun.FullPathFile {
+	files := FindFilesByExtSimple(ext)
+	// If no dirs passed, run no filtering.
+	if len(dirs) < 1 {
+		return files
+	}
+	// Only return files that have passed dirs as parents.
+	return g.Filter(func(path yunyun.FullPathFile) bool {
+		return g.Anyf(func(v string) bool {
+			return strings.HasPrefix(string(path),
+				string(JoinWorkdir(yunyun.RelativePathFile(v))))
+		}, dirs)
+	}, files)
 }

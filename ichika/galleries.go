@@ -98,7 +98,7 @@ func removeGalleryFiles(dryRun bool) {
 // getGalleryFiles returns a slice of all gallery images represented as `emilia.GalleryItem`.
 func getGalleryFiles() []*emilia.GalleryItem {
 	galleryFiles := make([]*emilia.GalleryItem, 0, 32)
-	for _, page := range buildPagesSimple() {
+	for _, page := range buildPagesSimple(nil) {
 		for _, gc := range page.Contents.Galleries() {
 			for _, item := range gc.List {
 				galleryFiles = append(galleryFiles, emilia.NewGalleryItem(page, gc, item))

@@ -21,9 +21,9 @@ const (
 	rssGenerator   = "Darkness (sandyuraz.com/darkness)"
 )
 
-func rssf(dryRun bool) {
+func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 	// Get all all the pages we can build out.
-	allPages := buildPagesSimple()
+	allPages := buildPagesSimple(rssDirectories)
 
 	// Try to retrieve the top root page to get channel description. If not found, use the
 	// website's title as the description.
@@ -147,9 +147,9 @@ func (p Pages) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 // Less sorts the array in descending order.
 func (p Pages) Less(i, j int) bool { return getDate(p[i]).Unix() > getDate(p[j]).Unix() }
 
-// Will return a slice of built pages.
-func buildPagesSimple() Pages {
-	inputs := emilia.FindFilesByExtSimple(emilia.Config.Project.Input)
+// Will return a slice of built pages that have dirs as parents (empty dirs will return everything).
+func buildPagesSimple(dirs []string) Pages {
+	inputs := emilia.FindFilesByExtSimpleDirs(emilia.Config.Project.Input, dirs)
 	pages := make([]*yunyun.Page, 0, len(inputs))
 	for _, input := range inputs {
 		bundle := openFile(input)
@@ -158,11 +158,10 @@ func buildPagesSimple() Pages {
 			fmt.Printf("failed to read %s: %s", input, err)
 			continue
 		}
-		page := emilia.ParserBuilder.
-			BuildParser(
-				emilia.FullPathToWorkDirRel(bundle.First),
-				string(data),
-			).Parse()
+		page := emilia.ParserBuilder.BuildParser(
+			emilia.FullPathToWorkDirRel(bundle.First),
+			string(data),
+		).Parse()
 		pages = append(pages, page)
 	}
 	return pages
