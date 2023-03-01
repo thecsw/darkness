@@ -24,7 +24,6 @@ const (
 func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 	// Get all all the pages we can build out.
 	allPages := buildPagesSimple(rssDirectories)
-
 	// Try to retrieve the top root page to get channel description. If not found, use the
 	// website's title as the description.
 	topPage := gana.First(gana.Filter(func(page *yunyun.Page) bool { return page.Location == "." }, allPages))
@@ -47,6 +46,10 @@ func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 	items := make([]*rss.Item, 0, len(pages))
 
 	for _, page := range pages {
+		// Skip drafts.
+		if page.Accoutrement.Draft.IsEnabled() {
+			continue
+		}
 		categoryName, categoryLocation := page.Title, page.Location
 		if categoryPage := getCategory(page, allPages); categoryPage != nil {
 			categoryName = categoryPage.Title

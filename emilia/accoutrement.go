@@ -11,6 +11,7 @@ const (
 	disableOption   = `nil`
 	delimiterOption = ':'
 
+	optionDraft           = `draft`
 	optionTomb            = `tomb`
 	optionAuthorImage     = `author-image`
 	optionMath            = `math`
@@ -19,6 +20,7 @@ const (
 
 var (
 	accotrementActions = map[string]func(string, *yunyun.Accoutrement){
+		optionDraft:           accoutrementDraft,
 		optionTomb:            accoutrementTomb,
 		optionAuthorImage:     accoutrementAuthorImage,
 		optionMath:            accoutrementMath,
@@ -65,6 +67,10 @@ func breakOption(what string) (string, string) {
 	// By default return the whole string as the first one,
 	// and enable option to the right.
 	return what, enableOption
+}
+
+func accoutrementDraft(what string, target *yunyun.Accoutrement) {
+	accoutrementBool(what, &target.Draft)
 }
 
 func accoutrementTomb(what string, target *yunyun.Accoutrement) {

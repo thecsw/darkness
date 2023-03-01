@@ -22,7 +22,7 @@ func MisaCommandFunc() {
 
 	options := getEmiliaOptions(misaCmd)
 	if len(*rss) > 0 {
-		options.Dev = true
+		options.Dev = false
 	}
 	emilia.InitDarkness(options)
 

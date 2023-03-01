@@ -4,6 +4,8 @@ import "strings"
 
 // Accoutrement are settings of a page.
 type Accoutrement struct {
+	// Draft will prevent rss from showing the page.
+	Draft AccoutrementFlip
 	// Tomb enables/disables tomb on a page.
 	Tomb AccoutrementFlip
 	// AuthorImage enables/disable author's header image.
