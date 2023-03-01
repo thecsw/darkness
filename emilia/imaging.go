@@ -41,24 +41,7 @@ func DownloadImage(link string, authority, prefix, name string) (image.Image, er
 	defer resp.Body.Close()
 
 	buf := new(bytes.Buffer)
-	bar := progressbar.NewOptions64(resp.ContentLength,
-		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
-		progressbar.OptionEnableColorCodes(true),
-		progressbar.OptionShowBytes(true),
-		progressbar.OptionSetWidth(30),
-		progressbar.OptionSetPredictTime(true),
-		progressbar.OptionShowCount(),
-		progressbar.OptionShowElapsedTimeOnFinish(),
-		progressbar.OptionSetDescription(
-			fmt.Sprintf("[cyan][%s][reset] %sDownloading %s", authority, prefix, name)),
-		progressbar.OptionSetTheme(progressbar.Theme{
-			Saucer:        "[magenta]=[reset]",
-			SaucerHead:    "[yellow]>[reset]",
-			SaucerPadding: " ",
-			BarStart:      "[",
-			BarEnd:        "]",
-		}),
-	)
+	bar := ProgressBar(resp.ContentLength, authority, prefix, "Downloading", name)
 	if _, err := io.Copy(io.MultiWriter(buf, bar), resp.Body); err != nil && err != io.EOF {
 		return nil, errors.Wrap(err, "failed to read the image data")
 	}
@@ -70,4 +53,26 @@ func DownloadImage(link string, authority, prefix, name string) (image.Image, er
 	}
 
 	return img, nil
+}
+
+// ProgressBar will return darkness style progress bar.
+func ProgressBar(size int64, authority, prefix, action, name string) *progressbar.ProgressBar {
+	return progressbar.NewOptions64(size,
+		progressbar.OptionSetWriter(ansi.NewAnsiStdout()),
+		progressbar.OptionEnableColorCodes(true),
+		progressbar.OptionShowBytes(true),
+		progressbar.OptionSetWidth(30),
+		progressbar.OptionSetPredictTime(true),
+		progressbar.OptionShowCount(),
+		progressbar.OptionShowElapsedTimeOnFinish(),
+		progressbar.OptionSetDescription(
+			fmt.Sprintf("[cyan][%s][reset] %s%s %s", authority, prefix, action, name)),
+		progressbar.OptionSetTheme(progressbar.Theme{
+			Saucer:        "[magenta]=[reset]",
+			SaucerHead:    "[yellow]>[reset]",
+			SaucerPadding: " ",
+			BarStart:      "[",
+			BarEnd:        "]",
+		}),
+	)
 }

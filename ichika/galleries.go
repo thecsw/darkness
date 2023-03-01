@@ -3,6 +3,7 @@ package ichika
 import (
 	"fmt"
 	"image"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -38,8 +39,8 @@ func buildGalleryFiles(dryRun bool) {
 		// - For local files, it's a reader of the file.
 		// - For remote files, it's a reader of the response body,
 		//   unless it's vendored, then it's a read of the vendored file.
-		sourceImage, err := emilia.GalleryItemToImage(galleryFile, "preview",
-			fmt.Sprintf("[%d/%d] ", i+1, len(missingFiles)))
+		prefix := fmt.Sprintf("[%d/%d] ", i+1, len(missingFiles))
+		sourceImage, err := emilia.GalleryItemToImage(galleryFile, "preview", prefix)
 		if err != nil {
 			fmt.Println("gallery item to reader:", err.Error())
 			continue
@@ -55,18 +56,20 @@ func buildGalleryFiles(dryRun bool) {
 		// Don't save the file if it's in dry run mode.
 		if !dryRun {
 			file, err := os.Create(string(newFile))
+			bar := emilia.ProgressBar(-1, "misa", prefix, "Resizing", string(emilia.FullPathToWorkDirRel(newFile)))
 			if err != nil {
 				fmt.Printf("failed to create file %s: %s\n", newFile, err.Error())
 				continue
 			}
 			// Write the final preview image file.
-			if err := imaging.Encode(file, previewImage, imaging.JPEG); err != nil {
+			if err := imaging.Encode(io.MultiWriter(file, bar), previewImage, imaging.JPEG); err != nil {
 				fmt.Printf("failed to encode image: %s", err.Error())
 				continue
 			}
 			file.Close()
 		}
 	}
+	fmt.Print("\r\033[2K")
 }
 
 // resizeAndBlur takes an image object and modifies it to preview standards.

@@ -21,6 +21,7 @@ func MisaCommandFunc() {
 	dryRun := misaCmd.Bool("dry-run", false, "skip writing files (but do the reading)")
 
 	options := getEmiliaOptions(misaCmd)
+	options.Dev = true
 	if len(*rss) > 0 {
 		options.Dev = false
 	}

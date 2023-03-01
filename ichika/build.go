@@ -111,7 +111,10 @@ func build() {
 	wg.Wait()
 
 	// Report back on some of the results
+
+	// Clear the download progress bar if present by wiping out the line.
 	fmt.Print("\r\033[2K")
+
 	fmt.Printf("Processed %d files in %d ms\n", emilia.NumFoundFiles, time.Since(start).Milliseconds())
 }
 
