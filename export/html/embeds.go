@@ -4,18 +4,28 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
 
 const (
-	// imageEmbedTemplate is the template for image embeds.
-	imageEmbedTemplate = `
+	// imageEmbedTemplateWithHref is the template for image embeds that's clickable.
+	imageEmbedTemplateWithHref = `
 <div class="media">
 <a class="image" href="%s"><img class="image" src="%s" title="%s" alt="%s"></a>
 <div class="title">%s</div>
 <hr>
 </div>`
+
+	// imageEmbedTemplateNoHref is the template of image embeds that is not clickable
+	imageEmbedTemplateNoHref = `
+<div class="media">
+<a class="image" ><img class="image" src="%s" title="%s" alt="%s"></a>
+<div class="title">%s</div>
+<hr>
+</div>`
+
 	// audioEmbedTemplate is the template for audio embeds.
 	audioEmbedTemplate = `
 <div class="media">
@@ -81,18 +91,10 @@ func (e *ExporterHTML) Link(content *yunyun.Content) string {
 	switch {
 	case yunyun.ImageExtRegexp.MatchString(content.Link) || strings.Contains(content.Attributes, "image"):
 		// Put imageblocks.
-		return fmt.Sprintf(imageEmbedTemplate,
-			content.Link,
-			content.Link,
-			yunyun.RemoveFormatting(content.LinkDescription),
-			yunyun.RemoveFormatting(content.LinkTitle),
-			processText(content.LinkTitle),
-		)
+		return linkImage(content)
 	case yunyun.AudioFileExtRegexp.MatchString(content.Link):
 		// Audiofiles
-		return fmt.Sprintf(audioEmbedTemplate,
-			content.Link,
-		)
+		return fmt.Sprintf(audioEmbedTemplate, content.Link)
 	case yunyun.VideoFileExtRegexp.MatchString(content.Link):
 		// Raw videofiles
 		return fmt.Sprintf(videoEmbedTemplate,
@@ -123,4 +125,24 @@ func (e *ExporterHTML) Link(content *yunyun.Content) string {
 			processText(content.LinkTitle),
 		)
 	}
+}
+
+func linkImage(content *yunyun.Content) string {
+	// User can elect in darkness.toml to make images clickable.
+	if emilia.Config.Website.ClickableImages {
+		return fmt.Sprintf(imageEmbedTemplateWithHref,
+			content.Link,
+			content.Link,
+			yunyun.RemoveFormatting(content.LinkDescription),
+			yunyun.RemoveFormatting(content.LinkTitle),
+			processText(content.LinkTitle),
+		)
+	}
+	// Send the embed with no clickable images. Default behavior.
+	return fmt.Sprintf(imageEmbedTemplateNoHref,
+		content.Link,
+		yunyun.RemoveFormatting(content.LinkDescription),
+		yunyun.RemoveFormatting(content.LinkTitle),
+		processText(content.LinkTitle),
+	)
 }

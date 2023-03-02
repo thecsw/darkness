@@ -98,6 +98,9 @@ type WebsiteConfig struct {
 	// FootnoteBrackets decides whether to use brackets on footnotes
 	FootnoteBrackets bool `toml:"footnote_brackets"`
 
+	// ClickableImages marks whether the images should href to the img link.
+	ClickableImages bool `toml:"clickable_images"`
+
 	// SyntaxHighlighting decides whether to enable code blocks'
 	// syntax highlighting with highlight.js
 	SyntaxHighlighting bool `toml:"syntax_highlighting"`
