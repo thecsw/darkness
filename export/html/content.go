@@ -156,6 +156,10 @@ func (e ExporterHTML) RawHTML(content *yunyun.Content) string {
 	if content.IsRawHTMLUnsafe() {
 		return content.RawHTML
 	}
+	// If responsive enabled, wrap the inner iframe (*probably*) in it.
+	if content.IsRawHTMLResponsive() {
+		return fmt.Sprintf(responsiveIFrameHTMLTemplate, content.RawHTML)
+	}
 	return fmt.Sprintf(rawHTMLTemplate, content.RawHTML, content.Caption)
 
 }

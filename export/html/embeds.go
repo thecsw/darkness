@@ -69,6 +69,15 @@ Sorry, your browser doesn't support embedded videos.
 <hr>
 </div>`
 
+	// Put iframes here to have a youtube-embed-like experience.
+	responsiveIFrameHTMLTemplate = `
+<div class="media">
+<div class="yt-container">
+%s
+</div>
+<hr>
+</div>`
+
 	// spotifyTrackEmbedPrefix is the prefix for spotify track embeds.
 	spotifyTrackEmbedPrefix = "https://open.spotify.com/track/"
 	// spotifyTrackEmbedTemplate is the template for spotify track embeds.

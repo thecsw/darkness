@@ -146,8 +146,10 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		// Now, check if we can enter a raw html environment
 		if isHTMLExportBegin(line) {
 			addFlag(yunyun.InRawHTMLFlag)
-			if strings.HasSuffix(line, "unsafe") {
+			if strings.Contains(line, "unsafe") {
 				addFlag(yunyun.InRawHtmlFlagUnsafe)
+			} else if strings.Contains(line, "responsive") || strings.Contains(line, "iframe") {
+				addFlag(yunyun.InRawHtmlFlagResponsive)
 			}
 			currentContext = previousContext
 			continue

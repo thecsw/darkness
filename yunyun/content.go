@@ -110,6 +110,9 @@ func (c Content) IsRawHTML() bool { return c.Type == TypeRawHTML }
 // IsRawHTMLUnsafe tells us if the html block is raw and unsafe.
 func (c Content) IsRawHTMLUnsafe() bool { return HasFlag(&c.Options, InRawHtmlFlagUnsafe) }
 
+// IsRawHTMLResponsive tells us if the html block is raw and *probably* an iframe.
+func (c Content) IsRawHTMLResponsive() bool { return HasFlag(&c.Options, InRawHtmlFlagResponsive) }
+
 // IsHorizontalLine tells us if the content is a horizontal line.
 func (c Content) IsHorizontalLine() bool { return c.Type == TypeHorizontalLine }
 

@@ -49,6 +49,8 @@ const (
 	InRawHTMLFlag
 	// InRawHtmlFlagUnsafe is used internally to mark unsafe html states.
 	InRawHtmlFlagUnsafe
+	// InRawHtmlFlagResponsive is used internally to mark responsive html states.
+	InRawHtmlFlagResponsive
 	// InQuoteFlag is used internally to mark quote states.
 	InQuoteFlag
 	// InCenterFlag is used internally to mark center states.
@@ -63,22 +65,34 @@ const (
 	YunYunStartCustomFlags
 )
 
-var (
-	// LatchFlags returns four functions: add, remove, flip, and has
-	// for the flag container.
-	LatchFlags = func(v *Bits) (
-		func(f Bits), func(f Bits), func(f Bits), func(f Bits) bool) {
-		return func(f Bits) { AddFlag(v, f) },
-			func(f Bits) { RemoveFlag(v, f) },
-			func(f Bits) { FlipFlag(v, f) },
-			func(f Bits) bool { return HasFlag(v, f) }
-	}
-	// AddFlag marks the flag in the first argument.
-	AddFlag = func(v *Bits, f Bits) { *v |= f }
-	// RemoveFlag removes the flag in the first argument.
-	RemoveFlag = func(v *Bits, f Bits) { *v &^= f }
-	// FlipFlag flips the flag in the first argument.
-	FlipFlag = func(v *Bits, f Bits) { *v ^= f }
-	// HasFlag returns true if the flag is found, false otherwise.
-	HasFlag = func(v *Bits, f Bits) bool { return *v&f != 0 }
-)
+// LatchFlags returns four functions: add, remove, flip, and has
+// for the flag container.
+//
+//go:inline
+func LatchFlags(v *Bits) (
+	func(f Bits), func(f Bits), func(f Bits), func(f Bits) bool) {
+	return func(f Bits) { AddFlag(v, f) },
+		func(f Bits) { RemoveFlag(v, f) },
+		func(f Bits) { FlipFlag(v, f) },
+		func(f Bits) bool { return HasFlag(v, f) }
+}
+
+// AddFlag marks the flag in the first argument.
+//
+//go:inline
+func AddFlag(v *Bits, f Bits) { *v |= f }
+
+// RemoveFlag removes the flag in the first argument.
+//
+//go:inline
+func RemoveFlag(v *Bits, f Bits) { *v &^= f }
+
+// FlipFlag flips the flag in the first argument.
+//
+//go:inline
+func FlipFlag(v *Bits, f Bits) { *v ^= f }
+
+// HasFlag returns true if the flag is found, false otherwise.
+//
+//go:inline
+func HasFlag(v *Bits, f Bits) bool { return *v&f != 0 }
