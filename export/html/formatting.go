@@ -37,7 +37,6 @@ var markupHTMLMapping map[*regexp.Regexp]string
 
 // markupHTML replaces the markup regexes defined in internal with HTML tags
 func markupHTML(text string) string {
-	text = yunyun.FixBoldItalicMarkups(text)
 	for source, replacement := range markupHTMLMapping {
 		text = source.ReplaceAllString(text, replacement)
 	}

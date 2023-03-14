@@ -4,6 +4,8 @@ go 1.18
 
 require github.com/BurntSushi/toml v1.2.1
 
+replace github.com/thecsw/gana => /Users/thecsw/gits/gana
+
 require (
 	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
@@ -15,7 +17,7 @@ require (
 	github.com/rivo/uniseg v0.4.3 // indirect
 	golang.org/x/exp v0.0.0-20230212135524-a684f29349b6 // indirect
 	golang.org/x/image v0.5.0 // indirect
-	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
 )
 

@@ -9,6 +9,7 @@ import (
 
 	"github.com/karrick/godirwalk"
 	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/gana"
 	g "github.com/thecsw/gana"
 )
 
@@ -17,7 +18,7 @@ var (
 )
 
 // FindFilesByExt finds all files with a given extension.
-func FindFilesByExt(inputFilenames chan<- yunyun.FullPathFile, ext string, wg *sync.WaitGroup) {
+func FindFilesByExt(pool gana.PoolConnector[yunyun.FullPathFile], ext string, wg *sync.WaitGroup) {
 	NumFoundFiles = 0
 	if err := godirwalk.Walk(Config.WorkDir, &godirwalk.Options{
 		ErrorCallback: func(osPathname string, err error) godirwalk.ErrorAction {
@@ -33,31 +34,26 @@ func FindFilesByExt(inputFilenames chan<- yunyun.FullPathFile, ext string, wg *s
 				(g.First([]rune(de.Name())) == rune('.') && de.IsDir()) {
 				return filepath.SkipDir
 			}
-			wg.Add(1)
 			relPath, err := filepath.Rel(Config.WorkDir, osPathname)
-			inputFilenames <- JoinWorkdir(yunyun.RelativePathFile(relPath))
+			pool.Submit(JoinWorkdir(yunyun.RelativePathFile(relPath)))
 			atomic.AddInt32(&NumFoundFiles, 1)
 			return err
 		},
 	}); err != nil {
 		fmt.Printf("File traversal returned an error: %s\n", err.Error())
 	}
-	close(inputFilenames)
+	wg.Done()
 }
 
 // FindFilesByExitSimple is the same as `FindFilesByExt` but it simply blocks the
 // parent goroutine until it processes all the results.
 func FindFilesByExtSimple(ext string) []yunyun.FullPathFile {
-	inputFilenames := make(chan yunyun.FullPathFile, 1)
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	go FindFilesByExt(inputFilenames, ext, wg)
 	toReturn := make([]yunyun.FullPathFile, 0, 64)
-	for inputFilename := range inputFilenames {
-		toReturn = append(toReturn, inputFilename)
-		wg.Done()
-	}
-	wg.Done()
+	wg := &sync.WaitGroup{}
+	addFile := func(v yunyun.FullPathFile) bool { toReturn = append(toReturn, v); wg.Done(); return true }
+	filesPool := gana.NewPool(addFile, 0, 0, "exp")
+	go FindFilesByExt(filesPool, ext, wg)
+	filesPool.Close()
 	return toReturn
 }
 
