@@ -51,36 +51,50 @@ func BuildCommandFunc() {
 
 // build uses set flags and emilia data to build the local directory.
 func build() {
-	start := time.Now()
-
 	filesPool := gana.NewPool(openFile, customNumWorkers, 0)
-	defer filesPool.Close()
+	defer filesPool.Close(true)
 
 	parserPool := gana.NewPool(parsePage, customNumWorkers, 0)
-	defer parserPool.Close()
+	defer parserPool.Close(true)
 
 	exporterPool := gana.NewPool(exportPage, customNumWorkers, 0)
-	defer exporterPool.Close()
+	defer exporterPool.Close(true)
 
 	filesPool.Connect(parserPool)
 	parserPool.Connect(exporterPool)
 
-	go func() {
-		for toWrite := range exporterPool.Outputs() {
-			if _, err := writeFile(toWrite.First, toWrite.Second); err != nil {
-				fmt.Println("writing file:", err.Error())
-			}
-		}
-	}()
+	go writePages(exporterPool)
+
+	start := time.Now()
 
 	<-emilia.FindFilesByExt(filesPool, emilia.Config.Project.Input)
 
 	exporterPool.Wait()
 
+	finish := time.Now()
+
 	// Clear the download progress bar if present by wiping out the line.
 	fmt.Print("\r\033[2K")
 
-	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsCompleted(), time.Since(start).Milliseconds())
+	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsCompleted(), finish.Sub(start).Milliseconds())
+}
+
+//go:inline
+func writePages(exporterPool *gana.Pool[*yunyun.Page, gana.Tuple[string, *bufio.Reader]]) {
+	for {
+		select {
+		case toWrite := <-exporterPool.Outputs():
+			{
+				if _, err := writeFile(toWrite.First, toWrite.Second); err != nil {
+					fmt.Println("writing file:", err.Error())
+				}
+			}
+		case <-exporterPool.CloseSignal():
+			{
+				return
+			}
+		}
+	}
 }
 
 //go:inline

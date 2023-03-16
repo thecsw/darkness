@@ -51,8 +51,7 @@ func FindFilesByExtSimple(ext string) []yunyun.FullPathFile {
 	filesPool := g.NewPool(addFile, 1, 0)
 	filesPool.DisableOutput()
 	<-FindFilesByExt(filesPool, ext)
-	filesPool.Wait()
-	filesPool.Close()
+	filesPool.Close(false)
 	return toReturn
 }
 
