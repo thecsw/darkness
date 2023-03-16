@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
@@ -47,12 +46,6 @@ func BuildCommandFunc() {
 	cmd := darknessFlagset(buildCommand)
 	emilia.InitDarkness(getEmiliaOptions(cmd))
 	build()
-	// Check that we actually processed some files before reporting.
-	if emilia.NumFoundFiles < 0 {
-		fmt.Println("no files found")
-		return
-	}
-
 	fmt.Println("farewell")
 }
 
@@ -60,47 +53,34 @@ func BuildCommandFunc() {
 func build() {
 	start := time.Now()
 
-	filesPool := gana.NewPool(openFile, customNumWorkers, 0, "files")
-	parserPool := gana.NewPool(parsePage, customNumWorkers, 0, "parser")
-	exporterPool := gana.NewPool(exportPage, customNumWorkers, 0, "exporter")
+	filesPool := gana.NewPool(openFile, customNumWorkers, 0)
+	defer filesPool.Close()
+
+	parserPool := gana.NewPool(parsePage, customNumWorkers, 0)
+	defer parserPool.Close()
+
+	exporterPool := gana.NewPool(exportPage, customNumWorkers, 0)
+	defer exporterPool.Close()
 
 	filesPool.Connect(parserPool)
 	parserPool.Connect(exporterPool)
 
-	// Run a discovery for files and feed to the reader worker.
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	go emilia.FindFilesByExt(filesPool, emilia.Config.Project.Input, wg)
-
-	// Build a wait group to ensure we always read and write the same
-	// number of files, such that after the file has been read, parsed,
-	// enriched, and exported -- this goroutine would pick them up and
-	// save it at the right spot, marking itself Done and leaving.
 	go func() {
-		for result := range exporterPool.Outputs() {
-			if _, err := writeFile(result.First, result.Second); err != nil {
+		for toWrite := range exporterPool.Outputs() {
+			if _, err := writeFile(toWrite.First, toWrite.Second); err != nil {
 				fmt.Println("writing file:", err.Error())
 			}
 		}
 	}()
 
-	wg.Wait()
-	// time.Sleep(time.Second)
+	<-emilia.FindFilesByExt(filesPool, emilia.Config.Project.Input)
 
-	// filesPool.Wait()
-	// parserPool.Wait()
-	// exporterPool.Wait()
-
-	// filesPool.Close()
-	// parserPool.Close()
-	// exporterPool.Close()
-
-	//exporterPool.Close()
+	exporterPool.Wait()
 
 	// Clear the download progress bar if present by wiping out the line.
 	fmt.Print("\r\033[2K")
 
-	fmt.Printf("Processed %d files in %d ms\n", emilia.NumFoundFiles, time.Since(start).Milliseconds())
+	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsCompleted(), time.Since(start).Milliseconds())
 }
 
 //go:inline

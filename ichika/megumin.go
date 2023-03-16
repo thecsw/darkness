@@ -2,6 +2,7 @@ package ichika
 
 import (
 	"fmt"
+	"os"
 	"time"
 	"unicode"
 
@@ -48,25 +49,17 @@ func CleanCommandFunc() {
 
 // removeOutputFiles is the low-level command to be used when cleaning data.
 func removeOutputFiles() {
-	// orgfiles := make(chan yunyun.FullPathFile, defaultNumOfWorkers)
-	// foo := func(v yunyun.FullPathFile) { orgfiles <- v }
-	// wg := &sync.WaitGroup{}
-	// wg.Add(1)
-	// close(orgfiles)
-	// go emilia.FindFilesByExt(foo, emilia.Config.Project.Input, wg)
-	// for orgfile := range orgfiles {
-	// 	toRemove := emilia.InputFilenameToOutput(orgfile)
-	// 	if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
-	// 		fmt.Println(toRemove, "failed to blow up!!")
-	// 	}
-	// 	if !isQuietMegumin {
-	// 		fmt.Println(toRemove, "went boom!")
-	// 		time.Sleep(50 * time.Millisecond)
-	// 	}
-	// 	wg.Done()
-	// }
-	// wg.Done()
-	// wg.Wait()
+	orgfiles := emilia.FindFilesByExtSimple(emilia.Config.Project.Input)
+	for _, orgfile := range orgfiles {
+		toRemove := emilia.InputFilenameToOutput(orgfile)
+		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
+			fmt.Println(toRemove, "failed to blow up!!")
+		}
+		if !isQuietMegumin {
+			fmt.Println(toRemove, "went boom!")
+			time.Sleep(50 * time.Millisecond)
+		}
+	}
 }
 
 // delayedLinesPrint prints lines with a delay.
