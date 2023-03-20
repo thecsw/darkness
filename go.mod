@@ -4,10 +4,12 @@ go 1.18
 
 require github.com/BurntSushi/toml v1.2.1
 
-replace github.com/thecsw/gana => /Users/thecsw/gits/gana
+replace github.com/thecsw/komi => /Users/thecsw/gits/komi
 
 require (
 	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
+	github.com/charmbracelet/log v0.1.2 // indirect
+	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
@@ -32,4 +34,5 @@ require (
 	github.com/schollz/progressbar/v3 v3.13.0
 	github.com/thecsw/gana v0.0.0-20221119221619-ec55f13e6a5d
 	github.com/thecsw/haruhi v0.0.0-20230212193023-1d4512254cfd
+	github.com/thecsw/komi v0.0.0-20230320005907-f16e184fab61
 )

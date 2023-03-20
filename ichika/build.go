@@ -10,6 +10,7 @@ import (
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
+	"github.com/thecsw/komi"
 )
 
 const (
@@ -51,25 +52,46 @@ func BuildCommandFunc() {
 
 // build uses set flags and emilia data to build the local directory.
 func build() {
-	filesPool := gana.NewPool(openFile, customNumWorkers, 0)
-	defer filesPool.Close(true)
+	// Create all the pools
+	filesPool := komi.NewPool(komi.Work(openPage), poolSettings("Reading 📚 ")...)
+	parserPool := komi.NewPool(komi.Work(parsePage), poolSettings("Parsing 🧹")...)
+	exporterPool := komi.NewPool(komi.Work(exportPage), poolSettings("Exporting 🥂")...)
+	writerPool := komi.NewPool(komi.WorkSimpleWithErrors(writePage), poolSettings("Writing 🎸", 1)...)
 
-	parserPool := gana.NewPool(parsePage, customNumWorkers, 0)
-	defer parserPool.Close(true)
+	// Handle any errors from the writing.
+	go func() {
+		for err := range writerPool.Errors() {
+			fmt.Printf("failed to write %s: %s", err.Job.First, err.Error)
+		}
+	}()
 
-	exporterPool := gana.NewPool(exportPage, customNumWorkers, 0)
-	defer exporterPool.Close(true)
-
+	// Connect all the pools between each other, so the relationship is as follows,
+	//
+	//           Reading 📚                      Parsing 🧹
+	//   path  ┌───────────┐   file handler   ┌─────────────┐
+	// ──────> │ filesPool │ ───────────────> │  parserPool │
+	//	   ╶───────────╴	          ╶─────────────╴
+	//	    log errors				│
+	//						│    parsed files
+	//					       	│  aka yunyun pages
+	//                                              │
+	//   file  ┌────────────┐  exported data  ┌──────────────┐
+	//  <───── │ writerPool │ <────────────── │ exporterPool │
+	// 	   ╶────────────╴              	  ╶──────────────╴
+	//           Writing 🎸                     Exporting 🥂
+	//
 	filesPool.Connect(parserPool)
 	parserPool.Connect(exporterPool)
-
-	go writePages(exporterPool)
+	exporterPool.Connect(writerPool)
 
 	start := time.Now()
 
 	<-emilia.FindFilesByExt(filesPool, emilia.Config.Project.Input)
 
+	filesPool.Wait()
+	parserPool.Wait()
 	exporterPool.Wait()
+	writerPool.Close()
 
 	finish := time.Now()
 
@@ -79,21 +101,15 @@ func build() {
 	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsCompleted(), finish.Sub(start).Milliseconds())
 }
 
-//go:inline
-func writePages(exporterPool *gana.Pool[*yunyun.Page, gana.Tuple[string, *bufio.Reader]]) {
-	for {
-		select {
-		case toWrite := <-exporterPool.Outputs():
-			{
-				if _, err := writeFile(toWrite.First, toWrite.Second); err != nil {
-					fmt.Println("writing file:", err.Error())
-				}
-			}
-		case <-exporterPool.CloseSignal():
-			{
-				return
-			}
-		}
+func poolSettings(name string, oneLaborer ...int) []komi.PoolSettingsFunc {
+	numLaborers := customNumWorkers
+	if len(oneLaborer) > 0 {
+		numLaborers = 1
+	}
+	return []komi.PoolSettingsFunc{
+		komi.WithName(name),
+		komi.WithLaborers(numLaborers),
+		//komi.WithDebug(),
 	}
 }
 
@@ -110,4 +126,10 @@ func parsePage(v gana.Tuple[yunyun.FullPathFile, *os.File]) *yunyun.Page {
 //go:inline
 func exportPage(v *yunyun.Page) gana.Tuple[string, *bufio.Reader] {
 	return gana.NewTuple(emilia.InputFilenameToOutput(emilia.JoinWorkdir(v.File)), emilia.EnrichExportPageAsBufio(v))
+}
+
+//go:inline
+func writePage(v gana.Tuple[string, *bufio.Reader]) error {
+	_, err := writeFile(v.First, v.Second)
+	return err
 }

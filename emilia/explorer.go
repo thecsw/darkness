@@ -8,11 +8,12 @@ import (
 	"github.com/karrick/godirwalk"
 	"github.com/thecsw/darkness/yunyun"
 	g "github.com/thecsw/gana"
+	"github.com/thecsw/komi"
 )
 
 // FindFilesByExt finds all files with a given extension.
-func FindFilesByExt(pool g.PoolConnector[yunyun.FullPathFile], ext string) <-chan struct{} {
-	done := make(chan struct{}, 1)
+func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-chan struct{} {
+	done := make(chan struct{})
 	go func(done chan<- struct{}) {
 		if err := godirwalk.Walk(Config.WorkDir, &godirwalk.Options{
 			ErrorCallback: func(osPathname string, err error) godirwalk.ErrorAction {
@@ -47,11 +48,10 @@ func FindFilesByExt(pool g.PoolConnector[yunyun.FullPathFile], ext string) <-cha
 // parent goroutine until it processes all the results.
 func FindFilesByExtSimple(ext string) []yunyun.FullPathFile {
 	toReturn := make([]yunyun.FullPathFile, 0, 64)
-	addFile := func(v yunyun.FullPathFile) bool { toReturn = append(toReturn, v); return true }
-	filesPool := g.NewPool(addFile, 1, 0)
-	filesPool.DisableOutput()
+	addFile := func(v yunyun.FullPathFile) { toReturn = append(toReturn, v) }
+	filesPool := komi.NewPool(komi.WorkSimple(addFile))
 	<-FindFilesByExt(filesPool, ext)
-	filesPool.Close(false)
+	filesPool.Close()
 	return toReturn
 }
 

@@ -52,9 +52,10 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 		optionalLink = extractedLinks[1].Link
 	}
 	return &GalleryItem{
-		Item:         yunyun.RelativePathFile(image),
-		Path:         yunyun.JoinPaths(page.Location, content.GalleryPath),
-		IsExternal:   yunyun.URLRegexp.MatchString(image),
+		Item: yunyun.RelativePathFile(image),
+		Path: yunyun.JoinPaths(page.Location, content.GalleryPath),
+		//IsExternal:   yunyun.URLRegexp.MatchString(image),
+		IsExternal:   strings.HasPrefix(image, "http"),
 		Text:         text,
 		Description:  description,
 		OriginalLine: wholeLine,
