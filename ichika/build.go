@@ -88,6 +88,9 @@ func build() {
 
 	<-emilia.FindFilesByExt(filesPool, emilia.Config.Project.Input)
 
+	// filesPool.Wait()
+	// parserPool.Wait()
+	// exporterPool.Wait()
 	writerPool.Close()
 
 	finish := time.Now()
@@ -106,7 +109,7 @@ func poolSettings(name string, oneLaborer ...int) []komi.PoolSettingsFunc {
 	return []komi.PoolSettingsFunc{
 		komi.WithName(name),
 		komi.WithLaborers(numLaborers),
-		// komi.WithDebug(),
+		komi.WithDebug(),
 	}
 }
 
