@@ -16,6 +16,8 @@ type Accoutrement struct {
 	// against page's scripts before injecting them into the page.
 	// Useful if you want to disable specific scripts on select pages.
 	ExcludeHtmlHeadContains ExcludeHtmlHeadContains
+	// The image for preview
+	Preview string
 }
 
 // ExcludeHtmlHeadContains is a type to store excluded keywords for html head.

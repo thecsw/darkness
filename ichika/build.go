@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
@@ -54,11 +55,14 @@ func BuildCommandFunc() {
 func build() {
 
 	// Create the pool that reads files and returns their handles.
-	filesPool := komi.NewWithSettings(komi.Work(openPage), &komi.Settings{
+	filesPool := komi.NewWithSettings(komi.WorkWithErrors(openPage), &komi.Settings{
 		Name:     "Reading 📚 ",
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
 	})
+
+	// Handle any errors from the reading.
+	go drain(filesPool.Errors())
 
 	// Create a pool that take a files handle and parses it out into yunyun pages.
 	parserPool := komi.NewWithSettings(komi.Work(parsePage), &komi.Settings{
@@ -82,11 +86,7 @@ func build() {
 	})
 
 	// Handle any errors from the writing.
-	go func() {
-		for err := range writerPool.Errors() {
-			fmt.Printf("failed to write %s: %s", err.Job.First, err.Error)
-		}
-	}()
+	go drain(writerPool.Errors())
 
 	// Connect all the pools between each other, so the relationship is as follows,
 	//
@@ -118,26 +118,41 @@ func build() {
 	// Clear the download progress bar if present by wiping out the line.
 	fmt.Print("\r\033[2K")
 
-	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsCompleted(), finish.Sub(start).Milliseconds())
+	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsSucceeded(), finish.Sub(start).Milliseconds())
 }
 
 //go:inline
-func openPage(v yunyun.FullPathFile) gana.Tuple[yunyun.FullPathFile, *os.File] {
-	return openFile(v)
+func openPage(v yunyun.FullPathFile) (*gana.Tuple[yunyun.FullPathFile, *os.File], error) {
+	file, err := os.Open(filepath.Clean(string(v)))
+	if err != nil {
+		fmt.Println("Failed to open file", v, ":", err)
+		return nil, err
+	}
+	a := gana.NewTuple(v, file)
+	return &a, err
 }
 
 //go:inline
-func parsePage(v gana.Tuple[yunyun.FullPathFile, *os.File]) *yunyun.Page {
+func parsePage(v *gana.Tuple[yunyun.FullPathFile, *os.File]) *yunyun.Page {
 	return emilia.ParserBuilder.BuildParserReader(emilia.FullPathToWorkDirRel(v.First), v.Second).Parse()
 }
 
 //go:inline
-func exportPage(v *yunyun.Page) gana.Tuple[string, *bufio.Reader] {
-	return gana.NewTuple(emilia.InputFilenameToOutput(emilia.JoinWorkdir(v.File)), emilia.EnrichExportPageAsBufio(v))
+func exportPage(v *yunyun.Page) *gana.Tuple[string, *bufio.Reader] {
+	a := gana.NewTuple(emilia.InputFilenameToOutput(emilia.JoinWorkdir(v.File)), emilia.EnrichExportPageAsBufio(v))
+	return &a
 }
 
 //go:inline
-func writePage(v gana.Tuple[string, *bufio.Reader]) error {
+func writePage(v *gana.Tuple[string, *bufio.Reader]) error {
 	_, err := writeFile(v.First, v.Second)
 	return err
 }
+
+func drain[T any](vv chan T) {
+	for v := range vv {
+		noop(v)
+	}
+}
+
+func noop[T any](v T) {}

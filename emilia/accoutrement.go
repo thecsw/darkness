@@ -16,6 +16,7 @@ const (
 	optionAuthorImage     = `author-image`
 	optionMath            = `math`
 	optionExcludeHtmlHead = `exclude-html-head`
+	optionPreview         = `preview`
 )
 
 var (
@@ -25,6 +26,7 @@ var (
 		optionAuthorImage:     accoutrementAuthorImage,
 		optionMath:            accoutrementMath,
 		optionExcludeHtmlHead: accoutrementExcludeHtmlScript,
+		optionPreview:         accoutrementPreview,
 	}
 )
 
@@ -87,6 +89,10 @@ func accoutrementMath(what string, target *yunyun.Accoutrement) {
 
 func accoutrementExcludeHtmlScript(what string, target *yunyun.Accoutrement) {
 	target.ExcludeHtmlHeadContains = append(target.ExcludeHtmlHeadContains, what)
+}
+
+func accoutrementPreview(what string, target *yunyun.Accoutrement) {
+	target.Preview = what
 }
 
 func accoutrementBool(what string, target *yunyun.AccoutrementFlip) {

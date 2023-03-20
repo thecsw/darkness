@@ -83,9 +83,10 @@ func addOpenGraph(page *yunyun.Page, description string) []string {
 		{"og:url", "og:url", string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](page.Location))},
 		{"og:locale", "og:locale", emilia.Config.Website.Locale},
 		{"og:type", "og:type", "website"},
-		{"og:image", "og:image", string(emilia.JoinPath(yunyun.JoinRelativePaths(page.Location, emilia.Config.Website.Preview)))},
+		{"og:image", "og:image", string(emilia.JoinPath(
+			yunyun.JoinRelativePaths(page.Location, yunyun.RelativePathFile(page.Accoutrement.Preview))))},
 		{"og:image:alt", "og:image:alt", "Preview"},
-		{"og:image:type", "og:image:type", "image/" + strings.TrimLeft(filepath.Ext(string(emilia.Config.Website.Preview)), ".")},
+		{"og:image:type", "og:image:type", "image/" + strings.TrimLeft(filepath.Ext(page.Accoutrement.Preview), ".")},
 		{"og:image:width", "og:image:width", "1280"},
 		{"og:image:height", "og:image:height", "640"},
 		{"og:description", "og:description", html.EscapeString(description)}})
@@ -97,7 +98,8 @@ func addTwitterMeta(page *yunyun.Page, description string) []string {
 		{"twitter:card", "twitter:card", "summary_large_image"},
 		{"twitter:site", "twitter:site", html.EscapeString(emilia.Config.Title)},
 		{"twitter:creator", "twitter:creator", emilia.Config.Website.Twitter},
-		{"twitter:image:src", "twitter:image:src", string(emilia.JoinPath(yunyun.JoinRelativePaths(page.Location, emilia.Config.Website.Preview)))},
+		{"twitter:image:src", "twitter:image:src", string(emilia.JoinPath(
+			yunyun.JoinRelativePaths(page.Location, yunyun.RelativePathFile(page.Accoutrement.Preview))))},
 		{"twitter:url", "twitter:url", string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](page.Location))},
 		{"twitter:title", "twitter:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"twitter:description", "twitter:description", html.EscapeString(description)}})

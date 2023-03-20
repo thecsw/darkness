@@ -47,6 +47,10 @@ func (e ExporterHTML) Export() string {
 	if e.page.Accoutrement.Tomb.IsEnabled() {
 		e.addTomb()
 	}
+	// If the page hasn't set a custom preview, default to emilia.
+	if len(e.page.Accoutrement.Preview) < 1 {
+		e.page.Accoutrement.Preview = string(emilia.Config.Website.Preview)
+	}
 	// Build the HTML (string) representation of each content
 	content := make([]string, e.contentsNum)
 	for i, v := range e.page.Contents {

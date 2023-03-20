@@ -34,5 +34,5 @@ require (
 	github.com/schollz/progressbar/v3 v3.13.1
 	github.com/thecsw/gana v0.0.0-20230302033602-789da1301422
 	github.com/thecsw/haruhi v0.0.0-20230320043919-14785d9364c1
-	github.com/thecsw/komi v0.0.0-20230320184446-2417288390ce
+	github.com/thecsw/komi v0.0.0-20230320212740-244ce6cb09d1
 )
