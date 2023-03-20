@@ -14,6 +14,7 @@ import (
 // quotesReplace is the map to replace
 var quotesReplace = map[string]string{
 	"'s":  "’s",
+	"s'":  "s’",
 	"'m":  "’m",
 	"n't": "n’t",
 	"'re": "’re",
@@ -21,7 +22,8 @@ var quotesReplace = map[string]string{
 	"'ll": "’ll",
 	"``":  "“",
 	"''":  "”",
-	"--":  "—",
+	"--":  "–", // en dash
+	"---": "—", // em dash
 }
 
 // fancyQuotes replaces boring single and double quotes with fancier Unicode versions
