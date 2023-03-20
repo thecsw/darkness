@@ -4,8 +4,6 @@ go 1.18
 
 require github.com/BurntSushi/toml v1.2.1
 
-replace github.com/thecsw/komi => /Users/thecsw/gits/komi
-
 require (
 	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
 	github.com/charmbracelet/log v0.1.2 // indirect
