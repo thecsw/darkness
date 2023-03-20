@@ -88,9 +88,6 @@ func build() {
 
 	<-emilia.FindFilesByExt(filesPool, emilia.Config.Project.Input)
 
-	filesPool.Wait()
-	parserPool.Wait()
-	exporterPool.Wait()
 	writerPool.Close()
 
 	finish := time.Now()
