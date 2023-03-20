@@ -87,7 +87,7 @@ func ExtractLinks(line string) []*ExtractedLink {
 	if !LinkRegexp.MatchString(line) {
 		return nil
 	}
-	submatches := LinkRegexp.FindAllStringSubmatch(line, 1)
+	submatches := LinkRegexp.FindAllStringSubmatch(line, -1)
 	// Sanity check
 	if len(submatches) < 1 {
 		return nil
