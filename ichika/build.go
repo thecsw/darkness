@@ -109,7 +109,7 @@ func poolSettings(name string, oneLaborer ...int) []komi.PoolSettingsFunc {
 	return []komi.PoolSettingsFunc{
 		komi.WithName(name),
 		komi.WithLaborers(numLaborers),
-		//komi.WithDebug(),
+		// komi.WithDebug(),
 	}
 }
 
