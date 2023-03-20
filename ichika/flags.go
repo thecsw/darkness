@@ -39,7 +39,7 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	cmd.StringVar(&workDir, "dir", ".", "where do I look for files")
 	cmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	cmd.BoolVar(&disableParallel, "disable-parallel", false, "disable parallel build (only use one worker)")
-	cmd.IntVar(&customNumWorkers, "workers", 0, "number of workers to use")
+	cmd.IntVar(&customNumWorkers, "workers", 4, "number of workers to use")
 	cmd.BoolVar(&debugEnabled, "debug", false, "enable debug logs")
 	cmd.BoolVar(&useCurrentDirectory, "dev", false, "use local path for urls (development)")
 	cmd.BoolVar(&vendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")
