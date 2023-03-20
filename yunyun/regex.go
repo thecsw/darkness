@@ -52,8 +52,8 @@ var (
 func (m Markings) BuildRegex() {
 	BoldText = SymmetricEmphasis(m.Bold)
 	ItalicText = SymmetricEmphasis(m.Italic)
-	BoldItalicTextBegin = regexp.MustCompile(`(?mU)(^|[ ()_%<>])` + m.Bold + m.Italic)
-	BoldItalicTextEnd = regexp.MustCompile(`(?mU)` + m.Italic + m.Bold + `($|[ (),.!?;&_%><])`)
+	BoldItalicTextBegin = regexp.MustCompile(`(?mU)(^|[ ()_%<>])` + m.Italic + m.Bold)
+	BoldItalicTextEnd = regexp.MustCompile(`(?mU)` + m.Bold + m.Italic + `($|[ (),.!?;&_%><])`)
 	VerbatimText = SymmetricEmphasis(m.Verbatim)
 	StrikethroughText = SymmetricEmphasis(m.Strikethrough)
 	UnderlineText = SymmetricEmphasis(m.Underline)
@@ -158,15 +158,8 @@ var (
 	FootnotePostProcessingRegexp = regexp.MustCompile(`!(\d+)!`)
 )
 
-// FixBoldItalicMarkups fixes bold italic text sources, such that all
-// occurences of \*/.../\*  are switched to /\*...\*/
-func FixBoldItalicMarkups(input string) string {
-	return BoldItalicTextEnd.ReplaceAllString(BoldItalicTextBegin.ReplaceAllString(input, `$1/*`), `*/$1`)
-}
-
 // RemoveFormatting will remove all special markup symbols.
 func RemoveFormatting(what string) string {
-	what = FixBoldItalicMarkups(what)
 	for _, source := range SpecialTextMarkups {
 		what = source.ReplaceAllString(what, `$l$text$r`)
 	}

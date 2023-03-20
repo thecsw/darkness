@@ -3,12 +3,10 @@ package ichika
 import (
 	"fmt"
 	"os"
-	"sync"
 	"time"
 	"unicode"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/yunyun"
 )
 
 var (
@@ -51,11 +49,8 @@ func CleanCommandFunc() {
 
 // removeOutputFiles is the low-level command to be used when cleaning data.
 func removeOutputFiles() {
-	orgfiles := make(chan yunyun.FullPathFile, defaultNumOfWorkers)
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	go emilia.FindFilesByExt(orgfiles, emilia.Config.Project.Input, wg)
-	for orgfile := range orgfiles {
+	orgfiles := emilia.FindFilesByExtSimple(emilia.Config.Project.Input)
+	for _, orgfile := range orgfiles {
 		toRemove := emilia.InputFilenameToOutput(orgfile)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to blow up!!")
@@ -64,10 +59,7 @@ func removeOutputFiles() {
 			fmt.Println(toRemove, "went boom!")
 			time.Sleep(50 * time.Millisecond)
 		}
-		wg.Done()
 	}
-	wg.Done()
-	wg.Wait()
 }
 
 // delayedLinesPrint prints lines with a delay.

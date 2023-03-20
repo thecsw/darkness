@@ -97,39 +97,40 @@ Sorry, your browser doesn't support embedded videos.
 
 // link returns an html representation of a link even if it's an embed command
 func (e *ExporterHTML) Link(content *yunyun.Content) string {
+	cleanLink := strings.TrimSpace(content.Link)
 	switch {
-	case yunyun.ImageExtRegexp.MatchString(content.Link) || strings.Contains(content.Attributes, "image"):
+	case yunyun.ImageExtRegexp.MatchString(cleanLink) || strings.Contains(content.Attributes, "image"):
 		// Put imageblocks.
 		return linkImage(content)
-	case yunyun.AudioFileExtRegexp.MatchString(content.Link):
+	case yunyun.AudioFileExtRegexp.MatchString(cleanLink):
 		// Audiofiles
-		return fmt.Sprintf(audioEmbedTemplate, content.Link)
-	case yunyun.VideoFileExtRegexp.MatchString(content.Link):
+		return fmt.Sprintf(audioEmbedTemplate, cleanLink)
+	case yunyun.VideoFileExtRegexp.MatchString(cleanLink):
 		// Raw videofiles
 		return fmt.Sprintf(videoEmbedTemplate,
-			content.Link, func(v string) string {
+			cleanLink, func(v string) string {
 				return yunyun.VideoFileExtRegexp.FindAllStringSubmatch(v, 1)[0][1]
-			}(content.Link),
+			}(cleanLink),
 			processText(content.LinkTitle),
 		)
-	case strings.HasPrefix(content.Link, youtubeEmbedPrefix):
+	case strings.HasPrefix(cleanLink, youtubeEmbedPrefix):
 		// Youtube videos
 		return fmt.Sprintf(youtubeEmbedTemplate,
-			gana.SkipString(uint(len(youtubeEmbedPrefix)), content.Link),
+			gana.SkipString(uint(len(youtubeEmbedPrefix)), cleanLink),
 		)
-	case strings.HasPrefix(content.Link, spotifyTrackEmbedPrefix):
+	case strings.HasPrefix(cleanLink, spotifyTrackEmbedPrefix):
 		// Spotify songs
 		return fmt.Sprintf(spotifyTrackEmbedTemplate,
-			gana.SkipString(uint(len(spotifyTrackEmbedPrefix)), content.Link),
+			gana.SkipString(uint(len(spotifyTrackEmbedPrefix)), cleanLink),
 		)
-	case strings.HasPrefix(content.Link, spotifyPlaylistEmbedPrefix):
+	case strings.HasPrefix(cleanLink, spotifyPlaylistEmbedPrefix):
 		return fmt.Sprintf(spotifyPlaylistEmbedTemplate,
-			gana.SkipString(uint(len(spotifyPlaylistEmbedPrefix)), content.Link),
+			gana.SkipString(uint(len(spotifyPlaylistEmbedPrefix)), cleanLink),
 		)
 	default:
 		yunyun.AddFlag(&content.Options, linkWasNotSpecialFlag)
 		return fmt.Sprintf(`<a href="%s" title="%s">%s</a>`,
-			content.Link,
+			cleanLink,
 			yunyun.RemoveFormatting(content.LinkDescription),
 			processText(content.LinkTitle),
 		)
