@@ -49,7 +49,7 @@ func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-
 func FindFilesByExtSimple(ext string) []yunyun.FullPathFile {
 	toReturn := make([]yunyun.FullPathFile, 0, 64)
 	addFile := func(v yunyun.FullPathFile) { toReturn = append(toReturn, v) }
-	filesPool := komi.NewPool(komi.WorkSimple(addFile))
+	filesPool := komi.New(komi.WorkSimple(addFile))
 	<-FindFilesByExt(filesPool, ext)
 	filesPool.Close()
 	return toReturn

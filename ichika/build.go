@@ -52,11 +52,34 @@ func BuildCommandFunc() {
 
 // build uses set flags and emilia data to build the local directory.
 func build() {
-	// Create all the pools
-	filesPool := komi.NewPool(komi.Work(openPage), poolSettings("Reading 📚 ")...)
-	parserPool := komi.NewPool(komi.Work(parsePage), poolSettings("Parsing 🧹")...)
-	exporterPool := komi.NewPool(komi.Work(exportPage), poolSettings("Exporting 🥂")...)
-	writerPool := komi.NewPool(komi.WorkSimpleWithErrors(writePage), poolSettings("Writing 🎸", 1)...)
+
+	// Create the pool that reads files and returns their handles.
+	filesPool := komi.NewWithSettings(komi.Work(openPage), &komi.Settings{
+		Name:     "Reading 📚 ",
+		Laborers: customNumWorkers,
+		Debug:    debugEnabled,
+	})
+
+	// Create a pool that take a files handle and parses it out into yunyun pages.
+	parserPool := komi.NewWithSettings(komi.Work(parsePage), &komi.Settings{
+		Name:     "Parsing 🧹 ",
+		Laborers: customNumWorkers,
+		Debug:    debugEnabled,
+	})
+
+	// Create a pool that that takes yunyun pages and exports them into request format.
+	exporterPool := komi.NewWithSettings(komi.Work(exportPage), &komi.Settings{
+		Name:     "Exporting 🥂 ",
+		Laborers: customNumWorkers,
+		Debug:    debugEnabled,
+	})
+
+	// Create a pool that reads the exported data and writes them to target files.
+	writerPool := komi.NewWithSettings(komi.WorkSimpleWithErrors(writePage), &komi.Settings{
+		Name:     "Writing 🎸",
+		Laborers: 1,
+		Debug:    debugEnabled,
+	})
 
 	// Handle any errors from the writing.
 	go func() {
@@ -88,9 +111,6 @@ func build() {
 
 	<-emilia.FindFilesByExt(filesPool, emilia.Config.Project.Input)
 
-	// filesPool.Wait()
-	// parserPool.Wait()
-	// exporterPool.Wait()
 	writerPool.Close()
 
 	finish := time.Now()
@@ -99,18 +119,6 @@ func build() {
 	fmt.Print("\r\033[2K")
 
 	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsCompleted(), finish.Sub(start).Milliseconds())
-}
-
-func poolSettings(name string, oneLaborer ...int) []komi.PoolSettingsFunc {
-	numLaborers := customNumWorkers
-	if len(oneLaborer) > 0 {
-		numLaborers = 1
-	}
-	return []komi.PoolSettingsFunc{
-		komi.WithName(name),
-		komi.WithLaborers(numLaborers),
-		komi.WithDebug(),
-	}
 }
 
 //go:inline

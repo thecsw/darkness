@@ -12,21 +12,26 @@ import (
 var (
 	// workDir is the directory to look for files.
 	workDir = "."
+
 	// darknessToml is the location of `darkness.toml`.
 	darknessToml = "darkness.toml"
+
 	// filename is the file to build.
 	filename = "index.org"
+
 	// defaultNumOfWorkers gives us the number of workers to
 	// spin up in each stage: parsing and processing.
 	defaultNumOfWorkers = 14
+
 	// disableParallel sets the number of workers to 1.
 	disableParallel bool
+
 	// customNumWorkers sets the custom number of workers.
 	customNumWorkers int
-	// customChannelCapacity low-level sets the capacity of
-	// workers' input/output capacity, defaults to the default
-	// number of workers.
-	customChannelCapacity int
+
+	// debugEnabled tells us whether to show debug logs.
+	debugEnabled bool
+
 	// useCurrentDirectory is used for development and local
 	// serving, such that you can browse the url files locally.
 	useCurrentDirectory bool
@@ -39,7 +44,7 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	cmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	cmd.BoolVar(&disableParallel, "disable-parallel", false, "disable parallel build (only use one worker)")
 	cmd.IntVar(&customNumWorkers, "workers", defaultNumOfWorkers, "number of workers to spin up")
-	cmd.IntVar(&customChannelCapacity, "capacity", defaultNumOfWorkers, "worker channels' capacity")
+	cmd.BoolVar(&debugEnabled, "debug", false, "enable debug logs")
 	cmd.BoolVar(&useCurrentDirectory, "dev", false, "use local path for urls (development)")
 	cmd.BoolVar(&vendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")
 	if err := cmd.Parse(os.Args[2:]); err != nil {
