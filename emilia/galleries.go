@@ -153,10 +153,14 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 	// Open the file writer and encode the image there.
 	imgFile, err := os.Create(filepath.Clean(localVendoredPath))
 	if err != nil {
-		fmt.Printf("Failed to create file %s: %s\n", localVendoredPath, err.Error())
+		fmt.Printf("Failed to create file %s: %s\n", localVendoredPath, err)
 		return fallbackReturn
 	}
-	defer imgFile.Close()
+	defer func() {
+		if err := imgFile.Close(); err != nil {
+			fmt.Printf("Failed to close image file %s: %s\n", localVendoredPath, err)
+		}
+	}()
 
 	// Decode the image into the file.
 	if err := imaging.Encode(imgFile, img, imaging.JPEG); err != nil {

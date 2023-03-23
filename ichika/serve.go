@@ -44,11 +44,25 @@ func ServeCommandFunc() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.NoCache)
 	r.Use(middleware.Recoverer)
+
+	// Set up the server's timeouts.
+	srv := &http.Server{
+		Addr:              "127.0.0.1:" + strconv.Itoa(*port),
+		Handler:           r,
+		ReadTimeout:       5 * time.Second,
+		ReadHeaderTimeout: 1 * time.Second,
+		WriteTimeout:      10 * time.Second,
+	}
+
+	// Tune it to serve local files.
 	FileServer(r, "/", http.Dir(emilia.Config.WorkDir))
 
+	// Spin the local server up.
 	go func() {
-		log.Fatal(http.ListenAndServe(":"+strconv.Itoa(*port), r))
+		log.Fatal(srv.ListenAndServe())
 	}()
+
+	// File watcher will rebuild dir if any files change.
 	go launchWatcher()
 	log.Println("Launched file watcher")
 

@@ -60,9 +60,7 @@ func build() {
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
 	})
-
-	// Handle any errors from the reading.
-	go drain(filesPool.Errors())
+	go logErrors("reading", filesPool.Errors())
 
 	// Create a pool that take a files handle and parses it out into yunyun pages.
 	parserPool := komi.NewWithSettings(komi.Work(parsePage), &komi.Settings{
@@ -84,9 +82,7 @@ func build() {
 		Laborers: 1,
 		Debug:    debugEnabled,
 	})
-
-	// Handle any errors from the writing.
-	go drain(writerPool.Errors())
+	go logErrors("writer", writerPool.Errors())
 
 	// Connect all the pools between each other, so the relationship is as follows,
 	//
@@ -125,7 +121,6 @@ func build() {
 func openPage(v yunyun.FullPathFile) (*gana.Tuple[yunyun.FullPathFile, *os.File], error) {
 	file, err := os.Open(filepath.Clean(string(v)))
 	if err != nil {
-		fmt.Println("Failed to open file", v, ":", err)
 		return nil, err
 	}
 	a := gana.NewTuple(v, file)
@@ -147,6 +142,12 @@ func exportPage(v *yunyun.Page) *gana.Tuple[string, *bufio.Reader] {
 func writePage(v *gana.Tuple[string, *bufio.Reader]) error {
 	_, err := writeFile(v.First, v.Second)
 	return err
+}
+
+func logErrors[T any](name string, vv chan komi.PoolError[T]) {
+	for v := range vv {
+		fmt.Printf("%s reported error: %s", name, v.Error)
+	}
 }
 
 func drain[T any](vv chan T) {

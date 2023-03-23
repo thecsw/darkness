@@ -51,8 +51,6 @@ github.com/thecsw/gana v0.0.0-20230302033602-789da1301422 h1:aB9iKJRev+s8tezrqXy
 github.com/thecsw/gana v0.0.0-20230302033602-789da1301422/go.mod h1:peUsRpO0qD0S5GdV+95GLWBNOUq59MuA1l1HRfL65aw=
 github.com/thecsw/haruhi v0.0.0-20230320043919-14785d9364c1 h1:ia5BsYxROECDZnMWMx7aw+iw9TfS7DM9ILEJ/XFUryY=
 github.com/thecsw/haruhi v0.0.0-20230320043919-14785d9364c1/go.mod h1:ZCskUH8LmpStDG9+AZzaQ4pSAC9EP2CUfDwiRNyndHw=
-github.com/thecsw/komi v0.0.0-20230320184446-2417288390ce h1:7pzqtWBv8LRr2k31RZN2YfWLD5IzDIM8776ep5mlO0U=
-github.com/thecsw/komi v0.0.0-20230320184446-2417288390ce/go.mod h1:wGGWD6Ck+Fup6i+bNaHH/BH+wad838rcCu8VnQsl67c=
 github.com/thecsw/komi v0.0.0-20230320212740-244ce6cb09d1 h1:IDqlgSj95Nkfs4KO933Jl5Fe+NFt4Y4XlTLzumy5z2o=
 github.com/thecsw/komi v0.0.0-20230320212740-244ce6cb09d1/go.mod h1:wGGWD6Ck+Fup6i+bNaHH/BH+wad838rcCu8VnQsl67c=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=

@@ -23,7 +23,7 @@ func buildGalleryFiles(dryRun bool) {
 	// Make sure the preview directory exists
 	previewDirectory := filepath.Join(emilia.Config.WorkDir, string(emilia.Config.Project.DarknessPreviewDirectory))
 	if err := emilia.Mkdir(previewDirectory); err != nil {
-		fmt.Println("fatal: couldn't create preview directory:", err.Error())
+		fmt.Println("fatal: couldn't create preview directory:", err)
 		os.Exit(1)
 	}
 	galleryFiles := getGalleryFiles()
@@ -42,14 +42,14 @@ func buildGalleryFiles(dryRun bool) {
 		prefix := fmt.Sprintf("[%d/%d] ", i+1, len(missingFiles))
 		sourceImage, err := emilia.GalleryItemToImage(galleryFile, "preview", prefix)
 		if err != nil {
-			fmt.Println("gallery item to reader:", err.Error())
+			fmt.Println("gallery item to reader:", err)
 			continue
 		}
 
 		// Encode preview image into a buffer.
 		previewImage, err := resizeAndBlur(sourceImage)
 		if err != nil {
-			fmt.Println("gallery reader to writer:", err.Error())
+			fmt.Println("gallery reader to writer:", err)
 			continue
 		}
 
@@ -58,15 +58,17 @@ func buildGalleryFiles(dryRun bool) {
 			file, err := os.Create(string(newFile))
 			bar := emilia.ProgressBar(-1, "misa", prefix, "Resizing", string(emilia.FullPathToWorkDirRel(newFile)))
 			if err != nil {
-				fmt.Printf("failed to create file %s: %s\n", newFile, err.Error())
+				fmt.Printf("failed to create file %s: %s\n", newFile, err)
 				continue
 			}
 			// Write the final preview image file.
 			if err := imaging.Encode(io.MultiWriter(file, bar), previewImage, imaging.JPEG); err != nil {
-				fmt.Printf("failed to encode image: %s", err.Error())
+				fmt.Printf("failed to encode image: %s", err)
 				continue
 			}
-			file.Close()
+			if err := file.Close(); err != nil {
+				fmt.Printf("failed to close image preview file %s: %s\n", newFile, err)
+			}
 		}
 	}
 	fmt.Print("\r\033[2K")
@@ -93,7 +95,7 @@ func removeGalleryFiles(dryRun bool) {
 	for _, galleryFile := range getGalleryFiles() {
 		newFile := emilia.GalleryPreview(galleryFile)
 		if err := removeFunc(string(newFile)); err != nil && !os.IsNotExist(err) {
-			fmt.Println("Couldn't delete", newFile, "| reason:", err.Error())
+			fmt.Println("Couldn't delete", newFile, "| reason:", err)
 		}
 	}
 }

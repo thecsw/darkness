@@ -10,7 +10,8 @@ import (
 // WithSourceCodeTrimmedLeftWhitespace removes leading whitespace from source code blocks
 func WithSourceCodeTrimmedLeftWhitespace() yunyun.PageOption {
 	return func(page *yunyun.Page) {
-		for i, content := range page.Contents.SourceCodeBlocks() {
+		for _, contentl := range page.Contents.SourceCodeBlocks() {
+			content := contentl
 			lines := strings.Split(content.SourceCode, "\n")
 			if len(lines) < 1 {
 				continue
@@ -27,7 +28,7 @@ func WithSourceCodeTrimmedLeftWhitespace() yunyun.PageOption {
 				}
 				lines[i] = line[gana.Min(len(lines[i]), offset):]
 			}
-			page.Contents[i].SourceCode = strings.Join(lines, "\n")
+			content.SourceCode = strings.Join(lines, "\n")
 		}
 	}
 }

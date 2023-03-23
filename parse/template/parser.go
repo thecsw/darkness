@@ -2,6 +2,7 @@ package template
 
 import (
 	"bufio"
+	"fmt"
 	"io"
 
 	"github.com/thecsw/darkness/parse"
@@ -33,7 +34,9 @@ func (ParserTemplateBuilder) BuildParserReader(
 	filename yunyun.RelativePathFile, reader io.ReadCloser,
 ) parse.Parser {
 	data, _ := io.ReadAll(bufio.NewReader(reader))
-	reader.Close()
+	if err := reader.Close(); err != nil {
+		fmt.Printf("Failed to close file handler for %s: %s\n", filename, err)
+	}
 	return &ParserTemplate{
 		Filename: filename,
 		Data:     string(data),
