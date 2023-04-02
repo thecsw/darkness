@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
@@ -57,7 +58,7 @@ func build() {
 	// Create the pool that reads files and returns their handles.
 	filesPool := komi.NewWithSettings(komi.WorkWithErrors(openPage), &komi.Settings{
 		Name:     "Reading 📚 ",
-		Laborers: customNumWorkers,
+		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
 	})
 	go logErrors("reading", filesPool.Errors())
@@ -79,7 +80,7 @@ func build() {
 	// Create a pool that reads the exported data and writes them to target files.
 	writerPool := komi.NewWithSettings(komi.WorkSimpleWithErrors(writePage), &komi.Settings{
 		Name:     "Writing 🎸",
-		Laborers: 1,
+		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
 	})
 	go logErrors("writer", writerPool.Errors())

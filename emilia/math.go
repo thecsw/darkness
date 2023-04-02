@@ -14,8 +14,12 @@ const (
 	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>`
 
 	// katexJs is the javascript for math support using katex
-	katexCdnCSS        = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css`
-	katexCdnJS         = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js`
+	katexCdnCSS = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css`
+
+	// katexCdnJS is the javascript for math support using katex
+	katexCdnJS = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js`
+
+	// katexCdnAutoRender is the javascript for math support using katex
 	katexCdnAutoRender = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js`
 
 	katexLocalCSS        yunyun.RelativePathFile = `scripts/katex/katex.min.css`

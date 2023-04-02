@@ -47,7 +47,7 @@ farewell
 ```
 
 *Each* page takes <1ms to process on my 2020 M1 MacBook Pro. With all the IO time included
-as well. Heavily optimized with [gana workers](https://github.com/thecsw/gana), 
+as well. Heavily optimized with [komi pools](https://github.com/thecsw/komi),
 [hunting heap moves](https://hmarr.com/blog/go-allocation-hunting/), and
 [heavy profiling](https://sandyuraz.com/blogs/pprof).
 
