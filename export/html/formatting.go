@@ -22,8 +22,8 @@ var quotesReplace = map[string]string{
 	"'ll": "’ll",
 	"``":  "“",
 	"''":  "”",
-	"--":  "–", // en dash
 	"---": "—", // em dash
+	"--":  "–", // en dash
 }
 
 // fancyQuotes replaces boring single and double quotes with fancier Unicode versions
