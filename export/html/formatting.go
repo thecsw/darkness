@@ -22,8 +22,6 @@ var quotesReplace = map[string]string{
 	"'ll": "’ll",
 	"``":  "“",
 	"''":  "”",
-	"---": "—", // em dash
-	"--":  "–", // en dash
 }
 
 // fancyQuotes replaces boring single and double quotes with fancier Unicode versions
@@ -31,6 +29,8 @@ func fancyQuotes(text string) string {
 	for k, v := range quotesReplace {
 		text = strings.ReplaceAll(text, k, v)
 	}
+	text = strings.ReplaceAll(text, "---", "—") // em-dash
+	text = strings.ReplaceAll(text, "--", "–")  // en dash
 	return text
 }
 
