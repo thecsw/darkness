@@ -39,6 +39,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		yunyun.WithLocation(yunyun.RelativePathTrim(p.Filename)),
 		yunyun.WithContents(make([]*yunyun.Content, 0, 32)),
 	)
+	page.Author = emilia.Config.RSS.DefaultAuthor
 
 	// currentFlags uses flags to set options
 	currentFlags := yunyun.Bits(0)
@@ -111,6 +112,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		optionHtmlHead:   func(line string) { page.HtmlHead = append(page.HtmlHead, extractHtmlHead(line)) },
 		optionOptions:    func(line string) { optionsStrings += extractOptions(line) + " " },
 		optionAttributes: func(line string) { attributes = extractAttributes(line) },
+		optionAuthor:     func(line string) { page.Author = extractAuthor(line) },
 	}
 
 	// Yunyun's markings default to orgmode

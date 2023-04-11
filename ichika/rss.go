@@ -57,16 +57,16 @@ func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 		}
 
 		items = append(items, &rss.Item{
+			XMLName:     xml.Name{},
 			Title:       yunyun.RemoveFormatting(page.Title),
 			Link:        emilia.Config.URL + string(page.Location),
 			Description: emilia.GetDescription(page, emilia.Config.Website.DescriptionLength*4) + " [ Continue reading... ]",
-			Category: &rss.Category{
-				Value:  categoryName,
-				Domain: emilia.Config.URL + string(categoryLocation),
-			},
-			Guid:    &rss.Guid{Value: emilia.Config.URL + string(page.Location), IsPermaLink: true},
-			PubDate: getDate(page).Format(rss.RSSFormat),
-			Source:  &rss.Source{Value: emilia.Config.Title, URL: emilia.Config.URL},
+			Author:      page.Author,
+			Category:    &rss.Category{Value: categoryName, Domain: emilia.Config.URL + string(categoryLocation)},
+			Enclosure:   &rss.Enclosure{},
+			Guid:        &rss.Guid{Value: emilia.Config.URL + string(page.Location), IsPermaLink: true},
+			PubDate:     getDate(page).Format(rss.RSSFormat),
+			Source:      &rss.Source{Value: emilia.Config.Title, URL: emilia.Config.URL},
 		})
 	}
 

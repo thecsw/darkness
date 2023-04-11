@@ -185,6 +185,11 @@ func extractDate(line string) string {
 	return extractOptionLabel(line, optionDate)
 }
 
+// extractDate extracts author `AUTHOR` from `#+author: AUTHOR`.
+func extractAuthor(line string) string {
+	return extractOptionLabel(line, optionAuthor)
+}
+
 // extractGalleryFolder extracts gallery `FOLDER` from `#+begin_gallery FOLDER`.
 func extractGalleryFolder(line string) string {
 	path, err := extractCustomBlockOption(line, `path`, regexpPatternNoWhitespace)

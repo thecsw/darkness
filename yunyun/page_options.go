@@ -17,6 +17,7 @@ func NewPage(options ...PageOption) *Page {
 	p := &Page{
 		File:          defaultPageFilename,
 		Title:         defaultPageTitle,
+		Author:        "",
 		Date:          defaultDate,
 		DateHoloscene: defaulteDateHoloscene,
 		Location:      defaultURL,

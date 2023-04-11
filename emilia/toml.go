@@ -179,6 +179,12 @@ type RSSConfig struct {
 	// Example: "geo@herald.com (George Matesky)"
 	ManagingEditor string `toml:"managing_editor"`
 
+	// DefaultAuthor name to use for posts. Overwritten by posts'
+	// author directives.
+	//
+	// Example: "Sandy Urazayev"
+	DefaultAuthor string `toml:"default_author"`
+
 	// Email address for person responsible for technical issues
 	// relating to channel.
 	//

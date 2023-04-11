@@ -14,6 +14,8 @@ type Page struct {
 	Location RelativePathDir
 	// Title is the title of the page.
 	Title string
+	// Author is the author of the page.
+	Author string
 	// Date is the date of the page.
 	Date string
 	// DateHoloscene tells us whether the first paragraph
