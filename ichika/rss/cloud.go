@@ -9,9 +9,6 @@ type Cloud struct {
 	// A list of URLs of RSS documents that the client seeks to monitor
 	Domain string `xml:"domain,attr"`
 
-	// The client's TCP port.
-	Port int `xml:"port,attr"`
-
 	// The client's remote procedure call path.
 	Path string `xml:"path,attr"`
 
@@ -22,4 +19,7 @@ type Cloud struct {
 	// The string "xml-rpc" if the client employs XML-RPC,
 	// "soap" for SOAP and "http-post" for REST.
 	Protocol string `xml:"protocol,attr"`
+
+	// The client's TCP port.
+	Port int `xml:"port,attr"`
 }

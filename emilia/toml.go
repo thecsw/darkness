@@ -9,29 +9,6 @@ import (
 
 // DarknessConfig is the global darkness config
 type DarknessConfig struct {
-	// Title is the title of the site
-	Title string `toml:"title"`
-
-	// URL is the URL of the site
-	URL string `toml:"url"`
-
-	// Slice with just `URL` in it.
-	URLSlice []string `tom:"-"`
-
-	// URLIsLocal is true if URL is the file path, not url.
-	URLIsLocal bool `toml:"-"`
-
-	// Project is the project section of the config
-	Project ProjectConfig `toml:"project"`
-
-	// Website is the website section of the config
-	Website WebsiteConfig `toml:"website"`
-
-	// Author is the author section of the config
-	Author AuthorConfig `toml:"author"`
-
-	// RSS is the rss config.
-	RSS RSSConfig `toml:"rss"`
 
 	// Navigation is the navigation section of the config
 	Navigation map[string]NavigationConfig `toml:"navigation"`
@@ -39,8 +16,32 @@ type DarknessConfig struct {
 	// URLPath is the parsed URL of the site
 	URLPath *url.URL `toml:"-"`
 
+	// Title is the title of the site
+	Title string `toml:"title"`
+
+	// URL is the URL of the site
+	URL string `toml:"url"`
+
 	// WorkDir is the directory of where darkness project lives.
 	WorkDir string `toml:"-"`
+
+	// RSS is the rss config.
+	RSS RSSConfig `toml:"rss"`
+
+	// Author is the author section of the config
+	Author AuthorConfig `toml:"author"`
+
+	// Slice with just `URL` in it.
+	URLSlice []string `tom:"-"`
+
+	// Project is the project section of the config
+	Project ProjectConfig `toml:"project"`
+
+	// Website is the website section of the config
+	Website WebsiteConfig `toml:"website"`
+
+	// URLIsLocal is true if URL is the file path, not url.
+	URLIsLocal bool `toml:"-"`
 
 	// VendorGalleries tells us if we need to stub local copies
 	// of remote links in galleries.
@@ -49,28 +50,30 @@ type DarknessConfig struct {
 
 // ProjectConfig is the project section of the config
 type ProjectConfig struct {
+	ExcludeRegex *regexp.Regexp `toml:"-"`
 	// Input is the input format (default ".org")
 	Input string `toml:"input"`
 
 	// Output is the output format (defaulte ".html")
 	Output string `toml:"output"`
 
-	// Excludes is the list of relative paths to exclude from the project
-	Exclude []yunyun.RelativePathDir `toml:"exclude"`
-
 	// DarknessVendorDirectory where to vendor, default to `darkness_vendor`.
 	DarknessVendorDirectory yunyun.RelativePathDir `toml:"vendor_directory"`
 
 	// DarknessPreviewDirectory where to store previews, default to `darkness_preview`.
 	DarknessPreviewDirectory yunyun.RelativePathDir `toml:"preview_directory"`
-	ExcludeRegex             *regexp.Regexp         `toml:"-"`
-	ExcludeEnabled           bool                   `toml:"-"`
+
+	// Excludes is the list of relative paths to exclude from the project
+	Exclude []yunyun.RelativePathDir `toml:"exclude"`
+
+	ExcludeEnabled bool `toml:"-"`
 }
 
 // WebsiteConfig is the website section of the config
 type WebsiteConfig struct {
-	// Locale is the locale of the site
-	Locale string `toml:"locale"`
+
+	// SyntaxHighlightingLanguages is the location of highlight.js languages
+	SyntaxHighlightingLanguages yunyun.RelativePathDir `toml:"syntax_highlighting_languages"`
 
 	// Color is the color of the site
 	Color string `toml:"color"`
@@ -78,41 +81,41 @@ type WebsiteConfig struct {
 	// Twitter is the twitter handle of the site
 	Twitter string `toml:"twitter"`
 
+	// Preview is the filename of the picture in the
+	// same directory to use as a page preview. defaults to preview.png
+	Preview yunyun.RelativePathFile `toml:"preview"`
+
+	// Locale is the locale of the site
+	Locale string `toml:"locale"`
+
+	// SyntaxHighlightingTheme decides what theme to use from highlight.js
+	SyntaxHighlightingTheme yunyun.RelativePathFile `toml:"syntax_highlighting_theme"`
+
 	// Styles is the list of relative paths to css files for the site
 	Styles []yunyun.RelativePathFile `toml:"styles"`
 
 	// Tombs is the list of relative paths where to include the tombstones
 	Tombs []yunyun.RelativePathDir `toml:"tombs"`
 
-	// Preview is the filename of the picture in the
-	// same directory to use as a page preview. defaults to preview.png
-	Preview yunyun.RelativePathFile `toml:"preview"`
+	// ExtraHead is the list of html directives to insert in <head>
+	ExtraHead []string `toml:"extra_head"`
 
 	// Description length dictates on how many characters do we extract
 	// from the page to show in the web prewies, like OpenGraph and Twitter
 	DescriptionLength int `toml:"description_length"`
 
-	// RomanFootnotes tells if we have to use roman numerals for footnotes
-	RomanFootnotes bool `toml:"roman_footnotes"`
-
-	// FootnoteBrackets decides whether to use brackets on footnotes
-	FootnoteBrackets bool `toml:"footnote_brackets"`
-
-	// ClickableImages marks whether the images should href to the img link.
-	ClickableImages bool `toml:"clickable_images"`
-
 	// SyntaxHighlighting decides whether to enable code blocks'
 	// syntax highlighting with highlight.js
 	SyntaxHighlighting bool `toml:"syntax_highlighting"`
 
-	// SyntaxHighlightingLanguages is the location of highlight.js languages
-	SyntaxHighlightingLanguages yunyun.RelativePathDir `toml:"syntax_highlighting_languages"`
+	// ClickableImages marks whether the images should href to the img link.
+	ClickableImages bool `toml:"clickable_images"`
 
-	// SyntaxHighlightingTheme decides what theme to use from highlight.js
-	SyntaxHighlightingTheme yunyun.RelativePathFile `toml:"syntax_highlighting_theme"`
+	// FootnoteBrackets decides whether to use brackets on footnotes
+	FootnoteBrackets bool `toml:"footnote_brackets"`
 
-	// ExtraHead is the list of html directives to insert in <head>
-	ExtraHead []string `toml:"extra_head"`
+	// RomanFootnotes tells if we have to use roman numerals for footnotes
+	RomanFootnotes bool `toml:"roman_footnotes"`
 }
 
 // AuthorConfig is the author section of the config
@@ -126,12 +129,12 @@ type AuthorConfig struct {
 	// Name is the name of the author
 	Name string `toml:"name"`
 
+	// Email is the email of the author
+	Email string `toml:"email"`
+
 	// NameEnable will not show the name in the menu
 	// if disabled, but will use it for metadata.
 	NameEnable bool `toml:"name_enable"`
-
-	// Email is the email of the author
-	Email string `toml:"email"`
 
 	// EmailEnable will hide the email if false.
 	EmailEnable bool `toml:"email_enable"`
@@ -151,8 +154,6 @@ type NavigationConfig struct {
 
 // RSSConfig is for filling out rss stuff.
 type RSSConfig struct {
-	// If true, darkness will add the rss icon to the menu.
-	Enable bool `toml:"enable"`
 
 	// The language the channel is written in. This allows
 	// aggregators to group all Italian language sites, for
@@ -196,4 +197,6 @@ type RSSConfig struct {
 	//
 	// Example: "<category>Newspapers</category>"
 	Category string `toml:"category"`
+	// If true, darkness will add the rss icon to the menu.
+	Enable bool `toml:"enable"`
 }

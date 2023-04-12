@@ -14,7 +14,7 @@ func WithEnrichedHeadings() yunyun.PageOption {
 		// if !Config.Website.NormalizeHeadings {
 		// 	return
 		// }
-		minHeadingLevel := 999
+		minHeadingLevel := uint32(999)
 		// Find the smallest heading
 		for i := range page.Contents {
 			c := page.Contents[i]
@@ -40,7 +40,7 @@ func WithEnrichedHeadings() yunyun.PageOption {
 // COMMENT headings are encountered
 func WithResolvedComments() yunyun.PageOption {
 	return func(page *yunyun.Page) {
-		start, headingLevel, searching := -1, -1, false
+		start, headingLevel, searching := -1, uint32(0), false
 		for i, content := range page.Contents {
 			if !content.IsHeading() {
 				continue
@@ -53,7 +53,7 @@ func WithResolvedComments() yunyun.PageOption {
 			}
 			if searching && content.HeadingLevel <= headingLevel {
 				page.Contents = append(page.Contents[:start], page.Contents[i:]...)
-				start, headingLevel, searching = -1, -1, false
+				start, headingLevel, searching = -1, 0, false
 			}
 		}
 		// Still searching till the end? then set the finish to the last element

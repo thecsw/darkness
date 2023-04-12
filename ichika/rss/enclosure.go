@@ -15,9 +15,9 @@ type Enclosure struct {
 	// The url must be an http url.
 	URL string `xml:"url,attr"`
 
-	// Length of the image in bytes.
-	Length int `xml:"length,attr"`
-
 	// Content type of the enclosure.
 	Type string `xml:"type,attr"`
+
+	// Length of the image in bytes.
+	Length int `xml:"length,attr"`
 }

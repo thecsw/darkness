@@ -21,8 +21,6 @@ type GalleryItem struct {
 	Item yunyun.RelativePathFile
 	// Path is the path of the local gallery source file.
 	Path yunyun.RelativePathDir
-	// IsExternal runs a URL regexp check.
-	IsExternal bool
 	// Text found through the link regexp.
 	Text string
 	// Description found through the link regexp.
@@ -32,6 +30,8 @@ type GalleryItem struct {
 	// Link is an optional parameter that the gallery item should
 	// also link to something.
 	Link string
+	// IsExternal runs a URL regexp check.
+	IsExternal bool
 }
 
 // NewGalleryItem creates a new helper `GalleryItem` and

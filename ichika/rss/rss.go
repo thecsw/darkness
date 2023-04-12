@@ -24,12 +24,12 @@ const (
 // Subordinate to the <rss> element is a single <channel> element, which
 // contains information about the channel (metadata) and its contents.
 type RSS struct {
-	XMLName xml.Name `xml:"rss"`
-
-	// Must be "2.0"
-	Version string `xml:"version,attr"`
 
 	// Subordinate to the <rss> element is a single <channel> element, which
 	// contains information about the channel (metadata) and its contents.
 	Channel *Channel `xml:"channel"`
+	XMLName xml.Name `xml:"rss"`
+
+	// Must be "2.0"
+	Version string `xml:"version,attr"`
 }

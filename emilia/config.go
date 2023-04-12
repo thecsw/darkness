@@ -34,12 +34,6 @@ type EmiliaOptions struct {
 	// DarknessConfig is the location of darkness's toml config file.
 	DarknessConfig string
 
-	// Dev enables URL generation through local paths.
-	Dev bool
-
-	// Test enables test environment, where darkness config is not needed.
-	Test bool
-
 	// URL is a custom website url, usually used for serving from localhost.
 	URL string
 
@@ -48,6 +42,12 @@ type EmiliaOptions struct {
 
 	// WorkDir is the working directory of the darkness project.
 	WorkDir string
+
+	// Dev enables URL generation through local paths.
+	Dev bool
+
+	// Test enables test environment, where darkness config is not needed.
+	Test bool
 
 	// VendorGalleries dictates whether we should stub in local gallery images.
 	VendorGalleries bool

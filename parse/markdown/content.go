@@ -8,7 +8,7 @@ import (
 
 // isHeader returns a non-nil object if the line is a header
 func isHeader(line string) *yunyun.Content {
-	level := 0
+	level := uint32(0)
 	switch {
 	case strings.HasPrefix(line, sectionLevelOne):
 		level = 1

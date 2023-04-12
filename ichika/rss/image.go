@@ -20,6 +20,10 @@ type Image struct {
 	// should have the same value as the channel's <title> and <link>.
 	Link string `xml:"link"`
 
+	// Contains text that is included in the TITLE attribute of the
+	// link formed around the image in the HTML rendering.
+	Description string `xml:"description,omitempty"`
+
 	// -----------------
 	// Optional elements
 	// -----------------
@@ -31,8 +35,4 @@ type Image struct {
 	// Optional elements include <width> and <height>, numbers,
 	// indicating the width and height of the image in pixels.
 	Height int `xml:"height,omitempty"`
-
-	// Contains text that is included in the TITLE attribute of the
-	// link formed around the image in the HTML rendering.
-	Description string `xml:"description,omitempty"`
 }

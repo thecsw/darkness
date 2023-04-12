@@ -4,6 +4,16 @@ import "strings"
 
 // Accoutrement are settings of a page.
 type Accoutrement struct {
+
+	// To prevent unkeyed literars.
+	_ struct{}
+	// The image for preview
+	Preview string
+
+	// ExcludeHtmlHeadContains is a list of strings that we should match
+	// against page's scripts before injecting them into the page.
+	// Useful if you want to disable specific scripts on select pages.
+	ExcludeHtmlHeadContains ExcludeHtmlHeadContains
 	// Draft will prevent rss from showing the page.
 	Draft AccoutrementFlip
 	// Tomb enables/disables tomb on a page.
@@ -12,12 +22,6 @@ type Accoutrement struct {
 	AuthorImage AccoutrementFlip
 	// Math enables/disables math rendering (overrides auto-discovery).
 	Math AccoutrementFlip
-	// ExcludeHtmlHeadContains is a list of strings that we should match
-	// against page's scripts before injecting them into the page.
-	// Useful if you want to disable specific scripts on select pages.
-	ExcludeHtmlHeadContains ExcludeHtmlHeadContains
-	// The image for preview
-	Preview string
 }
 
 // ExcludeHtmlHeadContains is a type to store excluded keywords for html head.

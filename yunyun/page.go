@@ -8,8 +8,12 @@ import (
 
 // Page is a struct for holding the page contents.
 type Page struct {
-	// File is the original filename of the page (optional).
-	File RelativePathFile
+
+	// To prevent unkeyed literars.
+	_ struct{}
+	// Accoutrement are additional options enabled on a page.
+	Accoutrement *Accoutrement
+
 	// Location is the Location of the page.
 	Location RelativePathDir
 	// Title is the title of the page.
@@ -18,25 +22,28 @@ type Page struct {
 	Author string
 	// Date is the date of the page.
 	Date string
-	// DateHoloscene tells us whether the first paragraph
-	// on the page is given as holoscene date stamp.
-	DateHoloscene bool
+	// File is the original filename of the page (optional).
+	File RelativePathFile
 	// Contents is the contents of the page.
 	Contents Contents
-	// Footnotes is the footnotes of the page.
-	Footnotes []string
 	// Scripts is the scripts of the page.
 	Scripts []string
 	// Stylesheets is the list of css of the page.
 	Stylesheets []string
 	// HtmlHead is the list of extra HTML declaration to add in the head.
 	HtmlHead []string
-	// Accoutrement are additional options enabled on a page.
-	Accoutrement *Accoutrement
+	// Footnotes is the footnotes of the page.
+	Footnotes []string
+	// DateHoloscene tells us whether the first paragraph
+	// on the page is given as holoscene date stamp.
+	DateHoloscene bool
 }
 
 // MetaTag is a struct for holding the meta tag.
 type MetaTag struct {
+
+	// To prevent unkeyed literars.
+	_ struct{}
 	// Name is the name of the meta tag.
 	Name string
 	// Content is the content of the meta tag.
@@ -47,6 +54,9 @@ type MetaTag struct {
 
 // Link is a struct for holding the link tag.
 type Link struct {
+
+	// To prevent unkeyed literars.
+	_ struct{}
 	// Rel is the rel of the link tag.
 	Rel string
 	// Type is the type of the link tag.

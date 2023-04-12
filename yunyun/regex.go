@@ -7,6 +7,9 @@ import (
 // Markings is used to store the regex patterns for
 // our formatting, like bold, italics, etc.
 type Markings struct {
+
+	// To prevent unkeyed literars.
+	_ struct{}
 	// Bold defaults to orgmode's `*` (need to escape).
 	Bold string
 	// Italic defaults to orgmode's `/`.
@@ -75,10 +78,10 @@ func (m Markings) BuildRegex() {
 // ExtractedLink represents the link that was extracted with
 // `ExtractLink` or `ExtractLinks`.
 type ExtractedLink struct {
-	MatchLength int
 	Link        string
 	Text        string
 	Description string
+	MatchLength int
 }
 
 // ExtractLink uses `linkRegexp` and returns an array of
