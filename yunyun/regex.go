@@ -40,7 +40,7 @@ var (
 		Verbatim:         `[~=]`,
 		Strikethrough:    `\+`,
 		Underline:        `_`,
-		Link:             `(?mU)\[\[(?P<link>[^][]+)\]\[(?P<text>[^][]+)(?: "(?P<desc>[^"]+)")?\]\]`,
+		Link:             `(?mU)\[\[(?P<link>[^][]+)\](?:\[(?P<text>[^][]+)(?: "(?P<desc>[^"]+)")?\])?\]`,
 		SuperscriptStart: `\^\{\{`,
 		SuperscriptEnd:   `\}\}`,
 		SubscriptStart:   `_\{\{`,

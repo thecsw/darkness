@@ -9,13 +9,16 @@ require github.com/BurntSushi/toml v1.2.1
 require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/charmbracelet/log v0.2.1 // indirect
+	github.com/felixge/fgprof v0.9.3 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
+	github.com/google/pprof v0.0.0-20211214055906-6f57359322fd // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.15.1 // indirect
+	github.com/pkg/profile v1.7.0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/thecsw/nazuna v0.1.0 // indirect
 	golang.org/x/exp v0.0.0-20230321023759-10a507213a29 // indirect
