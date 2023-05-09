@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -26,6 +27,7 @@ var (
 
 // Export runs the process of exporting
 func (e ExporterHTML) Export() string {
+	defer puck.Stopwatch("Exported", "page", e.page.File).Record()
 	if e.page == nil {
 		fmt.Println("Export should be called after SetPage")
 		os.Exit(1)

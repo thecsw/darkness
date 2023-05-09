@@ -6,7 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/charmbracelet/log"
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
 )
 
 var (
@@ -28,6 +30,9 @@ var (
 	// debugEnabled tells us whether to show debug logs.
 	debugEnabled bool
 
+	// infoEnabled tells us whether to show info logs.
+	infoEnabled bool
+
 	// useCurrentDirectory is used for development and local
 	// serving, such that you can browse the url files locally.
 	useCurrentDirectory bool
@@ -40,6 +45,7 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	cmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	cmd.BoolVar(&disableParallel, "disable-parallel", false, "disable parallel build (only use one worker)")
 	cmd.IntVar(&customNumWorkers, "workers", 4, "number of workers to use")
+	cmd.BoolVar(&infoEnabled, "info", false, "enable info logs")
 	cmd.BoolVar(&debugEnabled, "debug", false, "enable debug logs")
 	cmd.BoolVar(&useCurrentDirectory, "dev", false, "use local path for urls (development)")
 	cmd.BoolVar(&vendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")
@@ -60,6 +66,14 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	// per each processing stage.
 	if disableParallel {
 		customNumWorkers = 1
+	}
+
+	// Set the proper log levels and default to warn.
+	switch {
+	case debugEnabled:
+		puck.Logger.SetLevel(log.DebugLevel)
+	case infoEnabled:
+		puck.Logger.SetLevel(log.InfoLevel)
 	}
 
 	// Read the config and initialize emilia settings.

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
 )
 
 // MisaCommandFunc will support many different tools that darkness can support,
@@ -22,6 +23,9 @@ func MisaCommandFunc() {
 
 	options := getEmiliaOptions(misaCmd)
 	options.Dev = true
+
+	puck.Logger.SetPrefix("Misa 🍎 ")
+
 	if len(*rss) > 0 {
 		options.Dev = false
 	}

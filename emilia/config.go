@@ -53,36 +53,39 @@ type EmiliaOptions struct {
 	VendorGalleries bool
 }
 
+var Logger = puck.Logger.WithPrefix("Emilia ❄️ ")
+
 // InitDarkness initializes the darkness config.
 func InitDarkness(options *EmiliaOptions) {
+	defer puck.Stopwatch("Initialized options").Record()
 	Config = &DarknessConfig{}
 	Config.WorkDir = options.WorkDir
 	if isZero(Config.WorkDir) {
 		Config.WorkDir = filepath.Dir(options.DarknessConfig)
-		fmt.Println("guessed the working directory as:", Config.WorkDir)
+		Logger.Info("Guessing working directory", "result", Config.WorkDir)
 	}
 	data, err := ioutil.ReadFile(options.DarknessConfig)
 	if err != nil && !options.Test {
-		fmt.Printf("failed to open the config %s: %s", options.DarknessConfig, err.Error())
+		Logger.Error("Opening config", "path", options.DarknessConfig, "err", err)
 		os.Exit(1)
 	}
 	_, err = toml.Decode(string(data), Config)
 	if err != nil {
-		fmt.Printf("failed to decode the config %s: %s", options.DarknessConfig, err.Error())
+		Logger.Error("Decoding config", "path", options.DarknessConfig, "err", err)
 		os.Exit(1)
 	}
 	// If input/output formats are empty, default to .org/.html respectively.
 	if isZero(Config.Project.Input) {
-		fmt.Println("Input format not found, defaulting to", puck.ExtensionOrgmode)
+		Logger.Info("Input format not found, using a default", "ext", puck.ExtensionOrgmode)
 		Config.Project.Input = puck.ExtensionOrgmode
 	}
 	// Output section.
 	if isZero(Config.Project.Output) {
-		fmt.Println("Output format not found, defaulting to", puck.ExtensionHtml)
+		Logger.Info("Input format not found, using a default", "ext", puck.ExtensionHtml)
 		Config.Project.Output = puck.ExtensionHtml
 	}
 	if !isZero(options.OutputExtension) && Config.Project.Output != options.OutputExtension {
-		fmt.Println("Got an instruction to override the output extension to", options.OutputExtension)
+		Logger.Warn("Output extension was overwritten", "ext", options.OutputExtension)
 		Config.Project.Output = options.OutputExtension
 	}
 	// Build the parser and exporter builders.
@@ -100,7 +103,7 @@ func InitDarkness(options *EmiliaOptions) {
 	if len(Config.URL) < 1 || options.Dev {
 		Config.URL, err = os.Getwd()
 		if err != nil {
-			fmt.Printf("failed to get current directory because config url was not given: %s", err.Error())
+			Logger.Error("Getting working directory, no config url found", "err", err)
 			os.Exit(1)
 		}
 	}
@@ -116,7 +119,7 @@ func InitDarkness(options *EmiliaOptions) {
 	if !Config.URLIsLocal {
 		Config.URLPath, err = url.Parse(Config.URL)
 		if err != nil {
-			fmt.Printf("failed to parse url from config %s: %s", Config.URL, err.Error())
+			Logger.Error("Parsing url from config", "url", Config.URL, "err", err)
 			os.Exit(1)
 		}
 	}

@@ -57,7 +57,7 @@ func build() {
 
 	// Create the pool that reads files and returns their handles.
 	filesPool := komi.NewWithSettings(komi.WorkWithErrors(openPage), &komi.Settings{
-		Name:     "Reading 📚 ",
+		Name:     "Komi Reading 📚 ",
 		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
 	})
@@ -65,21 +65,21 @@ func build() {
 
 	// Create a pool that take a files handle and parses it out into yunyun pages.
 	parserPool := komi.NewWithSettings(komi.Work(parsePage), &komi.Settings{
-		Name:     "Parsing 🧹 ",
+		Name:     "Komi Parsing 🧹 ",
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
 	})
 
 	// Create a pool that that takes yunyun pages and exports them into request format.
 	exporterPool := komi.NewWithSettings(komi.Work(exportPage), &komi.Settings{
-		Name:     "Exporting 🥂 ",
+		Name:     "Komi Exporting 🥂 ",
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
 	})
 
 	// Create a pool that reads the exported data and writes them to target files.
 	writerPool := komi.NewWithSettings(komi.WorkSimpleWithErrors(writePage), &komi.Settings{
-		Name:     "Writing 🎸",
+		Name:     "Komi Writing 🎸",
 		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
 	})

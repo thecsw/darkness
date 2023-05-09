@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -31,6 +32,8 @@ const (
 
 // Parse parses the input string and returns a list of elements
 func (p ParserOrgmode) Parse() *yunyun.Page {
+	defer puck.Stopwatch("Parsed", "page", p.Filename).Record()
+
 	// Split the data into lines
 	lines := strings.Split(preprocess(p.Data), "\n")
 

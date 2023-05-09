@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/ichika/rss"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
@@ -45,30 +46,33 @@ func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 	// Create RSS items.
 	items := make([]*rss.Item, 0, len(pages))
 
-	for _, page := range pages {
-		// Skip drafts.
-		if page.Accoutrement.Draft.IsEnabled() {
-			continue
-		}
-		categoryName, categoryLocation := page.Title, page.Location
-		if categoryPage := getCategory(page, allPages); categoryPage != nil {
-			categoryName = categoryPage.Title
-			categoryLocation = categoryPage.Location
-		}
+	func() {
+		defer puck.Stopwatch("Built RSS pages", "num", len(pages)).Record()
+		for _, page := range pages {
+			// Skip drafts.
+			if page.Accoutrement.Draft.IsEnabled() {
+				continue
+			}
+			categoryName, categoryLocation := page.Title, page.Location
+			if categoryPage := getCategory(page, allPages); categoryPage != nil {
+				categoryName = categoryPage.Title
+				categoryLocation = categoryPage.Location
+			}
 
-		items = append(items, &rss.Item{
-			XMLName:     xml.Name{},
-			Title:       yunyun.RemoveFormatting(page.Title),
-			Link:        emilia.Config.URL + string(page.Location),
-			Description: emilia.GetDescription(page, emilia.Config.Website.DescriptionLength*4) + " [ Continue reading... ]",
-			Author:      page.Author,
-			Category:    &rss.Category{Value: categoryName, Domain: emilia.Config.URL + string(categoryLocation)},
-			Enclosure:   &rss.Enclosure{},
-			Guid:        &rss.Guid{Value: emilia.Config.URL + string(page.Location), IsPermaLink: true},
-			PubDate:     getDate(page).Format(rss.RSSFormat),
-			Source:      &rss.Source{Value: emilia.Config.Title, URL: emilia.Config.URL},
-		})
-	}
+			items = append(items, &rss.Item{
+				XMLName:     xml.Name{},
+				Title:       yunyun.RemoveFormatting(page.Title),
+				Link:        emilia.Config.URL + string(page.Location),
+				Description: emilia.GetDescription(page, emilia.Config.Website.DescriptionLength*4) + " [ Continue reading... ]",
+				Author:      page.Author,
+				Category:    &rss.Category{Value: categoryName, Domain: emilia.Config.URL + string(categoryLocation)},
+				Enclosure:   &rss.Enclosure{},
+				Guid:        &rss.Guid{Value: emilia.Config.URL + string(page.Location), IsPermaLink: true},
+				PubDate:     getDate(page).Format(rss.RSSFormat),
+				Source:      &rss.Source{Value: emilia.Config.Title, URL: emilia.Config.URL},
+			})
+		}
+	}()
 
 	// Create the final feed.
 	feed := &rss.RSS{
@@ -95,20 +99,20 @@ func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 	xmlTarget := string(emilia.JoinWorkdir(rssXMLFilename))
 	feedXml, err := os.Create(filepath.Clean(xmlTarget))
 	if err != nil {
-		fmt.Printf("couldn't create %s: %s\n", xmlTarget, err)
+		puck.Logger.Error("Creating file", "path", xmlTarget, "err", err)
 		os.Exit(1)
 	}
 	encoder := xml.NewEncoder(feedXml)
 	encoder.Indent("", "  ")
 	if err := encoder.Encode(feed); err != nil {
-		fmt.Printf("failed to encode %s: %s\n", xmlTarget, err)
+		puck.Logger.Error("Encoding to xml", "path", xmlTarget, "err", err)
 		os.Exit(1)
 	}
 	if err := feedXml.Close(); err != nil {
-		fmt.Printf("failed to close %s: %s", xmlTarget, err)
+		puck.Logger.Error("Closing file", "path", xmlTarget, "err", err)
 		os.Exit(1)
 	}
-	fmt.Printf("Created rss file in %s\n", xmlTarget)
+	puck.Logger.Print("Created rss file", "path", xmlTarget)
 }
 
 // getDate takes a page and returns its date if any found.

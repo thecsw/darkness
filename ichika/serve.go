@@ -1,7 +1,6 @@
 package ichika
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -37,8 +36,11 @@ func ServeCommandFunc() {
 	// Override the output extension to .html
 	options.OutputExtension = puck.ExtensionHtml
 	emilia.InitDarkness(options)
+
+	puck.Logger.SetPrefix("Server 🍩 ")
+
 	build()
-	log.Println("Serving on", options.URL)
+	puck.Logger.Print("Serving the files", "url", options.URL)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -64,23 +66,23 @@ func ServeCommandFunc() {
 
 	// File watcher will rebuild dir if any files change.
 	go launchWatcher()
-	log.Println("Launched file watcher")
+	puck.Logger.Print("Launched file watcher")
 
 	// Try to open the local server with `open` command.
 	if !*noBrowser {
 		time.Sleep(500 * time.Millisecond)
 		if err := exec.Command("open", options.URL).Run(); err != nil {
-			log.Println("couldn't open the browser:", err.Error())
+			puck.Logger.Error("Couldn't open the browser", err)
 		}
 	}
 
 	sigint := make(chan os.Signal, 1)
 	signal.Notify(sigint, os.Interrupt)
 	<-sigint
-	log.Println("Shutting down the server + cleaning up")
+	puck.Logger.Print("Shutting down the server + cleaning up")
 	isQuietMegumin = true
 	removeOutputFiles()
-	log.Println("farewell")
+	puck.Logger.Print("farewell")
 }
 
 // launchWatcher watches for any file creations, changes, modifications, deletions
@@ -98,9 +100,8 @@ func launchWatcher() {
 		for {
 			select {
 			case event, ok := <-watcher.Events:
-				// fmt.Println(event)
 				if !ok {
-					log.Println("stopped watching")
+					puck.Logger.Warn("stopped watching")
 					return
 				}
 				filename := string(emilia.FullPathToWorkDirRel(yunyun.FullPathFile(event.Name)))
@@ -113,24 +114,24 @@ func launchWatcher() {
 					continue
 				}
 				if event.Has(fsnotify.Write) {
-					log.Println("modified file:", filename)
+					puck.Logger.Warn("A file was modified", "path", filename)
 				}
 				if event.Has(fsnotify.Create) {
-					log.Println("created file:", filename)
+					puck.Logger.Warn("A file was created", "path", filename)
 				}
 				if event.Has(fsnotify.Remove) {
-					log.Println("removed file:", filename)
+					puck.Logger.Warn("A file was removed", "path", filename)
 				}
 				if event.Has(fsnotify.Rename) {
-					log.Println("renamed file:", filename)
+					puck.Logger.Warn("A file was renamed", "path", filename)
 				}
 				build()
 			case err, ok := <-watcher.Errors:
 				if !ok {
-					log.Println("finished watching")
+					puck.Logger.Warn("Watcher is leaving")
 					return
 				}
-				fmt.Println("watcher error:", err)
+				puck.Logger.Error("Watcher", "err", err)
 			}
 		}
 	}()
@@ -142,9 +143,9 @@ func launchWatcher() {
 			log.Fatal(err)
 		}
 	}
-	log.Printf("Listening to %d files in %s\n\n", len(watcher.WatchList()), workDir)
+	puck.Logger.Print("Listening to file changes", "num", len(watcher.WatchList()), "dir", workDir)
 
-	fmt.Println("Press Ctrl-C to stop the server")
+	puck.Logger.Print("Press Ctrl-C to stop the server")
 	// Block main goroutine forever.
 	<-make(chan struct{})
 }

@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 )
 
@@ -24,6 +25,7 @@ func EnrichExportPageAsBufio(page *yunyun.Page) *bufio.Reader {
 
 // EnrichPage applies common emilia enhancements.
 func EnrichPage(page *yunyun.Page) *yunyun.Page {
+	defer puck.Stopwatch("Enriched", "page", page.File).Record()
 	return page.Options(
 		WithResolvedComments(),
 		WithEnrichedHeadings(),
