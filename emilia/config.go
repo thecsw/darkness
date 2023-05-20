@@ -16,6 +16,7 @@ import (
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
+	"github.com/thecsw/rei"
 )
 
 var (
@@ -149,9 +150,7 @@ func InitDarkness(options *EmiliaOptions) {
 		strings.Join(yunyun.AnyPathsToStrings(Config.Project.Exclude), "|"))
 	Config.Project.ExcludeRegex, err = regexp.Compile(excludePattern)
 	if err != nil {
-		fmt.Println("Bad exclude regex, made", excludePattern,
-			"\nFailed with error:", err.Error())
-		os.Exit(1)
+		Logger.Fatalf("bad exclude regex passed ('%s'): %v", excludePattern, err)
 	}
 
 	// Work through the vendored galleries.
@@ -165,11 +164,10 @@ func InitDarkness(options *EmiliaOptions) {
 		fmt.Printf("Please add %s to your .gitignore, so you don't pollute your git objects.\n",
 			cmdColor.Render(string(Config.Project.DarknessVendorDirectory)))
 		fmt.Println()
-		if err := Mkdir(filepath.Join(Config.WorkDir,
+		if err := rei.Mkdir(filepath.Join(Config.WorkDir,
 			string(Config.Project.DarknessVendorDirectory))); err != nil {
-			fmt.Printf("Failed to create vendor directory %s: %s\n",
-				Config.Project.DarknessVendorDirectory, err.Error())
-			fmt.Println("Disabling vendoring by force.")
+			Logger.Warnf("creating vendor directory %s: %v", Config.Project.DarknessVendorDirectory, err)
+			Logger.Warn("disabling vendoring by force")
 			Config.VendorGalleries = false
 		}
 	}
@@ -184,7 +182,7 @@ func InitDarkness(options *EmiliaOptions) {
 	}
 	// Monkey patch the function if we're using the roman footnotes.
 	if Config.Website.RomanFootnotes {
-		FootnoteLabeler = numberToRoman
+		FootnoteLabeler = rei.NumberToRoman
 	}
 
 	// Init the math script
@@ -227,7 +225,7 @@ func getParserBuilder() parse.ParserBuilder {
 	if v, ok := parse.ParserMap[Config.Project.Input]; ok {
 		return v
 	}
-	fmt.Printf("No'%s parser, defaulting to %s\n", Config.Project.Input, puck.ExtensionOrgmode)
+	Logger.Warnf("parser %s not found, defaulting to %s", Config.Project.Input, puck.ExtensionOrgmode)
 	Config.Project.Input = puck.ExtensionOrgmode
 	return parse.ParserMap[puck.ExtensionOrgmode]
 }
@@ -237,7 +235,7 @@ func getExporterBuilder() export.ExporterBuilder {
 	if v, ok := export.ExporterMap[Config.Project.Output]; ok {
 		return v
 	}
-	fmt.Printf("No %s exporter, defaulting to %s\n", Config.Project.Output, puck.ExtensionHtml)
+	Logger.Warnf("exporter %s not found, defaulting to %s", Config.Project.Output, puck.ExtensionHtml)
 	Config.Project.Output = puck.ExtensionHtml
 	return export.ExporterMap[puck.ExtensionHtml]
 }
@@ -247,7 +245,7 @@ func getExporterBuilder() export.ExporterBuilder {
 func setupHighlightJsLanguages(dir yunyun.RelativePathDir) {
 	languages, err := ioutil.ReadDir(string(dir))
 	if err != nil {
-		fmt.Printf("Failed to open %s: %s", dir, err.Error())
+		Logger.Warnf("failed to open %s: %v", dir, err)
 		AvailableLanguages = nil
 		return
 	}

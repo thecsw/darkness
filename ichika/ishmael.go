@@ -9,7 +9,8 @@ import (
 	"path/filepath"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/rei"
 )
 
 var (
@@ -29,13 +30,12 @@ func NewDarknessCommandFunc() {
 	if err == nil {
 		fmt.Println("this directory already exists, bailing")
 		if err := f.Close(); err != nil {
-			fmt.Printf("failed to close directory: %s\n", err.Error())
+			puck.Logger.Errorf("closing directory %s: %v", dirName, err)
 		}
 		os.Exit(1)
 	}
 	if err := os.Mkdir(dirName, os.FileMode(0777)); err != nil {
-		fmt.Println("couldn't create a directory for you:", err.Error())
-		os.Exit(1)
+		puck.Logger.Fatalf("creating your directory %s: %v", dirName, err)
 	}
 
 	// Create the darkness template reader.
@@ -44,14 +44,12 @@ func NewDarknessCommandFunc() {
 	// Uncompress the gzip file.
 	gzipBuf, err := gzip.NewReader(defaultDarknessTemplateReader)
 	if err != nil {
-		fmt.Println("couldn't read the default template, fatal: " + err.Error())
-		os.Exit(1)
+		puck.Logger.Fatalf("reading default template %s: %v", defaultDarknessTemplate, err)
 	}
 
 	// Create a buffer for the tar file so we can start untarring it.
-	if err := emilia.Untar(gzipBuf, dirName); err != nil {
-		fmt.Println("failed at flushing the template files:", err.Error())
-		return
+	if err := rei.Untar(gzipBuf, dirName); err != nil {
+		puck.Logger.Fatalf("flushing tarred template files: %v", err)
 	}
 
 	cmdColor := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ff50a2"))

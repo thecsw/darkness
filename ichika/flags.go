@@ -2,7 +2,6 @@ package ichika
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -50,16 +49,14 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	cmd.BoolVar(&useCurrentDirectory, "dev", false, "use local path for urls (development)")
 	cmd.BoolVar(&vendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")
 	if err := cmd.Parse(os.Args[2:]); err != nil {
-		fmt.Printf("failed to parse build arguments, fatal: %s", err.Error())
-		os.Exit(1)
+		puck.Logger.Fatalf("parsing build arguments: %v", err)
 	}
 
 	// Find the absolute path of the work directory to stub in the files.
 	var err error
 	workDir, err = filepath.Abs(workDir)
 	if err != nil {
-		fmt.Println("Couldn't determine absolute path of", workDir)
-		os.Exit(1)
+		puck.Logger.Fatalf("determining absolute path of %s: %v", workDir, err)
 	}
 
 	// If parallel processing is disabled, only provision one workers

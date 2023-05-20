@@ -12,6 +12,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/rei"
 )
 
 // GalleryItem is a struct that holds the gallery item path
@@ -137,39 +138,36 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 	expectedReturn := JoinPath(vendoredImagePath)
 
 	// Check if the image was already vendored, if it was, return it immediately.
-	if FileExists(localVendoredPath) {
+	if exists, err := rei.FileExists(localVendoredPath); exists {
 		return expectedReturn
+	} else if err != nil {
+		Logger.Errorf("checking for vendored path existence %s: %v", localVendoredPath, err)
+		return fallbackReturn
 	}
-
-	//start := time.Now()
-	//fmt.Printf("Vendoring %s... ", vendoredImagePath)
 
 	img, err := DownloadImage(string(item.Item), "vendor", "", string(galleryItemHash(item)))
 	if err != nil {
-		fmt.Printf("failed to vendor: %s\n", err.Error())
+		Logger.Errorf("vendoring %s: %v", item.Item, err)
 		return fallbackReturn
 	}
 
 	// Open the file writer and encode the image there.
 	imgFile, err := os.Create(filepath.Clean(localVendoredPath))
 	if err != nil {
-		fmt.Printf("Failed to create file %s: %s\n", localVendoredPath, err)
+		Logger.Errorf("creating vendored file %s: %v", localVendoredPath, err)
 		return fallbackReturn
 	}
 	defer func() {
 		if err := imgFile.Close(); err != nil {
-			fmt.Printf("Failed to close image file %s: %s\n", localVendoredPath, err)
+			Logger.Errorf("closing vendored file %s: %v", localVendoredPath, err)
 		}
 	}()
 
 	// Decode the image into the file.
 	if err := imaging.Encode(imgFile, img, imaging.JPEG); err != nil {
-		fmt.Printf("Failde to encode %s: %s\n", vendoredImagePath, err.Error())
+		Logger.Errorf("encoding vendored file %s: %v", vendoredImagePath, err)
 		return fallbackReturn
 	}
-
-	//finish := time.Now()
-	//fmt.Printf("done in %d ms\n", finish.Sub(start).Milliseconds())
 
 	// Finally.
 	return expectedReturn
@@ -185,8 +183,10 @@ func GalleryItemToImage(item *GalleryItem, authority, prefix string) (image.Imag
 
 	// Check if the item has been vendored by any chance?
 	vendorPath := filepath.Join(Config.WorkDir, string(GalleryVendored(item)))
-	if FileExists(vendorPath) {
+	if exists, err := rei.FileExists(vendorPath); exists {
 		return OpenImage(vendorPath)
+	} else if err != nil {
+		return nil, fmt.Errorf("checking for vendored file existence %s: %v", vendorPath, err)
 	}
 
 	// If it's a remote file, then ask Emilia to try and fetch it.
@@ -195,5 +195,5 @@ func GalleryItemToImage(item *GalleryItem, authority, prefix string) (image.Imag
 
 // galleryItemHash returns a hashed name of a gallery item link.
 func galleryItemHash(item *GalleryItem) yunyun.RelativePathFile {
-	return yunyun.RelativePathFile(sha256String(string(item.Item))[:7] + ".jpg")
+	return yunyun.RelativePathFile(rei.Sha256([]byte(item.Item))[:7] + ".jpg")
 }

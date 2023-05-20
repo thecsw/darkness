@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 	"github.com/thecsw/komi"
@@ -142,19 +143,18 @@ func exportPage(v *yunyun.Page) *gana.Tuple[string, *bufio.Reader] {
 //go:inline
 func writePage(v *gana.Tuple[string, *bufio.Reader]) error {
 	_, err := writeFile(v.First, v.Second)
-	return err
+	if err != nil {
+		return fmt.Errorf("writing page %s: %v", v.First, err)
+	}
+	return nil
 }
 
+// logErrors is a helper function that logs errors from a pool. It is meant to be
+// used as a goroutine.
 func logErrors[T any](name string, vv chan komi.PoolError[T]) {
 	for v := range vv {
-		fmt.Printf("%s reported error: %s", name, v.Error)
+		if v.Error != nil {
+			puck.Logger.Errorf("pool %s encountered an error: %v", name, v.Error)
+		}
 	}
 }
-
-func drain[T any](vv chan T) {
-	for v := range vv {
-		noop(v)
-	}
-}
-
-func noop[T any](v T) {}

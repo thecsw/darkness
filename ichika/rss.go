@@ -2,7 +2,6 @@ package ichika
 
 import (
 	"encoding/xml"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -159,10 +158,14 @@ func buildPagesSimple(dirs []string) Pages {
 	inputs := emilia.FindFilesByExtSimpleDirs(emilia.Config.Project.Input, dirs)
 	pages := make([]*yunyun.Page, 0, len(inputs))
 	for _, input := range inputs {
-		bundle := openFile(input)
+		bundleOption := openFile(input)
+		if bundleOption.IsNone() {
+			continue
+		}
+		bundle := bundleOption.Unwrap()
 		data, err := io.ReadAll(bundle.Second)
 		if err != nil {
-			fmt.Printf("failed to read %s: %s", input, err)
+			puck.Logger.Printf("reading file %s: %v", input, err)
 			continue
 		}
 		page := emilia.ParserBuilder.BuildParser(

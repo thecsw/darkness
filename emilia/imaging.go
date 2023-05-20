@@ -10,7 +10,6 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/k0kubun/go-ansi"
-	"github.com/pkg/errors"
 	"github.com/schollz/progressbar/v3"
 	"github.com/thecsw/haruhi"
 )
@@ -19,7 +18,7 @@ import (
 func OpenImage(path string) (image.Image, error) {
 	file, err := os.Open(filepath.Clean(path))
 	if err != nil {
-		return nil, errors.Wrap(err, "OpenImage: opening file "+path)
+		return nil, fmt.Errorf("opening image file %s: %v", path, err)
 	}
 	// Respect the EXIF orientation flags.
 	return imaging.Decode(file, imaging.AutoOrientation(true))
@@ -31,25 +30,24 @@ func DownloadImage(link string, authority, prefix, name string) (image.Image, er
 	resp, cancel, err := haruhi.URL(link).Response()
 	defer cancel()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("downloading image: %v", err)
 	}
 	// If we got not found or server issue, bail.
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
-		return nil, errors.Wrap(err,
-			fmt.Sprintf("DownloadImage: Bad status: %d", resp.StatusCode))
+		return nil, fmt.Errorf("downloading image got bad status %d", resp.StatusCode)
 	}
 	defer resp.Body.Close()
 
 	buf := new(bytes.Buffer)
 	bar := ProgressBar(resp.ContentLength, authority, prefix, "Downloading", name)
 	if _, err := io.Copy(io.MultiWriter(buf, bar), resp.Body); err != nil && err != io.EOF {
-		return nil, errors.Wrap(err, "failed to read the image data")
+		return nil, fmt.Errorf("reading downloaded image data: %v", err)
 	}
 
 	// Attempt to decode.
 	img, err := imaging.Decode(buf, imaging.AutoOrientation(true))
 	if err != nil {
-		return nil, errors.Wrap(err, "DownloadImage: failed to decode")
+		return nil, fmt.Errorf("decoding downloaded image: %v", err)
 	}
 
 	return img, nil

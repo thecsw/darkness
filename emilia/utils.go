@@ -1,8 +1,6 @@
 package emilia
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"strings"
 
 	"github.com/thecsw/darkness/yunyun"
@@ -21,10 +19,4 @@ func PackRef(filename *yunyun.FullPathFile, data *string) (yunyun.RelativePathFi
 // relPathToWorkdir returns path trimmed by the workspace
 func FullPathToWorkDirRel(filename yunyun.FullPathFile) yunyun.RelativePathFile {
 	return yunyun.RelativePathFile(strings.TrimPrefix(string(filename), Config.WorkDir+`/`))
-}
-
-// sha256String hashes given string to sha256.
-func sha256String(what string) string {
-	ans := sha256.Sum256([]byte(what))
-	return hex.EncodeToString(ans[:])
 }

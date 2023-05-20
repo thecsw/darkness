@@ -60,6 +60,9 @@ func FillAccoutrement(options *string, page *yunyun.Page) {
 	}
 }
 
+// breakOption breaks the option into two parts, the first part is the
+// key, and the second part is the value. If the option doesn't have
+// a value, then the second part is `enableOption` by default.
 func breakOption(what string) (string, string) {
 	for i := len(what) - 1; i >= 0; i-- {
 		if what[i] == delimiterOption {
@@ -71,30 +74,37 @@ func breakOption(what string) (string, string) {
 	return what, enableOption
 }
 
+// accoutrementDraft sets the draft option of the accoutrement.
 func accoutrementDraft(what string, target *yunyun.Accoutrement) {
 	accoutrementBool(what, &target.Draft)
 }
 
+// accoutrementTomb sets the tomb option of the accoutrement.
 func accoutrementTomb(what string, target *yunyun.Accoutrement) {
 	accoutrementBool(what, &target.Tomb)
 }
 
+// accoutrementAuthorImage sets the author image option of the accoutrement.
 func accoutrementAuthorImage(what string, target *yunyun.Accoutrement) {
 	accoutrementBool(what, &target.AuthorImage)
 }
 
+// accoutrementMath sets the math option of the accoutrement.
 func accoutrementMath(what string, target *yunyun.Accoutrement) {
 	accoutrementBool(what, &target.Math)
 }
 
+// accoutrementExcludeHtmlScript sets the exclude html script option of the accoutrement.
 func accoutrementExcludeHtmlScript(what string, target *yunyun.Accoutrement) {
 	target.ExcludeHtmlHeadContains = append(target.ExcludeHtmlHeadContains, what)
 }
 
+// accoutrementPreview sets the preview option of the accoutrement.
 func accoutrementPreview(what string, target *yunyun.Accoutrement) {
 	target.Preview = what
 }
 
+// accoutrementBool sets the bool value of the target according to the what.
 func accoutrementBool(what string, target *yunyun.AccoutrementFlip) {
 	switch strings.TrimSpace(what) {
 	case enableOption:

@@ -1,12 +1,13 @@
 package orgmode
 
 import (
+	"errors"
 	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/pkg/errors"
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -195,7 +196,7 @@ func extractGalleryFolder(line string) string {
 	path, err := extractCustomBlockOption(line, `path`, regexpPatternNoWhitespace)
 	if err != nil {
 		if err != errNoMatches {
-			fmt.Println("gallery path extraction failed:", err.Error())
+			puck.Logger.Errorf("gallery path extraction: %v", err)
 		}
 		return ""
 	}
@@ -206,17 +207,17 @@ func extractGalleryImagesPerRow(line string) uint {
 	num, err := extractCustomBlockOption(line, `num`, regexpPatternOnlyDigits)
 	if err != nil {
 		if err != errNoMatches {
-			fmt.Println("gallery path extraction failed:", err.Error())
+			puck.Logger.Errorf("gallery path extraction: %v", err)
 		}
 		return defaultGalleryImagesPerRow
 	}
 	ans, err := strconv.Atoi(*num)
 	if err != nil {
-		fmt.Println("failed to format gallery width of", line, ", defaulting to", defaultGalleryImagesPerRow)
+		puck.Logger.Warnf("failed to format gallery width of %s, defaulting to %s", line, defaultGalleryImagesPerRow)
 		return defaultGalleryImagesPerRow
 	}
 	if ans < 1 {
-		fmt.Println("gallery width should be at least 1, defaulting to", defaultGalleryImagesPerRow)
+		puck.Logger.Warnf("gallery width should be at least 1, defaulting to %s", defaultGalleryImagesPerRow)
 		return defaultGalleryImagesPerRow
 	}
 	return uint(ans)
@@ -238,7 +239,7 @@ func extractCustomBlockOption(target, optionName string, pattern regexpPattern) 
 	optP := fmt.Sprintf(`:%s %s`, optionName, pattern)
 	optR, err := regexp.Compile(optP)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to make regex "+optP)
+		return nil, fmt.Errorf("compiling regex ('%s'): %v", optP, err)
 	}
 	matches := optR.FindAllStringSubmatch(target, 1)
 	if len(matches) < 1 {

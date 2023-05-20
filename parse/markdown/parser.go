@@ -2,9 +2,9 @@ package markdown
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 )
@@ -34,7 +34,7 @@ func (ParserMarkdownBuilder) BuildParserReader(
 ) parse.Parser {
 	data, _ := io.ReadAll(bufio.NewReader(reader))
 	if err := reader.Close(); err != nil {
-		fmt.Printf("Failed to close file handler for %s: %s\n", filename, err)
+		puck.Logger.Errorf("closing file %s: %v", filename, err)
 	}
 	return &ParserMarkdown{
 		Filename: filename,

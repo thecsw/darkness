@@ -17,7 +17,7 @@ func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-
 	go func(done chan<- struct{}) {
 		if err := godirwalk.Walk(Config.WorkDir, &godirwalk.Options{
 			ErrorCallback: func(osPathname string, err error) godirwalk.ErrorAction {
-				fmt.Printf("Encountered an error while traversing %s: %s\n", osPathname, err.Error())
+				Logger.Errorf("traversing %s: %v", osPathname, err)
 				return godirwalk.SkipNode
 			},
 			Unsorted: true,
@@ -33,11 +33,15 @@ func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-
 					return filepath.SkipDir
 				}
 				relPath, err := filepath.Rel(Config.WorkDir, osPathname)
+				if err != nil {
+					return fmt.Errorf("finding relative path of %s to %s: %v", osPathname, Config.WorkDir, err)
+				}
 				pool.Submit(JoinWorkdir(yunyun.RelativePathFile(relPath)))
-				return err
+				return nil
+
 			},
 		}); err != nil {
-			fmt.Printf("File traversal returned an error: %s\n", err.Error())
+			Logger.Errorf("root traversal: %v", err)
 		}
 		done <- struct{}{}
 	}(done)

@@ -2,9 +2,9 @@ package orgmode
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 )
@@ -36,7 +36,7 @@ func (ParserOrgmodeBuilder) BuildParserReader(
 ) parse.Parser {
 	data, _ := io.ReadAll(bufio.NewReader(reader))
 	if err := reader.Close(); err != nil {
-		fmt.Printf("Failed to close file handler for %s: %s\n", filename, err)
+		puck.Logger.Error("closing file %s: %v", filename, err)
 	}
 	return &ParserOrgmode{
 		Filename: filename,

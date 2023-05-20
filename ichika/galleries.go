@@ -9,11 +9,15 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/gana"
+	"github.com/thecsw/rei"
 )
 
 const (
+	// galleryPreviewImageSize is the size of the preview image.
 	galleryPreviewImageSize = 250
+	// galleryPreviewImageBlur is the blur radius of the preview image.
 	galleryPreviewImageBlur = 20
 )
 
@@ -22,16 +26,19 @@ const (
 func buildGalleryFiles(dryRun bool) {
 	// Make sure the preview directory exists
 	previewDirectory := filepath.Join(emilia.Config.WorkDir, string(emilia.Config.Project.DarknessPreviewDirectory))
-	if err := emilia.Mkdir(previewDirectory); err != nil {
-		fmt.Println("fatal: couldn't create preview directory:", err)
-		os.Exit(1)
+	if err := rei.Mkdir(previewDirectory); err != nil {
+		puck.Logger.Fatalf("creating preview directory %s: %v", previewDirectory, err)
 	}
+
+	// Get all the gallery files.
 	galleryFiles := getGalleryFiles()
 
+	// Filter out all the files that already exist.
 	missingFiles := gana.Filter(func(item *emilia.GalleryItem) bool {
-		return !emilia.FileExists(string(emilia.GalleryPreview(item)))
+		return !rei.FileMustExist(string(emilia.GalleryPreview(item)))
 	}, galleryFiles)
 
+	// Build all the missing files.
 	for i, galleryFile := range missingFiles {
 		newFile := emilia.GalleryPreview(galleryFile)
 
@@ -42,32 +49,33 @@ func buildGalleryFiles(dryRun bool) {
 		prefix := fmt.Sprintf("[%d/%d] ", i+1, len(missingFiles))
 		sourceImage, err := emilia.GalleryItemToImage(galleryFile, "preview", prefix)
 		if err != nil {
-			fmt.Println("gallery item to reader:", err)
+			puck.Logger.Errorf("parsing a gallery item: %v", err)
 			continue
 		}
 
 		// Encode preview image into a buffer.
-		previewImage, err := resizeAndBlur(sourceImage)
-		if err != nil {
-			fmt.Println("gallery reader to writer:", err)
-			continue
-		}
+		previewImage := resizeAndBlur(sourceImage)
 
 		// Don't save the file if it's in dry run mode.
 		if !dryRun {
 			file, err := os.Create(string(newFile))
+
+			// Create a progress bar.
 			bar := emilia.ProgressBar(-1, "misa", prefix, "Resizing", string(emilia.FullPathToWorkDirRel(newFile)))
 			if err != nil {
-				fmt.Printf("failed to create file %s: %s\n", newFile, err)
+				puck.Logger.Errorf("creating file %s: %v", newFile, err)
 				continue
 			}
+
 			// Write the final preview image file.
 			if err := imaging.Encode(io.MultiWriter(file, bar), previewImage, imaging.JPEG); err != nil {
-				fmt.Printf("failed to encode image: %s", err)
+				puck.Logger.Errorf("encoding image: %v", err)
 				continue
 			}
+
+			// Close the file.
 			if err := file.Close(); err != nil {
-				fmt.Printf("failed to close image preview file %s: %s\n", newFile, err)
+				puck.Logger.Errorf("closing image preview file %s: %v", newFile, err)
 			}
 		}
 	}
@@ -75,11 +83,12 @@ func buildGalleryFiles(dryRun bool) {
 }
 
 // resizeAndBlur takes an image object and modifies it to preview standards.
-func resizeAndBlur(img image.Image) (*image.NRGBA, error) {
+func resizeAndBlur(img image.Image) *image.NRGBA {
 	// Resize the image to save up on storage.
 	img = imaging.Resize(img, galleryPreviewImageSize, 0, imaging.Lanczos)
+	// Blur the image to make it look better.
 	blurred := imaging.Blur(img, galleryPreviewImageBlur)
-	return blurred, nil
+	return blurred
 }
 
 func dryRemove(val string) error {
@@ -95,7 +104,7 @@ func removeGalleryFiles(dryRun bool) {
 	for _, galleryFile := range getGalleryFiles() {
 		newFile := emilia.GalleryPreview(galleryFile)
 		if err := removeFunc(string(newFile)); err != nil && !os.IsNotExist(err) {
-			fmt.Println("Couldn't delete", newFile, "| reason:", err)
+			puck.Logger.Errorf("deleting %s: %v", newFile, err)
 		}
 	}
 }
