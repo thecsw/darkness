@@ -7,7 +7,6 @@ import (
 // Markings is used to store the regex patterns for
 // our formatting, like bold, italics, etc.
 type Markings struct {
-
 	// To prevent unkeyed literars.
 	_ struct{}
 	// Bold defaults to orgmode's `*` (need to escape).

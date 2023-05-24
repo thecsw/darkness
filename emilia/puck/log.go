@@ -7,10 +7,8 @@ import (
 	l "github.com/charmbracelet/log"
 )
 
-var (
-	// Logger is darkness' logger.
-	Logger = NewLogger("Darkness 🥬 ")
-)
+// Logger is darkness' logger.
+var Logger = NewLogger("Darkness 🥬 ")
 
 // NewLogger returns a new logger with the given prefix.
 func NewLogger(prefix string) *l.Logger {

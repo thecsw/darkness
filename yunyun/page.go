@@ -8,7 +8,6 @@ import (
 
 // Page is a struct for holding the page contents.
 type Page struct {
-
 	// To prevent unkeyed literars.
 	_ struct{}
 	// Accoutrement are additional options enabled on a page.
@@ -41,7 +40,6 @@ type Page struct {
 
 // MetaTag is a struct for holding the meta tag.
 type MetaTag struct {
-
 	// To prevent unkeyed literars.
 	_ struct{}
 	// Name is the name of the meta tag.
@@ -54,7 +52,6 @@ type MetaTag struct {
 
 // Link is a struct for holding the link tag.
 type Link struct {
-
 	// To prevent unkeyed literars.
 	_ struct{}
 	// Rel is the rel of the link tag.

@@ -9,7 +9,6 @@ import "encoding/xml"
 // see examples), and the link and title may be omitted. All elements of an item are
 // optional, however at least one of title or description must be present.
 type Item struct {
-
 	// It has one optional attribute, domain, a string that identifies
 	// a categorization taxonomy.
 	//

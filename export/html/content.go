@@ -85,7 +85,6 @@ func paragraphClass(content *yunyun.Content) string {
 		return " dropcap"
 	}
 	return ""
-
 }
 
 // paragraph gives us a paragraph html representation
@@ -161,7 +160,6 @@ func (e ExporterHTML) RawHTML(content *yunyun.Content) string {
 		return fmt.Sprintf(responsiveIFrameHTMLTemplate, content.RawHTML)
 	}
 	return fmt.Sprintf(rawHTMLTemplate, content.RawHTML, content.Caption)
-
 }
 
 // horizontalLine gives us a horizontal line html representation

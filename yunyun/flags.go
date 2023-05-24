@@ -70,7 +70,8 @@ const (
 //
 //go:inline
 func LatchFlags(v *Bits) (
-	func(f Bits), func(f Bits), func(f Bits), func(f Bits) bool) {
+	func(f Bits), func(f Bits), func(f Bits), func(f Bits) bool,
+) {
 	return func(f Bits) { AddFlag(v, f) },
 		func(f Bits) { RemoveFlag(v, f) },
 		func(f Bits) { FlipFlag(v, f) },

@@ -13,10 +13,8 @@ import (
 	"github.com/thecsw/rei"
 )
 
-var (
-	//go:embed ishmael.tar.gz
-	defaultDarknessTemplate []byte
-)
+//go:embed ishmael.tar.gz
+var defaultDarknessTemplate []byte
 
 // NewDarknessCommandFunc creates a default darkness config in the current directory
 // if one already exists, nothing will happen, except a notice of that
@@ -34,7 +32,7 @@ func NewDarknessCommandFunc() {
 		}
 		os.Exit(1)
 	}
-	if err := os.Mkdir(dirName, os.FileMode(0777)); err != nil {
+	if err := os.Mkdir(dirName, os.FileMode(0o777)); err != nil {
 		puck.Logger.Fatalf("creating your directory %s: %v", dirName, err)
 	}
 

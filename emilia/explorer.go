@@ -38,7 +38,6 @@ func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-
 				}
 				pool.Submit(JoinWorkdir(yunyun.RelativePathFile(relPath)))
 				return nil
-
 			},
 		}); err != nil {
 			Logger.Errorf("root traversal: %v", err)

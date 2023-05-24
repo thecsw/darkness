@@ -231,9 +231,7 @@ const (
 	regexpPatternNumber       regexpPattern = `(-?\d+)`
 )
 
-var (
-	errNoMatches = errors.New(`no matches found`)
-)
+var errNoMatches = errors.New(`no matches found`)
 
 func extractCustomBlockOption(target, optionName string, pattern regexpPattern) (*string, error) {
 	optP := fmt.Sprintf(`:%s %s`, optionName, pattern)

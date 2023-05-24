@@ -56,13 +56,11 @@ func metaTag(val meta) string {
 	)
 }
 
-var (
-	// metaTopTag is the top tag for all meta tags
-	metaTopTag = []string{
-		`<meta charset="UTF-8">`,
-		`<meta http-equiv="X-UA-Compatible" content="IE=edge">`,
-	}
-)
+// metaTopTag is the top tag for all meta tags
+var metaTopTag = []string{
+	`<meta charset="UTF-8">`,
+	`<meta http-equiv="X-UA-Compatible" content="IE=edge">`,
+}
 
 // addBasic adds the basic meta tags
 func addBasic(page *yunyun.Page, description string) []string {
@@ -72,7 +70,8 @@ func addBasic(page *yunyun.Page, description string) []string {
 		{"author", "author", emilia.Config.Author.Name},
 		{"date", "date", page.Date},
 		{"theme-color", "theme-color", emilia.Config.Website.Color},
-		{"description", "description", html.EscapeString(description)}})...)
+		{"description", "description", html.EscapeString(description)},
+	})...)
 }
 
 // addOpenGraph adds the opengraph preview meta tags
@@ -89,7 +88,8 @@ func addOpenGraph(page *yunyun.Page, description string) []string {
 		{"og:image:type", "og:image:type", "image/" + strings.TrimLeft(filepath.Ext(page.Accoutrement.Preview), ".")},
 		{"og:image:width", "og:image:width", "1280"},
 		{"og:image:height", "og:image:height", "640"},
-		{"og:description", "og:description", html.EscapeString(description)}})
+		{"og:description", "og:description", html.EscapeString(description)},
+	})
 }
 
 // addTwitterMeta adds the twitter preview meta tags
@@ -102,5 +102,6 @@ func addTwitterMeta(page *yunyun.Page, description string) []string {
 			yunyun.JoinRelativePaths(page.Location, yunyun.RelativePathFile(page.Accoutrement.Preview))))},
 		{"twitter:url", "twitter:url", string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](page.Location))},
 		{"twitter:title", "twitter:title", html.EscapeString(flattenFormatting(page.Title))},
-		{"twitter:description", "twitter:description", html.EscapeString(description)}})
+		{"twitter:description", "twitter:description", html.EscapeString(description)},
+	})
 }

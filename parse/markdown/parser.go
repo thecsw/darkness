@@ -29,6 +29,7 @@ func (ParserMarkdownBuilder) BuildParser(
 		Data:     data,
 	}
 }
+
 func (ParserMarkdownBuilder) BuildParserReader(
 	filename yunyun.RelativePathFile, reader io.ReadCloser,
 ) parse.Parser {

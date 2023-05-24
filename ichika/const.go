@@ -15,24 +15,22 @@ const (
 	aquaCommand        DarknessCommand = `aqua`
 )
 
-var (
-	// CommandFuncs maps supplied darkness command to the function
-	// that needs to get executed.
-	CommandFuncs = map[DarknessCommand]func(){
-		newDarknessCommand: NewDarknessCommandFunc,
-		oneFileCommand:     OneFileCommandFunc,
-		buildCommand:       BuildCommandFunc,
-		serveCommand:       ServeCommandFunc,
-		cleanCommand:       CleanCommandFunc,
-		meguminCommand:     MeguminCommandFunc,
-		misaCommand:        MisaCommandFunc,
-		lalatinaCommand:    LalatinaCommandFunc,
-		aquaCommand:        AquaCommandFunc,
+// CommandFuncs maps supplied darkness command to the function
+// that needs to get executed.
+var CommandFuncs = map[DarknessCommand]func(){
+	newDarknessCommand: NewDarknessCommandFunc,
+	oneFileCommand:     OneFileCommandFunc,
+	buildCommand:       BuildCommandFunc,
+	serveCommand:       ServeCommandFunc,
+	cleanCommand:       CleanCommandFunc,
+	meguminCommand:     MeguminCommandFunc,
+	misaCommand:        MisaCommandFunc,
+	lalatinaCommand:    LalatinaCommandFunc,
+	aquaCommand:        AquaCommandFunc,
 
-		// All the help commands
-		`-h`:     HelpCommandFunc,
-		`help`:   HelpCommandFunc,
-		`-help`:  HelpCommandFunc,
-		`--help`: HelpCommandFunc,
-	}
-)
+	// All the help commands
+	`-h`:     HelpCommandFunc,
+	`help`:   HelpCommandFunc,
+	`-help`:  HelpCommandFunc,
+	`--help`: HelpCommandFunc,
+}

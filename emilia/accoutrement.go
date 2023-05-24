@@ -19,16 +19,14 @@ const (
 	optionPreview         = `preview`
 )
 
-var (
-	accotrementActions = map[string]func(string, *yunyun.Accoutrement){
-		optionDraft:           accoutrementDraft,
-		optionTomb:            accoutrementTomb,
-		optionAuthorImage:     accoutrementAuthorImage,
-		optionMath:            accoutrementMath,
-		optionExcludeHtmlHead: accoutrementExcludeHtmlScript,
-		optionPreview:         accoutrementPreview,
-	}
-)
+var accotrementActions = map[string]func(string, *yunyun.Accoutrement){
+	optionDraft:           accoutrementDraft,
+	optionTomb:            accoutrementTomb,
+	optionAuthorImage:     accoutrementAuthorImage,
+	optionMath:            accoutrementMath,
+	optionExcludeHtmlHead: accoutrementExcludeHtmlScript,
+	optionPreview:         accoutrementPreview,
+}
 
 // InitializeAccoutrement fills accoutrement according to the config
 // and default values.

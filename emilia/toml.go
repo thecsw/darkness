@@ -9,7 +9,6 @@ import (
 
 // DarknessConfig is the global darkness config
 type DarknessConfig struct {
-
 	// Navigation is the navigation section of the config
 	Navigation map[string]NavigationConfig `toml:"navigation"`
 
@@ -71,7 +70,6 @@ type ProjectConfig struct {
 
 // WebsiteConfig is the website section of the config
 type WebsiteConfig struct {
-
 	// SyntaxHighlightingLanguages is the location of highlight.js languages
 	SyntaxHighlightingLanguages yunyun.RelativePathDir `toml:"syntax_highlighting_languages"`
 
@@ -154,7 +152,6 @@ type NavigationConfig struct {
 
 // RSSConfig is for filling out rss stuff.
 type RSSConfig struct {
-
 	// The language the channel is written in. This allows
 	// aggregators to group all Italian language sites, for
 	// example, on a single page. A list of allowable values

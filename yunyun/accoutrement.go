@@ -4,7 +4,6 @@ import "strings"
 
 // Accoutrement are settings of a page.
 type Accoutrement struct {
-
 	// To prevent unkeyed literars.
 	_ struct{}
 	// The image for preview

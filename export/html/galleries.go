@@ -11,9 +11,7 @@ import (
 	"github.com/thecsw/gana"
 )
 
-var (
-	flexOptionRegexp = regexp.MustCompile(`:flex (\d+)`)
-)
+var flexOptionRegexp = regexp.MustCompile(`:flex (\d+)`)
 
 // extractCustomFlex extract custom flex class `:flex [1,5]`
 func extractCustomFlex(s string) uint {

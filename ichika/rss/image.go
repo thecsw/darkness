@@ -3,7 +3,6 @@ package rss
 // <image> is an optional sub-element of <channel>, which
 // contains three required and three optional sub-elements.
 type Image struct {
-
 	// -----------------
 	// Required elements
 	// -----------------

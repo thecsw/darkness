@@ -6,7 +6,6 @@ import "encoding/xml"
 // description, an example, and where available, a pointer to a more
 // complete description.
 type Channel struct {
-
 	// Allows processes to register with a cloud to be notified of updates
 	// to the channel, implementing a lightweight publish-subscribe protocol
 	// for RSS feeds.

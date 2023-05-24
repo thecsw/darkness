@@ -9,10 +9,8 @@ import (
 	"github.com/thecsw/darkness/emilia"
 )
 
-var (
-	// if true, darkness cleans with no output
-	isQuietMegumin = false
-)
+// if true, darkness cleans with no output
+var isQuietMegumin = false
 
 // MeguminCommandFunc blows up the directory.
 func MeguminCommandFunc() {

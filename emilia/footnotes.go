@@ -8,11 +8,9 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
-var (
-	// FootnoteLabeler will take an integer and return string representation as
-	// defined in the darkness config, with either Roman or Arabic numerals.
-	FootnoteLabeler = strconv.Itoa
-)
+// FootnoteLabeler will take an integer and return string representation as
+// defined in the darkness config, with either Roman or Arabic numerals.
+var FootnoteLabeler = strconv.Itoa
 
 // WithFootnotes resolves footnotes and cleans up the page if necessary
 func WithFootnotes() yunyun.PageOption {

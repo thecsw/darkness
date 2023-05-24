@@ -55,7 +55,7 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 	return &GalleryItem{
 		Item: yunyun.RelativePathFile(image),
 		Path: yunyun.JoinPaths(page.Location, content.GalleryPath),
-		//IsExternal:   yunyun.URLRegexp.MatchString(image),
+		// IsExternal:   yunyun.URLRegexp.MatchString(image),
 		IsExternal:   strings.HasPrefix(image, "http"),
 		Text:         text,
 		Description:  description,

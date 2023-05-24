@@ -19,23 +19,21 @@ import (
 const (
 	// savePerms tells us what permissions to use for the
 	// final export files.
-	savePerms = fs.FileMode(0644)
+	savePerms = fs.FileMode(0o644)
 )
 
-var (
-	// vendorGalleryImages is a flag that dictates whether we should
-	// store a local copy of all remote gallery images and stub them
-	// in the gallery links instead of the remote links.
-	//
-	// Turning this option on would result in a VERY slow build the
-	// first time, as it would need to retrieve however many images
-	// from remote services.
-	//
-	// All images will be put in "darkness_vendor" directory, which
-	// will be skipped in discovery process AND should be put it
-	// .gitignore by user, so they don't pollute their git objects.
-	vendorGalleryImages bool
-)
+// vendorGalleryImages is a flag that dictates whether we should
+// store a local copy of all remote gallery images and stub them
+// in the gallery links instead of the remote links.
+//
+// Turning this option on would result in a VERY slow build the
+// first time, as it would need to retrieve however many images
+// from remote services.
+//
+// All images will be put in "darkness_vendor" directory, which
+// will be skipped in discovery process AND should be put it
+// .gitignore by user, so they don't pollute their git objects.
+var vendorGalleryImages bool
 
 // OneFileCommandFunc builds a single file.
 func OneFileCommandFunc() {
@@ -55,7 +53,6 @@ func BuildCommandFunc() {
 
 // build uses set flags and emilia data to build the local directory.
 func build() {
-
 	// Create the pool that reads files and returns their handles.
 	filesPool := komi.NewWithSettings(komi.WorkWithErrors(openPage), &komi.Settings{
 		Name:     "Komi Reading 📚 ",

@@ -61,10 +61,8 @@ const (
 `
 )
 
-var (
-	// mathJs is the javascript for math support (either mathjax or katex)
-	mathJs = ""
-)
+// mathJs is the javascript for math support (either mathjax or katex)
+var mathJs = ""
 
 // WithMathSupport adds math support to the page using javascript injection
 func WithMathSupport() yunyun.PageOption {

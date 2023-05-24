@@ -6,7 +6,6 @@ import (
 
 // Content is a piece of content of a page.
 type Content struct {
-
 	// To prevent unkeyed literars.
 	_ struct{}
 	// AttentionText is the attention text.

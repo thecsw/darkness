@@ -14,10 +14,8 @@ const (
 	highlightJsAction                                    = `<script>hljs.highlightAll();</script>`
 )
 
-var (
-	// AvailableLanguages has the map lookup if a highlight.js language is found.
-	AvailableLanguages = map[string]bool{}
-)
+// AvailableLanguages has the map lookup if a highlight.js language is found.
+var AvailableLanguages = map[string]bool{}
 
 func WithSyntaxHighlighting() yunyun.PageOption {
 	return func(page *yunyun.Page) {

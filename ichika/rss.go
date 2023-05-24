@@ -123,9 +123,7 @@ func getDate(page *yunyun.Page) *time.Time {
 	return nil
 }
 
-var (
-	categoryCache = make(map[string]*yunyun.Page)
-)
+var categoryCache = make(map[string]*yunyun.Page)
 
 func getCategory(page *yunyun.Page, pages Pages) *yunyun.Page {
 	categoryName := strings.TrimSuffix(string(page.Location), "/"+filepath.Base(string(page.Location)))

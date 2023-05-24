@@ -39,21 +39,19 @@ const (
 	divSpecial
 )
 
-var (
-	divTypes = []divType{
-		divWriting, // yunyun.TypeHeading
-		divWriting, // yunyun.TypeParagraph
-		divSpecial, // yunyun.TypeList
-		divWriting, // yunyun.TypeListNumbered
-		divSpecial, // yunyun.TypeLink
-		divOutside, // yunyun.TypeSourceCode
-		divOutside, // yunyun.TypeRawHTML
-		divOutside, // yunyun.TypeHorizontalLine
-		divWriting, // yunyun.TypeAttentionText
-		divOutside, // yunyun.TypeTable
-		divWriting, // yunyun.TypeDetails
-	}
-)
+var divTypes = []divType{
+	divWriting, // yunyun.TypeHeading
+	divWriting, // yunyun.TypeParagraph
+	divSpecial, // yunyun.TypeList
+	divWriting, // yunyun.TypeListNumbered
+	divSpecial, // yunyun.TypeLink
+	divOutside, // yunyun.TypeSourceCode
+	divOutside, // yunyun.TypeRawHTML
+	divOutside, // yunyun.TypeHorizontalLine
+	divWriting, // yunyun.TypeAttentionText
+	divOutside, // yunyun.TypeTable
+	divWriting, // yunyun.TypeDetails
+}
 
 func whatDivType(content *yunyun.Content) divType {
 	dt := divTypes[int(content.Type)]

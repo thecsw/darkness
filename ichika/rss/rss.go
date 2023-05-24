@@ -24,7 +24,6 @@ const (
 // Subordinate to the <rss> element is a single <channel> element, which
 // contains information about the channel (metadata) and its contents.
 type RSS struct {
-
 	// Subordinate to the <rss> element is a single <channel> element, which
 	// contains information about the channel (metadata) and its contents.
 	Channel *Channel `xml:"channel"`
