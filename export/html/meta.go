@@ -86,8 +86,8 @@ func addOpenGraph(page *yunyun.Page, description string) []string {
 			yunyun.JoinRelativePaths(page.Location, yunyun.RelativePathFile(page.Accoutrement.Preview))))},
 		{"og:image:alt", "og:image:alt", "Preview"},
 		{"og:image:type", "og:image:type", "image/" + strings.TrimLeft(filepath.Ext(page.Accoutrement.Preview), ".")},
-		{"og:image:width", "og:image:width", "1280"},
-		{"og:image:height", "og:image:height", "640"},
+		// {"og:image:width", "og:image:width", "1280"},
+		// {"og:image:height", "og:image:height", "640"},
 		{"og:description", "og:description", html.EscapeString(description)},
 	})
 }
