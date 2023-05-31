@@ -17,6 +17,8 @@ const (
 	optionMath            = `math`
 	optionExcludeHtmlHead = `exclude-html-head`
 	optionPreview         = `preview`
+	optionPreviewWidth    = `preview-width`
+	optionPreviewHeigh    = `preview-height`
 )
 
 var accotrementActions = map[string]func(string, *yunyun.Accoutrement){
@@ -26,6 +28,8 @@ var accotrementActions = map[string]func(string, *yunyun.Accoutrement){
 	optionMath:            accoutrementMath,
 	optionExcludeHtmlHead: accoutrementExcludeHtmlScript,
 	optionPreview:         accoutrementPreview,
+	optionPreviewWidth:    accoutrementPreviewWidth,
+	optionPreviewHeigh:    accoutrementPreviewHeight,
 }
 
 // InitializeAccoutrement fills accoutrement according to the config
@@ -39,6 +43,9 @@ func InitializeAccoutrement(page *yunyun.Page) {
 			break
 		}
 	}
+
+	// Set the default values for preview width and height.
+
 }
 
 // FillAccoutrement parses `options` and fills the `target`.
@@ -100,6 +107,16 @@ func accoutrementExcludeHtmlScript(what string, target *yunyun.Accoutrement) {
 // accoutrementPreview sets the preview option of the accoutrement.
 func accoutrementPreview(what string, target *yunyun.Accoutrement) {
 	target.Preview = what
+}
+
+// accoutrementPreviewWidth sets the preview width option of the accoutrement.
+func accoutrementPreviewWidth(what string, target *yunyun.Accoutrement) {
+	target.PreviewWidth = what
+}
+
+// accoutrementPreviewHeight sets the preview height option of the accoutrement.
+func accoutrementPreviewHeight(what string, target *yunyun.Accoutrement) {
+	target.PreviewHeight = what
 }
 
 // accoutrementBool sets the bool value of the target according to the what.

@@ -8,6 +8,9 @@ type Accoutrement struct {
 	_ struct{}
 	// The image for preview
 	Preview string
+	// PreviewWidth and PreviewHeight are the dimensions of the preview image.
+	PreviewWidth  string
+	PreviewHeight string
 
 	// ExcludeHtmlHeadContains is a list of strings that we should match
 	// against page's scripts before injecting them into the page.

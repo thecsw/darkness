@@ -10,6 +10,8 @@ const (
 	defaulteDateHoloscene = true
 	defaultDate           = "0; 12000 H.E."
 	defaultURL            = "unknown"
+	defaultPreviewWidth   = `1280`
+	defaultPreviewHeight  = `640`
 )
 
 // NewPage creates a new `Page` and runs passed options.
@@ -28,6 +30,8 @@ func NewPage(options ...PageOption) *Page {
 		HtmlHead:      make([]string, 0, 2),
 		Accoutrement: &Accoutrement{
 			ExcludeHtmlHeadContains: make([]string, 0, 2),
+			PreviewWidth:            defaultPreviewWidth,
+			PreviewHeight:           defaultPreviewHeight,
 		},
 	}
 	return p.Options(options...)
