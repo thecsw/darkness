@@ -17,7 +17,6 @@ require (
 	github.com/muesli/termenv v0.15.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
-	github.com/thecsw/rei v0.0.0-20230520200126-160ae664571f // indirect
 	golang.org/x/exp v0.0.0-20230425010034-47ecfdc1ba53 // indirect
 	golang.org/x/image v0.7.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect
@@ -36,4 +35,5 @@ require (
 	github.com/thecsw/gana v0.1.0
 	github.com/thecsw/haruhi v0.3.0
 	github.com/thecsw/komi v0.1.0
+	github.com/thecsw/rei v0.0.1
 )

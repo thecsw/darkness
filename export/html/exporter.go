@@ -16,8 +16,6 @@ type ExporterHTML struct {
 	currentContent *yunyun.Content
 	// contentFunctions is dictionary of rules to execute on content types.
 	contentFunctions []func(*yunyun.Content) string
-	// contentsNum is a pre-computed value of how many contents there are in Page.
-	contentsNum int
 	// currentContentIndex is the index of the content that exporter is currently working on.
 	currentContentIndex int
 	// currentDiv is used as a state variable for internal processing.
@@ -30,10 +28,7 @@ type ExporterHTML struct {
 
 // SetPage sets the internal page and creates internal content mappers.
 func (ExporterHTMLBuilder) BuildExporter(page *yunyun.Page) export.Exporter {
-	what := &ExporterHTML{
-		page:        page,
-		contentsNum: len(page.Contents),
-	}
+	what := &ExporterHTML{page: page}
 	// Set up the content functions.
 	what.contentFunctions = export.ContentBuilder(what)
 	return what

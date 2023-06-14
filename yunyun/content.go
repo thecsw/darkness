@@ -4,54 +4,80 @@ import (
 	"github.com/thecsw/gana"
 )
 
+// ListItems is a list of list items.
+type ListItem struct {
+	// To prevent unkeyed literars.
+	_ struct{}
+	// Level is the level of the list item.
+	Level uint8
+	// Text is the text of the list item.
+	Text string
+}
+
 // Content is a piece of content of a page.
 type Content struct {
 	// To prevent unkeyed literars.
 	_ struct{}
+
 	// AttentionText is the attention text.
 	AttentionText string
+
 	// GalleryPath stores the path declared by the gallery directive,
 	// it can either be the relative path (to the page that it was
 	// declared on) or some other http/absolute link.
 	GalleryPath RelativePathDir
+
 	// SourceCode is the source code.
 	SourceCode string
+
 	// SourceCodeLanguage is the language of the source code.
 	SourceCodeLang string
+
 	// LinkDescription is the optional description of the link.
 	LinkDescription string
+
 	// Attributes is a string given by the user to give this content some
 	// custom export mechanisms.
 	Attributes string
 
 	// Heading is the heading text.
 	Heading string
+
 	// Paragraph is the paragraph text.
 	Paragraph string
+
 	// Caption is the current caption.
 	Caption string
+
 	// AttentionTitle is the attention text title (IMPORTANT, WARNING, etc.).
 	AttentionTitle string
+
 	// Link is the link text.
 	Link string
+
 	// LinkTitle is the link title.
 	LinkTitle string
+
 	// RawHTML is the raw HTML.
 	RawHTML string
+
 	// Summary is the current summary, used by details to denote
 	// the title of the summary block.
 	Summary string
+
 	// Table is the table of items.
 	Table [][]string
-	// ListNumbered is the list of items, numbered.
-	ListNumbered []string
+
 	// List is the list of items, unordered.
-	List []string
+	List []*ListItem
+
 	// GalleryImagesPerRow stores the number of default images per row,
 	// therefore what flex class to use -- defaults to 3.
 	GalleryImagesPerRow uint
+
 	// HeadingLevelAdjusted is adjusted `HeadingLevel` by `emilia`.
 	HeadingLevelAdjusted uint32
+
 	// HeadingLevel is the heading level of the content (1 being the title, starts at 2).
 	HeadingLevel uint32
 

@@ -22,10 +22,11 @@ func WithFootnotes() yunyun.PageOption {
 			if c.IsParagraph() {
 				c.Paragraph = findFootnotes(c.Paragraph, &footnotes)
 			}
+
 			// Footnotes can also appear in lists
 			if c.IsList() {
 				for i := 0; i < len(c.List); i++ {
-					c.List[i] = findFootnotes(c.List[i], &footnotes)
+					c.List[i].Text = findFootnotes(c.List[i].Text, &footnotes)
 				}
 			}
 		}

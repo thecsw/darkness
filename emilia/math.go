@@ -103,7 +103,10 @@ func hasEquationInList(content *yunyun.Content) bool {
 	if !content.IsList() {
 		return false
 	}
-	return gana.Anyf(yunyun.MathRegexp.MatchString, content.List)
+	return gana.Anyf(
+		yunyun.MathRegexp.MatchString,
+		gana.Map(func(t *yunyun.ListItem) string { return t.Text }, content.List),
+	)
 }
 
 // hasEquationsInHeading returns true if the heading has an equation.

@@ -213,11 +213,11 @@ func extractGalleryImagesPerRow(line string) uint {
 	}
 	ans, err := strconv.Atoi(*num)
 	if err != nil {
-		puck.Logger.Warnf("failed to format gallery width of %s, defaulting to %s", line, defaultGalleryImagesPerRow)
+		puck.Logger.Warnf("failed to format gallery width of %s, defaulting to %d", line, defaultGalleryImagesPerRow)
 		return defaultGalleryImagesPerRow
 	}
 	if ans < 1 {
-		puck.Logger.Warnf("gallery width should be at least 1, defaulting to %s", defaultGalleryImagesPerRow)
+		puck.Logger.Warnf("gallery width should be at least 1, defaulting to %d", defaultGalleryImagesPerRow)
 		return defaultGalleryImagesPerRow
 	}
 	return uint(ans)

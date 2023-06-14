@@ -38,14 +38,6 @@ func (e *ExporterHTML) setContentFlags(v *yunyun.Content) {
 	}
 }
 
-// buildContent runs the givent `*Content` against known protocols/policies
-// and does some funky logic to balance div openings and closures.
-func (e *ExporterHTML) buildContent() string {
-	built := e.contentFunctions[e.currentContent.Type](e.currentContent)
-	e.setContentFlags(e.currentContent)
-	return e.resolveDivTags(built)
-}
-
 // resolveDivTags applies results from `setContentFlags` by modifying the DOM.
 func (e *ExporterHTML) resolveDivTags(built string) string {
 	if yunyun.HasFlag(&e.currentContent.Options, thisContentOpensWritingFlag) {
@@ -54,7 +46,7 @@ func (e *ExporterHTML) resolveDivTags(built string) string {
 	if yunyun.HasFlag(&e.currentContent.Options, thisContentClosesWritingFlag) {
 		built = "</div>\n" + built
 	}
-	if e.inWriting && e.currentContentIndex == e.contentsNum-1 {
+	if e.inWriting && e.currentContentIndex == len(e.page.Contents)-1 {
 		built = built + "\n</div>\n"
 	}
 	return built
@@ -64,11 +56,11 @@ func (e *ExporterHTML) resolveDivTags(built string) string {
 func (e *ExporterHTML) Heading(content *yunyun.Content) string {
 	toReturn := fmt.Sprintf(`
 <h%d id="%s" class="section-%d">%s</h%d>`,
-		content.HeadingLevelAdjusted, // HTML open tag
-		extractID(content.Heading),   // ID
-		content.HeadingLevel,         // section class
-		processText(content.Heading), // Actual title
-		content.HeadingLevelAdjusted, // HTML close tag
+		content.HeadingLevelAdjusted,      // HTML open tag
+		emilia.ExtractID(content.Heading), // ID
+		content.HeadingLevel,              // section class
+		processText(content.Heading),      // Actual title
+		content.HeadingLevelAdjusted,      // HTML close tag
 	)
 	e.inHeading = true
 	return toReturn
@@ -102,13 +94,13 @@ func (e ExporterHTML) Paragraph(content *yunyun.Content) string {
 }
 
 // makeListItem makes an html item
-func makeListItem(s string) string {
+func makeListItem(item *yunyun.ListItem) string {
 	return fmt.Sprintf(`
-<li>
+<li class="l%d">
 <p>
 %s
 </p>
-</li>`, processText(s))
+</li>`, item.Level, processText(item.Text))
 }
 
 // list gives us a list html representation
@@ -119,11 +111,13 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 	}
 	return fmt.Sprintf(`
 <div class="ulist">
-<ul>
+<ul class="%s">
 %s
 </ul>
 </div>
-`, strings.Join(gana.Map(makeListItem, content.List), "\n"))
+`,
+		content.Summary, // overloaded summary to store list class
+		strings.Join(gana.Map(makeListItem, content.List), "\n"))
 }
 
 // listNumbered gives us a numbered list html representation

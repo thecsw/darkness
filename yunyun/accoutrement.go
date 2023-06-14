@@ -24,6 +24,8 @@ type Accoutrement struct {
 	AuthorImage AccoutrementFlip
 	// Math enables/disables math rendering (overrides auto-discovery).
 	Math AccoutrementFlip
+	// Toc enables/disables table of contents
+	Toc AccoutrementFlip
 }
 
 // ExcludeHtmlHeadContains is a type to store excluded keywords for html head.

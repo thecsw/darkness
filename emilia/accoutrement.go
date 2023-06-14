@@ -19,6 +19,7 @@ const (
 	optionPreview         = `preview`
 	optionPreviewWidth    = `preview-width`
 	optionPreviewHeigh    = `preview-height`
+	optionToc             = `toc`
 )
 
 var accotrementActions = map[string]func(string, *yunyun.Accoutrement){
@@ -30,6 +31,7 @@ var accotrementActions = map[string]func(string, *yunyun.Accoutrement){
 	optionPreview:         accoutrementPreview,
 	optionPreviewWidth:    accoutrementPreviewWidth,
 	optionPreviewHeigh:    accoutrementPreviewHeight,
+	optionToc:             accoutrementToc,
 }
 
 // InitializeAccoutrement fills accoutrement according to the config
@@ -43,9 +45,6 @@ func InitializeAccoutrement(page *yunyun.Page) {
 			break
 		}
 	}
-
-	// Set the default values for preview width and height.
-
 }
 
 // FillAccoutrement parses `options` and fills the `target`.
@@ -117,6 +116,11 @@ func accoutrementPreviewWidth(what string, target *yunyun.Accoutrement) {
 // accoutrementPreviewHeight sets the preview height option of the accoutrement.
 func accoutrementPreviewHeight(what string, target *yunyun.Accoutrement) {
 	target.PreviewHeight = what
+}
+
+// accoutrementToc sets the toc option of the accoutrement.
+func accoutrementToc(what string, target *yunyun.Accoutrement) {
+	accoutrementBool(what, &target.Toc)
 }
 
 // accoutrementBool sets the bool value of the target according to the what.

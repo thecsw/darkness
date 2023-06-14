@@ -60,6 +60,8 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	galleryWidth := defaultGalleryImagesPerRow
 	// Our context is a parody of a state machine
 	currentContext := ""
+	// listItemInitialIndent is the initial indent of the list item
+	listItemInitialIndent := uint8(0)
 
 	// optionsStrings will get populated as the page is being scanned
 	// and then parsed out before leaving this parser.
@@ -227,12 +229,17 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 			}
 			// If we were in a list, save it as a list
 			if hasFlag(yunyun.InListFlag) {
-				matches := strings.Split(previousContext, listSeparatorWS)[1:]
-				for i, match := range matches {
-					matches[i] = strings.Replace(match, "- ", "", 1)
+				rawListItems := strings.Split(previousContext, listSeparatorWS)[1:]
+				matches := make([]*yunyun.ListItem, len(rawListItems))
+				for i, match := range rawListItems {
+					listItemRaw := strings.Replace(match, "- ", "", 1)
+					matches[i] = &yunyun.ListItem{
+						Level: emilia.CountStringsLeft(listItemRaw, "  ") - listItemInitialIndent + 1,
+						Text:  strings.TrimSpace(listItemRaw),
+					}
 				}
 				// Shouldn't happen, continue as a failure
-				if len(matches) < 1 {
+				if len(rawListItems) < 1 {
 					continue
 				}
 				// Add the list
@@ -241,6 +248,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 					List: matches,
 				})
 				flipFlag(yunyun.InListFlag)
+				listItemInitialIndent = 0
 				continue
 			}
 			// If we were in a table, save it as such
@@ -287,8 +295,11 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 			continue
 		}
 		if isList(line) {
+			if !hasFlag(yunyun.InListFlag) {
+				listItemInitialIndent = emilia.CountRunesLeft(rawLine, ' ')
+			}
 			addFlag(yunyun.InListFlag)
-			currentContext = previousContext + listSeparatorWS + line
+			currentContext = previousContext + listSeparatorWS + rawLine
 		}
 		if isTable(line) {
 			addFlag(yunyun.InTableFlag)
@@ -306,6 +317,8 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	return page
 }
 
+// fillHolosceneDate tries to find a date in the format of "H.E." and
+// saves it as the page's date.
 func fillHolosceneDate(page *yunyun.Page) {
 	// No contents found?
 	if len(page.Contents) < 1 {

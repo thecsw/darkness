@@ -115,7 +115,7 @@ func getGalleryFiles() []*emilia.GalleryItem {
 	for _, page := range buildPagesSimple(nil) {
 		for _, gc := range page.Contents.Galleries() {
 			for _, item := range gc.List {
-				galleryFiles = append(galleryFiles, emilia.NewGalleryItem(page, gc, item))
+				galleryFiles = append(galleryFiles, emilia.NewGalleryItem(page, gc, item.Text))
 			}
 		}
 	}

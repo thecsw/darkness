@@ -2,7 +2,6 @@ package emilia
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -65,7 +64,7 @@ func InitDarkness(options *EmiliaOptions) {
 		Config.WorkDir = filepath.Dir(options.DarknessConfig)
 		Logger.Info("Guessing working directory", "result", Config.WorkDir)
 	}
-	data, err := ioutil.ReadFile(options.DarknessConfig)
+	data, err := os.ReadFile(options.DarknessConfig)
 	if err != nil && !options.Test {
 		Logger.Error("Opening config", "path", options.DarknessConfig, "err", err)
 		os.Exit(1)
@@ -243,7 +242,7 @@ func getExporterBuilder() export.ExporterBuilder {
 // setupHighlightJsLanguages logs all the languages we support through
 // the directory included in the config.
 func setupHighlightJsLanguages(dir yunyun.RelativePathDir) {
-	languages, err := ioutil.ReadDir(string(dir))
+	languages, err := os.ReadDir(string(dir))
 	if err != nil {
 		Logger.Warnf("failed to open %s: %v", dir, err)
 		AvailableLanguages = nil

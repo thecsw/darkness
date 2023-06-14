@@ -80,8 +80,8 @@ func makeFlexItem(item *emilia.GalleryItem, width uint) string {
 
 // gallery will create a flexbox gallery as defined in .gallery css class
 func (e ExporterHTML) gallery(content *yunyun.Content) string {
-	makeFlexItemWithFolder := func(s string) string {
-		return makeFlexItem(emilia.NewGalleryItem(e.page, content, s), content.GalleryImagesPerRow)
+	makeFlexItemWithFolder := func(s *yunyun.ListItem) string {
+		return makeFlexItem(emilia.NewGalleryItem(e.page, content, s.Text), content.GalleryImagesPerRow)
 	}
 	return fmt.Sprintf(`
 <div class="gallery-container">

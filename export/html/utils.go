@@ -1,32 +1,8 @@
 package html
 
 import (
-	"strings"
-	"unicode"
-
 	"github.com/thecsw/darkness/yunyun"
 )
-
-// extractID returns a properly formatted ID for a heading title
-func extractID(heading string) string {
-	// Check if heading is a link
-	extractedLink := yunyun.ExtractLink(heading)
-	if extractedLink != nil {
-		heading = extractedLink.Text // 0 is whole match, 1 is link, 2 is title
-	}
-
-	res := ""
-	for _, c := range heading {
-		if unicode.IsSpace(c) || unicode.IsPunct(c) || unicode.IsSymbol(c) {
-			res += "-"
-			continue
-		}
-		if c <= unicode.MaxASCII {
-			res += string(unicode.ToLower(c))
-		}
-	}
-	return strings.TrimRight(res, "-")
-}
 
 type divType uint8
 

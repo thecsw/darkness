@@ -32,7 +32,7 @@ const (
 )
 
 // Bits is aliased to `uint16` to store flags.
-type Bits uint16
+type Bits uint32
 
 const (
 	// InListFlag is used internally to mark list states.

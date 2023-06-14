@@ -26,7 +26,7 @@ var (
 )
 
 // Export runs the process of exporting
-func (e ExporterHTML) Export() string {
+func (e *ExporterHTML) Export() string {
 	defer puck.Stopwatch("Exported", "page", e.page.File).Record()
 	if e.page == nil {
 		fmt.Println("Export should be called after SetPage")
@@ -53,12 +53,17 @@ func (e ExporterHTML) Export() string {
 	if len(e.page.Accoutrement.Preview) < 1 {
 		e.page.Accoutrement.Preview = string(emilia.Config.Website.Preview)
 	}
+
+	if e.page.Accoutrement.Toc.IsEnabled() {
+		e.page.Contents = append(e.toc(), e.page.Contents...)
+	}
+
 	// Build the HTML (string) representation of each content
-	content := make([]string, e.contentsNum)
+	content := make([]string, 0, len(e.page.Contents))
 	for i, v := range e.page.Contents {
 		e.currentContentIndex = i
 		e.currentContent = v
-		content[i] = e.buildContent()
+		content = append(content, e.buildContent(v))
 	}
 
 	return fmt.Sprintf(`%s<!DOCTYPE html>
@@ -80,6 +85,19 @@ func (e ExporterHTML) Export() string {
 		strings.Join(content, ""),
 		e.addFootnotes(),
 	)
+}
+
+// buildContent builds the HTML representation of a content.
+func (e *ExporterHTML) buildContent(content *yunyun.Content) string {
+	// Build the HTML (string) representation of each content.
+	built := e.contentFunctions[e.currentContent.Type](e.currentContent)
+
+	// Set the content flags, like whether it's in writing mode or not.
+	e.setContentFlags(e.currentContent)
+
+	// If the content is in writing mode, wrap it in a writing div.
+	// otherwise, wrap it in other divs, depending on the content type.
+	return e.resolveDivTags(built)
 }
 
 // leftHeading leaves the heading.
@@ -200,7 +218,7 @@ func authorImage(authorImageFlag yunyun.AccoutrementFlip) string {
 // addTomb adds the tomb to the last paragraph.
 func (e ExporterHTML) addTomb() {
 	// Empty???
-	if e.contentsNum < 1 {
+	if len(e.page.Contents) < 1 {
 		return
 	}
 	// Find the last paragrapd and attached the tomb.
@@ -212,5 +230,30 @@ func (e ExporterHTML) addTomb() {
 		// Add the tomb and break out.
 		e.page.Contents[i].Paragraph += tombEnding
 		break
+	}
+}
+
+// toc returns the table of contents.
+func (e ExporterHTML) toc() []*yunyun.Content {
+	return []*yunyun.Content{
+		// First, add the table of contents header.
+		{
+			Type:                 yunyun.TypeHeading,
+			Heading:              "Table of Contents",
+			HeadingLevel:         3,
+			HeadingLevelAdjusted: 1,
+		},
+		// Then, add the table of contents.
+		{
+			Type: yunyun.TypeList,
+			// overload the summary field to indicate
+			// that this is the table of contents.
+			Summary: "toc",
+			List:    emilia.GenerateTableOfContents(e.page),
+		},
+		// Finally, add the horizontal line.
+		{
+			Type: yunyun.TypeHorizontalLine,
+		},
 	}
 }

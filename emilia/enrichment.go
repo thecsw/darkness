@@ -3,7 +3,7 @@ package emilia
 import (
 	"bufio"
 	"bytes"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -44,7 +44,7 @@ func InputFilenameToOutput(file yunyun.FullPathFile) string {
 
 // InputToOutput converts a single input file to its output.
 func InputToOutput(file yunyun.FullPathFile) string {
-	data, err := ioutil.ReadFile(filepath.Clean(string(file)))
+	data, err := os.ReadFile(filepath.Clean(string(file)))
 	if err != nil {
 		panic(err)
 	}

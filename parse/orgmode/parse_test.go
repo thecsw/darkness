@@ -1,7 +1,7 @@
 package orgmode
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/thecsw/darkness/emilia"
@@ -14,7 +14,7 @@ const (
 
 func BenchmarkAParseHome(b *testing.B) {
 	emilia.InitDarkness(&emilia.EmiliaOptions{Test: true})
-	data, err := ioutil.ReadFile(testFileHome)
+	data, err := os.ReadFile(testFileHome)
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -25,7 +25,7 @@ func BenchmarkAParseHome(b *testing.B) {
 
 func BenchmarkBParseArch(b *testing.B) {
 	emilia.InitDarkness(&emilia.EmiliaOptions{Test: true})
-	data, err := ioutil.ReadFile(testFileArch)
+	data, err := os.ReadFile(testFileArch)
 	if err != nil {
 		b.Fatal(err)
 	}

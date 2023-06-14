@@ -1,12 +1,11 @@
 package html
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/parse/orgmode"
-	_ "github.com/thecsw/darkness/parse/orgmode"
 )
 
 const (
@@ -16,7 +15,7 @@ const (
 
 func BenchmarkAExportHome(b *testing.B) {
 	emilia.InitDarkness(&emilia.EmiliaOptions{Test: true})
-	data, err := ioutil.ReadFile(testFileHome)
+	data, err := os.ReadFile(testFileHome)
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -29,7 +28,7 @@ func BenchmarkAExportHome(b *testing.B) {
 
 func BenchmarkAExportArch(b *testing.B) {
 	emilia.InitDarkness(&emilia.EmiliaOptions{Test: true})
-	data, err := ioutil.ReadFile(testFileArch)
+	data, err := os.ReadFile(testFileArch)
 	if err != nil {
 		b.Fatal(err)
 	}

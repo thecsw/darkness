@@ -3,6 +3,7 @@ package markdown
 import (
 	"strings"
 
+	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -39,6 +40,8 @@ func (p ParserMarkdown) Parse() *yunyun.Page {
 	additionalContext := ""
 	// Our context is a parody of a state machine
 	currentContext := ""
+	// listItemInitialIndent is the initial indent of the list item
+	listItemInitialIndent := uint8(0)
 
 	addFlag, removeFlag, flipFlag, hasFlag := yunyun.LatchFlags(&currentFlags)
 	// addContent is a helper function to add content to the page
@@ -149,12 +152,17 @@ func (p ParserMarkdown) Parse() *yunyun.Page {
 			}
 			// If we were in a list, save it as a list
 			if hasFlag(yunyun.InListFlag) {
-				matches := strings.Split(previousContext, listSeparatorWS)[1:]
-				for i, match := range matches {
-					matches[i] = strings.Replace(match, "- ", "", 1)
+				rawListItems := strings.Split(previousContext, listSeparatorWS)[1:]
+				matches := make([]*yunyun.ListItem, len(rawListItems))
+				for i, match := range rawListItems {
+					listItemRaw := strings.Replace(match, "- ", "", 1)
+					matches[i] = &yunyun.ListItem{
+						Level: emilia.CountStringsLeft(listItemRaw, "  ") - listItemInitialIndent + 1,
+						Text:  strings.TrimSpace(listItemRaw),
+					}
 				}
 				// Shouldn't happen, continue as a failure
-				if len(matches) < 1 {
+				if len(rawListItems) < 1 {
 					continue
 				}
 				// Add the list
@@ -163,6 +171,7 @@ func (p ParserMarkdown) Parse() *yunyun.Page {
 					List: matches,
 				})
 				flipFlag(yunyun.InListFlag)
+				listItemInitialIndent = 0
 				continue
 			}
 			// If we were in a table, save it as such
