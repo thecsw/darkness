@@ -3,7 +3,6 @@ package markdown
 import (
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -157,7 +156,7 @@ func (p ParserMarkdown) Parse() *yunyun.Page {
 				for i, match := range rawListItems {
 					listItemRaw := strings.Replace(match, "- ", "", 1)
 					matches[i] = &yunyun.ListItem{
-						Level: emilia.CountStringsLeft(listItemRaw, "  ") - listItemInitialIndent + 1,
+						Level: gana.CountStringsLeft[uint8](listItemRaw, "  ") - listItemInitialIndent + 1,
 						Text:  strings.TrimSpace(listItemRaw),
 					}
 				}

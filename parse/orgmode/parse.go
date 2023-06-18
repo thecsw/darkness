@@ -234,7 +234,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 				for i, match := range rawListItems {
 					listItemRaw := strings.Replace(match, "- ", "", 1)
 					matches[i] = &yunyun.ListItem{
-						Level: emilia.CountStringsLeft(listItemRaw, "  ") - listItemInitialIndent + 1,
+						Level: gana.CountStringsLeft[uint8](listItemRaw, "  ") - listItemInitialIndent + 1,
 						Text:  strings.TrimSpace(listItemRaw),
 					}
 				}
@@ -296,7 +296,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		}
 		if isList(line) {
 			if !hasFlag(yunyun.InListFlag) {
-				listItemInitialIndent = emilia.CountRunesLeft(rawLine, ' ')
+				listItemInitialIndent = gana.CountRunesLeft[uint8](rawLine, ' ')
 			}
 			addFlag(yunyun.InListFlag)
 			currentContext = previousContext + listSeparatorWS + rawLine
