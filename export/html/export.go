@@ -114,7 +114,7 @@ func (e ExporterHTML) combineAndFilterHtmlHead() string {
 		finalHead += strings.Join(gana.Filter(e.page.Accoutrement.ExcludeHtmlHeadContains.ShouldKeep, head), "\n")
 	}
 	// Page's specific html head elements are not filtered out.
-	return finalHead + strings.Join(e.page.HtmlHead, "\n")
+	return finalHead + "\n" + strings.Join(e.page.HtmlHead, "\n")
 }
 
 // styleTags is the processed style tags.

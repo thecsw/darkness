@@ -36,7 +36,9 @@ func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-
 				if err != nil {
 					return fmt.Errorf("finding relative path of %s to %s: %v", osPathname, Config.WorkDir, err)
 				}
-				pool.Submit(JoinWorkdir(yunyun.RelativePathFile(relPath)))
+				if err := pool.Submit(JoinWorkdir(yunyun.RelativePathFile(relPath))); err != nil {
+					Logger.Errorf("couldn't submit %s: %v", relPath, err)
+				}
 				return nil
 			},
 		}); err != nil {

@@ -52,7 +52,7 @@ func markupHTML(text string) string {
 // processText returns a properly formatted HTML of a text
 func processText(text string) string {
 	text = markupHTML(html.EscapeString(fancyQuotes(text)))
-	text = strings.ReplaceAll(text, "◼", `<b style="color:#ba3925">◼︎</b>`)
+	text = strings.ReplaceAll(text, "◼", `<b style="color:var(--color-tomb)">◼︎</b>`)
 	text = yunyun.LinkRegexp.ReplaceAllString(text,
 		fmt.Sprintf(`<a href="%s" title="%s">%s</a>`, `$link`, `$desc`, `$text`))
 	text = yunyun.MathRegexp.ReplaceAllString(text, `\($1\)`)

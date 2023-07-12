@@ -14,6 +14,7 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 	"github.com/thecsw/komi"
+	"github.com/thecsw/rei"
 )
 
 const (
@@ -59,7 +60,9 @@ func build() {
 		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
 	})
-	go logErrors("reading", filesPool.Errors())
+	filesError, err := filesPool.Errors()
+	rei.Try(err)
+	go logErrors("reading", filesError)
 
 	// Create a pool that take a files handle and parses it out into yunyun pages.
 	parserPool := komi.NewWithSettings(komi.Work(parsePage), &komi.Settings{
@@ -81,7 +84,9 @@ func build() {
 		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
 	})
-	go logErrors("writer", writerPool.Errors())
+	writersErrors, err := writerPool.Errors()
+	rei.Try(err)
+	go logErrors("writer", writersErrors)
 
 	// Connect all the pools between each other, so the relationship is as follows,
 	//
@@ -117,28 +122,26 @@ func build() {
 }
 
 //go:inline
-func openPage(v yunyun.FullPathFile) (*gana.Tuple[yunyun.FullPathFile, *os.File], error) {
+func openPage(v yunyun.FullPathFile) (gana.Tuple[yunyun.FullPathFile, *os.File], error) {
 	file, err := os.Open(filepath.Clean(string(v)))
 	if err != nil {
-		return nil, err
+		return gana.NewTuple[yunyun.FullPathFile, *os.File]("", nil), err
 	}
-	a := gana.NewTuple(v, file)
-	return &a, err
+	return gana.NewTuple(v, file), nil
 }
 
 //go:inline
-func parsePage(v *gana.Tuple[yunyun.FullPathFile, *os.File]) *yunyun.Page {
+func parsePage(v gana.Tuple[yunyun.FullPathFile, *os.File]) *yunyun.Page {
 	return emilia.ParserBuilder.BuildParserReader(emilia.FullPathToWorkDirRel(v.First), v.Second).Parse()
 }
 
 //go:inline
-func exportPage(v *yunyun.Page) *gana.Tuple[string, *bufio.Reader] {
-	a := gana.NewTuple(emilia.InputFilenameToOutput(emilia.JoinWorkdir(v.File)), emilia.EnrichExportPageAsBufio(v))
-	return &a
+func exportPage(v *yunyun.Page) gana.Tuple[string, *bufio.Reader] {
+	return gana.NewTuple(emilia.InputFilenameToOutput(emilia.JoinWorkdir(v.File)), emilia.EnrichExportPageAsBufio(v))
 }
 
 //go:inline
-func writePage(v *gana.Tuple[string, *bufio.Reader]) error {
+func writePage(v gana.Tuple[string, *bufio.Reader]) error {
 	_, err := writeFile(v.First, v.Second)
 	if err != nil {
 		return fmt.Errorf("writing page %s: %v", v.First, err)

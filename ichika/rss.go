@@ -36,6 +36,8 @@ func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 		rootDescription = emilia.Config.Title
 	}
 
+	sort.Slice(allPages, func(i, j int) bool { return allPages[i].Title < allPages[j].Title })
+
 	// Get all pages that have dates defined, we only use those to be included in the rss feed.
 	pages := Pages(gana.Filter(func(page *yunyun.Page) bool { return getDate(page) != nil }, allPages))
 
