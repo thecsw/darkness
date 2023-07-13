@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"os"
-	"runtime/debug"
 
 	"github.com/pkg/profile"
 	"github.com/thecsw/darkness/ichika"
@@ -18,8 +16,8 @@ const (
 
 // main is the entry point for the program.
 func main() {
-	debug.SetGCPercent(-1)
-	debug.SetMemoryLimit(math.MaxInt64)
+	// debug.SetGCPercent(-1)
+	// debug.SetMemoryLimit(math.MaxInt64)
 
 	if PROFILE_CPU {
 		defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
