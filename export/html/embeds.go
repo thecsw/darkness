@@ -83,7 +83,7 @@ Sorry, your browser doesn't support embedded videos.
 	// spotifyTrackEmbedTemplate is the template for spotify track embeds.
 	spotifyTrackEmbedTemplate = `
 <div class="media">
-<iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/%s?utm_source=generator" width="69%%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+<iframe class="spotify-embed-track" style="border-radius:12px" src="https://open.spotify.com/embed/track/%s?utm_source=generator" width="69%%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>`
 
 	// spotifyPlaylistEmbedPrefix is the prefix for spotify playlist embeds.
@@ -91,7 +91,7 @@ Sorry, your browser doesn't support embedded videos.
 	// spotifyPlaylistEmbedTemplate is the template for spotify playlist embeds.
 	spotifyPlaylistEmbedTemplate = `
 <div class="media">
-<iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/%s?utm_source=generator" width="69%%" height="550" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+<iframe class="spotify-embed-playlist" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/%s?utm_source=generator" width="69%%" height="550" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>`
 )
 
