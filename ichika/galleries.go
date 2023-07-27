@@ -34,7 +34,7 @@ func buildGalleryFiles(dryRun bool) {
 	galleryFiles := getGalleryFiles()
 
 	// Filter out all the files that already exist.
-	missingFiles := gana.Filter(func(item *emilia.GalleryItem) bool {
+	missingFiles := gana.Filter(func(item emilia.GalleryItem) bool {
 		return !rei.FileMustExist(string(emilia.GalleryPreview(item)))
 	}, galleryFiles)
 
@@ -110,8 +110,8 @@ func removeGalleryFiles(dryRun bool) {
 }
 
 // getGalleryFiles returns a slice of all gallery images represented as `emilia.GalleryItem`.
-func getGalleryFiles() []*emilia.GalleryItem {
-	galleryFiles := make([]*emilia.GalleryItem, 0, 32)
+func getGalleryFiles() []emilia.GalleryItem {
+	galleryFiles := make([]emilia.GalleryItem, 0, 32)
 	for _, page := range buildPagesSimple(nil) {
 		for _, gc := range page.Contents.Galleries() {
 			for _, item := range gc.List {
@@ -119,6 +119,5 @@ func getGalleryFiles() []*emilia.GalleryItem {
 			}
 		}
 	}
-
 	return galleryFiles
 }

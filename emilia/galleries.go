@@ -37,7 +37,7 @@ type GalleryItem struct {
 
 // NewGalleryItem creates a new helper `GalleryItem` and
 // decides whether the passed item is an external link or not.
-func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string) *GalleryItem {
+func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string) GalleryItem {
 	extractedLinks := yunyun.ExtractLinks(wholeLine)
 	// If image wasn't found, then the whole line should be counted as the image path.
 	image := wholeLine
@@ -52,7 +52,7 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 	if len(extractedLinks) > 1 {
 		optionalLink = extractedLinks[1].Link
 	}
-	return &GalleryItem{
+	return GalleryItem{
 		Item: yunyun.RelativePathFile(image),
 		Path: yunyun.JoinPaths(page.Location, content.GalleryPath),
 		// IsExternal:   yunyun.URLRegexp.MatchString(image),
@@ -66,7 +66,7 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 
 // GalleryImage takes a gallery item and returns its full path depending
 // on the option, so whether it's a full link or a vendored path.
-func GalleryImage(item *GalleryItem) yunyun.FullPathFile {
+func GalleryImage(item GalleryItem) yunyun.FullPathFile {
 	if item.IsExternal {
 		// If it's vendored, then retrieve a local copy (if doesn't already
 		// exist) and stub it in as the full path
@@ -79,7 +79,7 @@ func GalleryImage(item *GalleryItem) yunyun.FullPathFile {
 }
 
 // galleryPreviewRelative takes gallery item and returns relative path to it.
-func galleryPreviewRelative(item *GalleryItem) yunyun.RelativePathFile {
+func galleryPreviewRelative(item GalleryItem) yunyun.RelativePathFile {
 	if item.IsExternal {
 		return galleryItemHash(item)
 	}
@@ -90,7 +90,7 @@ func galleryPreviewRelative(item *GalleryItem) yunyun.RelativePathFile {
 
 // GalleryPreview takes an original image's path and returns
 // the preview path of it. Previews are always .jpg
-func GalleryPreview(item *GalleryItem) yunyun.FullPathFile {
+func GalleryPreview(item GalleryItem) yunyun.FullPathFile {
 	return JoinPath(yunyun.JoinRelativePaths(Config.Project.DarknessPreviewDirectory, galleryPreviewRelative(item)))
 }
 
@@ -114,7 +114,7 @@ var (
 )
 
 // GalleryVendored returns vendored local path of the gallery item.
-func GalleryVendored(item *GalleryItem) yunyun.RelativePathFile {
+func GalleryVendored(item GalleryItem) yunyun.RelativePathFile {
 	return yunyun.JoinRelativePaths(Config.Project.DarknessVendorDirectory, galleryItemHash(item))
 }
 
@@ -124,7 +124,7 @@ func GalleryVendored(item *GalleryItem) yunyun.RelativePathFile {
 // .IsExternal check before calling this. SLOW function because of network calls.
 //
 // If the vendoring fails at any point, fallback to the remote image path.
-func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
+func galleryVendorItem(item GalleryItem) yunyun.FullPathFile {
 	// Process only one vendor request at a time.
 	vendorLock.Lock()
 	// Unlock so the next vendor request can get processed.
@@ -174,7 +174,7 @@ func galleryVendorItem(item *GalleryItem) yunyun.FullPathFile {
 }
 
 // GalleryItemToImage takes in a gallery item and returns an image object.
-func GalleryItemToImage(item *GalleryItem, authority, prefix string) (image.Image, error) {
+func GalleryItemToImage(item GalleryItem, authority, prefix string) (image.Image, error) {
 	// If it's a local file, simply open the os file.
 	if !item.IsExternal {
 		file := JoinWorkdir(yunyun.JoinRelativePaths(item.Path, item.Item))
@@ -194,6 +194,6 @@ func GalleryItemToImage(item *GalleryItem, authority, prefix string) (image.Imag
 }
 
 // galleryItemHash returns a hashed name of a gallery item link.
-func galleryItemHash(item *GalleryItem) yunyun.RelativePathFile {
+func galleryItemHash(item GalleryItem) yunyun.RelativePathFile {
 	return yunyun.RelativePathFile(rei.Sha256([]byte(item.Item))[:7] + ".jpg")
 }
