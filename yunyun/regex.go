@@ -153,7 +153,7 @@ var (
 	// VideoFileExtRegexp matches commonly used video file formats.
 	VideoFileExtRegexp = regexp.MustCompile(`\.(mp4|mkv|mov|flv|webm)$`)
 	// NewLineRegexp matches a new line for non-math environments.
-	NewLineRegexp = regexp.MustCompile(`(?mU)([^\\ ])(?:[ ]|^)?(?:\\|\\\\)(?:[ ]|$)`)
+	NewLineRegexp = regexp.MustCompile(`(?mU)([^\\ ])(?:[ ]|^)?(?:[\\])(?:[ ]|$)`)
 	// FootnoteRegexp is the regexp for matching footnotes.
 	FootnoteRegexp = regexp.MustCompile(`(?mU)\[fn:: (.+)\]([:;!?\t\n. ]|$)`)
 	// FootnoteReferenceRegexp is the regexp for matching footnotes references.
