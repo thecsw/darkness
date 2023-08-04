@@ -14,6 +14,7 @@ import (
 // quotesReplace is the map to replace
 var quotesReplace = map[string]string{
 	"'s":  "’s",
+	"'d":  "’d",
 	"s'":  "s’",
 	"'m":  "’m",
 	"n't": "n’t",
