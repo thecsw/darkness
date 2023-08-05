@@ -176,6 +176,11 @@ func extractAttributes(line string) string {
 	return extractOptionLabel(line, optionAttributes)
 }
 
+// extractHtmlTags extracts the line of html styles.
+func extractHtmlTags(line string) string {
+	return extractOptionLabel(line, optionHtmlTags)
+}
+
 // extractCaptionTitle extracts caption `TITLE` from `#+caption: TITLE`.
 func extractCaptionTitle(line string) string {
 	return extractOptionLabel(line, optionCaption)

@@ -61,6 +61,9 @@ type Content struct {
 	// RawHTML is the raw HTML.
 	RawHTML string
 
+	// CustomHtmlTags can provide custom tags for the html element.
+	CustomHtmlTags string
+
 	// Summary is the current summary, used by details to denote
 	// the title of the summary block.
 	Summary string

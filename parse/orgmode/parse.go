@@ -60,6 +60,8 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	galleryWidth := defaultGalleryImagesPerRow
 	// Our context is a parody of a state machine
 	currentContext := ""
+	// User can provide custom style for an image (like resizing).
+	customHtmlTags := ""
 	// listItemInitialIndent is the initial indent of the list item
 	listItemInitialIndent := uint8(0)
 
@@ -81,12 +83,14 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		content.GalleryImagesPerRow = galleryWidth
 		content.Caption = caption
 		content.Attributes = attributes
+		content.CustomHtmlTags = customHtmlTags
 		page.Contents = append(page.Contents, content)
 		currentContext = ""
 		galleryPath = ""
 		galleryWidth = defaultGalleryImagesPerRow
 		additionalContext = ""
 		attributes = ""
+		customHtmlTags = ""
 	}
 	optionsActions := map[string]func(line string){
 		optionDropCap:     func(line string) { addFlag(yunyun.InDropCapFlag) },
@@ -118,6 +122,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		optionOptions:    func(line string) { optionsStrings += extractOptions(line) + " " },
 		optionAttributes: func(line string) { attributes = extractAttributes(line) },
 		optionAuthor:     func(line string) { page.Author = extractAuthor(line) },
+		optionHtmlTags:   func(line string) { customHtmlTags = extractHtmlTags(line) },
 	}
 
 	// Yunyun's markings default to orgmode

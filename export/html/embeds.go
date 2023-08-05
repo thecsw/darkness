@@ -12,7 +12,7 @@ import (
 const (
 	// imageEmbedTemplateWithHref is the template for image embeds that's clickable.
 	imageEmbedTemplateWithHref = `
-<div class="media">
+<div class="media" %s>
 <a class="image" href="%s"><img class="image" src="%s" title="%s" alt="%s"></a>
 <div class="title">%s</div>
 <hr>
@@ -20,7 +20,7 @@ const (
 
 	// imageEmbedTemplateNoHref is the template of image embeds that is not clickable
 	imageEmbedTemplateNoHref = `
-<div class="media">
+<div class="media" %s>
 <a class="image" ><img class="image" src="%s" title="%s" alt="%s"></a>
 <div class="title">%s</div>
 <hr>
@@ -28,13 +28,13 @@ const (
 
 	// audioEmbedTemplate is the template for audio embeds.
 	audioEmbedTemplate = `
-<div class="media">
+<div class="media" %s>
 <audio controls><source src="%s" type="audio/mpeg">music is good for the soul</audio>
 </div>`
 
 	// videoEmbedTemplate is the template for video embeds.
 	videoEmbedTemplate = `
-<div class="media">
+<div class="media" %s>
 <video controls class="responsive-iframe">
 <source src="%s" type="video/%s">
 Sorry, your browser doesn't support embedded videos.
@@ -46,14 +46,14 @@ Sorry, your browser doesn't support embedded videos.
 
 	// rawHTMLTemplate wraps raw html in `mediablock`.
 	rawHTMLTemplate = `
-<div class="media">
+<div class="media" %s>
 %s
 <div class="title">%s</div>
 </div>`
 
 	// tableTemplate is the template for image embeds.
 	tableTemplate = `
-<div class="media">
+<div class="media" %s>
 <div class="title">%s</div>
 %s
 </div>`
@@ -62,7 +62,7 @@ Sorry, your browser doesn't support embedded videos.
 	youtubeEmbedPrefix = "https://youtu.be/"
 	// youtubeEmbedTemplate is the template for youtube embeds.
 	youtubeEmbedTemplate = `
-<div class="media">
+<div class="media" %s>
 <div class="yt-container">
 <iframe src="https://www.youtube.com/embed/%s" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 </div>
@@ -71,7 +71,7 @@ Sorry, your browser doesn't support embedded videos.
 
 	// Put iframes here to have a youtube-embed-like experience.
 	responsiveIFrameHTMLTemplate = `
-<div class="media">
+<div class="media" %s>
 <div class="yt-container">
 %s
 </div>
@@ -82,7 +82,7 @@ Sorry, your browser doesn't support embedded videos.
 	spotifyTrackEmbedPrefix = "https://open.spotify.com/track/"
 	// spotifyTrackEmbedTemplate is the template for spotify track embeds.
 	spotifyTrackEmbedTemplate = `
-<div class="media">
+<div class="media" %s>
 <iframe class="spotify-embed-track" style="border-radius:12px" src="https://open.spotify.com/embed/track/%s?utm_source=generator" width="69%%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>`
 
@@ -90,7 +90,7 @@ Sorry, your browser doesn't support embedded videos.
 	spotifyPlaylistEmbedPrefix = "https://open.spotify.com/playlist/"
 	// spotifyPlaylistEmbedTemplate is the template for spotify playlist embeds.
 	spotifyPlaylistEmbedTemplate = `
-<div class="media">
+<div class="media" %s>
 <iframe class="spotify-embed-playlist" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/%s?utm_source=generator" width="69%%" height="550" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>`
 )
@@ -104,10 +104,14 @@ func (e *ExporterHTML) Link(content *yunyun.Content) string {
 		return linkImage(content)
 	case yunyun.AudioFileExtRegexp.MatchString(cleanLink):
 		// Audiofiles
-		return fmt.Sprintf(audioEmbedTemplate, cleanLink)
+		return fmt.Sprintf(audioEmbedTemplate,
+			content.CustomHtmlTags,
+			cleanLink,
+		)
 	case yunyun.VideoFileExtRegexp.MatchString(cleanLink):
 		// Raw videofiles
 		return fmt.Sprintf(videoEmbedTemplate,
+			content.CustomHtmlTags,
 			cleanLink, func(v string) string {
 				return yunyun.VideoFileExtRegexp.FindAllStringSubmatch(v, 1)[0][1]
 			}(cleanLink),
@@ -116,15 +120,18 @@ func (e *ExporterHTML) Link(content *yunyun.Content) string {
 	case strings.HasPrefix(cleanLink, youtubeEmbedPrefix):
 		// Youtube videos
 		return fmt.Sprintf(youtubeEmbedTemplate,
+			content.CustomHtmlTags,
 			gana.SkipString(uint(len(youtubeEmbedPrefix)), cleanLink),
 		)
 	case strings.HasPrefix(cleanLink, spotifyTrackEmbedPrefix):
 		// Spotify songs
 		return fmt.Sprintf(spotifyTrackEmbedTemplate,
+			content.CustomHtmlTags,
 			gana.SkipString(uint(len(spotifyTrackEmbedPrefix)), cleanLink),
 		)
 	case strings.HasPrefix(cleanLink, spotifyPlaylistEmbedPrefix):
 		return fmt.Sprintf(spotifyPlaylistEmbedTemplate,
+			content.CustomHtmlTags,
 			gana.SkipString(uint(len(spotifyPlaylistEmbedPrefix)), cleanLink),
 		)
 	default:
@@ -141,6 +148,7 @@ func linkImage(content *yunyun.Content) string {
 	// User can elect in darkness.toml to make images clickable.
 	if emilia.Config.Website.ClickableImages {
 		return fmt.Sprintf(imageEmbedTemplateWithHref,
+			content.CustomHtmlTags,
 			content.Link,
 			content.Link,
 			yunyun.RemoveFormatting(content.LinkDescription),
@@ -150,6 +158,7 @@ func linkImage(content *yunyun.Content) string {
 	}
 	// Send the embed with no clickable images. Default behavior.
 	return fmt.Sprintf(imageEmbedTemplateNoHref,
+		content.CustomHtmlTags,
 		content.Link,
 		yunyun.RemoveFormatting(content.LinkDescription),
 		yunyun.RemoveFormatting(content.LinkTitle),

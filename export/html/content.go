@@ -129,18 +129,23 @@ func (e ExporterHTML) ListNumbered(content *yunyun.Content) string {
 // sourceCode gives us a source code html representation
 func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
 	return fmt.Sprintf(`
-<div class="media">
+<div class="coding" %s>
 <div class="listingblock">
 <pre class="highlight"><code class="language-%s" data-lang="%s">%s</code></pre>
 </div>
 </div>
-`, emilia.MapSourceCodeLang(content.SourceCodeLang), content.SourceCodeLang, func() string {
-		// Remove the nested parser blockers
-		s := strings.ReplaceAll(content.SourceCode, ",#", "#")
-		// Escape the whatever HTML that is found in source code
-		s = html.EscapeString(s)
-		return s
-	}())
+`,
+		content.CustomHtmlTags,
+		emilia.MapSourceCodeLang(content.SourceCodeLang),
+		content.SourceCodeLang,
+		func() string {
+			// Remove the nested parser blockers
+			s := strings.ReplaceAll(content.SourceCode, ",#", "#")
+			// Escape the whatever HTML that is found in source code
+			s = html.EscapeString(s)
+			return s
+		}(),
+	)
 }
 
 // rawHTML gives us a raw html representation
@@ -151,9 +156,9 @@ func (e ExporterHTML) RawHTML(content *yunyun.Content) string {
 	}
 	// If responsive enabled, wrap the inner iframe (*probably*) in it.
 	if content.IsRawHTMLResponsive() {
-		return fmt.Sprintf(responsiveIFrameHTMLTemplate, content.RawHTML)
+		return fmt.Sprintf(responsiveIFrameHTMLTemplate, content.CustomHtmlTags, content.RawHTML)
 	}
-	return fmt.Sprintf(rawHTMLTemplate, content.RawHTML, content.Caption)
+	return fmt.Sprintf(rawHTMLTemplate, content.CustomHtmlTags, content.RawHTML, content.Caption)
 }
 
 // horizontalLine gives us a horizontal line html representation
@@ -194,7 +199,7 @@ func (e ExporterHTML) Table(content *yunyun.Content) string {
 		rows[i] = fmt.Sprintf("<tr>\n%s</tr>", strings.Join(content.Table[i], "\n"))
 	}
 	tableHTML := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
-	return fmt.Sprintf(tableTemplate, content.Caption, tableHTML)
+	return fmt.Sprintf(tableTemplate, content.CustomHtmlTags, content.Caption, tableHTML)
 }
 
 // table gives an HTML formatted table
