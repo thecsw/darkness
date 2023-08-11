@@ -54,7 +54,7 @@ Sorry, your browser doesn't support embedded videos.
 	// tableTemplate is the template for image embeds.
 	tableTemplate = `
 <div class="media" %s>
-<div class="title">%s</div>
+<div class="title centered">%s</div>
 %s
 </div>`
 
