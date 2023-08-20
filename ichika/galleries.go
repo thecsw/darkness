@@ -10,6 +10,8 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/emilia/rem"
+	"github.com/thecsw/darkness/emilia/reze"
 	"github.com/thecsw/gana"
 	"github.com/thecsw/rei"
 )
@@ -34,20 +36,20 @@ func buildGalleryFiles(dryRun bool) {
 	galleryFiles := getGalleryFiles()
 
 	// Filter out all the files that already exist.
-	missingFiles := gana.Filter(func(item emilia.GalleryItem) bool {
-		return !rei.FileMustExist(string(emilia.GalleryPreview(item)))
+	missingFiles := gana.Filter(func(item rem.GalleryItem) bool {
+		return !rei.FileMustExist(string(rem.GalleryPreview(item)))
 	}, galleryFiles)
 
 	// Build all the missing files.
 	for i, galleryFile := range missingFiles {
-		newFile := emilia.GalleryPreview(galleryFile)
+		newFile := rem.GalleryPreview(galleryFile)
 
 		// Retrieve image contents reader:
 		// - For local files, it's a reader of the file.
 		// - For remote files, it's a reader of the response body,
 		//   unless it's vendored, then it's a read of the vendored file.
 		prefix := fmt.Sprintf("[%d/%d] ", i+1, len(missingFiles))
-		sourceImage, err := emilia.GalleryItemToImage(galleryFile, "preview", prefix)
+		sourceImage, err := rem.GalleryItemToImage(galleryFile, "preview", prefix)
 		if err != nil {
 			puck.Logger.Errorf("parsing a gallery item: %v", err)
 			continue
@@ -61,7 +63,7 @@ func buildGalleryFiles(dryRun bool) {
 			file, err := os.Create(string(newFile))
 
 			// Create a progress bar.
-			bar := emilia.ProgressBar(-1, "misa", prefix, "Resizing", string(emilia.FullPathToWorkDirRel(newFile)))
+			bar := reze.ProgressBar(-1, "misa", prefix, "Resizing", string(emilia.FullPathToWorkDirRel(newFile)))
 			if err != nil {
 				puck.Logger.Errorf("creating file %s: %v", newFile, err)
 				continue
@@ -102,20 +104,20 @@ func removeGalleryFiles(dryRun bool) {
 		removeFunc = dryRemove
 	}
 	for _, galleryFile := range getGalleryFiles() {
-		newFile := emilia.GalleryPreview(galleryFile)
+		newFile := rem.GalleryPreview(galleryFile)
 		if err := removeFunc(string(newFile)); err != nil && !os.IsNotExist(err) {
 			puck.Logger.Errorf("deleting %s: %v", newFile, err)
 		}
 	}
 }
 
-// getGalleryFiles returns a slice of all gallery images represented as `emilia.GalleryItem`.
-func getGalleryFiles() []emilia.GalleryItem {
-	galleryFiles := make([]emilia.GalleryItem, 0, 32)
+// getGalleryFiles returns a slice of all gallery images represented as `rem.GalleryItem`.
+func getGalleryFiles() []rem.GalleryItem {
+	galleryFiles := make([]rem.GalleryItem, 0, 32)
 	for _, page := range buildPagesSimple(nil) {
 		for _, gc := range page.Contents.Galleries() {
 			for _, item := range gc.List {
-				galleryFiles = append(galleryFiles, emilia.NewGalleryItem(page, gc, item.Text))
+				galleryFiles = append(galleryFiles, rem.NewGalleryItem(page, gc, item.Text))
 			}
 		}
 	}

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/rem"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -31,7 +31,7 @@ func extractCustomFlex(s string) uint {
 
 // hrefGalleryTagIfLinkGiven returns an href tag if gallery link is found,
 // an empty string otherwise.
-func hrefGalleryTagIfLinkGiven(item emilia.GalleryItem) string {
+func hrefGalleryTagIfLinkGiven(item rem.GalleryItem) string {
 	if item.Link == "" {
 		return ""
 	}
@@ -48,7 +48,7 @@ func resolveCustomFlexItemClasses(wholeLine string) string {
 }
 
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
-func makeFlexItem(item emilia.GalleryItem, width uint) string {
+func makeFlexItem(item rem.GalleryItem, width uint) string {
 	// See if there is a custom flex width requested for the item.
 	if customFlex := extractCustomFlex(string(item.OriginalLine)); customFlex != 0 {
 		width = customFlex
@@ -68,9 +68,9 @@ func makeFlexItem(item emilia.GalleryItem, width uint) string {
 		// Additionally-enabled options, like no-zoom.
 		resolveCustomFlexItemClasses(item.OriginalLine),
 		// Path to the gallery image's preview.
-		emilia.GalleryPreview(item),
+		rem.GalleryPreview(item),
 		// Path to the image (either external, local, or vendored).
-		emilia.GalleryImage(item),
+		rem.GalleryImage(item),
 		// The text to show on the image hover.
 		item.Description,
 		// The alt descriptino of the image.
@@ -81,7 +81,7 @@ func makeFlexItem(item emilia.GalleryItem, width uint) string {
 // gallery will create a flexbox gallery as defined in .gallery css class
 func (e ExporterHTML) gallery(content *yunyun.Content) string {
 	makeFlexItemWithFolder := func(s *yunyun.ListItem) string {
-		return makeFlexItem(emilia.NewGalleryItem(e.page, content, s.Text), content.GalleryImagesPerRow)
+		return makeFlexItem(rem.NewGalleryItem(e.page, content, s.Text), content.GalleryImagesPerRow)
 	}
 	return fmt.Sprintf(`
 <div class="gallery-container">

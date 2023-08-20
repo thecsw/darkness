@@ -9,6 +9,7 @@ import (
 
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/rei"
 )
 
 // EnrichExportPage automatically applies all the emilia enhancements
@@ -44,10 +45,7 @@ func InputFilenameToOutput(file yunyun.FullPathFile) string {
 
 // InputToOutput converts a single input file to its output.
 func InputToOutput(file yunyun.FullPathFile) string {
-	data, err := os.ReadFile(filepath.Clean(string(file)))
-	if err != nil {
-		panic(err)
-	}
+	data := rei.Must(os.ReadFile(filepath.Clean(string(file))))
 	page := ParserBuilder.BuildParser(Pack(file, string(data))).Parse()
 	return EnrichExportPage(EnrichPage(page))
 }

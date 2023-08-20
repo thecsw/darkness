@@ -55,6 +55,13 @@ type EmiliaOptions struct {
 
 var Logger = puck.Logger.WithPrefix("Emilia ❄️ ")
 
+const (
+	// defaultVendorDirectory is the name of the dir where vendor images are stored.
+	defaultVendorDirectory yunyun.RelativePathDir = "darkness_vendor"
+	// defaultPreviewDirectory is the name of the dir where all gallery previews are stored.
+	defaultPreviewDirectory yunyun.RelativePathDir = "darkness_gallery_previews"
+)
+
 // InitDarkness initializes the darkness config.
 func InitDarkness(options *EmiliaOptions) {
 	defer puck.Stopwatch("Initialized options").Record()

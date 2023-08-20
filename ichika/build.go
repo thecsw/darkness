@@ -60,8 +60,7 @@ func build() {
 		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
 	})
-	filesError, err := filesPool.Errors()
-	rei.Try(err)
+	filesError := rei.Must(filesPool.Errors())
 	go logErrors("reading", filesError)
 
 	// Create a pool that take a files handle and parses it out into yunyun pages.
@@ -84,8 +83,7 @@ func build() {
 		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
 	})
-	writersErrors, err := writerPool.Errors()
-	rei.Try(err)
+	writersErrors := rei.Must(writerPool.Errors())
 	go logErrors("writer", writersErrors)
 
 	// Connect all the pools between each other, so the relationship is as follows,
