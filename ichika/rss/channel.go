@@ -2,6 +2,7 @@ package rss
 
 import "encoding/xml"
 
+// Channel
 // Here's a list of the required channel elements, each with a brief
 // description, an example, and where available, a pointer to a more
 // complete description.

@@ -14,7 +14,7 @@ type ExporterTemplate struct {
 	contentFunctions []func(*yunyun.Content) string
 }
 
-// SetPage creates a new Exporter object and returns it with data filled.
+// BuildExporter builds the exporter to generate output from yunyun internals.
 func (ExporterTemplateBuilder) BuildExporter(page *yunyun.Page) export.Exporter {
 	what := &ExporterTemplate{
 		page: page,

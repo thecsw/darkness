@@ -4,7 +4,7 @@ import (
 	"github.com/thecsw/gana"
 )
 
-// ListItems is a list of list items.
+// ListItem is an item from our internal list representation.
 type ListItem struct {
 	// To prevent unkeyed literars.
 	_ struct{}

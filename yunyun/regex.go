@@ -83,7 +83,7 @@ type ExtractedLink struct {
 	MatchLength int
 }
 
-// ExtractLink uses `linkRegexp` and returns an array of
+// ExtractLinks uses `linkRegexp` and returns an array of
 // extracted links, if any.
 func ExtractLinks(line string) []*ExtractedLink {
 	if !LinkRegexp.MatchString(line) {
@@ -126,7 +126,7 @@ var (
 	BoldText *regexp.Regexp
 	// ItalicText is the regexp for matching italic text.
 	ItalicText *regexp.Regexp
-	// BoldItalicText is the regexp for matching bold-italic text from the left.
+	// BoldItalicTextBegin is the regexp for matching bold-italic text from the left.
 	BoldItalicTextBegin *regexp.Regexp
 	// BoldItalicTextEnd is the regexp for matching bold-italic text from the right.
 	BoldItalicTextEnd *regexp.Regexp
@@ -146,9 +146,9 @@ var (
 	KeyboardRegexp = regexp.MustCompile(`kbd:\[([^][]+)\]`)
 	// MathRegexp is the regexp for matching math text.
 	MathRegexp = regexp.MustCompile(`(?mU)\$(.+)\$`)
-	// ImageRegexp is the regexp for matching images (png, gif, jpg, jpeg, svg, webp).
+	// ImageExtRegexp is the regexp for matching images (png, gif, jpg, jpeg, svg, webp).
 	ImageExtRegexp = regexp.MustCompile(`\.(png|gif|jpg|jpeg|svg|webp)$`)
-	// AudioRegexp is the regexp for matching audio (mp3, flac, midi).
+	// AudioFileExtRegexp is the regexp for matching audio (mp3, flac, midi).
 	AudioFileExtRegexp = regexp.MustCompile(`\.(mp3|flac|midi)$`)
 	// VideoFileExtRegexp matches commonly used video file formats.
 	VideoFileExtRegexp = regexp.MustCompile(`\.(mp4|mkv|mov|flv|webm)$`)
@@ -156,7 +156,7 @@ var (
 	NewLineRegexp = regexp.MustCompile(`(?mU)([^\\ ])(?:[ ]|^)?(?:[\\])(?:[ ]|$)`)
 	// FootnoteRegexp is the regexp for matching footnotes.
 	FootnoteRegexp = regexp.MustCompile(`(?mU)\[fn:: (.+)\]([:;!?\t\n. ]|$)`)
-	// FootnoteReferenceRegexp is the regexp for matching footnotes references.
+	// FootnotePostProcessingRegexp is the regexp for matching footnotes references.
 	FootnotePostProcessingRegexp = regexp.MustCompile(`!(\d+)!`)
 )
 

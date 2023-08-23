@@ -95,7 +95,7 @@ Sorry, your browser doesn't support embedded videos.
 </div>`
 )
 
-// link returns an html representation of a link even if it's an embed command
+// Link returns an html representation of a link even if it's an embed command
 func (e *ExporterHTML) Link(content *yunyun.Content) string {
 	cleanLink := strings.TrimSpace(content.Link)
 	switch {

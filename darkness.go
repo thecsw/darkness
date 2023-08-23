@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	PROFILE_CPU   = false
-	PROFILE_MEM   = false
-	PROFILE_CLOCK = false
+	ProfileCpu   = false
+	ProfileMem   = false
+	ProfileClock = false
 )
 
 // main is the entry point for the program.
@@ -19,11 +19,11 @@ func main() {
 	// debug.SetGCPercent(-1)
 	// debug.SetMemoryLimit(math.MaxInt64)
 
-	if PROFILE_CPU {
+	if ProfileCpu {
 		defer profile.Start(profile.CPUProfile, profile.ProfilePath(".")).Stop()
-	} else if PROFILE_MEM {
+	} else if ProfileMem {
 		defer profile.Start(profile.MemProfile, profile.MemProfileRate(1), profile.ProfilePath(".")).Stop()
-	} else if PROFILE_CLOCK {
+	} else if ProfileClock {
 		defer profile.Start(profile.ClockProfile, profile.ProfilePath(".")).Stop()
 	}
 

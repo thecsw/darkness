@@ -16,7 +16,7 @@ func PackRef(filename *yunyun.FullPathFile, data *string) (yunyun.RelativePathFi
 	return FullPathToWorkDirRel(*filename), *data
 }
 
-// relPathToWorkdir returns path trimmed by the workspace
+// FullPathToWorkDirRel returns path trimmed by the workspace
 func FullPathToWorkDirRel(filename yunyun.FullPathFile) yunyun.RelativePathFile {
 	return yunyun.RelativePathFile(strings.TrimPrefix(string(filename), Config.WorkDir+`/`))
 }

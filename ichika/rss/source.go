@@ -2,7 +2,7 @@ package rss
 
 import "encoding/xml"
 
-// The RSS channel that the item came from.
+// Source is the RSS channel that the item came from.
 //
 // Its value is the name of the RSS channel that the item came from,
 // derived from its <title>. It has one required attribute, url,

@@ -2,7 +2,7 @@ package rss
 
 import "encoding/xml"
 
-// <cloud> is an optional sub-element of <channel>.
+// Cloud is an optional sub-element of <channel>.
 type Cloud struct {
 	XMLName xml.Name `xml:"cloud"`
 

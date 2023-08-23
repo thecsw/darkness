@@ -2,7 +2,7 @@ package rss
 
 import "encoding/xml"
 
-// It has one optional attribute, domain, a string that identifies
+// Category It has one optional attribute, domain, a string that identifies
 // a categorization taxonomy.
 //
 // The value of the element is a forward-slash-separated string that

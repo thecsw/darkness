@@ -13,7 +13,7 @@ import (
 const (
 	// linkWasNotSpecialFlag is used internally to mark that the read link
 	// content was not an embed and should be treated as simple text.
-	linkWasNotSpecialFlag yunyun.Bits = yunyun.YunYunStartCustomFlags << iota
+	linkWasNotSpecialFlag = yunyun.YunYunStartCustomFlags << iota
 	// thisContentOpensWritingFlag shows that we are entering the `.writing` tag.
 	thisContentOpensWritingFlag
 	// ThisContentClosesWriting shows that we have to close the `.writing` tag.
@@ -52,7 +52,7 @@ func (e *ExporterHTML) resolveDivTags(built string) string {
 	return built
 }
 
-// headings gives us a heading html representation
+// Heading gives us a heading html representation.
 func (e *ExporterHTML) Heading(content *yunyun.Content) string {
 	toReturn := fmt.Sprintf(`
 <h%d id="%s" class="section-%d">%s</h%d>`,

@@ -44,7 +44,7 @@ func OneFileCommandFunc() {
 	fmt.Println(emilia.InputToOutput(emilia.JoinWorkdir(yunyun.RelativePathFile(filename))))
 }
 
-// build builds the entire directory.
+// BuildCommandFunc builds the entire directory.
 func BuildCommandFunc() {
 	cmd := darknessFlagset(buildCommand)
 	emilia.InitDarkness(getEmiliaOptions(cmd))

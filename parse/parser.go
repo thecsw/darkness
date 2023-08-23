@@ -7,7 +7,7 @@ import (
 )
 
 type ParserBuilder interface {
-	// WithFilenameData returns a new `Parser` object with
+	// BuildParser returns a new `Parser` object with
 	// filename and data set.
 	BuildParser(yunyun.RelativePathFile, string) Parser
 	BuildParserReader(yunyun.RelativePathFile, io.ReadCloser) Parser

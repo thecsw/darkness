@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	// RFC_EMILY is the RFC3339 format for the emily time format
-	RFC_EMILY = "Mon, 02 Jan 2006"
+	// RfcEmily is the RFC3339 format for the emily time format
+	RfcEmily = "Mon, 02 Jan 2006"
 )
 
 var (
@@ -53,7 +53,7 @@ func AddHolosceneTitles(data string, num int) string {
 		data = strings.Replace(data,
 			match[0],
 			fmt.Sprintf(` title="%s"%s`,
-				getHoloscene(match[1], match[2]).Format(RFC_EMILY), match[0]),
+				getHoloscene(match[1], match[2]).Format(RfcEmily), match[0]),
 			len(matches),
 		)
 	}

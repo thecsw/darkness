@@ -49,7 +49,7 @@ func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-
 	return done
 }
 
-// FindFilesByExitSimple is the same as `FindFilesByExt` but it simply blocks the
+// FindFilesByExtSimple is the same as `FindFilesByExt` but it simply blocks the
 // parent goroutine until it processes all the results.
 func FindFilesByExtSimple(ext string) []yunyun.FullPathFile {
 	toReturn := make([]yunyun.FullPathFile, 0, 64)
@@ -60,7 +60,7 @@ func FindFilesByExtSimple(ext string) []yunyun.FullPathFile {
 	return toReturn
 }
 
-// FindFilesByExitSimple is the same as `FindFilesByExt` but it simply blocks the
+// FindFilesByExtSimpleDirs is the same as `FindFilesByExt` but it simply blocks the
 // parent goroutine until it processes all the results and returns only the results
 // which are children of the passed dirs.
 func FindFilesByExtSimpleDirs(ext string, dirs []string) []yunyun.FullPathFile {

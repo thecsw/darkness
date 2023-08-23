@@ -26,7 +26,7 @@ type ExporterHTML struct {
 	inWriting bool
 }
 
-// SetPage sets the internal page and creates internal content mappers.
+// BuildExporter builds the exporter to generate output from yunyun internals.
 func (ExporterHTMLBuilder) BuildExporter(page *yunyun.Page) export.Exporter {
 	what := &ExporterHTML{page: page}
 	// Set up the content functions.

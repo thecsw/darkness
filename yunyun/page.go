@@ -62,7 +62,7 @@ type Link struct {
 	Href string
 }
 
-// RelativePath is used in `Page` for `Location` to make sure
+// RelativePathDir is used in `Page` for `Location` to make sure
 // that we are passing correct understanding of that it should
 // only have the relative path to the workspace -- this should
 // be a directory with NO filename and NO base.
@@ -77,7 +77,7 @@ type RelativePath interface {
 	RelativePathDir | RelativePathFile
 }
 
-// FullPath is the result of joining emilia root with `RelativePath`.
+// FullPathDir is the result of joining emilia root with `RelativePath`.
 type FullPathDir string
 
 // FullPathFile is the result of joining emilia root with `RelativePathFile`.
@@ -108,7 +108,7 @@ func JoinPaths[T AnyPath](what ...T) T {
 	return T(filepath.Join(AnyPathsToStrings(what)...))
 }
 
-// PathsToString converts an array of `AnyPath` to `string`.
+// AnyPathsToStrings converts an array of `AnyPath` to `string`.
 func AnyPathsToStrings[T AnyPath](what []T) []string {
 	return gana.Map(func(t T) string { return string(t) }, what)
 }

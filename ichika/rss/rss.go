@@ -6,17 +6,17 @@ import (
 )
 
 const (
-	// RSS spec version implemented.
+	// RSSVersion spec version implemented.
 	RSSVersion = "2.0"
 
-	// The date format used in RSS spec.
+	// RSSFormat date format used in RSS spec.
 	RSSFormat = time.RFC1123
 
-	// The RSS spec implemented.
+	// RSSDocs RSS spec implemented.
 	RSSDocs = "https://www.rssboard.org/rss-specification"
 )
 
-// At the top level, a RSS document is a <rss> element, with a
+// RSS document is a <rss> element, with a
 // mandatory attribute called version, that specifies the version of
 // RSS that the document conforms to. If it conforms to this specification,
 // the version attribute must be 2.0.

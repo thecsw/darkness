@@ -2,7 +2,7 @@ package rss
 
 import "encoding/xml"
 
-// guid stands for globally unique identifier. It's a string that
+// Guid stands for globally unique identifier. It's a string that
 // uniquely identifies the item. When present, an aggregator may
 // choose to use this string to determine if an item is new.
 type Guid struct {

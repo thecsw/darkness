@@ -2,7 +2,7 @@ package rss
 
 import "encoding/xml"
 
-// Describes a media object that is attached to the item.
+// Enclosure describes a media object that is attached to the item.
 //
 // It has three required attributes. url says where the enclosure
 // is located, length says how big it is in bytes, and type says
