@@ -76,13 +76,13 @@ func (a AccoutrementFlip) IsDisabled() bool {
 // IsEnabledOrDefault returns true if the flag was not set
 // or it was enabled.
 func (a AccoutrementFlip) IsEnabledOrDefault() bool {
-	return a == AccoutrementDefault || a == AccoutrementEnabled
+	return a.IsEnabled() || a.IsDefault()
 }
 
 // IsDisabledOrDefault returns true if the flag was not set
 // or it was disabled.
 func (a AccoutrementFlip) IsDisabledOrDefault() bool {
-	return a == AccoutrementDefault || a == AccoutrementDisabled
+	return a.IsDisabled() || a.IsDefault()
 }
 
 func (a *AccoutrementFlip) Enable() {
