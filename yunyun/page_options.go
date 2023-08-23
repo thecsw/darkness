@@ -10,8 +10,8 @@ const (
 	defaulteDateHoloscene = true
 	defaultDate           = "0; 12000 H.E."
 	defaultURL            = "unknown"
-	defaultPreviewWidth   = `1280`
-	defaultPreviewHeight  = `640`
+	defaultPreviewWidth   = `1200`
+	defaultPreviewHeight  = `700`
 )
 
 // NewPage creates a new `Page` and runs passed options.

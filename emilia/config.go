@@ -53,6 +53,7 @@ type EmiliaOptions struct {
 	VendorGalleries bool
 }
 
+// Logger is the global logger for emilia.
 var Logger = puck.Logger.WithPrefix("Emilia ❄️ ")
 
 const (
@@ -64,37 +65,51 @@ const (
 
 // InitDarkness initializes the darkness config.
 func InitDarkness(options *EmiliaOptions) {
+	// Record the time it takes to initialize the options.
 	defer puck.Stopwatch("Initialized options").Record()
+
 	Config = &DarknessConfig{}
 	Config.WorkDir = options.WorkDir
+
+	// If the working directory is empty, then default to the directory of the config file.
 	if isZero(Config.WorkDir) {
 		Config.WorkDir = filepath.Dir(options.DarknessConfig)
 		Logger.Info("Guessing working directory", "result", Config.WorkDir)
 	}
+
+	// Read the config file.
 	data, err := os.ReadFile(options.DarknessConfig)
 	if err != nil && !options.Test {
 		Logger.Error("Opening config", "path", options.DarknessConfig, "err", err)
 		os.Exit(1)
 	}
+
+	// If we can't decode the config, then exit.
 	_, err = toml.Decode(string(data), Config)
 	if err != nil {
 		Logger.Error("Decoding config", "path", options.DarknessConfig, "err", err)
 		os.Exit(1)
 	}
+
 	// If input/output formats are empty, default to .org/.html respectively.
 	if isZero(Config.Project.Input) {
 		Logger.Info("Input format not found, using a default", "ext", puck.ExtensionOrgmode)
 		Config.Project.Input = puck.ExtensionOrgmode
 	}
+
 	// Output section.
 	if isZero(Config.Project.Output) {
 		Logger.Info("Input format not found, using a default", "ext", puck.ExtensionHtml)
 		Config.Project.Output = puck.ExtensionHtml
 	}
+
+	// If the output extension is not the same as the one in the config,
+	// then overwrite the config.
 	if !isZero(options.OutputExtension) && Config.Project.Output != options.OutputExtension {
 		Logger.Warn("Output extension was overwritten", "ext", options.OutputExtension)
 		Config.Project.Output = options.OutputExtension
 	}
+
 	// Build the parser and exporter builders.
 	ParserBuilder = getParserBuilder()
 	ExporterBuilder = getExporterBuilder()
@@ -115,14 +130,18 @@ func InitDarkness(options *EmiliaOptions) {
 		}
 	}
 	Config.URLIsLocal = !yunyun.URLRegexp.MatchString(Config.URL)
+
 	// Check if custom URL has been passed
 	if len(options.URL) > 0 {
 		Config.URL = options.URL
 	}
+
 	// URL must end with a trailing forward slash
 	if !strings.HasSuffix(Config.URL, "/") {
 		Config.URL += "/"
 	}
+
+	// If the URL is not local, then parse it. Otherwise, just use the URL as is.
 	if !Config.URLIsLocal {
 		Config.URLPath, err = url.Parse(Config.URL)
 		if err != nil {
@@ -131,27 +150,35 @@ func InitDarkness(options *EmiliaOptions) {
 		}
 	}
 	Config.URLSlice = []string{Config.URL}
-	// Set up the custom highlight languages
+
+	// Set up the custom highlight languages if they exist.
 	if !isZero(Config.Website.SyntaxHighlightingLanguages) {
 		setupHighlightJsLanguages(Config.Website.SyntaxHighlightingLanguages)
 	}
-	// Set the default syntax highlighting theme
+
+	// Set the default syntax highlighting theme if it's not set.
 	if isZero(Config.Website.SyntaxHighlightingTheme) {
 		Config.Website.SyntaxHighlightingTheme = highlightJsThemeDefaultPath
 	}
-	// Set the default vendor directory.
+
+	// Set the default vendor directory if it's not set.
 	if isZero(Config.Project.DarknessVendorDirectory) {
 		Config.Project.DarknessVendorDirectory = defaultVendorDirectory
 	}
-	// Set the default preview directory.
+
+	// Set the default preview directory if it's not set.
 	if isZero(Config.Project.DarknessPreviewDirectory) {
 		Config.Project.DarknessPreviewDirectory = defaultPreviewDirectory
 	}
+
 	// Build the regex that will be used to exclude files that
 	// have been denoted in emilia darkness config.
 	if len(Config.Project.Exclude) > 0 {
 		Config.Project.ExcludeEnabled = true
 	}
+
+	// Build the regex that will be used to exclude files that
+	// have been denoted in emilia darkness config.
 	excludePattern := fmt.Sprintf("(?mU)(%s)/.*",
 		strings.Join(yunyun.AnyPathsToStrings(Config.Project.Exclude), "|"))
 	Config.Project.ExcludeRegex, err = regexp.Compile(excludePattern)
@@ -161,6 +188,9 @@ func InitDarkness(options *EmiliaOptions) {
 
 	// Work through the vendored galleries.
 	Config.VendorGalleries = options.VendorGalleries
+
+	// Show a warning that we're going to vendor the galleries and that
+	// the user should add the vendor directory to their .gitignore.
 	if Config.VendorGalleries {
 		cmdColor := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ff50a2"))
 		yellow := lipgloss.NewStyle().Bold(true).Foreground(lipgloss.Color("#ffff00"))
@@ -186,6 +216,7 @@ func InitDarkness(options *EmiliaOptions) {
 	} else {
 		Config.Author.ImagePreComputed = yunyun.FullPathFile(Config.Author.Image)
 	}
+
 	// Monkey patch the function if we're using the roman footnotes.
 	if Config.Website.RomanFootnotes {
 		FootnoteLabeler = rei.NumberToRoman
