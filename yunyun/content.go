@@ -72,7 +72,7 @@ type Content struct {
 	Table [][]string
 
 	// List is the list of items, unordered.
-	List []*ListItem
+	List []ListItem
 
 	// GalleryImagesPerRow stores the number of default images per row,
 	// therefore what flex class to use -- defaults to 3.

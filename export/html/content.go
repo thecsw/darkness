@@ -94,7 +94,7 @@ func (e ExporterHTML) Paragraph(content *yunyun.Content) string {
 }
 
 // makeListItem makes an html item
-func makeListItem(item *yunyun.ListItem) string {
+func makeListItem(item yunyun.ListItem) string {
 	return fmt.Sprintf(`
 <li class="l%d">
 <p>

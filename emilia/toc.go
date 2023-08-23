@@ -9,10 +9,10 @@ import (
 )
 
 // GenerateTableOfContents generates a table of contents for a page.
-func GenerateTableOfContents(page *yunyun.Page) []*yunyun.ListItem {
-	toc := make([]*yunyun.ListItem, len(page.Contents.Headings()))
+func GenerateTableOfContents(page *yunyun.Page) []yunyun.ListItem {
+	toc := make([]yunyun.ListItem, len(page.Contents.Headings()))
 	for i, heading := range page.Contents.Headings() {
-		toc[i] = &yunyun.ListItem{
+		toc[i] = yunyun.ListItem{
 			Level: uint8(heading.HeadingLevelAdjusted),
 			Text:  fmt.Sprintf("[[%s][%s]]", "#"+ExtractID(heading.Heading), heading.Heading),
 		}

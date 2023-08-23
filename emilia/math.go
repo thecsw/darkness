@@ -105,7 +105,7 @@ func hasEquationInList(content *yunyun.Content) bool {
 	}
 	return gana.Anyf(
 		yunyun.MathRegexp.MatchString,
-		gana.Map(func(t *yunyun.ListItem) string { return t.Text }, content.List),
+		gana.Map(func(t yunyun.ListItem) string { return t.Text }, content.List),
 	)
 }
 

@@ -152,10 +152,10 @@ func (p ParserMarkdown) Parse() *yunyun.Page {
 			// If we were in a list, save it as a list
 			if hasFlag(yunyun.InListFlag) {
 				rawListItems := strings.Split(previousContext, listSeparatorWS)[1:]
-				matches := make([]*yunyun.ListItem, len(rawListItems))
+				matches := make([]yunyun.ListItem, len(rawListItems))
 				for i, match := range rawListItems {
 					listItemRaw := strings.Replace(match, "- ", "", 1)
-					matches[i] = &yunyun.ListItem{
+					matches[i] = yunyun.ListItem{
 						Level: gana.CountStringsLeft[uint8](listItemRaw, "  ") - listItemInitialIndent + 1,
 						Text:  strings.TrimSpace(listItemRaw),
 					}
