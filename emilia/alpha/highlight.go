@@ -4,6 +4,12 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/thecsw/darkness/yunyun"
+)
+
+const (
+	highlightJsThemeDefaultPath yunyun.RelativePathFile = `scripts/highlight/styles/agate.min.css`
 )
 
 // setupHighlightJsLanguages logs all the languages we support through

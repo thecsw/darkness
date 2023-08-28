@@ -84,6 +84,10 @@ func BuildConfig(options Options) DarknessConfig {
 	if !isUnset(conf.Website.SyntaxHighlightingLanguages) {
 		conf.setupHighlightJsLanguages()
 	}
+	// Set up the highlight theme if it's not given.
+	if isUnset(conf.Website.SyntaxHighlightingTheme) {
+		conf.Website.SyntaxHighlightingTheme = highlightJsThemeDefaultPath
+	}
 
 	// Set the default vendor directory if it's not set.
 	if isUnset(conf.Project.DarknessVendorDirectory) {

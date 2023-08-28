@@ -9,7 +9,6 @@ import (
 
 const (
 	highlightJsTheme                                     = `<link rel="stylesheet" href="%s">`
-	highlightJsThemeDefaultPath  yunyun.RelativePathFile = `scripts/highlight/styles/agate.min.css`
 	highlightJsScript                                    = `<script src="%s"></script>`
 	highlightJsScriptDefaultPath yunyun.RelativePathFile = `scripts/highlight/highlight.min.js`
 	highlightJsAction                                    = `<script>hljs.highlightAll();</script>`
@@ -28,14 +27,9 @@ func WithSyntaxHighlighting(conf alpha.DarknessConfig) yunyun.PageOption {
 			return
 		}
 
-		theme := conf.Website.SyntaxHighlightingTheme
-		if len(theme) < 1 {
-			theme = highlightJsThemeDefaultPath
-		}
-
 		// Add the basic processing scripts.
 		page.Stylesheets = append(page.Stylesheets,
-			fmt.Sprintf(highlightJsTheme, conf.Runtime.Join(theme)))
+			fmt.Sprintf(highlightJsTheme, conf.Runtime.Join(conf.Website.SyntaxHighlightingTheme)))
 		page.Scripts = append(page.Scripts,
 			fmt.Sprintf(highlightJsScript, conf.Runtime.Join(highlightJsScriptDefaultPath)))
 
