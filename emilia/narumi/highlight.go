@@ -33,7 +33,6 @@ func WithSyntaxHighlighting(conf alpha.DarknessConfig) yunyun.PageOption {
 			theme = highlightJsThemeDefaultPath
 		}
 
-		fmt.Println("added, boom")
 		// Add the basic processing scripts.
 		page.Stylesheets = append(page.Stylesheets,
 			fmt.Sprintf(highlightJsTheme, conf.Runtime.Join()))
