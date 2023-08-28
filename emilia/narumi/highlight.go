@@ -35,7 +35,7 @@ func WithSyntaxHighlighting(conf alpha.DarknessConfig) yunyun.PageOption {
 
 		// Add the basic processing scripts.
 		page.Stylesheets = append(page.Stylesheets,
-			fmt.Sprintf(highlightJsTheme, conf.Runtime.Join()))
+			fmt.Sprintf(highlightJsTheme, conf.Runtime.Join(theme)))
 		page.Scripts = append(page.Scripts,
 			fmt.Sprintf(highlightJsScript, conf.Runtime.Join(highlightJsScriptDefaultPath)))
 
