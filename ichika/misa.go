@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/puck"
 )
 
@@ -21,7 +21,7 @@ func MisaCommandFunc() {
 	rssDirectories := misaCmd.String("rss-dirs", "", "look up specific dirs")
 	dryRun := misaCmd.Bool("dry-run", false, "skip writing files (but do the reading)")
 
-	options := getEmiliaOptions(misaCmd)
+	options := getAlphaOptions(misaCmd)
 	options.Dev = true
 
 	puck.Logger.SetPrefix("Misa 🍎 ")
@@ -29,22 +29,22 @@ func MisaCommandFunc() {
 	if len(*rss) > 0 {
 		options.Dev = false
 	}
-	emilia.InitDarkness(options)
+	conf := alpha.BuildConfig(options)
 
 	if *buildGalleryPreviews {
-		buildGalleryFiles(*dryRun)
+		buildGalleryFiles(conf, *dryRun)
 		os.Exit(0)
 	}
 	if *removeGalleryPreviews {
-		removeGalleryFiles(*dryRun)
+		removeGalleryFiles(conf, *dryRun)
 		os.Exit(0)
 	}
 	if *addHolosceneTitles {
-		updateHolosceneTitles(*dryRun)
+		updateHolosceneTitles(conf, *dryRun)
 		os.Exit(0)
 	}
 	if len(*rss) > 0 {
-		rssf(*rss, strings.Split(*rssDirectories, ","), *dryRun)
+		rssf(conf, *rss, strings.Split(*rssDirectories, ","), *dryRun)
 		os.Exit(0)
 	}
 

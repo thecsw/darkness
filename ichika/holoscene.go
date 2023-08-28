@@ -8,6 +8,8 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/emilia/puck"
 )
 
@@ -15,17 +17,17 @@ const (
 	holosceneTitlesTempDir = "temp-holoscene"
 )
 
-func updateHolosceneTitles(dryRun bool) {
+func updateHolosceneTitles(conf alpha.DarknessConfig, dryRun bool) {
 	if dryRun {
 		if err := os.Mkdir(holosceneTitlesTempDir, 0o750); err != nil {
 			puck.Logger.Fatalf("creating temporary directory %s: %v", holosceneTitlesTempDir, err)
 		}
 	}
 
-	inputs := emilia.FindFilesByExtSimple(emilia.Config.Project.Input)
+	inputs := emilia.FindFilesByExtSimple(conf)
 	outputs := make([]string, len(inputs))
 	for i, v := range inputs {
-		outputs[i] = emilia.InputFilenameToOutput(v)
+		outputs[i] = conf.InputFilenameToOutput(v)
 	}
 
 	actuallyFound := make([]*os.File, 0, len(outputs))
@@ -52,7 +54,7 @@ func updateHolosceneTitles(dryRun bool) {
 			continue
 		}
 
-		newOutput := emilia.AddHolosceneTitles(string(output), -1)
+		newOutput := narumi.AddHolosceneTitles(string(output), -1)
 		var file *os.File
 		if dryRun {
 			file, err = os.CreateTemp(holosceneTitlesTempDir,
@@ -76,7 +78,7 @@ func updateHolosceneTitles(dryRun bool) {
 
 		puck.Logger.Printf("Wrote %d bytes to %s", written, file.Name())
 		if dryRun {
-			fmt.Printf(": %s", strings.TrimPrefix(filename, emilia.Config.WorkDir))
+			fmt.Printf(": %s", strings.TrimPrefix(filename, string(conf.Runtime.WorkDir)))
 		}
 	}
 

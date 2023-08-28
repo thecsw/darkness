@@ -5,6 +5,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/thecsw/darkness/emilia/alpha"
+
 	"github.com/karrick/godirwalk"
 	"github.com/thecsw/darkness/yunyun"
 	g "github.com/thecsw/gana"
@@ -12,12 +14,12 @@ import (
 )
 
 // FindFilesByExt finds all files with a given extension.
-func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-chan struct{} {
+func FindFilesByExt(conf alpha.DarknessConfig, pool komi.PoolConnector[yunyun.FullPathFile]) <-chan struct{} {
 	done := make(chan struct{})
 	go func(done chan<- struct{}) {
-		if err := godirwalk.Walk(Config.WorkDir, &godirwalk.Options{
+		if err := godirwalk.Walk(string(conf.Runtime.WorkDir), &godirwalk.Options{
 			ErrorCallback: func(osPathname string, err error) godirwalk.ErrorAction {
-				Logger.Errorf("traversing %s: %v", osPathname, err)
+				conf.Runtime.Logger.Errorf("traversing %s: %v", osPathname, err)
 				return godirwalk.SkipNode
 			},
 			Unsorted: true,
@@ -25,24 +27,24 @@ func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-
 				if pool.IsClosed() {
 					return nil
 				}
-				if filepath.Ext(osPathname) != ext || strings.HasPrefix(filepath.Base(osPathname), ".") {
+				if filepath.Ext(osPathname) != conf.Project.Input || strings.HasPrefix(filepath.Base(osPathname), ".") {
 					return nil
 				}
-				if (Config.Project.ExcludeEnabled && Config.Project.ExcludeRegex.MatchString(osPathname)) ||
-					(g.First([]rune(de.Name())) == rune('.') && de.IsDir()) {
+				if (conf.Project.ExcludeEnabled && conf.Project.ExcludeRegex.MatchString(osPathname)) ||
+					(g.First([]rune(de.Name())) == '.' && de.IsDir()) {
 					return filepath.SkipDir
 				}
-				relPath, err := filepath.Rel(Config.WorkDir, osPathname)
+				relPath, err := filepath.Rel(string(conf.Runtime.WorkDir), osPathname)
 				if err != nil {
-					return fmt.Errorf("finding relative path of %s to %s: %v", osPathname, Config.WorkDir, err)
+					return fmt.Errorf("finding relative path of %s to %s: %v", osPathname, conf.Runtime.WorkDir, err)
 				}
-				if err := pool.Submit(JoinWorkdir(yunyun.RelativePathFile(relPath))); err != nil {
-					Logger.Errorf("couldn't submit %s: %v", relPath, err)
+				if err := pool.Submit(conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(relPath))); err != nil {
+					conf.Runtime.Logger.Errorf("couldn't submit %s: %v", relPath, err)
 				}
 				return nil
 			},
 		}); err != nil {
-			Logger.Errorf("root traversal: %v", err)
+			conf.Runtime.Logger.Errorf("root traversal: %v", err)
 		}
 		done <- struct{}{}
 	}(done)
@@ -51,11 +53,11 @@ func FindFilesByExt(pool komi.PoolConnector[yunyun.FullPathFile], ext string) <-
 
 // FindFilesByExtSimple is the same as `FindFilesByExt` but it simply blocks the
 // parent goroutine until it processes all the results.
-func FindFilesByExtSimple(ext string) []yunyun.FullPathFile {
+func FindFilesByExtSimple(conf alpha.DarknessConfig) []yunyun.FullPathFile {
 	toReturn := make([]yunyun.FullPathFile, 0, 64)
 	addFile := func(v yunyun.FullPathFile) { toReturn = append(toReturn, v) }
 	filesPool := komi.New(komi.WorkSimple(addFile))
-	<-FindFilesByExt(filesPool, ext)
+	<-FindFilesByExt(conf, filesPool)
 	filesPool.Close()
 	return toReturn
 }
@@ -63,8 +65,8 @@ func FindFilesByExtSimple(ext string) []yunyun.FullPathFile {
 // FindFilesByExtSimpleDirs is the same as `FindFilesByExt` but it simply blocks the
 // parent goroutine until it processes all the results and returns only the results
 // which are children of the passed dirs.
-func FindFilesByExtSimpleDirs(ext string, dirs []string) []yunyun.FullPathFile {
-	files := FindFilesByExtSimple(ext)
+func FindFilesByExtSimpleDirs(conf alpha.DarknessConfig, dirs []string) []yunyun.FullPathFile {
+	files := FindFilesByExtSimple(conf)
 	// If no dirs passed, run no filtering.
 	if len(dirs) < 1 {
 		return files
@@ -73,7 +75,7 @@ func FindFilesByExtSimpleDirs(ext string, dirs []string) []yunyun.FullPathFile {
 	return g.Filter(func(path yunyun.FullPathFile) bool {
 		return g.Anyf(func(v string) bool {
 			return strings.HasPrefix(string(path),
-				string(JoinWorkdir(yunyun.RelativePathFile(v))))
+				string(conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(v))))
 		}, dirs)
 	}, files)
 }

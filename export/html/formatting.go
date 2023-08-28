@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/yunyun"
 )
 
@@ -62,11 +62,12 @@ func processText(text string) string {
 		// get the footnote HTML body
 		footnote := fmt.Sprintf(
 			`<a id="_footnoteref_%d" class="footnote" href="#_footnotedef_%d" title="View footnote.">%s</a>`,
-			num, num, emilia.FootnoteLabeler(num))
+			num, num, narumi.FootnoteLabeler(num))
 		// Decide if we need to wrap the footnote in square brackets
-		if emilia.Config.Website.FootnoteBrackets {
-			footnote = "[" + footnote + "]"
-		}
+		// TODO: would we like to enable the square brackets?
+		// if emilia.Config.Website.FootnoteBrackets {
+		// 	footnote = "[" + footnote + "]"
+		// }
 		return `
 <sup class="footnote">` + footnote + `</sup>
 `

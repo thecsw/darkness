@@ -1,8 +1,6 @@
-package emilia
+package narumi
 
 import (
-	"fmt"
-	"github.com/thecsw/darkness/emilia/alpha"
 	"strings"
 
 	"github.com/thecsw/darkness/yunyun"
@@ -10,29 +8,16 @@ import (
 )
 
 const (
-	// mathJavaScript is the javascript for math support using mathjax
-	mathJax = `<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>`
-
-	// katexJs is the javascript for math support using katex
-	katexCdnCSS = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css`
-
-	// katexCdnJS is the javascript for math support using katex
-	katexCdnJS = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js`
-
-	// katexCdnAutoRender is the javascript for math support using katex
-	katexCdnAutoRender = `https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js`
-
 	katexLocalCSS        yunyun.RelativePathFile = `scripts/katex/katex.min.css`
 	katexLocalJS         yunyun.RelativePathFile = `scripts/katex/katex.min.js`
 	katexLocalAutoRender yunyun.RelativePathFile = `scripts/katex/auto-render.min.js`
 
 	katexJs = `
-<link rel="stylesheet" href="%s" integrity="sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css" integrity="sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB" crossorigin="anonymous">
 <!-- The loading of KaTeX is deferred to speed up page rendering -->
-<script defer src="%s" integrity="sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js" integrity="sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p" crossorigin="anonymous"></script>
 <!-- To automatically render math in text elements, include the auto-render extension: -->
-<script defer src="%s" integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous"
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js" integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous"
         onload="renderMathInElement(document.body);"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -60,15 +45,12 @@ const (
     });
 </script>
 `
+
+	mathJs = katexJs
 )
 
 // WithMathSupport adds math support to the page using javascript injection
-func WithMathSupport(conf alpha.DarknessConfig) yunyun.PageOption {
-	mathJs := fmt.Sprintf(katexJs,
-		conf.Runtime.Join(katexLocalCSS),
-		conf.Runtime.Join(katexLocalJS),
-		conf.Runtime.Join(katexLocalAutoRender),
-	)
+func WithMathSupport() yunyun.PageOption {
 	return func(page *yunyun.Page) {
 		// If we found math-related tags or forced by user
 		if hasMathEquations(page) && !page.Accoutrement.Math.IsDisabled() {

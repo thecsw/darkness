@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -96,12 +95,12 @@ Sorry, your browser doesn't support embedded videos.
 )
 
 // Link returns an html representation of a link even if it's an embed command
-func (e *ExporterHTML) Link(content *yunyun.Content) string {
+func (e state) Link(content *yunyun.Content) string {
 	cleanLink := strings.TrimSpace(content.Link)
 	switch {
 	case yunyun.ImageExtRegexp.MatchString(cleanLink) || strings.Contains(content.Attributes, "image"):
 		// Put imageblocks.
-		return linkImage(content)
+		return linkImage(content, e.conf.Website.ClickableImages)
 	case yunyun.AudioFileExtRegexp.MatchString(cleanLink):
 		// Audiofiles
 		return fmt.Sprintf(audioEmbedTemplate,
@@ -144,9 +143,9 @@ func (e *ExporterHTML) Link(content *yunyun.Content) string {
 	}
 }
 
-func linkImage(content *yunyun.Content) string {
+func linkImage(content *yunyun.Content, isClickable bool) string {
 	// User can elect in darkness.toml to make images clickable.
-	if emilia.Config.Website.ClickableImages {
+	if isClickable {
 		return fmt.Sprintf(imageEmbedTemplateWithHref,
 			content.CustomHtmlTags,
 			content.Link,

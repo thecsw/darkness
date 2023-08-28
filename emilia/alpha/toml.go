@@ -1,7 +1,6 @@
-package emilia
+package alpha
 
 import (
-	"net/url"
 	"regexp"
 
 	"github.com/thecsw/darkness/yunyun"
@@ -12,17 +11,11 @@ type DarknessConfig struct {
 	// Navigation is the navigation section of the config
 	Navigation map[string]NavigationConfig `toml:"navigation"`
 
-	// URLPath is the parsed URL of the site
-	URLPath *url.URL `toml:"-"`
-
 	// Title is the title of the site
 	Title string `toml:"title"`
 
 	// URL is the URL of the site
 	URL string `toml:"url"`
-
-	// WorkDir is the directory of where darkness project lives.
-	WorkDir string `toml:"-"`
 
 	// RSS is the rss config.
 	RSS RSSConfig `toml:"rss"`
@@ -30,21 +23,14 @@ type DarknessConfig struct {
 	// Author is the author section of the config
 	Author AuthorConfig `toml:"author"`
 
-	// Slice with just `URL` in it.
-	URLSlice []string `tom:"-"`
-
 	// Project is the project section of the config
 	Project ProjectConfig `toml:"project"`
 
 	// Website is the website section of the config
 	Website WebsiteConfig `toml:"website"`
 
-	// URLIsLocal is true if URL is the file path, not url.
-	URLIsLocal bool `toml:"-"`
-
-	// VendorGalleries tells us if we need to stub local copies
-	// of remote links in galleries.
-	VendorGalleries bool `toml:"-"`
+	// Runtime holds the state we use during the runtime.
+	Runtime RuntimeConfig `toml:"-"`
 }
 
 // ProjectConfig is the project section of the config

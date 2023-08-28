@@ -31,18 +31,21 @@ const (
 )
 
 // Parse parses the input string and returns a list of elements
-func (p ParserOrgmode) Parse() *yunyun.Page {
-	defer puck.Stopwatch("Parsed", "page", p.Filename).Record()
+func (p ParserOrgmode) Do(
+	filename yunyun.RelativePathFile,
+	data string,
+) *yunyun.Page {
+	defer puck.Stopwatch("Parsed", "page", filename).Record()
 
 	// Split the data into lines
-	lines := strings.Split(preprocess(p.Data), "\n")
+	lines := strings.Split(preprocess(data), "\n")
 
 	page := yunyun.NewPage(
-		yunyun.WithFilename(p.Filename),
-		yunyun.WithLocation(yunyun.RelativePathTrim(p.Filename)),
+		yunyun.WithFilename(filename),
+		yunyun.WithLocation(yunyun.RelativePathTrim(filename)),
 		yunyun.WithContents(make([]*yunyun.Content, 0, 32)),
 	)
-	page.Author = emilia.Config.RSS.DefaultAuthor
+	page.Author = p.Conf.RSS.DefaultAuthor
 
 	// currentFlags uses flags to set options
 	currentFlags := yunyun.Bits(0)
@@ -68,7 +71,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	// optionsStrings will get populated as the page is being scanned
 	// and then parsed out before leaving this parser.
 	optionsStrings := ""
-	defer emilia.FillAccoutrement(&optionsStrings, page)
+	defer emilia.FillAccoutrement(p.Conf.Website.Tombs, &optionsStrings, page)
 
 	// Optional parsing to see if H.E. has been left on the first line
 	// as the date

@@ -15,6 +15,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 )
@@ -31,15 +32,16 @@ func ServeCommandFunc() {
 	serveCmd := darknessFlagset(serveCommand)
 	port := serveCmd.Int("port", defaultServePort, "port number to use")
 	noBrowser := serveCmd.Bool("no-browser", false, "do not open the browser")
-	options := getEmiliaOptions(serveCmd)
+	options := getAlphaOptions(serveCmd)
 	options.URL = "http://127.0.0.1:" + strconv.Itoa(*port)
 	// Override the output extension to .html
 	options.OutputExtension = puck.ExtensionHtml
-	emilia.InitDarkness(options)
+	//emilia.InitDarkness(options)
+	conf := alpha.BuildConfig(options)
 
 	puck.Logger.SetPrefix("Server 🍩 ")
 
-	build()
+	build(conf)
 	puck.Logger.Print("Serving the files", "url", options.URL)
 
 	r := chi.NewRouter()
@@ -57,7 +59,7 @@ func ServeCommandFunc() {
 	}
 
 	// Tune it to serve local files.
-	FileServer(r, "/", http.Dir(emilia.Config.WorkDir))
+	FileServer(r, "/", http.Dir(string(conf.Runtime.WorkDir)))
 
 	// Spin the local server up.
 	go func() {
@@ -65,7 +67,7 @@ func ServeCommandFunc() {
 	}()
 
 	// File watcher will rebuild dir if any files change.
-	go launchWatcher()
+	go launchWatcher(conf)
 	puck.Logger.Print("Launched file watcher")
 
 	// Try to open the local server with `open` command.
@@ -81,13 +83,13 @@ func ServeCommandFunc() {
 	<-sigint
 	puck.Logger.Print("Shutting down the server + cleaning up")
 	isQuietMegumin = true
-	removeOutputFiles()
+	removeOutputFiles(conf)
 	puck.Logger.Print("farewell")
 }
 
 // launchWatcher watches for any file creations, changes, modifications, deletions
 // and rebuilds the directory as that happens.
-func launchWatcher() {
+func launchWatcher(conf alpha.DarknessConfig) {
 	// Create new watcher.
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
@@ -104,8 +106,8 @@ func launchWatcher() {
 					puck.Logger.Warn("stopped watching")
 					return
 				}
-				filename := string(emilia.FullPathToWorkDirRel(yunyun.FullPathFile(event.Name)))
-				if strings.HasSuffix(filename, emilia.Config.Project.Output) ||
+				filename := string(conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(event.Name)))
+				if strings.HasSuffix(filename, conf.Project.Output) ||
 					strings.HasPrefix(filepath.Base(filename), `.`) {
 					continue
 				}
@@ -125,7 +127,7 @@ func launchWatcher() {
 				if event.Has(fsnotify.Rename) {
 					puck.Logger.Warn("A file was renamed", "path", filename)
 				}
-				build()
+				build(conf)
 			case err, ok := <-watcher.Errors:
 				if !ok {
 					puck.Logger.Warn("Watcher is leaving")
@@ -137,7 +139,7 @@ func launchWatcher() {
 	}()
 
 	// start adding all the source files
-	for _, toWatch := range emilia.FindFilesByExtSimple(emilia.Config.Project.Input) {
+	for _, toWatch := range emilia.FindFilesByExtSimple(conf) {
 		err = watcher.Add(string(toWatch))
 		if err != nil {
 			log.Fatal(err)

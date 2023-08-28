@@ -10,8 +10,11 @@ import (
 	"time"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/ichika/rss"
+	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -21,19 +24,19 @@ const (
 	rssGenerator   = "Darkness (sandyuraz.com/darkness)"
 )
 
-func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
+func rssf(conf alpha.DarknessConfig, rssFilename string, rssDirectories []string, dryRun bool) {
 	// Get all all the pages we can build out.
-	allPages := buildPagesSimple(rssDirectories)
+	allPages := buildPagesSimple(conf, rssDirectories)
 	// Try to retrieve the top root page to get channel description. If not found, use the
 	// website's title as the description.
 	topPage := gana.First(gana.Filter(func(page *yunyun.Page) bool { return page.Location == "." }, allPages))
-	rootDescription := emilia.Config.RSS.Description
+	rootDescription := conf.RSS.Description
 	if topPage != nil {
-		rootDescription = emilia.GetDescription(topPage, emilia.Config.Website.DescriptionLength*4)
+		rootDescription = emilia.GetDescription(topPage, conf.Website.DescriptionLength*4)
 	}
 	// If both the top page and RSS config have no description, default to the title.
 	if len(rootDescription) < 1 {
-		rootDescription = emilia.Config.Title
+		rootDescription = conf.Title
 	}
 
 	sort.Slice(allPages, func(i, j int) bool { return allPages[i].Title < allPages[j].Title })
@@ -63,14 +66,14 @@ func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 			items = append(items, &rss.Item{
 				XMLName:     xml.Name{},
 				Title:       yunyun.RemoveFormatting(page.Title),
-				Link:        emilia.Config.URL + string(page.Location),
-				Description: emilia.GetDescription(page, emilia.Config.Website.DescriptionLength*4) + " [ Continue reading... ]",
+				Link:        conf.URL + string(page.Location),
+				Description: emilia.GetDescription(page, conf.Website.DescriptionLength*4) + " [ Continue reading... ]",
 				Author:      page.Author,
-				Category:    &rss.Category{Value: categoryName, Domain: emilia.Config.URL + string(categoryLocation)},
+				Category:    &rss.Category{Value: categoryName, Domain: conf.URL + string(categoryLocation)},
 				Enclosure:   &rss.Enclosure{},
-				Guid:        &rss.Guid{Value: emilia.Config.URL + string(page.Location), IsPermaLink: true},
+				Guid:        &rss.Guid{Value: conf.URL + string(page.Location), IsPermaLink: true},
 				PubDate:     getDate(page).Format(rss.RSSFormat),
-				Source:      &rss.Source{Value: emilia.Config.Title, URL: emilia.Config.URL},
+				Source:      &rss.Source{Value: conf.Title, URL: conf.URL},
 			})
 		}
 	}()
@@ -80,16 +83,16 @@ func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 		Version: rss.RSSVersion,
 		Channel: &rss.Channel{
 			XMLName:        xml.Name{},
-			Title:          emilia.Config.Title,
-			Link:           emilia.Config.URL,
+			Title:          conf.Title,
+			Link:           conf.URL,
 			Description:    rootDescription,
-			Language:       emilia.Config.RSS.Language,
-			Copyright:      emilia.Config.RSS.Copyright,
-			ManagingEditor: emilia.Config.RSS.ManagingEditor,
-			WebMaster:      emilia.Config.RSS.WebMaster,
+			Language:       conf.RSS.Language,
+			Copyright:      conf.RSS.Copyright,
+			ManagingEditor: conf.RSS.ManagingEditor,
+			WebMaster:      conf.RSS.WebMaster,
 			PubDate:        getDate(gana.First(pages)).Format(rss.RSSFormat),
 			LastBuildDate:  time.Now().Format(rss.RSSFormat),
-			Category:       emilia.Config.RSS.Category,
+			Category:       conf.RSS.Category,
 			Generator:      rssGenerator,
 			Docs:           rss.RSSDocs,
 			TTL:            60,
@@ -97,7 +100,7 @@ func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 		},
 	}
 
-	xmlTarget := string(emilia.JoinWorkdir(rssXMLFilename))
+	xmlTarget := string(conf.Runtime.WorkDir.Join(rssXMLFilename))
 	feedXml, err := os.Create(filepath.Clean(xmlTarget))
 	if err != nil {
 		puck.Logger.Error("Creating file", "path", xmlTarget, "err", err)
@@ -118,7 +121,7 @@ func rssf(rssFilename string, rssDirectories []string, dryRun bool) {
 
 // getDate takes a page and returns its date if any found.
 func getDate(page *yunyun.Page) *time.Time {
-	parsed := emilia.ConvertHoloscene(page.Date)
+	parsed := narumi.ConvertHoloscene(page.Date)
 	if parsed != nil && parsed.Day() != 31 && parsed.Year() != 2000 {
 		return parsed
 	}
@@ -154,9 +157,10 @@ func (p Pages) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 func (p Pages) Less(i, j int) bool { return getDate(p[i]).Unix() > getDate(p[j]).Unix() }
 
 // Will return a slice of built pages that have dirs as parents (empty dirs will return everything).
-func buildPagesSimple(dirs []string) Pages {
-	inputs := emilia.FindFilesByExtSimpleDirs(emilia.Config.Project.Input, dirs)
+func buildPagesSimple(conf alpha.DarknessConfig, dirs []string) Pages {
+	inputs := emilia.FindFilesByExtSimpleDirs(conf, dirs)
 	pages := make([]*yunyun.Page, 0, len(inputs))
+	parser := parse.BuildParser(conf)
 	for _, input := range inputs {
 		bundleOption := openFile(input)
 		if bundleOption.IsNone() {
@@ -168,10 +172,7 @@ func buildPagesSimple(dirs []string) Pages {
 			puck.Logger.Printf("reading file %s: %v", input, err)
 			continue
 		}
-		page := emilia.ParserBuilder.BuildParser(
-			emilia.FullPathToWorkDirRel(bundle.First),
-			string(data),
-		).Parse()
+		page := parser.Do(conf.Runtime.WorkDir.Rel(bundle.First), string(data))
 		pages = append(pages, page)
 	}
 	return pages

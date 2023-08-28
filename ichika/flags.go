@@ -2,11 +2,11 @@ package ichika
 
 import (
 	"flag"
+	"github.com/thecsw/darkness/emilia/alpha"
 	"os"
 	"path/filepath"
 
 	"github.com/charmbracelet/log"
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
 )
 
@@ -37,9 +37,9 @@ var (
 	useCurrentDirectory bool
 )
 
-// getEmiliaOptions takes a cmd subcommand and parses general flags
+// getAlphaOptions takes a cmd subcommand and parses general flags
 // and returns emilia options that should be used when initializing emilia.
-func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
+func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 	cmd.StringVar(&workDir, "dir", ".", "where do I look for files")
 	cmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	cmd.BoolVar(&disableParallel, "disable-parallel", false, "disable parallel build (only use one worker)")
@@ -74,7 +74,7 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	}
 
 	// Read the config and initialize emilia settings.
-	return &emilia.EmiliaOptions{
+	return alpha.Options{
 		DarknessConfig:  darknessToml,
 		Dev:             useCurrentDirectory,
 		WorkDir:         workDir,

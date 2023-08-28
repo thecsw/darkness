@@ -7,6 +7,7 @@ import (
 	"unicode"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/alpha"
 )
 
 // if true, darkness cleans with no output
@@ -14,9 +15,9 @@ var isQuietMegumin = false
 
 // MeguminCommandFunc blows up the directory.
 func MeguminCommandFunc() {
-	options := getEmiliaOptions(darknessFlagset(meguminCommand))
+	options := getAlphaOptions(darknessFlagset(meguminCommand))
 	options.Dev = true
-	emilia.InitDarkness(options)
+	conf := alpha.BuildConfig(options)
 	delayedLinesPrint([]string{
 		"Darker than black, darker than darkness, combine with my intense crimson.",
 		"Time to wake up, descend to these borders and appear as an intangible distortion.",
@@ -28,7 +29,7 @@ func MeguminCommandFunc() {
 		"It is the ultimate magical attack!",
 		"Explosion!",
 	})
-	removeOutputFiles()
+	removeOutputFiles(conf)
 	delayedLinesPrint([]string{
 		"Wahahahahaha!",
 		"My name is Megumin, the number one mage of Axel!",
@@ -38,18 +39,18 @@ func MeguminCommandFunc() {
 
 // CleanCommandFunc cleans the files like `megumin` but without any output (except for errors).
 func CleanCommandFunc() {
-	options := getEmiliaOptions(darknessFlagset(cleanCommand))
+	options := getAlphaOptions(darknessFlagset(cleanCommand))
 	options.Dev = true
-	emilia.InitDarkness(options)
+	conf := alpha.BuildConfig(options)
 	isQuietMegumin = true
-	removeOutputFiles()
+	removeOutputFiles(conf)
 }
 
 // removeOutputFiles is the low-level command to be used when cleaning data.
-func removeOutputFiles() {
-	orgfiles := emilia.FindFilesByExtSimple(emilia.Config.Project.Input)
+func removeOutputFiles(conf alpha.DarknessConfig) {
+	orgfiles := emilia.FindFilesByExtSimple(conf)
 	for _, orgfile := range orgfiles {
-		toRemove := emilia.InputFilenameToOutput(orgfile)
+		toRemove := conf.InputFilenameToOutput(orgfile)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to blow up!!")
 		}

@@ -1,16 +1,20 @@
 package ichika
 
 import (
-	"bufio"
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"runtime"
 	"time"
 
+	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/export"
+
 	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 	"github.com/thecsw/komi"
@@ -38,22 +42,28 @@ var vendorGalleryImages bool
 
 // OneFileCommandFunc builds a single file.
 func OneFileCommandFunc() {
-	fileCmd := darknessFlagset(oneFileCommand)
-	fileCmd.StringVar(&filename, "input", "index.org", "file on input")
-	emilia.InitDarkness(getEmiliaOptions(fileCmd))
-	fmt.Println(emilia.InputToOutput(emilia.JoinWorkdir(yunyun.RelativePathFile(filename))))
+	panic("todo")
+	// fileCmd := darknessFlagset(oneFileCommand)
+	// fileCmd.StringVar(&filename, "input", "index.org", "file on input")
+	// conf := alpha.BuildConfig(getAlphaOptions(fileCmd))
+	// fmt.Println(conf.Runtime.InputToOutput(conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(filename))))
+	//fmt.Println(emilia.InputToOutput(emilia.Join(yunyun.RelativePathFile(filename))))
 }
 
 // BuildCommandFunc builds the entire directory.
 func BuildCommandFunc() {
 	cmd := darknessFlagset(buildCommand)
-	emilia.InitDarkness(getEmiliaOptions(cmd))
-	build()
+	conf := alpha.BuildConfig(getAlphaOptions(cmd))
+	build(conf)
 	fmt.Println("farewell")
 }
 
 // build uses set flags and emilia data to build the local directory.
-func build() {
+func build(conf alpha.DarknessConfig) {
+
+	parser := parse.BuildParser(conf)
+	exporter := export.BuildExporter(conf)
+
 	// Create the pool that reads files and returns their handles.
 	filesPool := komi.NewWithSettings(komi.WorkWithErrors(openPage), &komi.Settings{
 		Name:     "Komi Reading 📚 ",
@@ -64,14 +74,18 @@ func build() {
 	go logErrors("reading", filesError)
 
 	// Create a pool that take a files handle and parses it out into yunyun pages.
-	parserPool := komi.NewWithSettings(komi.Work(parsePage), &komi.Settings{
+	parserPool := komi.NewWithSettings(komi.Work(func(v gana.Tuple[yunyun.FullPathFile, string]) *yunyun.Page {
+		return parser.Do(conf.Runtime.WorkDir.Rel(v.First), v.Second)
+	}), &komi.Settings{
 		Name:     "Komi Parsing 🧹 ",
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
 	})
 
 	// Create a pool that that takes yunyun pages and exports them into request format.
-	exporterPool := komi.NewWithSettings(komi.Work(exportPage), &komi.Settings{
+	exporterPool := komi.NewWithSettings(komi.Work(func(v *yunyun.Page) gana.Tuple[string, io.Reader] {
+		return gana.NewTuple(conf.InputFilenameToOutput(conf.Runtime.WorkDir.Join(v.File)), exporter.Do(EnrichPage(conf, v)))
+	}), &komi.Settings{
 		Name:     "Komi Exporting 🥂 ",
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
@@ -101,13 +115,13 @@ func build() {
 	// 	   └────────────┘              	  └──────────────┘
 	//           Writing 🎸                     Exporting 🥂
 	//
-	filesPool.Connect(parserPool)
-	parserPool.Connect(exporterPool)
-	exporterPool.Connect(writerPool)
+	rei.Try(filesPool.Connect(parserPool))
+	rei.Try(parserPool.Connect(exporterPool))
+	rei.Try(exporterPool.Connect(writerPool))
 
 	start := time.Now()
 
-	<-emilia.FindFilesByExt(filesPool, emilia.Config.Project.Input)
+	<-emilia.FindFilesByExt(conf, filesPool)
 
 	writerPool.Close()
 
@@ -120,26 +134,16 @@ func build() {
 }
 
 //go:inline
-func openPage(v yunyun.FullPathFile) (gana.Tuple[yunyun.FullPathFile, *os.File], error) {
-	file, err := os.Open(filepath.Clean(string(v)))
+func openPage(v yunyun.FullPathFile) (gana.Tuple[yunyun.FullPathFile, string], error) {
+	file, err := os.ReadFile(filepath.Clean(string(v)))
 	if err != nil {
-		return gana.NewTuple[yunyun.FullPathFile, *os.File]("", nil), err
+		return gana.NewTuple[yunyun.FullPathFile, string]("", ""), err
 	}
-	return gana.NewTuple(v, file), nil
+	return gana.NewTuple(v, string(file)), nil
 }
 
 //go:inline
-func parsePage(v gana.Tuple[yunyun.FullPathFile, *os.File]) *yunyun.Page {
-	return emilia.ParserBuilder.BuildParserReader(emilia.FullPathToWorkDirRel(v.First), v.Second).Parse()
-}
-
-//go:inline
-func exportPage(v *yunyun.Page) gana.Tuple[string, *bufio.Reader] {
-	return gana.NewTuple(emilia.InputFilenameToOutput(emilia.JoinWorkdir(v.File)), emilia.EnrichExportPageAsBufio(v))
-}
-
-//go:inline
-func writePage(v gana.Tuple[string, *bufio.Reader]) error {
+func writePage(v gana.Tuple[string, io.Reader]) error {
 	_, err := writeFile(v.First, v.Second)
 	if err != nil {
 		return fmt.Errorf("writing page %s: %v", v.First, err)

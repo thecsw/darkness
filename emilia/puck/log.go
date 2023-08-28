@@ -27,12 +27,16 @@ type stopwatch struct {
 	msgs  []any
 }
 
-func (s stopwatch) Record() {
-	Logger.Info(s.msg, append(s.msgs, "elapsed", time.Since(s.start))...)
+func (s stopwatch) Record(loggers ...*l.Logger) {
+	logger := Logger
+	if len(loggers) > 0 {
+		logger = loggers[0]
+	}
+	logger.Info(s.msg, append(s.msgs, "elapsed", time.Since(s.start))...)
 }
 
 func Stopwatch(msg any, msgs ...any) interface {
-	Record()
+	Record(...*l.Logger)
 } {
 	s := stopwatch{
 		start: time.Now(),

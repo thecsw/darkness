@@ -3,6 +3,7 @@ package emilia
 import (
 	"strings"
 
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -21,7 +22,7 @@ func GetDescription(page *yunyun.Page, length int) string {
 		}
 		// Skip holoscene times
 		paragraph := strings.TrimSpace(content.Paragraph)
-		if paragraph == "" || HEregex.MatchString(paragraph) {
+		if paragraph == "" || puck.HEregex.MatchString(paragraph) {
 			continue
 		}
 

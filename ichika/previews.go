@@ -1,9 +1,9 @@
 package ichika
 
 // what.previewGenerator = reze.InitPreviewGenerator(
-// 	string(emilia.JoinWorkdir("styles/fonts/EB_Garamond/EBGaramond-Italic-VariableFont_wght.ttf")),
-// 	string(emilia.JoinWorkdir("styles/fonts/EB_Garamond/static/EBGaramond-Medium.ttf")),
-// 	string(emilia.JoinWorkdir("styles/fonts/EB_Garamond/static/EBGaramond-Italic.ttf")),
+// 	string(emilia.Join("styles/fonts/EB_Garamond/EBGaramond-Italic-VariableFont_wght.ttf")),
+// 	string(emilia.Join("styles/fonts/EB_Garamond/static/EBGaramond-Medium.ttf")),
+// 	string(emilia.Join("styles/fonts/EB_Garamond/static/EBGaramond-Italic.ttf")),
 // 	1200,
 // 	700,
 // 	emilia.Config.Website.Color,

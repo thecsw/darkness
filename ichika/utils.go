@@ -1,7 +1,6 @@
 package ichika
 
 import (
-	"bufio"
 	"fmt"
 	"io"
 	"log"
@@ -14,7 +13,7 @@ import (
 )
 
 // writeFile takes a filename and a bufio reader and writes it.
-func writeFile(filename string, reader *bufio.Reader) (int64, error) {
+func writeFile(filename string, reader io.Reader) (int64, error) {
 	filename = filepath.Clean(filename)
 	target, err := os.Create(filename)
 	if err != nil {

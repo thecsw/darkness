@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/thecsw/darkness/emilia/alpha"
+
 	"github.com/thecsw/darkness/emilia/rem"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
@@ -48,9 +50,9 @@ func resolveCustomFlexItemClasses(wholeLine string) string {
 }
 
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
-func makeFlexItem(item rem.GalleryItem, width uint) string {
+func makeFlexItem(conf alpha.DarknessConfig, item rem.GalleryItem, width uint) string {
 	// See if there is a custom flex width requested for the item.
-	if customFlex := extractCustomFlex(string(item.OriginalLine)); customFlex != 0 {
+	if customFlex := extractCustomFlex(item.OriginalLine); customFlex != 0 {
 		width = customFlex
 	}
 	// If the image is external AND vendor galleries option is enabled,
@@ -68,9 +70,9 @@ func makeFlexItem(item rem.GalleryItem, width uint) string {
 		// Additionally-enabled options, like no-zoom.
 		resolveCustomFlexItemClasses(item.OriginalLine),
 		// Path to the gallery image's preview.
-		rem.GalleryPreview(item),
+		rem.GalleryPreview(conf, item),
 		// Path to the image (either external, local, or vendored).
-		rem.GalleryImage(item),
+		rem.GalleryImage(conf, item),
 		// The text to show on the image hover.
 		item.Description,
 		// The alt descriptino of the image.
@@ -79,9 +81,9 @@ func makeFlexItem(item rem.GalleryItem, width uint) string {
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
-func (e ExporterHTML) gallery(content *yunyun.Content) string {
+func (e state) gallery(content *yunyun.Content) string {
 	makeFlexItemWithFolder := func(s yunyun.ListItem) string {
-		return makeFlexItem(rem.NewGalleryItem(e.page, content, s.Text), content.GalleryImagesPerRow)
+		return makeFlexItem(e.conf, rem.NewGalleryItem(e.page, content, s.Text), content.GalleryImagesPerRow)
 	}
 	return fmt.Sprintf(`
 <div class="gallery-container">

@@ -2,14 +2,13 @@ package rem
 
 import (
 	"fmt"
+	"github.com/thecsw/darkness/emilia/alpha"
 	"image"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/reze"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/rei"
@@ -46,22 +45,22 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 
 // GalleryImage takes a gallery item and returns its full path depending
 // on the option, so whether it's a full link or a vendored path.
-func GalleryImage(item GalleryItem) yunyun.FullPathFile {
+func GalleryImage(conf alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
 	if item.IsExternal {
 		// If it's vendored, then retrieve a local copy (if doesn't already
 		// exist) and stub it in as the full path
-		if emilia.Config.VendorGalleries {
-			return galleryVendorItem(item)
+		if conf.Runtime.VendorGalleries {
+			return galleryVendorItem(conf, item)
 		}
 		return yunyun.FullPathFile(item.Item)
 	}
-	return emilia.JoinPath(yunyun.JoinRelativePaths(item.Path, item.Item))
+	return conf.Runtime.Join(yunyun.JoinRelativePaths(item.Path, item.Item))
 }
 
 // GalleryPreview takes an original image's path and returns
 // the preview path of it. Previews are always .jpg
-func GalleryPreview(item GalleryItem) yunyun.FullPathFile {
-	return emilia.JoinPath(yunyun.JoinRelativePaths(emilia.Config.Project.DarknessPreviewDirectory, galleryPreviewRelative(item)))
+func GalleryPreview(conf alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
+	return conf.Runtime.Join(yunyun.JoinRelativePaths(conf.Project.DarknessPreviewDirectory, galleryPreviewRelative(item)))
 }
 
 var (
@@ -77,15 +76,15 @@ var (
 )
 
 // GalleryItemToImage takes in a gallery item and returns an image object.
-func GalleryItemToImage(item GalleryItem, authority, prefix string) (image.Image, error) {
+func GalleryItemToImage(conf alpha.DarknessConfig, item GalleryItem, authority, prefix string) (image.Image, error) {
 	// If it's a local file, simply open the os file.
 	if !item.IsExternal {
-		file := emilia.JoinWorkdir(yunyun.JoinRelativePaths(item.Path, item.Item))
+		file := conf.Runtime.WorkDir.Join(yunyun.JoinRelativePaths(item.Path, item.Item))
 		return reze.OpenImage(string(file))
 	}
 
 	// Check if the item has been vendored by any chance?
-	vendorPath := filepath.Join(emilia.Config.WorkDir, string(GalleryVendored(item)))
+	vendorPath := string(conf.Runtime.WorkDir.Join(GalleryVendored(conf.Project.DarknessVendorDirectory, item)))
 	if exists, err := rei.FileExists(vendorPath); exists {
 		return reze.OpenImage(vendorPath)
 	} else if err != nil {

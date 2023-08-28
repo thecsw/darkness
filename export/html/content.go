@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -24,7 +25,7 @@ const (
 )
 
 // setContentFlags sets the content flags.
-func (e *ExporterHTML) setContentFlags(v *yunyun.Content) {
+func (e *state) setContentFlags(v *yunyun.Content) {
 	contentDivType := whatDivType(v)
 	// Mark situations when we have to leave writing
 	if e.inWriting && (contentDivType != divWriting) {
@@ -39,7 +40,7 @@ func (e *ExporterHTML) setContentFlags(v *yunyun.Content) {
 }
 
 // resolveDivTags applies results from `setContentFlags` by modifying the DOM.
-func (e *ExporterHTML) resolveDivTags(built string) string {
+func (e *state) resolveDivTags(built string) string {
 	if yunyun.HasFlag(&e.currentContent.Options, thisContentOpensWritingFlag) {
 		built = `<div class="writing">` + "\n" + built
 	}
@@ -53,7 +54,7 @@ func (e *ExporterHTML) resolveDivTags(built string) string {
 }
 
 // Heading gives us a heading html representation.
-func (e *ExporterHTML) Heading(content *yunyun.Content) string {
+func (e *state) Heading(content *yunyun.Content) string {
 	toReturn := fmt.Sprintf(`
 <h%d id="%s" class="section-%d">%s</h%d>`,
 		content.HeadingLevelAdjusted,      // HTML open tag
@@ -80,7 +81,7 @@ func paragraphClass(content *yunyun.Content) string {
 }
 
 // paragraph gives us a paragraph html representation
-func (e ExporterHTML) Paragraph(content *yunyun.Content) string {
+func (e state) Paragraph(content *yunyun.Content) string {
 	return fmt.Sprintf(
 		`
 <div class="paragraph%s">
@@ -104,7 +105,7 @@ func makeListItem(item yunyun.ListItem) string {
 }
 
 // list gives us a list html representation
-func (e ExporterHTML) List(content *yunyun.Content) string {
+func (e state) List(content *yunyun.Content) string {
 	// Hijack this type for galleries
 	if content.IsGallery() {
 		return e.gallery(content)
@@ -121,13 +122,13 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 }
 
 // listNumbered gives us a numbered list html representation
-func (e ExporterHTML) ListNumbered(content *yunyun.Content) string {
+func (e state) ListNumbered(content *yunyun.Content) string {
 	// TODO
 	return ""
 }
 
 // sourceCode gives us a source code html representation
-func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
+func (e state) SourceCode(content *yunyun.Content) string {
 	return fmt.Sprintf(`
 <div class="coding" %s>
 <div class="listingblock">
@@ -136,7 +137,7 @@ func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
 </div>
 `,
 		content.CustomHtmlTags,
-		emilia.MapSourceCodeLang(content.SourceCodeLang),
+		narumi.MapSourceCodeLang(content.SourceCodeLang),
 		content.SourceCodeLang,
 		func() string {
 			// Remove the nested parser blockers
@@ -149,7 +150,7 @@ func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
 }
 
 // rawHTML gives us a raw html representation
-func (e ExporterHTML) RawHTML(content *yunyun.Content) string {
+func (e state) RawHTML(content *yunyun.Content) string {
 	// If the unsafe flag is enabled, don't even wrap it in `mediablock`
 	if content.IsRawHTMLUnsafe() {
 		return content.RawHTML
@@ -162,14 +163,14 @@ func (e ExporterHTML) RawHTML(content *yunyun.Content) string {
 }
 
 // horizontalLine gives us a horizontal line html representation
-func (e ExporterHTML) HorizontalLine(content *yunyun.Content) string {
+func (e state) HorizontalLine(content *yunyun.Content) string {
 	return `<center>
 <hr>
 </center>`
 }
 
 // attentionBlock gives us a attention block html representation
-func (e ExporterHTML) AttentionBlock(content *yunyun.Content) string {
+func (e state) AttentionBlock(content *yunyun.Content) string {
 	return fmt.Sprintf(`
 <div class="admonitionblock note">
 <table>
@@ -186,7 +187,7 @@ func (e ExporterHTML) AttentionBlock(content *yunyun.Content) string {
 }
 
 // table gives an HTML formatted table
-func (e ExporterHTML) Table(content *yunyun.Content) string {
+func (e state) Table(content *yunyun.Content) string {
 	rows := make([]string, len(content.Table))
 	for i := range content.Table {
 		for j, v := range content.Table[i] {
@@ -203,7 +204,7 @@ func (e ExporterHTML) Table(content *yunyun.Content) string {
 }
 
 // table gives an HTML formatted table
-func (e ExporterHTML) Details(content *yunyun.Content) string {
+func (e state) Details(content *yunyun.Content) string {
 	if content.IsDetails() {
 		return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
 	}
