@@ -158,11 +158,11 @@ func (p Pages) Less(i, j int) bool { return getDate(p[i]).Unix() > getDate(p[j])
 
 // Will return a slice of built pages that have dirs as parents (empty dirs will return everything).
 func buildPagesSimple(conf alpha.DarknessConfig, dirs []string) Pages {
-	inputs := emilia.FindFilesByExtSimpleDirs(conf, dirs)
+	inputs := FindFilesByExtSimpleDirs(conf, dirs)
 	pages := make([]*yunyun.Page, 0, len(inputs))
 	parser := parse.BuildParser(conf)
 	for _, input := range inputs {
-		bundleOption := openFile(input)
+		bundleOption := openFile(input.InputFilename)
 		if bundleOption.IsNone() {
 			continue
 		}

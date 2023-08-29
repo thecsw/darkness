@@ -14,7 +14,6 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
@@ -139,8 +138,8 @@ func launchWatcher(conf alpha.DarknessConfig) {
 	}()
 
 	// start adding all the source files
-	for _, toWatch := range emilia.FindFilesByExtSimple(conf) {
-		err = watcher.Add(string(toWatch))
+	for _, toWatch := range FindFilesByExtSimple(conf) {
+		err = watcher.Add(string(toWatch.InputFilename))
 		if err != nil {
 			log.Fatal(err)
 		}

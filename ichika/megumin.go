@@ -6,7 +6,6 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/alpha"
 )
 
@@ -48,9 +47,9 @@ func CleanCommandFunc() {
 
 // removeOutputFiles is the low-level command to be used when cleaning data.
 func removeOutputFiles(conf alpha.DarknessConfig) {
-	orgfiles := emilia.FindFilesByExtSimple(conf)
+	orgfiles := FindFilesByExtSimple(conf)
 	for _, orgfile := range orgfiles {
-		toRemove := conf.InputFilenameToOutput(orgfile)
+		toRemove := conf.Project.InputFilenameToOutput(orgfile.InputFilename)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to blow up!!")
 		}

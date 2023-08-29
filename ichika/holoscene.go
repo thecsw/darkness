@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/emilia/puck"
@@ -24,10 +23,10 @@ func updateHolosceneTitles(conf alpha.DarknessConfig, dryRun bool) {
 		}
 	}
 
-	inputs := emilia.FindFilesByExtSimple(conf)
+	inputs := FindFilesByExtSimple(conf)
 	outputs := make([]string, len(inputs))
 	for i, v := range inputs {
-		outputs[i] = conf.InputFilenameToOutput(v)
+		outputs[i] = conf.Project.InputFilenameToOutput(v.InputFilename)
 	}
 
 	actuallyFound := make([]*os.File, 0, len(outputs))

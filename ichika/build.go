@@ -2,7 +2,6 @@ package ichika
 
 import (
 	"fmt"
-	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -11,12 +10,10 @@ import (
 
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/export"
+	"github.com/thecsw/darkness/ichika/makima"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/parse"
-	"github.com/thecsw/darkness/yunyun"
-	"github.com/thecsw/gana"
 	"github.com/thecsw/komi"
 	"github.com/thecsw/rei"
 )
@@ -74,18 +71,14 @@ func build(conf alpha.DarknessConfig) {
 	go logErrors("reading", filesError)
 
 	// Create a pool that take a files handle and parses it out into yunyun pages.
-	parserPool := komi.NewWithSettings(komi.Work(func(v gana.Tuple[yunyun.FullPathFile, string]) *yunyun.Page {
-		return parser.Do(conf.Runtime.WorkDir.Rel(v.First), v.Second)
-	}), &komi.Settings{
+	parserPool := komi.NewWithSettings(komi.Work(parsePage), &komi.Settings{
 		Name:     "Komi Parsing 🧹 ",
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
 	})
 
 	// Create a pool that that takes yunyun pages and exports them into request format.
-	exporterPool := komi.NewWithSettings(komi.Work(func(v *yunyun.Page) gana.Tuple[string, io.Reader] {
-		return gana.NewTuple(conf.InputFilenameToOutput(conf.Runtime.WorkDir.Join(v.File)), exporter.Do(EnrichPage(conf, v)))
-	}), &komi.Settings{
+	exporterPool := komi.NewWithSettings(komi.Work(exportPage), &komi.Settings{
 		Name:     "Komi Exporting 🥂 ",
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
@@ -121,7 +114,13 @@ func build(conf alpha.DarknessConfig) {
 
 	start := time.Now()
 
-	<-emilia.FindFilesByExt(conf, filesPool)
+	freshContext := makima.Control{
+		Conf:     conf,
+		Parser:   parser,
+		Exporter: exporter,
+	}
+
+	<-FindFilesByExt(conf, filesPool, freshContext)
 
 	writerPool.Close()
 
@@ -134,19 +133,33 @@ func build(conf alpha.DarknessConfig) {
 }
 
 //go:inline
-func openPage(v yunyun.FullPathFile) (gana.Tuple[yunyun.FullPathFile, string], error) {
-	file, err := os.ReadFile(filepath.Clean(string(v)))
+func openPage(c *makima.Control) (*makima.Control, error) {
+	file, err := os.ReadFile(filepath.Clean(string(c.InputFilename)))
 	if err != nil {
-		return gana.NewTuple[yunyun.FullPathFile, string]("", ""), err
+		return nil, err
 	}
-	return gana.NewTuple(v, string(file)), nil
+	c.Input = string(file)
+	return c, nil
 }
 
 //go:inline
-func writePage(v gana.Tuple[string, io.Reader]) error {
-	_, err := writeFile(v.First, v.Second)
+func parsePage(c *makima.Control) *makima.Control {
+	c.Page = c.Parser.Do(c.Conf.Runtime.WorkDir.Rel(c.InputFilename), c.Input)
+	return c
+}
+
+//go:inline
+func exportPage(c *makima.Control) *makima.Control {
+	c.OutputFilename = c.Conf.Project.InputFilenameToOutput(c.InputFilename)
+	c.Output = c.Exporter.Do(EnrichPage(c.Conf, c.Page))
+	return c
+}
+
+//go:inline
+func writePage(c *makima.Control) error {
+	_, err := writeFile(c.OutputFilename, c.Output)
 	if err != nil {
-		return fmt.Errorf("writing page %s: %v", v.First, err)
+		return fmt.Errorf("writing page %s: %v", c.OutputFilename, err)
 	}
 	return nil
 }
