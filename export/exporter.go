@@ -13,7 +13,7 @@ type Exporter interface {
 	Do(*yunyun.Page) io.Reader
 }
 
-func BuildExporter(conf alpha.DarknessConfig) Exporter {
+func BuildExporter(conf *alpha.DarknessConfig) Exporter {
 	var exporter Exporter
 	switch conf.Project.Output {
 	case puck.ExtensionHtml:

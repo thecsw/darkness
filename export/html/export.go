@@ -27,7 +27,7 @@ var (
 )
 
 func (e ExporterHTML) Do(page *yunyun.Page) io.Reader {
-	s := state{conf: e.Conf, page: page}
+	s := &state{conf: e.Conf, page: page}
 	s.contentFunctions = []func(*yunyun.Content) string{
 		s.Heading,
 		s.Paragraph,

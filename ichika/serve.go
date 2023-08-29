@@ -88,7 +88,7 @@ func ServeCommandFunc() {
 
 // launchWatcher watches for any file creations, changes, modifications, deletions
 // and rebuilds the directory as that happens.
-func launchWatcher(conf alpha.DarknessConfig) {
+func launchWatcher(conf *alpha.DarknessConfig) {
 	// Create new watcher.
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {

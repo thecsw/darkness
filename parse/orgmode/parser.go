@@ -5,5 +5,5 @@ import (
 )
 
 type ParserOrgmode struct {
-	Conf alpha.DarknessConfig
+	Conf *alpha.DarknessConfig
 }

@@ -11,7 +11,7 @@ type Parser interface {
 	Do(yunyun.RelativePathFile, string) *yunyun.Page
 }
 
-func BuildParser(conf alpha.DarknessConfig) Parser {
+func BuildParser(conf *alpha.DarknessConfig) Parser {
 	var parser Parser
 	switch conf.Project.Input {
 	case puck.ExtensionOrgmode:

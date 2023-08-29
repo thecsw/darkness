@@ -24,7 +24,7 @@ const (
 	rssGenerator   = "Darkness (sandyuraz.com/darkness)"
 )
 
-func rssf(conf alpha.DarknessConfig, rssFilename string, rssDirectories []string, dryRun bool) {
+func rssf(conf *alpha.DarknessConfig, rssFilename string, rssDirectories []string, dryRun bool) {
 	// Get all all the pages we can build out.
 	allPages := buildPagesSimple(conf, rssDirectories)
 	// Try to retrieve the top root page to get channel description. If not found, use the
@@ -42,7 +42,10 @@ func rssf(conf alpha.DarknessConfig, rssFilename string, rssDirectories []string
 	sort.Slice(allPages, func(i, j int) bool { return allPages[i].Title < allPages[j].Title })
 
 	// Get all pages that have dates defined, we only use those to be included in the rss feed.
-	pages := Pages(gana.Filter(func(page *yunyun.Page) bool { return getDate(page) != nil }, allPages))
+	pages := Pages(gana.Filter(func(page *yunyun.Page) bool {
+		_, dateFound := getDate(page)
+		return dateFound
+	}, allPages))
 
 	// Sort the pages in descending order of dates.
 	sort.Sort(pages)
@@ -72,7 +75,7 @@ func rssf(conf alpha.DarknessConfig, rssFilename string, rssDirectories []string
 				Category:    &rss.Category{Value: categoryName, Domain: conf.URL + string(categoryLocation)},
 				Enclosure:   &rss.Enclosure{},
 				Guid:        &rss.Guid{Value: conf.URL + string(page.Location), IsPermaLink: true},
-				PubDate:     getDate(page).Format(rss.RSSFormat),
+				PubDate:     mustDate(page).Format(rss.RSSFormat),
 				Source:      &rss.Source{Value: conf.Title, URL: conf.URL},
 			})
 		}
@@ -90,7 +93,7 @@ func rssf(conf alpha.DarknessConfig, rssFilename string, rssDirectories []string
 			Copyright:      conf.RSS.Copyright,
 			ManagingEditor: conf.RSS.ManagingEditor,
 			WebMaster:      conf.RSS.WebMaster,
-			PubDate:        getDate(gana.First(pages)).Format(rss.RSSFormat),
+			PubDate:        mustDate(gana.First(pages)).Format(rss.RSSFormat),
 			LastBuildDate:  time.Now().Format(rss.RSSFormat),
 			Category:       conf.RSS.Category,
 			Generator:      rssGenerator,
@@ -120,12 +123,9 @@ func rssf(conf alpha.DarknessConfig, rssFilename string, rssDirectories []string
 }
 
 // getDate takes a page and returns its date if any found.
-func getDate(page *yunyun.Page) *time.Time {
+func getDate(page *yunyun.Page) (time.Time, bool) {
 	parsed := narumi.ConvertHoloscene(page.Date)
-	if parsed != nil && parsed.Day() != 31 && parsed.Year() != 2000 {
-		return parsed
-	}
-	return nil
+	return parsed, parsed.Unix() != 0 && parsed.Day() != 31 && parsed.Year() != 2000
 }
 
 var categoryCache = make(map[string]*yunyun.Page)
@@ -154,10 +154,10 @@ func (p Pages) Len() int { return len(p) }
 func (p Pages) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 
 // Less sorts the array in descending order.
-func (p Pages) Less(i, j int) bool { return getDate(p[i]).Unix() > getDate(p[j]).Unix() }
+func (p Pages) Less(i, j int) bool { return mustDate(p[i]).Unix() > mustDate(p[j]).Unix() }
 
 // Will return a slice of built pages that have dirs as parents (empty dirs will return everything).
-func buildPagesSimple(conf alpha.DarknessConfig, dirs []string) Pages {
+func buildPagesSimple(conf *alpha.DarknessConfig, dirs []string) Pages {
 	inputs := FindFilesByExtSimpleDirs(conf, dirs)
 	pages := make([]*yunyun.Page, 0, len(inputs))
 	parser := parse.BuildParser(conf)
@@ -169,11 +169,19 @@ func buildPagesSimple(conf alpha.DarknessConfig, dirs []string) Pages {
 		bundle := bundleOption.Unwrap()
 		data, err := io.ReadAll(bundle.Second)
 		if err != nil {
-			puck.Logger.Printf("reading file %s: %v", input, err)
+			puck.Logger.Printf("reading file %s: %v", input.InputFilename, err)
 			continue
 		}
 		page := parser.Do(conf.Runtime.WorkDir.Rel(bundle.First), string(data))
 		pages = append(pages, page)
 	}
 	return pages
+}
+
+func mustDate(v *yunyun.Page) time.Time {
+	t, f := getDate(v)
+	if !f {
+		panic("must be date")
+	}
+	return t
 }

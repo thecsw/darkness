@@ -14,7 +14,7 @@ const (
 	highlightJsAction                                    = `<script>hljs.highlightAll();</script>`
 )
 
-func WithSyntaxHighlighting(conf alpha.DarknessConfig) yunyun.PageOption {
+func WithSyntaxHighlighting(conf *alpha.DarknessConfig) yunyun.PageOption {
 	return func(page *yunyun.Page) {
 		// If Emilia disabled the syntax highlighting, don't even bother.
 		if !conf.Website.SyntaxHighlighting {

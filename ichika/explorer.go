@@ -15,7 +15,7 @@ import (
 
 // FindFilesByExt finds all files with a given extension.
 func FindFilesByExt(
-	conf alpha.DarknessConfig,
+	conf *alpha.DarknessConfig,
 	pool komi.PoolConnector[*makima.Control],
 	freshContext2 makima.Control,
 ) <-chan struct{} {
@@ -65,7 +65,7 @@ func FindFilesByExt(
 
 // FindFilesByExtSimple is the same as `FindFilesByExt` but it simply blocks the
 // parent goroutine until it processes all the results.
-func FindFilesByExtSimple(conf alpha.DarknessConfig) []*makima.Control {
+func FindFilesByExtSimple(conf *alpha.DarknessConfig) []*makima.Control {
 	toReturn := make([]*makima.Control, 0, 64)
 	addFile := func(c *makima.Control) { toReturn = append(toReturn, c) }
 	filesPool := komi.New(komi.WorkSimple(addFile))
@@ -78,7 +78,7 @@ func FindFilesByExtSimple(conf alpha.DarknessConfig) []*makima.Control {
 // FindFilesByExtSimpleDirs is the same as `FindFilesByExt` but it simply blocks the
 // parent goroutine until it processes all the results and returns only the results
 // which are children of the passed dirs.
-func FindFilesByExtSimpleDirs(conf alpha.DarknessConfig, dirs []string) []*makima.Control {
+func FindFilesByExtSimpleDirs(conf *alpha.DarknessConfig, dirs []string) []*makima.Control {
 	files := FindFilesByExtSimple(conf)
 	// If no dirs passed, run no filtering.
 	if len(dirs) < 1 {

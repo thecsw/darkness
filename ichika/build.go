@@ -56,7 +56,7 @@ func BuildCommandFunc() {
 }
 
 // build uses set flags and emilia data to build the local directory.
-func build(conf alpha.DarknessConfig) {
+func build(conf *alpha.DarknessConfig) {
 
 	parser := parse.BuildParser(conf)
 	exporter := export.BuildExporter(conf)
@@ -144,15 +144,12 @@ func openPage(c *makima.Control) (*makima.Control, error) {
 
 //go:inline
 func parsePage(c *makima.Control) *makima.Control {
-	c.Page = c.Parser.Do(c.Conf.Runtime.WorkDir.Rel(c.InputFilename), c.Input)
-	return c
+	return c.Parse()
 }
 
 //go:inline
 func exportPage(c *makima.Control) *makima.Control {
-	c.OutputFilename = c.Conf.Project.InputFilenameToOutput(c.InputFilename)
-	c.Output = c.Exporter.Do(EnrichPage(c.Conf, c.Page))
-	return c
+	return c.Export()
 }
 
 //go:inline

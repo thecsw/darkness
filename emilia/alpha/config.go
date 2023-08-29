@@ -14,8 +14,8 @@ import (
 	"github.com/thecsw/gana"
 )
 
-func BuildConfig(options Options) DarknessConfig {
-	conf := DarknessConfig{}
+func BuildConfig(options Options) *DarknessConfig {
+	conf := &DarknessConfig{}
 	conf.Runtime.Logger = puck.NewLogger("Alpha ☕")
 	conf.Runtime.WorkDir = WorkingDirectory(options.WorkDir)
 

@@ -21,17 +21,17 @@ var (
 )
 
 // ConvertHoloscene takes a Holoscene time (127; 12022 H.E.) to a time struct.
-func ConvertHoloscene(HEtime string) *time.Time {
+func ConvertHoloscene(HEtime string) time.Time {
 	matches := puck.HEregex.FindAllStringSubmatch(HEtime, 1)
 	// Not a good match, nothing found
 	if len(matches) < 1 {
-		return nil
+		return time.Time{}
 	}
 	return getHoloscene(matches[0][1], matches[0][2])
 }
 
 // getHoloscene returns a time struct for a given holoscene time.
-func getHoloscene(dayS, yearS string) *time.Time {
+func getHoloscene(dayS, yearS string) time.Time {
 	// By the regex, we are guaranteed to have good numbers
 	day, _ := strconv.Atoi(dayS)
 	year, _ := strconv.Atoi(yearS)
@@ -40,7 +40,7 @@ func getHoloscene(dayS, yearS string) *time.Time {
 
 	tt := time.Date(year, time.January, 0, 0, 0, 0, 0, time.Local)
 	tt = tt.Add(time.Duration(day) * 24 * time.Hour)
-	return &tt
+	return tt
 }
 
 // AddHolosceneTitles adds the titles of the Holoscene to the page, and

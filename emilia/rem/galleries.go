@@ -2,12 +2,13 @@ package rem
 
 import (
 	"fmt"
-	"github.com/thecsw/darkness/emilia/alpha"
 	"image"
 	"net/http"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/thecsw/darkness/emilia/alpha"
 
 	"github.com/thecsw/darkness/emilia/reze"
 	"github.com/thecsw/darkness/yunyun"
@@ -45,7 +46,7 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 
 // GalleryImage takes a gallery item and returns its full path depending
 // on the option, so whether it's a full link or a vendored path.
-func GalleryImage(conf alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
+func GalleryImage(conf *alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
 	if item.IsExternal {
 		// If it's vendored, then retrieve a local copy (if doesn't already
 		// exist) and stub it in as the full path
@@ -59,7 +60,7 @@ func GalleryImage(conf alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFi
 
 // GalleryPreview takes an original image's path and returns
 // the preview path of it. Previews are always .jpg
-func GalleryPreview(conf alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
+func GalleryPreview(conf *alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
 	return conf.Runtime.Join(yunyun.JoinRelativePaths(conf.Project.DarknessPreviewDirectory, galleryPreviewRelative(item)))
 }
 
@@ -76,7 +77,7 @@ var (
 )
 
 // GalleryItemToImage takes in a gallery item and returns an image object.
-func GalleryItemToImage(conf alpha.DarknessConfig, item GalleryItem, authority, prefix string) (image.Image, error) {
+func GalleryItemToImage(conf *alpha.DarknessConfig, item GalleryItem, authority, prefix string) (image.Image, error) {
 	// If it's a local file, simply open the os file.
 	if !item.IsExternal {
 		file := conf.Runtime.WorkDir.Join(yunyun.JoinRelativePaths(item.Path, item.Item))

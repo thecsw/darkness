@@ -6,7 +6,7 @@ import (
 )
 
 type ExporterHTML struct {
-	Conf alpha.DarknessConfig
+	Conf *alpha.DarknessConfig
 }
 
 type state struct {
@@ -24,5 +24,5 @@ type state struct {
 	inHeading bool
 	// inWriting is used as a state variable for internal processing.
 	inWriting bool
-	conf      alpha.DarknessConfig
+	conf      *alpha.DarknessConfig
 }

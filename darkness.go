@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ProfileCpu   = true
+	ProfileCpu   = false
 	ProfileMem   = false
 	ProfileClock = false
 )

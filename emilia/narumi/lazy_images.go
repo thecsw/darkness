@@ -16,7 +16,7 @@ const (
 // WithLazyGalleries adds the lazy image loading scripts
 // (thanks to https://afarkas.github.io/lazysizes/index.html) if any
 // gallery blocks are found.
-func WithLazyGalleries(conf alpha.DarknessConfig) yunyun.PageOption {
+func WithLazyGalleries(conf *alpha.DarknessConfig) yunyun.PageOption {
 	return func(page *yunyun.Page) {
 		if gana.Anyf(func(v *yunyun.Content) bool { return v.IsGallery() }, page.Contents) {
 			page.Scripts = append(page.Scripts,

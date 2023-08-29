@@ -16,7 +16,7 @@ const (
 	holosceneTitlesTempDir = "temp-holoscene"
 )
 
-func updateHolosceneTitles(conf alpha.DarknessConfig, dryRun bool) {
+func updateHolosceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 	if dryRun {
 		if err := os.Mkdir(holosceneTitlesTempDir, 0o750); err != nil {
 			puck.Logger.Fatalf("creating temporary directory %s: %v", holosceneTitlesTempDir, err)

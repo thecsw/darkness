@@ -64,7 +64,7 @@ var metaTopTag = []string{
 }
 
 // addBasic adds the basic meta tags
-func addBasic(conf alpha.DarknessConfig, page *yunyun.Page, description string) []string {
+func addBasic(conf *alpha.DarknessConfig, page *yunyun.Page, description string) []string {
 	return append(metaTopTag, gana.Map(metaTag, []meta{
 		{"viewport", "viewport", "width=device-width, initial-scale=1.0"},
 		{"generator", "generator", "Darkness"},
@@ -76,7 +76,7 @@ func addBasic(conf alpha.DarknessConfig, page *yunyun.Page, description string) 
 }
 
 // addOpenGraph adds the opengraph preview meta tags
-func addOpenGraph(conf alpha.DarknessConfig, page *yunyun.Page, description string) []string {
+func addOpenGraph(conf *alpha.DarknessConfig, page *yunyun.Page, description string) []string {
 	return gana.Map(metaTag, []meta{
 		{"og:title", "og:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"og:site_name", "og:site_name", html.EscapeString(conf.Title)},
@@ -93,7 +93,7 @@ func addOpenGraph(conf alpha.DarknessConfig, page *yunyun.Page, description stri
 }
 
 // addTwitterMeta adds the twitter preview meta tags
-func addTwitterMeta(conf alpha.DarknessConfig, page *yunyun.Page, description string) []string {
+func addTwitterMeta(conf *alpha.DarknessConfig, page *yunyun.Page, description string) []string {
 	return gana.Map(metaTag, []meta{
 		{"twitter:card", "twitter:card", "summary_large_image"},
 		{"twitter:site", "twitter:site", html.EscapeString(conf.Title)},

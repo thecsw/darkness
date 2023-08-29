@@ -50,7 +50,7 @@ func resolveCustomFlexItemClasses(wholeLine string) string {
 }
 
 // makeFlexItem will make an item of the flexbox .gallery with 1/3 width
-func makeFlexItem(conf alpha.DarknessConfig, item rem.GalleryItem, width uint) string {
+func makeFlexItem(conf *alpha.DarknessConfig, item rem.GalleryItem, width uint) string {
 	// See if there is a custom flex width requested for the item.
 	if customFlex := extractCustomFlex(item.OriginalLine); customFlex != 0 {
 		width = customFlex

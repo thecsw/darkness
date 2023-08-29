@@ -1,9 +1,10 @@
 package rem
 
 import (
-	"github.com/thecsw/darkness/emilia/alpha"
 	"os"
 	"path/filepath"
+
+	"github.com/thecsw/darkness/emilia/alpha"
 
 	"github.com/disintegration/imaging"
 	"github.com/thecsw/darkness/emilia/reze"
@@ -22,7 +23,7 @@ func GalleryVendored(vendorDir yunyun.RelativePathDir, item GalleryItem) yunyun.
 // .IsExternal check before calling this. SLOW function because of network calls.
 //
 // If the vendoring fails at any point, fallback to the remote image path.
-func galleryVendorItem(conf alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
+func galleryVendorItem(conf *alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
 	// Process only one vendor request at a time.
 	vendorLock.Lock()
 	// Unlock so the next vendor request can get processed.
