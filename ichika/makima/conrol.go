@@ -10,25 +10,36 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
+// Control is the struct that is passed across darkness to build the site.
 type Control struct {
-	Conf     *alpha.DarknessConfig
-	Parser   parse.Parser
+	// Conf is the configuration for the site.
+	Conf *alpha.DarknessConfig
+	// Parser is the parser to use for the site.
+	Parser parse.Parser
+	// Exporter is the exporter to use for the site.
 	Exporter export.Exporter
 
+	// InputFilename is the filename of the input file.
 	InputFilename yunyun.FullPathFile
-	Input         string
+	// Input is the input file's contents.
+	Input string
 
+	// Page is the parsed page.
 	Page *yunyun.Page
 
+	// OutputFilename is the filename of the output file.
 	OutputFilename string
-	Output         io.Reader
+	// Output is the output file's contents.
+	Output io.Reader
 }
 
+// Parse parses the input file and returns the Control.
 func (c *Control) Parse() *Control {
 	c.Page = c.Parser.Do(c.Conf.Runtime.WorkDir.Rel(c.InputFilename), c.Input)
 	return c
 }
 
+// Export exports the parsed page and returns the Control.
 func (c *Control) Export() *Control {
 	c.OutputFilename = c.Conf.Project.InputFilenameToOutput(c.InputFilename)
 	c.Output = c.Exporter.Do(chiho.EnrichPage(c.Conf, c.Page))

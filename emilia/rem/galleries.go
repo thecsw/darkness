@@ -65,6 +65,7 @@ func GalleryPreview(conf *alpha.DarknessConfig, item GalleryItem) yunyun.FullPat
 }
 
 var (
+	// vendorClient is a client that is used to download images from the internet.
 	vendorClient = &http.Client{
 		Transport: &http.Transport{
 			MaxIdleConns:        1,
@@ -73,6 +74,7 @@ var (
 		},
 		Timeout: 10 * time.Second,
 	}
+	// vendorLock is a lock that is used to prevent multiple downloads at the same time.
 	vendorLock = &sync.Mutex{}
 )
 

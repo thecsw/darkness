@@ -14,6 +14,7 @@ import (
 	"github.com/thecsw/gana"
 )
 
+// BuildConfig builds the config from the passed options.
 func BuildConfig(options Options) *DarknessConfig {
 	conf := &DarknessConfig{}
 	conf.Runtime.Logger = puck.NewLogger("Alpha ☕")
@@ -79,9 +80,8 @@ func BuildConfig(options Options) *DarknessConfig {
 	conf.Runtime.URLSlice = []string{conf.URL}
 
 	// Set up the custom highlight languages if they exist.
-	if !isUnset(conf.Website.SyntaxHighlightingLanguages) {
-		conf.setupHighlightJsLanguages()
-	}
+	conf.setupHighlightJsLanguages()
+
 	// Set up the highlight theme if it's not given.
 	if isUnset(conf.Website.SyntaxHighlightingTheme) {
 		conf.Website.SyntaxHighlightingTheme = highlightJsThemeDefaultPath
@@ -121,9 +121,13 @@ func BuildConfig(options Options) *DarknessConfig {
 		conf.Author.ImagePreComputed = yunyun.FullPathFile(conf.Author.Image)
 	}
 
+	// Set up the project extensions.
 	conf.setupProjectExtensions(options)
-	conf.SetupGalleryVendoring(options)
 
+	// Set up the gallery vendoring.
+	conf.setupGalleryVendoring(options)
+
+	// Set up the gallery vendoring.
 	return conf
 }
 

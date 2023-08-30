@@ -3,10 +3,14 @@ package puck
 import "github.com/thecsw/darkness/yunyun"
 
 const (
-	ExtensionOrgmode  = ".org"
+	// ExtensionOrgmode is the extension of orgmode files.
+	ExtensionOrgmode = ".org"
+	// ExtensionMarkdown is the extension of markdown files.
 	ExtensionMarkdown = ".md"
-	ExtensionHtml     = ".html"
+	// ExtensionHtml is the extension of html files.
+	ExtensionHtml = ".html"
 
+	// DefaultPreviewFile is the name of the file where the preview of the gallery is stored.
 	DefaultPreviewFile = "preview.png"
 
 	// DefaultVendorDirectory is the name of the dir where vendor images are stored.

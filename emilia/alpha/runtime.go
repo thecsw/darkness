@@ -6,6 +6,7 @@ import (
 	l "github.com/charmbracelet/log"
 )
 
+// WorkingDirectory is the directory of where darkness project lives.
 type WorkingDirectory string
 
 // RuntimeConfig the config that is not a part of the config file,
@@ -27,7 +28,10 @@ type RuntimeConfig struct {
 	// of remote links in galleries.
 	VendorGalleries bool
 
+	// HtmlHighlightLanguages is a map of languages that we want to
+	// highlight in HTML.
 	HtmlHighlightLanguages map[string]struct{}
 
+	// Logger is the logger that we use.
 	Logger *l.Logger
 }

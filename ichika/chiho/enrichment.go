@@ -7,6 +7,14 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
+// EnrichPage enriches the page with the following:
+// - Resolved comments
+// - Enriched headings
+// - Footnotes
+// - Math support
+// - Source code trimmed left whitespace
+// - Syntax highlighting
+// - Lazy galleries
 func EnrichPage(conf *alpha.DarknessConfig, page *yunyun.Page) *yunyun.Page {
 	defer puck.Stopwatch("Enriched", "page", page.File).Record()
 	return page.Options(

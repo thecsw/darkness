@@ -4,6 +4,7 @@ import (
 	"github.com/thecsw/darkness/emilia/puck"
 )
 
+// setupProjectExtensions sets up the input/output extensions for the project.
 func (conf *DarknessConfig) setupProjectExtensions(options Options) {
 	// If input/output formats are empty, default to .org/.html respectively.
 	if isUnset(conf.Project.Input) {

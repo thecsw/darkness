@@ -9,9 +9,14 @@ import (
 )
 
 const (
+	// Minimum length of the description
 	descriptionMinLength = 14
 )
 
+// GetDescription returns the description of the page
+// It will return the first paragraph that is not empty and not a holoscene time
+// If no such paragraph is found, it will return an empty string
+// If the description is less than 14 characters, it will return an empty string
 func GetDescription(page *yunyun.Page, length int) string {
 	// Find the first paragraph for description
 	description := ""
