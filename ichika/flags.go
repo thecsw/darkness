@@ -2,9 +2,10 @@ package ichika
 
 import (
 	"flag"
-	"github.com/thecsw/darkness/emilia/alpha"
 	"os"
 	"path/filepath"
+
+	"github.com/thecsw/darkness/emilia/alpha"
 
 	"github.com/charmbracelet/log"
 	"github.com/thecsw/darkness/emilia/puck"

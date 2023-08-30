@@ -40,8 +40,6 @@ func BuildConfig(options Options) *DarknessConfig {
 		conf.Runtime.Logger.Fatal("Decoding config", "path", options.DarknessConfig, "err", err)
 	}
 
-	conf.setupProjectExtensions(options)
-
 	// Define the preview filename.
 	if isUnset(conf.Website.Preview) {
 		conf.Website.Preview = puck.DefaultPreviewFile
@@ -122,6 +120,9 @@ func BuildConfig(options Options) *DarknessConfig {
 	} else {
 		conf.Author.ImagePreComputed = yunyun.FullPathFile(conf.Author.Image)
 	}
+
+	conf.setupProjectExtensions(options)
+	conf.SetupGalleryVendoring(options)
 
 	return conf
 }
