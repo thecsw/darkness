@@ -2,6 +2,7 @@ package ichika
 
 import (
 	"fmt"
+	"github.com/thecsw/darkness/ichika/hizuru"
 	"runtime"
 	"time"
 
@@ -86,7 +87,7 @@ func build(conf *alpha.DarknessConfig) {
 
 	// Find all the files that need to be parsed.
 	inputFilenames := make(chan yunyun.FullPathFile, 8)
-	go FindFilesByExt(conf, inputFilenames)
+	go hizuru.FindFilesByExt(conf, inputFilenames)
 
 	// Submit all the files to the pool.
 	for inputFilename := range inputFilenames {

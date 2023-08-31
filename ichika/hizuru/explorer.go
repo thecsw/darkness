@@ -1,8 +1,11 @@
-package ichika
+package hizuru
 
 import (
 	"fmt"
+	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/rei"
+	"io"
 	"path/filepath"
 	"strings"
 
@@ -49,10 +52,10 @@ func FindFilesByExtSimple(conf *alpha.DarknessConfig) []yunyun.FullPathFile {
 	return rei.Collect(c)
 }
 
-// FindFilesByExtSimpleDirs is the same as `FindFilesByExt` but it simply blocks the
+// findFilesByExtSimpleDirs is the same as `FindFilesByExt` but it simply blocks the
 // parent goroutine until it processes all the results and returns only the results
 // which are children of the passed dirs.
-func FindFilesByExtSimpleDirs(conf *alpha.DarknessConfig, dirs []string) []yunyun.FullPathFile {
+func findFilesByExtSimpleDirs(conf *alpha.DarknessConfig, dirs []string) []yunyun.FullPathFile {
 	files := FindFilesByExtSimple(conf)
 	// If no dirs passed, run no filtering.
 	if len(dirs) < 1 {
@@ -65,4 +68,26 @@ func FindFilesByExtSimpleDirs(conf *alpha.DarknessConfig, dirs []string) []yunyu
 				string(conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(v))))
 		}, dirs)
 	}, files)
+}
+
+// BuildPagesSimple will return a slice of built pages that have dirs as parents (empty dirs will return everything).
+func BuildPagesSimple(conf *alpha.DarknessConfig, dirs []string) []*yunyun.Page {
+	inputFilenames := findFilesByExtSimpleDirs(conf, dirs)
+	pages := make([]*yunyun.Page, 0, len(inputFilenames))
+	parser := parse.BuildParser(conf)
+	for _, inputFilename := range inputFilenames {
+		bundleOption := openFile(inputFilename)
+		if bundleOption.IsNone() {
+			continue
+		}
+		bundle := bundleOption.Unwrap()
+		data, err := io.ReadAll(bundle.Second)
+		if err != nil {
+			puck.Logger.Printf("reading file %s: %v", inputFilename, err)
+			continue
+		}
+		page := parser.Do(conf.Runtime.WorkDir.Rel(bundle.First), string(data))
+		pages = append(pages, page)
+	}
+	return pages
 }

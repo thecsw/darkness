@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
@@ -27,19 +26,19 @@ var (
 )
 
 func (e ExporterHTML) Do(page *yunyun.Page) io.Reader {
-	s := &state{conf: e.Conf, page: page}
+	s := &state{conf: e.Config, page: page}
 	s.contentFunctions = []func(*yunyun.Content) string{
-		s.Heading,
-		s.Paragraph,
-		s.List,
-		s.ListNumbered,
-		s.Link,
-		s.SourceCode,
-		s.RawHTML,
-		s.HorizontalLine,
-		s.AttentionBlock,
-		s.Table,
-		s.Details,
+		s.heading,
+		s.paragraph,
+		s.list,
+		s.listNumbered,
+		s.link,
+		s.sourceCode,
+		s.rawHtml,
+		s.horizontalLine,
+		s.attentionBlock,
+		s.table,
+		s.details,
 	}
 	return s.export()
 }
@@ -125,7 +124,7 @@ func (e *state) leftHeading() {
 	e.inHeading = false
 }
 
-func (e state) combineAndFilterHtmlHead() string {
+func (e *state) combineAndFilterHtmlHead() string {
 	// Build the array of all head elements (except page's specific head options).
 	allHead := [][]string{e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags(), e.conf.Website.ExtraHead}
 	// Go through all the head elements and filter them out depending on page's specific exclusion rules.
@@ -138,7 +137,7 @@ func (e state) combineAndFilterHtmlHead() string {
 }
 
 // styleTags is the processed style tags.
-func (e state) styleTags() []string {
+func (e *state) styleTags() []string {
 	content := make([]string, len(e.conf.Website.Styles)+len(e.page.Stylesheets))
 	for i, style := range e.conf.Website.Styles {
 		stylePath := yunyun.FullPathFile(style)
@@ -159,25 +158,25 @@ var defaultScripts = []string{
 }
 
 // scriptTags returns the script tags.
-func (e state) scriptTags() []string {
+func (e *state) scriptTags() []string {
 	return append(defaultScripts, e.page.Scripts...)
 }
 
-func (e state) rssLink() string {
+func (e *state) rssLink() string {
 	if !e.conf.RSS.Enable {
 		return ""
 	}
 	return `<span><a href="/feed.xml" class="rss-link"><img src="/assets/rss.svg" class="rss-icon"></a></span><br>` + "\n"
 }
 
-func (e state) authorName() string {
+func (e *state) authorName() string {
 	if !e.conf.Author.NameEnable {
 		return ""
 	}
 	return `<span id="author" class="author">` + e.conf.Author.Name + `</span><br>` + "\n"
 }
 
-func (e state) authorEmail() string {
+func (e *state) authorEmail() string {
 	if !e.conf.Author.EmailEnable {
 		return ""
 	}
@@ -185,7 +184,7 @@ func (e state) authorEmail() string {
 }
 
 // authorHeader returns the author header.
-func (e state) authorHeader() string {
+func (e *state) authorHeader() string {
 	content := fmt.Sprintf(`
 <div class="header">
 <h1 class="section-1">%s%s</h1>
@@ -226,7 +225,7 @@ func (e state) authorHeader() string {
 }
 
 // authorHeader returns img element if author header image is given.
-func (e state) authorImage() string {
+func (e *state) authorImage() string {
 	// Return nothing if it's not provided.
 	if e.conf.Author.Image == "" || e.page.Accoutrement.AuthorImage.IsDisabled() {
 		return ""
@@ -235,7 +234,7 @@ func (e state) authorImage() string {
 }
 
 // addTomb adds the tomb to the last paragraph.
-func (e state) addTomb() {
+func (e *state) addTomb() {
 	// Empty???
 	if len(e.page.Contents) < 1 {
 		return
@@ -253,12 +252,12 @@ func (e state) addTomb() {
 }
 
 // toc returns the table of contents.
-func (e state) toc() []*yunyun.Content {
+func (e *state) toc() []*yunyun.Content {
 	return []*yunyun.Content{
 		// First, add the table of contents header.
 		{
 			Type:                 yunyun.TypeHeading,
-			Heading:              "Table of Contents",
+			Heading:              "table of Contents",
 			HeadingLevel:         3,
 			HeadingLevelAdjusted: 1,
 		},
@@ -268,7 +267,7 @@ func (e state) toc() []*yunyun.Content {
 			// overload the summary field to indicate
 			// that this is the table of contents.
 			Summary: "toc",
-			List:    emilia.GenerateTableOfContents(e.page),
+			List:    GenerateTableOfContents(e.page),
 		},
 		// Finally, add the horizontal line.
 		{

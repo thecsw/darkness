@@ -45,7 +45,7 @@ func (p ParserOrgmode) Do(
 		yunyun.WithLocation(yunyun.RelativePathTrim(filename)),
 		yunyun.WithContents(make([]*yunyun.Content, 0, 32)),
 	)
-	page.Author = p.Conf.RSS.DefaultAuthor
+	page.Author = p.Config.RSS.DefaultAuthor
 
 	// currentFlags uses flags to set options
 	currentFlags := yunyun.Bits(0)
@@ -71,7 +71,7 @@ func (p ParserOrgmode) Do(
 	// optionsStrings will get populated as the page is being scanned
 	// and then parsed out before leaving this parser.
 	optionsStrings := ""
-	defer emilia.FillAccoutrement(p.Conf.Website.Tombs, &optionsStrings, page)
+	defer emilia.FillAccoutrement(p.Config.Website.Tombs, &optionsStrings, page)
 
 	// Optional parsing to see if H.E. has been left on the first line
 	// as the date

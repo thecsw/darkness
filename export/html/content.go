@@ -5,7 +5,6 @@ import (
 	"html"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
@@ -53,15 +52,15 @@ func (e *state) resolveDivTags(built string) string {
 	return built
 }
 
-// Heading gives us a heading html representation.
-func (e *state) Heading(content *yunyun.Content) string {
+// heading gives us a heading html representation.
+func (e *state) heading(content *yunyun.Content) string {
 	toReturn := fmt.Sprintf(`
 <h%d id="%s" class="section-%d">%s</h%d>`,
-		content.HeadingLevelAdjusted,      // HTML open tag
-		emilia.ExtractID(content.Heading), // ID
-		content.HeadingLevel,              // section class
-		processText(content.Heading),      // Actual title
-		content.HeadingLevelAdjusted,      // HTML close tag
+		content.HeadingLevelAdjusted, // HTML open tag
+		ExtractID(content.Heading),   // ID
+		content.HeadingLevel,         // section class
+		processText(content.Heading), // Actual title
+		content.HeadingLevelAdjusted, // HTML close tag
 	)
 	e.inHeading = true
 	return toReturn
@@ -81,7 +80,7 @@ func paragraphClass(content *yunyun.Content) string {
 }
 
 // paragraph gives us a paragraph html representation
-func (e state) Paragraph(content *yunyun.Content) string {
+func (e *state) paragraph(content *yunyun.Content) string {
 	return fmt.Sprintf(
 		`
 <div class="paragraph%s">
@@ -105,7 +104,7 @@ func makeListItem(item yunyun.ListItem) string {
 }
 
 // list gives us a list html representation
-func (e state) List(content *yunyun.Content) string {
+func (e *state) list(content *yunyun.Content) string {
 	// Hijack this type for galleries
 	if content.IsGallery() {
 		return e.gallery(content)
@@ -122,13 +121,13 @@ func (e state) List(content *yunyun.Content) string {
 }
 
 // listNumbered gives us a numbered list html representation
-func (e state) ListNumbered(content *yunyun.Content) string {
+func (e *state) listNumbered(content *yunyun.Content) string {
 	// TODO
 	return ""
 }
 
 // sourceCode gives us a source code html representation
-func (e state) SourceCode(content *yunyun.Content) string {
+func (e *state) sourceCode(content *yunyun.Content) string {
 	return fmt.Sprintf(`
 <div class="coding" %s>
 <div class="listingblock">
@@ -150,7 +149,7 @@ func (e state) SourceCode(content *yunyun.Content) string {
 }
 
 // rawHTML gives us a raw html representation
-func (e state) RawHTML(content *yunyun.Content) string {
+func (e *state) rawHtml(content *yunyun.Content) string {
 	// If the unsafe flag is enabled, don't even wrap it in `mediablock`
 	if content.IsRawHTMLUnsafe() {
 		return content.RawHTML
@@ -163,14 +162,14 @@ func (e state) RawHTML(content *yunyun.Content) string {
 }
 
 // horizontalLine gives us a horizontal line html representation
-func (e state) HorizontalLine(content *yunyun.Content) string {
+func (e *state) horizontalLine(content *yunyun.Content) string {
 	return `<center>
 <hr>
 </center>`
 }
 
 // attentionBlock gives us a attention block html representation
-func (e state) AttentionBlock(content *yunyun.Content) string {
+func (e *state) attentionBlock(content *yunyun.Content) string {
 	return fmt.Sprintf(`
 <div class="admonitionblock note">
 <table>
@@ -187,7 +186,7 @@ func (e state) AttentionBlock(content *yunyun.Content) string {
 }
 
 // table gives an HTML formatted table
-func (e state) Table(content *yunyun.Content) string {
+func (e *state) table(content *yunyun.Content) string {
 	rows := make([]string, len(content.Table))
 	for i := range content.Table {
 		for j, v := range content.Table[i] {
@@ -204,7 +203,7 @@ func (e state) Table(content *yunyun.Content) string {
 }
 
 // table gives an HTML formatted table
-func (e state) Details(content *yunyun.Content) string {
+func (e *state) details(content *yunyun.Content) string {
 	if content.IsDetails() {
 		return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
 	}

@@ -1,7 +1,8 @@
-package ichika
+package misa
 
 import (
 	"fmt"
+	"github.com/thecsw/darkness/ichika/hizuru"
 	"image"
 	"io"
 	"os"
@@ -23,9 +24,9 @@ const (
 	galleryPreviewImageBlur = 20
 )
 
-// buildGalleryFiles finds all the gallery entries and build a resized
+// BuildGalleryFiles finds all the gallery entries and build a resized
 // preview version of it.
-func buildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
+func BuildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 	// Make sure the preview directory exists
 	previewDirectory := string(conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(conf.Project.DarknessPreviewDirectory)))
 	if err := rei.Mkdir(previewDirectory); err != nil {
@@ -97,8 +98,8 @@ func dryRemove(val string) error {
 	return nil
 }
 
-// removeGalleryFiles removes all generate gallery previews.
-func removeGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
+// RemoveGalleryFiles removes all generate gallery previews.
+func RemoveGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 	removeFunc := os.Remove
 	if dryRun {
 		removeFunc = dryRemove
@@ -114,7 +115,7 @@ func removeGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 // getGalleryFiles returns a slice of all gallery images represented as `rem.GalleryItem`.
 func getGalleryFiles(conf *alpha.DarknessConfig) []rem.GalleryItem {
 	galleryFiles := make([]rem.GalleryItem, 0, 32)
-	for _, page := range buildPagesSimple(conf, nil) {
+	for _, page := range hizuru.BuildPagesSimple(conf, nil) {
 		for _, gc := range page.Contents.Galleries() {
 			for _, item := range gc.List {
 				galleryFiles = append(galleryFiles, rem.NewGalleryItem(page, gc, item.Text))

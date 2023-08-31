@@ -1,6 +1,7 @@
 package ichika
 
 import (
+	"github.com/thecsw/darkness/ichika/hizuru"
 	"log"
 	"net/http"
 	"os"
@@ -58,7 +59,7 @@ func ServeCommandFunc() {
 	}
 
 	// Tune it to serve local files.
-	FileServer(r, "/", http.Dir(string(conf.Runtime.WorkDir)))
+	fileServer(r, "/", http.Dir(string(conf.Runtime.WorkDir)))
 
 	// Spin the local server up.
 	go func() {
@@ -138,7 +139,7 @@ func launchWatcher(conf *alpha.DarknessConfig) {
 	}()
 
 	// start adding all the source files
-	for _, inputFilenameToWatch := range FindFilesByExtSimple(conf) {
+	for _, inputFilenameToWatch := range hizuru.FindFilesByExtSimple(conf) {
 		err = watcher.Add(string(inputFilenameToWatch))
 		if err != nil {
 			log.Fatal(err)
@@ -151,12 +152,12 @@ func launchWatcher(conf *alpha.DarknessConfig) {
 	<-make(chan struct{})
 }
 
-// FileServer conveniently sets up a http.FileServer handler to serve
+// fileServer conveniently sets up a http.FileServer handler to serve
 // static files from a http.FileSystem.
 // Taken from https://github.com/go-chi/chi/blob/master/_examples/fileserver/main.go
-func FileServer(r chi.Router, path string, root http.FileSystem) {
+func fileServer(r chi.Router, path string, root http.FileSystem) {
 	if strings.ContainsAny(path, "{}*") {
-		panic("FileServer does not permit any URL parameters.")
+		panic("fileServer does not permit any URL parameters.")
 	}
 
 	if path != "/" && path[len(path)-1] != '/' {

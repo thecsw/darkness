@@ -94,8 +94,8 @@ Sorry, your browser doesn't support embedded videos.
 </div>`
 )
 
-// Link returns an html representation of a link even if it's an embed command
-func (e state) Link(content *yunyun.Content) string {
+// link returns an html representation of a link even if it's an embed command
+func (e *state) link(content *yunyun.Content) string {
 	cleanLink := strings.TrimSpace(content.Link)
 	switch {
 	case yunyun.ImageExtRegexp.MatchString(cleanLink) || strings.Contains(content.Attributes, "image"):

@@ -5,10 +5,13 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
+// ExporterHTML is the exporter for HTML.
 type ExporterHTML struct {
-	Conf *alpha.DarknessConfig
+	// Config is the configuration for the exporter.
+	Config *alpha.DarknessConfig
 }
 
+// state is the state of the exporter.
 type state struct {
 	// page is the source data that will be used for HTML building.
 	page *yunyun.Page
@@ -24,5 +27,6 @@ type state struct {
 	inHeading bool
 	// inWriting is used as a state variable for internal processing.
 	inWriting bool
-	conf      *alpha.DarknessConfig
+	// conf is the configuration for the exporter.
+	conf *alpha.DarknessConfig
 }

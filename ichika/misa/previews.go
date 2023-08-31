@@ -1,4 +1,4 @@
-package ichika
+package misa
 
 // what.previewGenerator = reze.InitPreviewGenerator(
 // 	string(emilia.Join("styles/fonts/EB_Garamond/EBGaramond-Italic-VariableFont_wght.ttf")),
@@ -16,3 +16,10 @@ package ichika
 // im := rei.Must(imaging.Decode(reader))
 // previewLocation := yunyun.JoinRelativePaths(e.page.Location, "new_preview.jpg")
 // rei.Try(imaging.Save(im, string(previewLocation)))
+
+//const (
+//	variableWidthFontFile = "./fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf"
+//	mediumWidthFontFile   = "./fonts/EB_Garamond/static/EBGaramond-Medium.ttf"
+//	italicWidthFontFile   = "./fonts/EB_Garamond/static/EBGaramond-Italic.ttf"
+//	resizedAvatarTempFile = ".resized_avatar_reze.png"
+//)

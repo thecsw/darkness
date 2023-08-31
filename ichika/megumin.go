@@ -2,6 +2,7 @@ package ichika
 
 import (
 	"fmt"
+	"github.com/thecsw/darkness/ichika/hizuru"
 	"os"
 	"time"
 	"unicode"
@@ -47,7 +48,7 @@ func CleanCommandFunc() {
 
 // removeOutputFiles is the low-level command to be used when cleaning data.
 func removeOutputFiles(conf *alpha.DarknessConfig) {
-	inputFilenames := FindFilesByExtSimple(conf)
+	inputFilenames := hizuru.FindFilesByExtSimple(conf)
 	for _, inputFilename := range inputFilenames {
 		toRemove := conf.Project.InputFilenameToOutput(inputFilename)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {

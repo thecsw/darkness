@@ -62,7 +62,7 @@ func (m Markings) BuildRegex() {
 	SuperscriptText = AsymmetricEmphasis(m.SuperscriptStart, m.SuperscriptEnd)
 	SubscriptText = AsymmetricEmphasis(m.SubscriptStart, m.SubscriptEnd)
 
-	// Compile the Link regexp and pre-compute named groups' indices.
+	// Compile the link regexp and pre-compute named groups' indices.
 	LinkRegexp = regexp.MustCompile(m.Link)
 	linkLinkIndex = LinkRegexp.SubexpIndex("link")
 	linkTextIndex = LinkRegexp.SubexpIndex("text")
@@ -165,7 +165,7 @@ func RemoveFormatting(what string) string {
 	for _, source := range SpecialTextMarkups {
 		what = source.ReplaceAllString(what, `$l$text$r`)
 	}
-	what = LinkRegexp.ReplaceAllString(what, `$text ($link)`)
+	what = LinkRegexp.ReplaceAllString(what, `$text`)
 	what = KeyboardRegexp.ReplaceAllString(what, `$1`)
 	what = NewLineRegexp.ReplaceAllString(what, `$1`)
 	return what

@@ -20,7 +20,7 @@ func linkTag(val rel) string {
 }
 
 // linkTags returns a string of the form <link rel="..." href="..." /> for an entire page
-func (e state) linkTags() []string {
+func (e *state) linkTags() []string {
 	return gana.Map(linkTag, []rel{
 		{"canonical", e.conf.Runtime.Join(yunyun.RelativePathFile(e.page.Location)), ""},
 		{"shortcut icon", e.conf.Runtime.Join("assets/favicon.ico"), "image/x-icon"},

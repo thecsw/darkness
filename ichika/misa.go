@@ -2,6 +2,7 @@ package ichika
 
 import (
 	"fmt"
+	"github.com/thecsw/darkness/ichika/misa"
 	"os"
 	"strings"
 
@@ -32,19 +33,19 @@ func MisaCommandFunc() {
 	conf := alpha.BuildConfig(options)
 
 	if *buildGalleryPreviews {
-		buildGalleryFiles(conf, *dryRun)
+		misa.BuildGalleryFiles(conf, *dryRun)
 		os.Exit(0)
 	}
 	if *removeGalleryPreviews {
-		removeGalleryFiles(conf, *dryRun)
+		misa.RemoveGalleryFiles(conf, *dryRun)
 		os.Exit(0)
 	}
 	if *addHolosceneTitles {
-		updateHolosceneTitles(conf, *dryRun)
+		misa.UpdateHoloceneTitles(conf, *dryRun)
 		os.Exit(0)
 	}
 	if len(*rss) > 0 {
-		rssf(conf, *rss, strings.Split(*rssDirectories, ","), *dryRun)
+		misa.GenerateRssFeed(conf, *rss, strings.Split(*rssDirectories, ","), *dryRun)
 		os.Exit(0)
 	}
 

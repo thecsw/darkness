@@ -22,7 +22,7 @@ const (
 	optionToc             = `toc`
 )
 
-var accotrementActions = map[string]func(string, *yunyun.Accoutrement){
+var accoutrementActions = map[string]func(string, *yunyun.Accoutrement){
 	optionDraft:           accoutrementDraft,
 	optionTomb:            accoutrementTomb,
 	optionAuthorImage:     accoutrementAuthorImage,
@@ -58,7 +58,7 @@ func FillAccoutrement(tombs []yunyun.RelativePathDir, options *string, page *yun
 	for _, option := range strings.Split(*options, " ") {
 		key, value := breakOption(option)
 		// If action is found, then execute it.
-		if action, ok := accotrementActions[key]; ok {
+		if action, ok := accoutrementActions[key]; ok {
 			action(value, page.Accoutrement)
 		}
 	}

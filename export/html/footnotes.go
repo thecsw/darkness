@@ -8,7 +8,7 @@ import (
 )
 
 // addFootnotes adds the footnotes
-func (e state) addFootnotes() string {
+func (e *state) addFootnotes() string {
 	if len(e.page.Footnotes) < 1 {
 		return ""
 	}

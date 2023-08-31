@@ -1,7 +1,8 @@
-package ichika
+package misa
 
 import (
 	"fmt"
+	"github.com/thecsw/darkness/ichika/hizuru"
 	"io"
 	"os"
 	"path/filepath"
@@ -16,14 +17,14 @@ const (
 	holosceneTitlesTempDir = "temp-holoscene"
 )
 
-func updateHolosceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
+func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 	if dryRun {
 		if err := os.Mkdir(holosceneTitlesTempDir, 0o750); err != nil {
 			puck.Logger.Fatalf("creating temporary directory %s: %v", holosceneTitlesTempDir, err)
 		}
 	}
 
-	inputFilenames := FindFilesByExtSimple(conf)
+	inputFilenames := hizuru.FindFilesByExtSimple(conf)
 	outputs := make([]string, len(inputFilenames))
 	for i, inputFilename := range inputFilenames {
 		outputs[i] = conf.Project.InputFilenameToOutput(inputFilename)

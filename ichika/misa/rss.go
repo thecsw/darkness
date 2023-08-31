@@ -1,38 +1,35 @@
-package ichika
+package misa
 
 import (
 	"encoding/xml"
+	"github.com/thecsw/darkness/ichika/hizuru"
 	"github.com/thecsw/darkness/yunyun/rss"
-	"io"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
 
 const (
-	rssXMLFilename = "feed.xml"
-	rssGenerator   = "Darkness (sandyuraz.com/darkness)"
+	rssGenerator = "Darkness (sandyuraz.com/darkness)"
 )
 
-func rssf(conf *alpha.DarknessConfig, rssFilename string, rssDirectories []string, dryRun bool) {
+func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirectories []string, dryRun bool) {
 	// Get all all the pages we can build out.
-	allPages := buildPagesSimple(conf, rssDirectories)
+	allPages := hizuru.BuildPagesSimple(conf, rssDirectories)
 	// Try to retrieve the top root page to get channel description. If not found, use the
 	// website's title as the description.
 	topPage := gana.First(gana.Filter(func(page *yunyun.Page) bool { return page.Location == "." }, allPages))
 	rootDescription := conf.RSS.Description
 	if topPage != nil {
-		rootDescription = emilia.GetDescription(topPage, conf.Website.DescriptionLength*4)
+		rootDescription = getDescription(topPage, conf.Website.DescriptionLength*4)
 	}
 	// If both the top page and RSS config have no description, default to the title.
 	if len(rootDescription) < 1 {
@@ -70,7 +67,7 @@ func rssf(conf *alpha.DarknessConfig, rssFilename string, rssDirectories []strin
 				XMLName:     xml.Name{},
 				Title:       yunyun.RemoveFormatting(page.Title),
 				Link:        conf.URL + string(page.Location),
-				Description: emilia.GetDescription(page, conf.Website.DescriptionLength*4) + " [ Continue reading... ]",
+				Description: getDescription(page, conf.Website.DescriptionLength*4) + " [ Continue reading... ]",
 				Author:      page.Author,
 				Category:    &rss.Category{Value: categoryName, Domain: conf.URL + string(categoryLocation)},
 				Enclosure:   &rss.Enclosure{},
@@ -103,19 +100,25 @@ func rssf(conf *alpha.DarknessConfig, rssFilename string, rssDirectories []strin
 		},
 	}
 
-	xmlTarget := string(conf.Runtime.WorkDir.Join(rssXMLFilename))
-	feedXml, err := os.Create(filepath.Clean(xmlTarget))
-	if err != nil {
-		puck.Logger.Error("Creating file", "path", xmlTarget, "err", err)
-		os.Exit(1)
+	xmlTarget := "stdout"
+	xmlFile := os.Stdout
+	var err error
+	if !dryRun {
+		xmlTarget = string(conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(rssFilename)))
+		xmlFile, err = os.Create(filepath.Clean(xmlTarget))
+		if err != nil {
+			puck.Logger.Error("Creating file", "path", xmlTarget, "err", err)
+			os.Exit(1)
+		}
 	}
-	encoder := xml.NewEncoder(feedXml)
+
+	encoder := xml.NewEncoder(xmlFile)
 	encoder.Indent("", "  ")
 	if err := encoder.Encode(feed); err != nil {
 		puck.Logger.Error("Encoding to xml", "path", xmlTarget, "err", err)
 		os.Exit(1)
 	}
-	if err := feedXml.Close(); err != nil {
+	if err := xmlFile.Close(); err != nil {
 		puck.Logger.Error("Closing file", "path", xmlTarget, "err", err)
 		os.Exit(1)
 	}
@@ -156,32 +159,43 @@ func (p Pages) Swap(i, j int) { p[i], p[j] = p[j], p[i] }
 // Less sorts the array in descending order.
 func (p Pages) Less(i, j int) bool { return mustDate(p[i]).Unix() > mustDate(p[j]).Unix() }
 
-// Will return a slice of built pages that have dirs as parents (empty dirs will return everything).
-func buildPagesSimple(conf *alpha.DarknessConfig, dirs []string) Pages {
-	inputFilenames := FindFilesByExtSimpleDirs(conf, dirs)
-	pages := make([]*yunyun.Page, 0, len(inputFilenames))
-	parser := parse.BuildParser(conf)
-	for _, inputFilename := range inputFilenames {
-		bundleOption := openFile(inputFilename)
-		if bundleOption.IsNone() {
-			continue
-		}
-		bundle := bundleOption.Unwrap()
-		data, err := io.ReadAll(bundle.Second)
-		if err != nil {
-			puck.Logger.Printf("reading file %s: %v", inputFilename, err)
-			continue
-		}
-		page := parser.Do(conf.Runtime.WorkDir.Rel(bundle.First), string(data))
-		pages = append(pages, page)
-	}
-	return pages
-}
-
 func mustDate(v *yunyun.Page) time.Time {
 	t, f := getDate(v)
 	if !f {
 		panic("must be date")
 	}
 	return t
+}
+
+const (
+	// Minimum length of the description
+	descriptionMinLength = 14
+)
+
+// getDescription returns the description of the page
+// It will return the first paragraph that is not empty and not a holoscene time
+// If no such paragraph is found, it will return an empty string
+// If the description is less than 14 characters, it will return an empty string
+func getDescription(page *yunyun.Page, length int) string {
+	// Find the first paragraph for description
+	description := ""
+	for _, content := range page.Contents {
+		// We are only looking for paragraphs
+		if !content.IsParagraph() {
+			continue
+		}
+		// Skip holoscene times
+		paragraph := strings.TrimSpace(content.Paragraph)
+		if paragraph == "" || puck.HEregex.MatchString(paragraph) {
+			continue
+		}
+
+		cleanText := yunyun.RemoveFormatting(paragraph[:gana.Min(len(paragraph), length+10)])
+		description = cleanText[:gana.Max(len(cleanText)-10, 0)] + "..."
+		if len(description) < descriptionMinLength {
+			continue
+		}
+		break
+	}
+	return description
 }

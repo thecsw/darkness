@@ -81,7 +81,7 @@ func makeFlexItem(conf *alpha.DarknessConfig, item rem.GalleryItem, width uint) 
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
-func (e state) gallery(content *yunyun.Content) string {
+func (e *state) gallery(content *yunyun.Content) string {
 	makeFlexItemWithFolder := func(s yunyun.ListItem) string {
 		return makeFlexItem(e.conf, rem.NewGalleryItem(e.page, content, s.Text), content.GalleryImagesPerRow)
 	}

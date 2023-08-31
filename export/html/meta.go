@@ -13,7 +13,7 @@ import (
 )
 
 // metaTopTag is the top tag for all meta tags
-func (e state) metaTags() []string {
+func (e *state) metaTags() []string {
 	// Find the first paragraph for description
 	description := ""
 	for _, content := range e.page.Contents {
