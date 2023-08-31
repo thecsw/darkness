@@ -2,13 +2,14 @@ package misa
 
 import (
 	"encoding/xml"
-	"github.com/thecsw/darkness/ichika/hizuru"
-	"github.com/thecsw/darkness/yunyun/rss"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/thecsw/darkness/ichika/hizuru"
+	"github.com/thecsw/darkness/yunyun/rss"
 
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/narumi"
@@ -18,9 +19,11 @@ import (
 )
 
 const (
+	// rssGenerator is the generator string used in the RSS feed.
 	rssGenerator = "Darkness (sandyuraz.com/darkness)"
 )
 
+// GenerateRssFeed generates an RSS feed based on the given config and directories.
 func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirectories []string, dryRun bool) {
 	// Get all all the pages we can build out.
 	allPages := hizuru.BuildPagesSimple(conf, rssDirectories)
@@ -48,7 +51,7 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 	sort.Sort(pages)
 
 	// Create RSS items.
-	items := make([]*rss.Item, 0, len(pages))
+	items := make([]rss.Item, 0, len(pages))
 
 	func() {
 		defer puck.Stopwatch("Built RSS pages", "num", len(pages)).Record()
@@ -57,13 +60,15 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 			if page.Accoutrement.Draft.IsEnabled() {
 				continue
 			}
+			// Create the category name and location.
 			categoryName, categoryLocation := page.Title, page.Location
 			if categoryPage := getCategory(page, allPages); categoryPage != nil {
 				categoryName = categoryPage.Title
 				categoryLocation = categoryPage.Location
 			}
 
-			items = append(items, &rss.Item{
+			// Create the RSS item.
+			items = append(items, rss.Item{
 				XMLName:     xml.Name{},
 				Title:       yunyun.RemoveFormatting(page.Title),
 				Link:        conf.URL + string(page.Location),

@@ -137,7 +137,7 @@ type Channel struct {
 	// in itself, if so, the description contains the text (entity-encoded HTML is allowed;
 	// see examples), and the link and title may be omitted. All elements of an item are
 	// optional, however at least one of title or description must be present.
-	Items []*Item `xml:"item,omitempty"`
+	Items []Item `xml:"item,omitempty"`
 
 	// ttl stands for time to live. It's a number of minutes that indicates
 	// how long a channel can be cached before refreshing from the source.

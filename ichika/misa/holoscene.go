@@ -2,11 +2,12 @@ package misa
 
 import (
 	"fmt"
-	"github.com/thecsw/darkness/ichika/hizuru"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/thecsw/darkness/ichika/hizuru"
 
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/narumi"
@@ -17,6 +18,7 @@ const (
 	holosceneTitlesTempDir = "temp-holoscene"
 )
 
+// UpdateHoloceneTitles adds holoscene titles to the output files.
 func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 	if dryRun {
 		if err := os.Mkdir(holosceneTitlesTempDir, 0o750); err != nil {
@@ -24,12 +26,16 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 		}
 	}
 
+	// Find all the files that need to be updated.
 	inputFilenames := hizuru.FindFilesByExtSimple(conf)
+
+	// Convert the input filenames to output filenames.
 	outputs := make([]string, len(inputFilenames))
 	for i, inputFilename := range inputFilenames {
 		outputs[i] = conf.Project.InputFilenameToOutput(inputFilename)
 	}
 
+	// Open all the output files.
 	actuallyFound := make([]*os.File, 0, len(outputs))
 	for _, v := range outputs {
 		v := filepath.Clean(v)
@@ -41,9 +47,12 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 		actuallyFound = append(actuallyFound, file)
 	}
 
+	// Add holoscene titles to all the output files.
 	fmt.Printf("Adding holoscene titles to %d output files\n", len(actuallyFound))
 
+	// Add holoscene titles to all the output files.
 	for _, foundOutput := range actuallyFound {
+		// Read the output file.
 		filename := foundOutput.Name()
 		output, err := io.ReadAll(foundOutput)
 		if err := foundOutput.Close(); err != nil {
@@ -54,6 +63,7 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 			continue
 		}
 
+		// Add holoscene titles to the output.
 		newOutput := narumi.AddHolosceneTitles(string(output), -1)
 		var file *os.File
 		if dryRun {
@@ -67,6 +77,7 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 			continue
 		}
 
+		// Write the new output to the file.
 		written, err := io.Copy(file, strings.NewReader(newOutput))
 		if err := file.Close(); err != nil {
 			puck.Logger.Errorf("closing file %s: %v", file.Name(), err)
