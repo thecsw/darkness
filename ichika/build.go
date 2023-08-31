@@ -2,6 +2,7 @@ package ichika
 
 import (
 	"fmt"
+	"github.com/thecsw/darkness/yunyun"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -57,7 +58,6 @@ func BuildCommandFunc() {
 
 // build uses set flags and emilia data to build the local directory.
 func build(conf *alpha.DarknessConfig) {
-
 	parser := parse.BuildParser(conf)
 	exporter := export.BuildExporter(conf)
 
@@ -114,13 +114,16 @@ func build(conf *alpha.DarknessConfig) {
 
 	start := time.Now()
 
-	freshContext := makima.Control{
-		Conf:     conf,
-		Parser:   parser,
-		Exporter: exporter,
+	inputFilenames := make(chan yunyun.FullPathFile, 8)
+	go FindFilesByExt(conf, inputFilenames)
+	for inputFilename := range inputFilenames {
+		rei.Try(filesPool.Submit(&makima.Control{
+			Conf:          conf,
+			Parser:        parser,
+			Exporter:      exporter,
+			InputFilename: inputFilename,
+		}))
 	}
-
-	<-FindFilesByExt(conf, filesPool, freshContext)
 
 	writerPool.Close()
 
@@ -133,7 +136,7 @@ func build(conf *alpha.DarknessConfig) {
 }
 
 //go:inline
-func openPage(c *makima.Control) (*makima.Control, error) {
+func openPage(c *makima.Control) (makima.Woof, error) {
 	file, err := os.ReadFile(filepath.Clean(string(c.InputFilename)))
 	if err != nil {
 		return nil, err
@@ -143,20 +146,21 @@ func openPage(c *makima.Control) (*makima.Control, error) {
 }
 
 //go:inline
-func parsePage(c *makima.Control) *makima.Control {
+func parsePage(c makima.Woof) makima.Woof {
 	return c.Parse()
 }
 
 //go:inline
-func exportPage(c *makima.Control) *makima.Control {
+func exportPage(c makima.Woof) makima.Woof {
 	return c.Export()
 }
 
 //go:inline
-func writePage(c *makima.Control) error {
-	_, err := writeFile(c.OutputFilename, c.Output)
+func writePage(c makima.Woof) error {
+	filename, output := c.Result()
+	_, err := writeFile(filename, output)
 	if err != nil {
-		return fmt.Errorf("writing page %s: %v", c.OutputFilename, err)
+		return fmt.Errorf("writing page %s: %v", filename, err)
 	}
 	return nil
 }

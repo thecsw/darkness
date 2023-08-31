@@ -138,8 +138,8 @@ func launchWatcher(conf *alpha.DarknessConfig) {
 	}()
 
 	// start adding all the source files
-	for _, toWatch := range FindFilesByExtSimple(conf) {
-		err = watcher.Add(string(toWatch.InputFilename))
+	for _, inputFilenameToWatch := range FindFilesByExtSimple(conf) {
+		err = watcher.Add(string(inputFilenameToWatch))
 		if err != nil {
 			log.Fatal(err)
 		}

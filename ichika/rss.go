@@ -2,6 +2,7 @@ package ichika
 
 import (
 	"encoding/xml"
+	"github.com/thecsw/darkness/yunyun/rss"
 	"io"
 	"os"
 	"path/filepath"
@@ -13,7 +14,6 @@ import (
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/ichika/rss"
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
@@ -158,18 +158,18 @@ func (p Pages) Less(i, j int) bool { return mustDate(p[i]).Unix() > mustDate(p[j
 
 // Will return a slice of built pages that have dirs as parents (empty dirs will return everything).
 func buildPagesSimple(conf *alpha.DarknessConfig, dirs []string) Pages {
-	inputs := FindFilesByExtSimpleDirs(conf, dirs)
-	pages := make([]*yunyun.Page, 0, len(inputs))
+	inputFilenames := FindFilesByExtSimpleDirs(conf, dirs)
+	pages := make([]*yunyun.Page, 0, len(inputFilenames))
 	parser := parse.BuildParser(conf)
-	for _, input := range inputs {
-		bundleOption := openFile(input.InputFilename)
+	for _, inputFilename := range inputFilenames {
+		bundleOption := openFile(inputFilename)
 		if bundleOption.IsNone() {
 			continue
 		}
 		bundle := bundleOption.Unwrap()
 		data, err := io.ReadAll(bundle.Second)
 		if err != nil {
-			puck.Logger.Printf("reading file %s: %v", input.InputFilename, err)
+			puck.Logger.Printf("reading file %s: %v", inputFilename, err)
 			continue
 		}
 		page := parser.Do(conf.Runtime.WorkDir.Rel(bundle.First), string(data))

@@ -1,6 +1,8 @@
 module github.com/thecsw/darkness
 
-go 1.20
+go 1.21
+
+toolchain go1.21.0
 
 require github.com/BurntSushi/toml v1.3.2
 
@@ -38,5 +40,5 @@ require (
 	github.com/thecsw/gana v0.1.1-0.20230618200220-b2b5d02e54b7
 	github.com/thecsw/haruhi v0.4.0
 	github.com/thecsw/komi v0.1.2
-	github.com/thecsw/rei v0.0.2
+	github.com/thecsw/rei v0.0.3
 )

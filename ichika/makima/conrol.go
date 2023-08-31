@@ -34,14 +34,18 @@ type Control struct {
 }
 
 // Parse parses the input file and returns the Control.
-func (c *Control) Parse() *Control {
+func (c *Control) Parse() Woof {
 	c.Page = c.Parser.Do(c.Conf.Runtime.WorkDir.Rel(c.InputFilename), c.Input)
 	return c
 }
 
 // Export exports the parsed page and returns the Control.
-func (c *Control) Export() *Control {
+func (c *Control) Export() Woof {
 	c.OutputFilename = c.Conf.Project.InputFilenameToOutput(c.InputFilename)
 	c.Output = c.Exporter.Do(chiho.EnrichPage(c.Conf, c.Page))
 	return c
+}
+
+func (c *Control) Result() (string, io.Reader) {
+	return c.OutputFilename, c.Output
 }

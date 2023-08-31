@@ -23,10 +23,10 @@ func updateHolosceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 		}
 	}
 
-	inputs := FindFilesByExtSimple(conf)
-	outputs := make([]string, len(inputs))
-	for i, v := range inputs {
-		outputs[i] = conf.Project.InputFilenameToOutput(v.InputFilename)
+	inputFilenames := FindFilesByExtSimple(conf)
+	outputs := make([]string, len(inputFilenames))
+	for i, inputFilename := range inputFilenames {
+		outputs[i] = conf.Project.InputFilenameToOutput(inputFilename)
 	}
 
 	actuallyFound := make([]*os.File, 0, len(outputs))

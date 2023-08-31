@@ -47,9 +47,9 @@ func CleanCommandFunc() {
 
 // removeOutputFiles is the low-level command to be used when cleaning data.
 func removeOutputFiles(conf *alpha.DarknessConfig) {
-	orgfiles := FindFilesByExtSimple(conf)
-	for _, orgfile := range orgfiles {
-		toRemove := conf.Project.InputFilenameToOutput(orgfile.InputFilename)
+	inputFilenames := FindFilesByExtSimple(conf)
+	for _, inputFilename := range inputFilenames {
+		toRemove := conf.Project.InputFilenameToOutput(inputFilename)
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
 			fmt.Println(toRemove, "failed to blow up!!")
 		}
