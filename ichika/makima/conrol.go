@@ -1,7 +1,10 @@
 package makima
 
 import (
+	"fmt"
 	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/export"
@@ -33,6 +36,16 @@ type Control struct {
 	Output io.Reader
 }
 
+// Read reads the input file and returns the Control.
+func (c *Control) Read() (Woof, error) {
+	file, err := os.ReadFile(filepath.Clean(string(c.InputFilename)))
+	if err != nil {
+		return nil, fmt.Errorf("reading input file %s: %v", c.InputFilename, err)
+	}
+	c.Input = string(file)
+	return c, nil
+}
+
 // Parse parses the input file and returns the Control.
 func (c *Control) Parse() Woof {
 	c.Page = c.Parser.Do(c.Conf.Runtime.WorkDir.Rel(c.InputFilename), c.Input)
@@ -46,6 +59,14 @@ func (c *Control) Export() Woof {
 	return c
 }
 
-func (c *Control) Result() (string, io.Reader) {
-	return c.OutputFilename, c.Output
+// Write copies the exported contents onto the output file.
+func (c *Control) Write() error {
+	file, err := os.Create(c.OutputFilename)
+	if err != nil {
+		return fmt.Errorf("creating output file %s: %v", c.OutputFilename, err)
+	}
+	if _, err := io.Copy(file, c.Output); err != nil {
+		return fmt.Errorf("writing to output file %s: %v", c.OutputFilename, err)
+	}
+	return nil
 }

@@ -2,12 +2,10 @@ package ichika
 
 import (
 	"fmt"
-	"github.com/thecsw/darkness/yunyun"
-	"io/fs"
-	"os"
-	"path/filepath"
 	"runtime"
 	"time"
+
+	"github.com/thecsw/darkness/yunyun"
 
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/export"
@@ -18,35 +16,6 @@ import (
 	"github.com/thecsw/komi"
 	"github.com/thecsw/rei"
 )
-
-const (
-	// savePerms tells us what permissions to use for the
-	// final export files.
-	savePerms = fs.FileMode(0o644)
-)
-
-// vendorGalleryImages is a flag that dictates whether we should
-// store a local copy of all remote gallery images and stub them
-// in the gallery links instead of the remote links.
-//
-// Turning this option on would result in a VERY slow build the
-// first time, as it would need to retrieve however many images
-// from remote services.
-//
-// All images will be put in "darkness_vendor" directory, which
-// will be skipped in discovery process AND should be put it
-// .gitignore by user, so they don't pollute their git objects.
-var vendorGalleryImages bool
-
-// OneFileCommandFunc builds a single file.
-func OneFileCommandFunc() {
-	panic("todo")
-	// fileCmd := darknessFlagset(oneFileCommand)
-	// fileCmd.StringVar(&filename, "input", "index.org", "file on input")
-	// conf := alpha.BuildConfig(getAlphaOptions(fileCmd))
-	// fmt.Println(conf.Runtime.InputToOutput(conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(filename))))
-	//fmt.Println(emilia.InputToOutput(emilia.Join(yunyun.RelativePathFile(filename))))
-}
 
 // BuildCommandFunc builds the entire directory.
 func BuildCommandFunc() {
@@ -62,7 +31,7 @@ func build(conf *alpha.DarknessConfig) {
 	exporter := export.BuildExporter(conf)
 
 	// Create the pool that reads files and returns their handles.
-	filesPool := komi.NewWithSettings(komi.WorkWithErrors(openPage), &komi.Settings{
+	filesPool := komi.NewWithSettings(komi.WorkWithErrors(makima.Woof.Read), &komi.Settings{
 		Name:     "Komi Reading 📚 ",
 		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
@@ -71,21 +40,21 @@ func build(conf *alpha.DarknessConfig) {
 	go logErrors("reading", filesError)
 
 	// Create a pool that take a files handle and parses it out into yunyun pages.
-	parserPool := komi.NewWithSettings(komi.Work(parsePage), &komi.Settings{
+	parserPool := komi.NewWithSettings(komi.Work(makima.Woof.Parse), &komi.Settings{
 		Name:     "Komi Parsing 🧹 ",
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
 	})
 
 	// Create a pool that that takes yunyun pages and exports them into request format.
-	exporterPool := komi.NewWithSettings(komi.Work(exportPage), &komi.Settings{
+	exporterPool := komi.NewWithSettings(komi.Work(makima.Woof.Export), &komi.Settings{
 		Name:     "Komi Exporting 🥂 ",
 		Laborers: customNumWorkers,
 		Debug:    debugEnabled,
 	})
 
 	// Create a pool that reads the exported data and writes them to target files.
-	writerPool := komi.NewWithSettings(komi.WorkSimpleWithErrors(writePage), &komi.Settings{
+	writerPool := komi.NewWithSettings(komi.WorkSimpleWithErrors(makima.Woof.Write), &komi.Settings{
 		Name:     "Komi Writing 🎸",
 		Laborers: runtime.NumCPU(),
 		Debug:    debugEnabled,
@@ -112,11 +81,16 @@ func build(conf *alpha.DarknessConfig) {
 	rei.Try(parserPool.Connect(exporterPool))
 	rei.Try(exporterPool.Connect(writerPool))
 
+	// Record the start time.
 	start := time.Now()
 
+	// Find all the files that need to be parsed.
 	inputFilenames := make(chan yunyun.FullPathFile, 8)
 	go FindFilesByExt(conf, inputFilenames)
+
+	// Submit all the files to the pool.
 	for inputFilename := range inputFilenames {
+		// Submit the job to the pool.
 		rei.Try(filesPool.Submit(&makima.Control{
 			Conf:          conf,
 			Parser:        parser,
@@ -125,8 +99,10 @@ func build(conf *alpha.DarknessConfig) {
 		}))
 	}
 
+	// Wait for all the pools to finish.
 	writerPool.Close()
 
+	// Record the time it took to finish.
 	finish := time.Now()
 
 	// Clear the download progress bar if present by wiping out the line.
@@ -135,42 +111,12 @@ func build(conf *alpha.DarknessConfig) {
 	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsSucceeded(), finish.Sub(start).Milliseconds())
 }
 
-//go:inline
-func openPage(c *makima.Control) (makima.Woof, error) {
-	file, err := os.ReadFile(filepath.Clean(string(c.InputFilename)))
-	if err != nil {
-		return nil, err
-	}
-	c.Input = string(file)
-	return c, nil
-}
-
-//go:inline
-func parsePage(c makima.Woof) makima.Woof {
-	return c.Parse()
-}
-
-//go:inline
-func exportPage(c makima.Woof) makima.Woof {
-	return c.Export()
-}
-
-//go:inline
-func writePage(c makima.Woof) error {
-	filename, output := c.Result()
-	_, err := writeFile(filename, output)
-	if err != nil {
-		return fmt.Errorf("writing page %s: %v", filename, err)
-	}
-	return nil
-}
-
 // logErrors is a helper function that logs errors from a pool. It is meant to be
 // used as a goroutine.
 func logErrors[T any](name string, vv chan komi.PoolError[T]) {
 	for v := range vv {
 		if v.Error != nil {
-			puck.Logger.Errorf("pool %s encountered an error: %v", name, v.Error)
+			puck.Logger.Error("job failed", "err", v.Error, "pool", name)
 		}
 	}
 }

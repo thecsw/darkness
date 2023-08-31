@@ -18,9 +18,6 @@ var (
 	// darknessToml is the location of `darkness.toml`.
 	darknessToml = "darkness.toml"
 
-	// filename is the file to build.
-	filename = "index.org"
-
 	// disableParallel sets the number of workers to 1.
 	disableParallel bool
 
@@ -36,6 +33,19 @@ var (
 	// useCurrentDirectory is used for development and local
 	// serving, such that you can browse the url files locally.
 	useCurrentDirectory bool
+
+	// vendorGalleryImages is a flag that dictates whether we should
+	// store a local copy of all remote gallery images and stub them
+	// in the gallery links instead of the remote links.
+	//
+	// Turning this option on would result in a VERY slow build the
+	// first time, as it would need to retrieve however many images
+	// from remote services.
+	//
+	// All images will be put in "darkness_vendor" directory, which
+	// will be skipped in discovery process AND should be put it
+	// .gitignore by user, so they don't pollute their git objects.
+	vendorGalleryImages bool
 )
 
 // getAlphaOptions takes a cmd subcommand and parses general flags
