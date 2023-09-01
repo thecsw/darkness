@@ -14,8 +14,8 @@ type DarknessConfig struct {
 	// Title is the title of the site
 	Title string `toml:"title"`
 
-	// URL is the URL of the site
-	URL string `toml:"url"`
+	// Url is the Url of the site
+	Url string `toml:"url"`
 
 	// RSS is the rss config.
 	RSS RSSConfig `toml:"rss"`

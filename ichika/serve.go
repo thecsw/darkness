@@ -33,7 +33,7 @@ func ServeCommandFunc() {
 	port := serveCmd.Int("port", defaultServePort, "port number to use")
 	noBrowser := serveCmd.Bool("no-browser", false, "do not open the browser")
 	options := getAlphaOptions(serveCmd)
-	options.URL = "http://127.0.0.1:" + strconv.Itoa(*port)
+	options.Url = "http://127.0.0.1:" + strconv.Itoa(*port)
 	// Override the output extension to .html
 	options.OutputExtension = puck.ExtensionHtml
 	//emilia.InitDarkness(options)
@@ -42,7 +42,7 @@ func ServeCommandFunc() {
 	puck.Logger.SetPrefix("Server 🍩 ")
 
 	build(conf)
-	puck.Logger.Print("Serving the files", "url", options.URL)
+	puck.Logger.Print("Serving the files", "url", options.Url)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -73,7 +73,7 @@ func ServeCommandFunc() {
 	// Try to open the local server with `open` command.
 	if !*noBrowser {
 		time.Sleep(500 * time.Millisecond)
-		if err := exec.Command("open", options.URL).Run(); err != nil {
+		if err := exec.Command("open", options.Url).Run(); err != nil {
 			puck.Logger.Error("Couldn't open the browser", err)
 		}
 	}
@@ -157,7 +157,7 @@ func launchWatcher(conf *alpha.DarknessConfig) {
 // Taken from https://github.com/go-chi/chi/blob/master/_examples/fileserver/main.go
 func fileServer(r chi.Router, path string, root http.FileSystem) {
 	if strings.ContainsAny(path, "{}*") {
-		panic("fileServer does not permit any URL parameters.")
+		panic("fileServer does not permit any Url parameters.")
 	}
 
 	if path != "/" && path[len(path)-1] != '/' {

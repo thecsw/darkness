@@ -49,35 +49,35 @@ func BuildConfig(options Options) *DarknessConfig {
 		conf.Website.DescriptionLength = 100
 	}
 
-	// If the URL is empty, then plug in the current directory.
-	if len(conf.URL) < 1 || options.Dev {
-		conf.URL, err = os.Getwd()
+	// If the Url is empty, then plug in the current directory.
+	if len(conf.Url) < 1 || options.Dev {
+		conf.Url, err = os.Getwd()
 		if err != nil {
 			conf.Runtime.Logger.Error("Getting working directory, no config url found", "err", err)
 			os.Exit(1)
 		}
 	}
-	conf.Runtime.URLIsLocal = !yunyun.URLRegexp.MatchString(conf.URL)
+	conf.Runtime.isUrlLocal = !yunyun.UrlRegexp.MatchString(conf.Url)
 
-	// Check if custom URL has been passed
-	if len(options.URL) > 0 {
-		conf.URL = options.URL
+	// Check if custom Url has been passed
+	if len(options.Url) > 0 {
+		conf.Url = options.Url
 	}
 
-	// URL must end with a trailing forward slash
-	if !strings.HasSuffix(conf.URL, "/") {
-		conf.URL += "/"
+	// Url must end with a trailing forward slash
+	if !strings.HasSuffix(conf.Url, "/") {
+		conf.Url += "/"
 	}
 
-	// If the URL is not local, then parse it. Otherwise, just use the URL as is.
-	if !conf.Runtime.URLIsLocal {
-		conf.Runtime.URLPath, err = url.Parse(conf.URL)
+	// If the Url is not local, then parse it. Otherwise, just use the Url as is.
+	if !conf.Runtime.isUrlLocal {
+		conf.Runtime.UrlPath, err = url.Parse(conf.Url)
 		if err != nil {
-			conf.Runtime.Logger.Error("Parsing url from config", "url", conf.URL, "err", err)
+			conf.Runtime.Logger.Error("Parsing url from config", "url", conf.Url, "err", err)
 			os.Exit(1)
 		}
 	}
-	conf.Runtime.URLSlice = []string{conf.URL}
+	conf.Runtime.urlSlice = []string{conf.Url}
 
 	// Set up the custom highlight languages if they exist.
 	conf.setupHighlightJsLanguages()
@@ -114,8 +114,8 @@ func BuildConfig(options Options) *DarknessConfig {
 
 	// Check whether the author image is full or not by running
 	// a url regexp and just hardcode the emilia path. If it's
-	// already a URL, then do nothing.
-	if !yunyun.URLRegexp.MatchString(string(conf.Author.Image)) {
+	// already a Url, then do nothing.
+	if !yunyun.UrlRegexp.MatchString(string(conf.Author.Image)) {
 		conf.Author.ImagePreComputed = conf.Runtime.Join(conf.Author.Image)
 	} else {
 		conf.Author.ImagePreComputed = yunyun.FullPathFile(conf.Author.Image)

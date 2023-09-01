@@ -74,7 +74,7 @@ type Channel struct {
 	// Example: "MightyInHouse Content System v2.3"
 	Generator string `xml:"generator,omitempty"`
 
-	// A URL that points to the documentation for the format used in the
+	// A Url that points to the documentation for the format used in the
 	// RSS file. It's probably a pointer to this page. It's for people who
 	// might stumble across an RSS file on a Web server 25 years from now
 	// and wonder what it is.
@@ -126,7 +126,7 @@ type Channel struct {
 	// Herald-Journal Web site.
 	Description string `xml:"description"`
 
-	// The URL to the HTML website corresponding to the channel.
+	// The Url to the HTML website corresponding to the channel.
 	//
 	// Example: "http://www.goupstate.com/"
 	Link string `xml:"link"`

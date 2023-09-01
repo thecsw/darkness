@@ -43,8 +43,8 @@ Sorry, your browser doesn't support embedded videos.
 </div>
 `
 
-	// rawHTMLTemplate wraps raw html in `mediablock`.
-	rawHTMLTemplate = `
+	// rawHtmlTemplate wraps raw html in `mediablock`.
+	rawHtmlTemplate = `
 <div class="media" %s>
 %s
 <div class="title">%s</div>
@@ -69,7 +69,7 @@ Sorry, your browser doesn't support embedded videos.
 </div>`
 
 	// Put iframes here to have a youtube-embed-like experience.
-	responsiveIFrameHTMLTemplate = `
+	responsiveIFrameHtmlTemplate = `
 <div class="media" %s>
 <div class="yt-container">
 %s
@@ -155,7 +155,7 @@ func linkImage(content *yunyun.Content, isClickable bool) string {
 			processText(content.LinkTitle),
 		)
 	}
-	// Send the embed with no clickable images. Default behavior.
+	// Send the embed with no clickable images. Unchanged behavior.
 	return fmt.Sprintf(imageEmbedTemplateNoHref,
 		content.CustomHtmlTags,
 		content.Link,

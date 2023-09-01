@@ -18,6 +18,6 @@ type TextInput struct {
 	// The name of the text object in the text input area.
 	Name string `xml:"name"`
 
-	// The URL of the CGI script that processes text input requests.
+	// The Url of the CGI script that processes text input requests.
 	Link string `xml:"link"`
 }

@@ -21,7 +21,7 @@ func BuildExporter(conf *alpha.DarknessConfig) Exporter {
 	var exporter Exporter
 	switch conf.Project.Output {
 	case puck.ExtensionHtml: // html
-		exporter = html.ExporterHTML{Config: conf}
+		exporter = html.ExporterHtml{Config: conf}
 	default: // unknown
 		log.Fatalf("unknown output type: %s", conf.Project.Output)
 	}

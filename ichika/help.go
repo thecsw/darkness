@@ -16,13 +16,12 @@ creating it with new followed by the directory name
   $> darkness new axel
 
 Here are the commands you can use, -help is supported:
-  file - build a single input file and output to stdout
   build - build the entire directory
   serve - build HTTP and serve them
-  megumin - blow up the directory
-  clean - megumin but quiet
-  misa - services to make your website even cooler
-  lalatina - DO NOT
+  megumin - blow up the directory!!
+  clean - megumin but super boring
+  misa - supercharge your website
+  lalatina - pls dont
   aqua - ...
 
 Don't hold back! You have no choice!`)

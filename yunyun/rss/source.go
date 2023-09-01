@@ -18,6 +18,6 @@ type Source struct {
 	// Title of the source.
 	Value string `xml:",chardata"`
 
-	// URL of the source.
-	URL string `xml:"url,attr"`
+	// Url of the source.
+	Url string `xml:"url,attr"`
 }

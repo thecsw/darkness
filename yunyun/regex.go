@@ -120,8 +120,8 @@ func ExtractLink(line string) *ExtractedLink {
 var (
 	// LinkRegexp is the regexp for matching links.
 	LinkRegexp *regexp.Regexp
-	// URLRegexp is yoinked from https://ihateregex.io/expr/url/
-	URLRegexp = regexp.MustCompile(`(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*))`)
+	// UrlRegexp is yoinked from https://ihateregex.io/expr/url/
+	UrlRegexp = regexp.MustCompile(`(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*))`)
 	// BoldText is the regexp for matching bold text.
 	BoldText *regexp.Regexp
 	// ItalicText is the regexp for matching italic text.

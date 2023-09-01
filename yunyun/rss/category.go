@@ -22,6 +22,6 @@ type Category struct {
 	// Name of the category.
 	Value string `xml:",chardata"`
 
-	// URL to the category.
+	// Url to the category.
 	Domain string `xml:"domain,attr"`
 }

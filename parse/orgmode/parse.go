@@ -142,15 +142,15 @@ func (p ParserOrgmode) Do(
 		currentContext = currentContext + line
 
 		// If we are in a raw html envoronment
-		if hasFlag(yunyun.InRawHTMLFlag) {
+		if hasFlag(yunyun.InRawHtmlFlag) {
 			// Maybe it's time to leave it?
-			if isHTMLExportEnd(line) {
+			if isHtmlExportEnd(line) {
 				// Mark the leave
-				removeFlag(yunyun.InRawHTMLFlag)
+				removeFlag(yunyun.InRawHtmlFlag)
 				// Save the raw html
 				addContent(&yunyun.Content{
-					Type:    yunyun.TypeRawHTML,
-					RawHTML: previousContext,
+					Type:    yunyun.TypeRawHtml,
+					RawHtml: previousContext,
 				})
 				continue
 			}
@@ -159,8 +159,8 @@ func (p ParserOrgmode) Do(
 			continue
 		}
 		// Now, check if we can enter a raw html environment
-		if isHTMLExportBegin(line) {
-			addFlag(yunyun.InRawHTMLFlag)
+		if isHtmlExportBegin(line) {
+			addFlag(yunyun.InRawHtmlFlag)
 			if strings.Contains(line, "unsafe") {
 				addFlag(yunyun.InRawHtmlFlagUnsafe)
 			} else if strings.Contains(line, "responsive") || strings.Contains(line, "iframe") {

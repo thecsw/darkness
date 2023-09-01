@@ -3,7 +3,7 @@ package rem
 import "github.com/thecsw/darkness/yunyun"
 
 // GalleryItem is a struct that holds the gallery item path
-// and a flag whether it is external (URL regexp matches).
+// and a flag whether it is external (Url regexp matches).
 type GalleryItem struct {
 	// Item is the link that was provided.
 	Item yunyun.RelativePathFile
@@ -18,6 +18,6 @@ type GalleryItem struct {
 	// Link is an optional parameter that the gallery item should
 	// also link to something.
 	Link string
-	// IsExternal runs a URL regexp check.
+	// IsExternal runs a Url regexp check.
 	IsExternal bool
 }

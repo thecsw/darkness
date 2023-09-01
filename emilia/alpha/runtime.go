@@ -15,14 +15,14 @@ type RuntimeConfig struct {
 	// WorkDir is the directory of where darkness project lives.
 	WorkDir WorkingDirectory
 
-	// Slice with just `URL` in it.
-	URLSlice []string
+	// Slice with just `Url` in it.
+	urlSlice []string
 
-	// URLPath is the parsed URL of the site
-	URLPath *url.URL
+	// UrlPath is the parsed Url of the site
+	UrlPath *url.URL
 
-	// URLIsLocal is true if URL is the file path, not url.
-	URLIsLocal bool
+	// isUrlLocal is true if Url is the file path, not url.
+	isUrlLocal bool
 
 	// VendorGalleries tells us if we need to stub local copies
 	// of remote links in galleries.

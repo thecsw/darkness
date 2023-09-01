@@ -9,10 +9,10 @@ import (
 
 // JoinGeneric joins the target path with the final root path (url or local).
 func (conf RuntimeConfig) JoinGeneric(what ...string) string {
-	if !conf.URLIsLocal {
-		return conf.URLPath.JoinPath(what...).String()
+	if !conf.isUrlLocal {
+		return conf.UrlPath.JoinPath(what...).String()
 	}
-	return filepath.Join(append(conf.URLSlice, what...)...)
+	return filepath.Join(append(conf.urlSlice, what...)...)
 }
 
 // Join joins the target path with the final root path (url or local).

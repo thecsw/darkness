@@ -7,14 +7,14 @@ type Image struct {
 	// Required elements
 	// -----------------
 
-	// The URL of a GIF, JPEG or PNG image that represents the channel.
+	// The Url of a GIF, JPEG or PNG image that represents the channel.
 	Url string `xml:"url"`
 
 	// Describes the image, it's used in the ALT attribute of the HTML
 	// <img> tag when the channel is rendered in HTML.
 	Title string `xml:"title"`
 
-	// URL of the site, when the channel is rendered, the image is a
+	// Url of the site, when the channel is rendered, the image is a
 	// link to the site. (Note, in practice the image <title> and <link>
 	// should have the same value as the channel's <title> and <link>.
 	Link string `xml:"link"`

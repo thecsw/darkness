@@ -151,14 +151,14 @@ func (e *state) sourceCode(content *yunyun.Content) string {
 // rawHTML gives us a raw html representation
 func (e *state) rawHtml(content *yunyun.Content) string {
 	// If the unsafe flag is enabled, don't even wrap it in `mediablock`
-	if content.IsRawHTMLUnsafe() {
-		return content.RawHTML
+	if content.IsRawHtmlUnsafe() {
+		return content.RawHtml
 	}
 	// If responsive enabled, wrap the inner iframe (*probably*) in it.
-	if content.IsRawHTMLResponsive() {
-		return fmt.Sprintf(responsiveIFrameHTMLTemplate, content.CustomHtmlTags, content.RawHTML)
+	if content.IsRawHtmlResponsive() {
+		return fmt.Sprintf(responsiveIFrameHtmlTemplate, content.CustomHtmlTags, content.RawHtml)
 	}
-	return fmt.Sprintf(rawHTMLTemplate, content.CustomHtmlTags, content.RawHTML, content.Caption)
+	return fmt.Sprintf(rawHtmlTemplate, content.CustomHtmlTags, content.RawHtml, content.Caption)
 }
 
 // horizontalLine gives us a horizontal line html representation
@@ -198,8 +198,8 @@ func (e *state) table(content *yunyun.Content) string {
 		}
 		rows[i] = fmt.Sprintf("<tr>\n%s</tr>", strings.Join(content.Table[i], "\n"))
 	}
-	tableHTML := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
-	return fmt.Sprintf(tableTemplate, content.CustomHtmlTags, content.Caption, tableHTML)
+	tableHtml := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
+	return fmt.Sprintf(tableTemplate, content.CustomHtmlTags, content.Caption, tableHtml)
 }
 
 // table gives an HTML formatted table

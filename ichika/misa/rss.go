@@ -57,7 +57,7 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 		defer puck.Stopwatch("Built RSS pages", "num", len(pages)).Record()
 		for _, page := range pages {
 			// Skip drafts.
-			if page.Accoutrement.Draft.IsEnabled() {
+			if page.Accoutrement.Draft.Enabled() {
 				continue
 			}
 			// Create the category name and location.
@@ -71,14 +71,14 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 			items = append(items, rss.Item{
 				XMLName:     xml.Name{},
 				Title:       yunyun.RemoveFormatting(page.Title),
-				Link:        conf.URL + string(page.Location),
+				Link:        conf.Url + string(page.Location),
 				Description: getDescription(page, conf.Website.DescriptionLength*4) + " [ Continue reading... ]",
 				Author:      page.Author,
-				Category:    &rss.Category{Value: categoryName, Domain: conf.URL + string(categoryLocation)},
+				Category:    &rss.Category{Value: categoryName, Domain: conf.Url + string(categoryLocation)},
 				Enclosure:   &rss.Enclosure{},
-				Guid:        &rss.Guid{Value: conf.URL + string(page.Location), IsPermaLink: true},
+				Guid:        &rss.Guid{Value: conf.Url + string(page.Location), IsPermaLink: true},
 				PubDate:     mustDate(page).Format(rss.RSSFormat),
-				Source:      &rss.Source{Value: conf.Title, URL: conf.URL},
+				Source:      &rss.Source{Value: conf.Title, Url: conf.Url},
 			})
 		}
 	}()
@@ -89,7 +89,7 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 		Channel: &rss.Channel{
 			XMLName:        xml.Name{},
 			Title:          conf.Title,
-			Link:           conf.URL,
+			Link:           conf.Url,
 			Description:    rootDescription,
 			Language:       conf.RSS.Language,
 			Copyright:      conf.RSS.Copyright,

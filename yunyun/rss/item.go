@@ -59,7 +59,7 @@ type Item struct {
 	// Example: "Venice Film Festival Tries to Quit Sinking"
 	Title string `xml:"title"`
 
-	// The URL of the item.
+	// The Url of the item.
 	//
 	// Example: "http://nytimes.com/2004/12/07FEST.html"
 	Link string `xml:"link,omitempty"`
@@ -82,7 +82,7 @@ type Item struct {
 	// <author> element.
 	Author string `xml:"author,omitempty"`
 
-	// URL of a page for comments relating to the item. If present, it is the
+	// Url of a page for comments relating to the item. If present, it is the
 	// url of the comments page for the item.
 	//
 	// Example: "<comments>http://ekzemplo.com/entry/4403/comments</comments>"

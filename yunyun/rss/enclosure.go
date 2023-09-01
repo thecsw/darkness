@@ -13,7 +13,7 @@ type Enclosure struct {
 	XMLName xml.Name `xml:"enclosure"`
 
 	// The url must be an http url.
-	URL string `xml:"url,attr"`
+	Url string `xml:"url,attr"`
 
 	// Content type of the enclosure.
 	Type string `xml:"type,attr"`

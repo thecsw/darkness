@@ -16,8 +16,8 @@ const (
 	TypeLink
 	// TypeSourceCode is the type of source code block
 	TypeSourceCode
-	// TypeRawHTML is the type of raw HTML block
-	TypeRawHTML
+	// TypeRawHtml is the type of raw HTML block
+	TypeRawHtml
 	// TypeHorizontalLine is the type of horizontal line
 	TypeHorizontalLine
 	// TypeAttentionText is the type of attention text block
@@ -45,8 +45,8 @@ const (
 	// InSourceCodeFlag is used internally to mark source code
 	// states.
 	InSourceCodeFlag
-	// InRawHTMLFlag is used internally to mark raw html states.
-	InRawHTMLFlag
+	// InRawHtmlFlag is used internally to mark raw html states.
+	InRawHtmlFlag
 	// InRawHtmlFlagUnsafe is used internally to mark unsafe html states.
 	InRawHtmlFlagUnsafe
 	// InRawHtmlFlagResponsive is used internally to mark responsive html states.

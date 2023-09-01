@@ -25,7 +25,7 @@ var (
 	darknessBanner = "<!--\n" + darknessBannerSource + "\n-->\n"
 )
 
-func (e ExporterHTML) Do(page *yunyun.Page) io.Reader {
+func (e ExporterHtml) Do(page *yunyun.Page) io.Reader {
 	s := &state{conf: e.Config, page: page}
 	s.contentFunctions = []func(*yunyun.Content) string{
 		s.heading,
@@ -52,7 +52,7 @@ func (e *state) export() io.Reader {
 	}
 
 	// Initialize the html mapping after yunyun built regexes.
-	markupHTMLMapping = map[*regexp.Regexp]string{
+	markupHtmlMapping = map[*regexp.Regexp]string{
 		yunyun.ItalicText:        `$l<em>$text</em>$r`,
 		yunyun.BoldText:          `$l<strong>$text</strong>$r`,
 		yunyun.VerbatimText:      `$l<code>$text</code>$r`,
@@ -64,7 +64,7 @@ func (e *state) export() io.Reader {
 
 	// Add the red tomb to the last paragraph on given directories.
 	// Only trigger if the tombs were manually flipped.
-	if e.page.Accoutrement.Tomb.IsEnabled() {
+	if e.page.Accoutrement.Tomb.Enabled() {
 		e.addTomb()
 	}
 	// If the page hasn't set a custom preview, default to emilia.
@@ -72,7 +72,7 @@ func (e *state) export() io.Reader {
 		e.page.Accoutrement.Preview = string(e.conf.Website.Preview)
 	}
 
-	if e.page.Accoutrement.Toc.IsEnabled() {
+	if e.page.Accoutrement.Toc.Enabled() {
 		e.page.Contents = append(e.toc(), e.page.Contents...)
 	}
 
@@ -227,7 +227,7 @@ func (e *state) authorHeader() string {
 // authorHeader returns img element if author header image is given.
 func (e *state) authorImage() string {
 	// Return nothing if it's not provided.
-	if e.conf.Author.Image == "" || e.page.Accoutrement.AuthorImage.IsDisabled() {
+	if e.conf.Author.Image == "" || e.page.Accoutrement.AuthorImage.Disabled() {
 		return ""
 	}
 	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`, e.conf.Author.ImagePreComputed)

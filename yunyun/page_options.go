@@ -9,7 +9,7 @@ const (
 	defaultPageTitle      = "no title"
 	defaulteDateHoloscene = true
 	defaultDate           = "0; 12000 H.E."
-	defaultURL            = "unknown"
+	defaultUrl            = "unknown"
 	defaultPreviewWidth   = `1200`
 	defaultPreviewHeight  = `700`
 )
@@ -22,7 +22,7 @@ func NewPage(options ...PageOption) *Page {
 		Author:        "",
 		Date:          defaultDate,
 		DateHoloscene: defaulteDateHoloscene,
-		Location:      defaultURL,
+		Location:      defaultUrl,
 		Contents:      nil,
 		Footnotes:     make([]string, 0, 2),
 		Scripts:       make([]string, 0, 4),
@@ -52,7 +52,7 @@ func WithFilename(filename RelativePathFile) PageOption {
 	}
 }
 
-// WithLocation sets the URL.
+// WithLocation sets the Url.
 func WithLocation(url RelativePathDir) PageOption {
 	return func(p *Page) {
 		p.Location = url

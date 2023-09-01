@@ -5,8 +5,8 @@ import (
 	"github.com/thecsw/darkness/yunyun"
 )
 
-// ExporterHTML is the exporter for HTML.
-type ExporterHTML struct {
+// ExporterHtml is the exporter for HTML.
+type ExporterHtml struct {
 	// Config is the configuration for the exporter.
 	Config *alpha.DarknessConfig
 }
