@@ -155,7 +155,7 @@ func linkImage(content *yunyun.Content, isClickable bool) string {
 			processText(content.LinkTitle),
 		)
 	}
-	// Send the embed with no clickable images. Unchanged behavior.
+	// Send the embed with no clickable images. IsDefault behavior.
 	return fmt.Sprintf(imageEmbedTemplateNoHref,
 		content.CustomHtmlTags,
 		content.Link,

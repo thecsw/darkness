@@ -53,7 +53,7 @@ const (
 func WithMathSupport() yunyun.PageOption {
 	return func(page *yunyun.Page) {
 		// If we found math-related tags or forced by user
-		if hasMathEquations(page) && !page.Accoutrement.Math.Disabled() {
+		if hasMathEquations(page) && !page.Accoutrement.Math.IsDisabled() {
 			page.Scripts = append(page.Scripts, mathJs)
 		}
 	}

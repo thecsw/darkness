@@ -58,31 +58,31 @@ const (
 	AccoutrementDisabled
 )
 
-// Unchanged returns true if the flag was left with no changes to default.
-func (a *AccoutrementFlip) Unchanged() bool {
+// IsDefault returns true if the flag was left with no changes to default.
+func (a *AccoutrementFlip) IsDefault() bool {
 	return *a == AccoutrementDefault
 }
 
-// Enabled returns true if the flag was manually set.
-func (a *AccoutrementFlip) Enabled() bool {
+// IsEnabled returns true if the flag was manually set.
+func (a *AccoutrementFlip) IsEnabled() bool {
 	return *a == AccoutrementEnabled
 }
 
-// Disabled returns true if the flag was manually unset.
-func (a *AccoutrementFlip) Disabled() bool {
+// IsDisabled returns true if the flag was manually unset.
+func (a *AccoutrementFlip) IsDisabled() bool {
 	return *a == AccoutrementDisabled
 }
 
-// EnabledOrUnchanged returns true if the flag was not set
+// IsEnabledOrUnchanged returns true if the flag was not set
 // or it was enabled.
-func (a *AccoutrementFlip) EnabledOrUnchanged() bool {
-	return a.Enabled() || a.Unchanged()
+func (a *AccoutrementFlip) IsEnabledOrUnchanged() bool {
+	return a.IsEnabled() || a.IsDefault()
 }
 
-// DisabledOrDefault returns true if the flag was not set
+// IsDisabledOrDefault returns true if the flag was not set
 // or it was disabled.
-func (a *AccoutrementFlip) DisabledOrDefault() bool {
-	return a.Disabled() || a.Unchanged()
+func (a *AccoutrementFlip) IsDisabledOrDefault() bool {
+	return a.IsDisabled() || a.IsDefault()
 }
 
 // Enable turns the flag on.

@@ -64,7 +64,7 @@ func (e *state) export() io.Reader {
 
 	// Add the red tomb to the last paragraph on given directories.
 	// Only trigger if the tombs were manually flipped.
-	if e.page.Accoutrement.Tomb.Enabled() {
+	if e.page.Accoutrement.Tomb.IsEnabled() {
 		e.addTomb()
 	}
 	// If the page hasn't set a custom preview, default to emilia.
@@ -72,7 +72,7 @@ func (e *state) export() io.Reader {
 		e.page.Accoutrement.Preview = string(e.conf.Website.Preview)
 	}
 
-	if e.page.Accoutrement.Toc.Enabled() {
+	if e.page.Accoutrement.Toc.IsEnabled() {
 		e.page.Contents = append(e.toc(), e.page.Contents...)
 	}
 
@@ -227,7 +227,7 @@ func (e *state) authorHeader() string {
 // authorHeader returns img element if author header image is given.
 func (e *state) authorImage() string {
 	// Return nothing if it's not provided.
-	if e.conf.Author.Image == "" || e.page.Accoutrement.AuthorImage.Disabled() {
+	if e.conf.Author.Image == "" || e.page.Accoutrement.AuthorImage.IsDisabled() {
 		return ""
 	}
 	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`, e.conf.Author.ImagePreComputed)

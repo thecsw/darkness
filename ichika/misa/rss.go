@@ -57,7 +57,7 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 		defer puck.Stopwatch("Built RSS pages", "num", len(pages)).Record()
 		for _, page := range pages {
 			// Skip drafts.
-			if page.Accoutrement.Draft.Enabled() {
+			if page.Accoutrement.Draft.IsEnabled() {
 				continue
 			}
 			// Create the category name and location.

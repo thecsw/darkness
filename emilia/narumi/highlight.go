@@ -85,6 +85,6 @@ func MapSourceCodeLang(s string) string {
 	if v, ok := sourceCodeLang[s]; ok {
 		return v
 	}
-	// Unchanged to whatever was passed.
+	// IsDefault to whatever was passed.
 	return s
 }
