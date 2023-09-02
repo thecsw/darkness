@@ -31,18 +31,21 @@ const (
 )
 
 // Parse parses the input string and returns a list of elements
-func (p ParserOrgmode) Parse() *yunyun.Page {
-	defer puck.Stopwatch("Parsed", "page", p.Filename).Record()
+func (p ParserOrgmode) Do(
+	filename yunyun.RelativePathFile,
+	data string,
+) *yunyun.Page {
+	defer puck.Stopwatch("Parsed", "page", filename).Record()
 
 	// Split the data into lines
-	lines := strings.Split(preprocess(p.Data), "\n")
+	lines := strings.Split(preprocess(data), "\n")
 
 	page := yunyun.NewPage(
-		yunyun.WithFilename(p.Filename),
-		yunyun.WithLocation(yunyun.RelativePathTrim(p.Filename)),
+		yunyun.WithFilename(filename),
+		yunyun.WithLocation(yunyun.RelativePathTrim(filename)),
 		yunyun.WithContents(make([]*yunyun.Content, 0, 32)),
 	)
-	page.Author = emilia.Config.RSS.DefaultAuthor
+	page.Author = p.Config.RSS.DefaultAuthor
 
 	// currentFlags uses flags to set options
 	currentFlags := yunyun.Bits(0)
@@ -68,7 +71,7 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 	// optionsStrings will get populated as the page is being scanned
 	// and then parsed out before leaving this parser.
 	optionsStrings := ""
-	defer emilia.FillAccoutrement(&optionsStrings, page)
+	defer emilia.FillAccoutrement(p.Config.Website.Tombs, &optionsStrings, page)
 
 	// Optional parsing to see if H.E. has been left on the first line
 	// as the date
@@ -139,15 +142,15 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 		currentContext = currentContext + line
 
 		// If we are in a raw html envoronment
-		if hasFlag(yunyun.InRawHTMLFlag) {
+		if hasFlag(yunyun.InRawHtmlFlag) {
 			// Maybe it's time to leave it?
-			if isHTMLExportEnd(line) {
+			if isHtmlExportEnd(line) {
 				// Mark the leave
-				removeFlag(yunyun.InRawHTMLFlag)
+				removeFlag(yunyun.InRawHtmlFlag)
 				// Save the raw html
 				addContent(&yunyun.Content{
-					Type:    yunyun.TypeRawHTML,
-					RawHTML: previousContext,
+					Type:    yunyun.TypeRawHtml,
+					RawHtml: previousContext,
 				})
 				continue
 			}
@@ -156,8 +159,8 @@ func (p ParserOrgmode) Parse() *yunyun.Page {
 			continue
 		}
 		// Now, check if we can enter a raw html environment
-		if isHTMLExportBegin(line) {
-			addFlag(yunyun.InRawHTMLFlag)
+		if isHtmlExportBegin(line) {
+			addFlag(yunyun.InRawHtmlFlag)
 			if strings.Contains(line, "unsafe") {
 				addFlag(yunyun.InRawHtmlFlagUnsafe)
 			} else if strings.Contains(line, "responsive") || strings.Contains(line, "iframe") {

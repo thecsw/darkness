@@ -16,9 +16,9 @@ import (
 //go:embed ishmael.tar.gz
 var defaultDarknessTemplate []byte
 
-// NewDarknessCommandFunc creates a default darkness config in the current directory
+// newDarknessCommandFunc creates a default darkness config in the current directory
 // if one already exists, nothing will happen, except a notice of that
-func NewDarknessCommandFunc() {
+func newDarknessCommandFunc() {
 	if len(os.Args) != 3 {
 		fmt.Println("you forgot to add a directory name after new")
 		os.Exit(1)

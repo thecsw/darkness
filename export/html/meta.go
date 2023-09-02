@@ -6,13 +6,14 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
 
 // metaTopTag is the top tag for all meta tags
-func (e ExporterHTML) metaTags() []string {
+func (e *state) metaTags() []string {
 	// Find the first paragraph for description
 	description := ""
 	for _, content := range e.page.Contents {
@@ -22,16 +23,16 @@ func (e ExporterHTML) metaTags() []string {
 		}
 		// Skip holoscene times
 		paragraph := strings.TrimSpace(content.Paragraph)
-		if paragraph == "" || emilia.HEregex.MatchString(paragraph) {
+		if paragraph == "" || puck.HEregex.MatchString(paragraph) {
 			continue
 		}
 		description = flattenFormatting(
-			paragraph[:gana.Min(len(paragraph), emilia.Config.Website.DescriptionLength)]) + "..."
+			paragraph[:gana.Min(len(paragraph), e.conf.Website.DescriptionLength)]) + "..."
 		break
 	}
-	basic := addBasic(e.page, description)
-	openGraph := addOpenGraph(e.page, description)
-	twitter := addTwitterMeta(e.page, description)
+	basic := addBasic(e.conf, e.page, description)
+	openGraph := addOpenGraph(e.conf, e.page, description)
+	twitter := addTwitterMeta(e.conf, e.page, description)
 
 	metas := make([]string, 0, len(basic)+len(openGraph)+len(twitter))
 	metas = append(metas, basic...)
@@ -63,27 +64,26 @@ var metaTopTag = []string{
 }
 
 // addBasic adds the basic meta tags
-func addBasic(page *yunyun.Page, description string) []string {
+func addBasic(conf *alpha.DarknessConfig, page *yunyun.Page, description string) []string {
 	return append(metaTopTag, gana.Map(metaTag, []meta{
 		{"viewport", "viewport", "width=device-width, initial-scale=1.0"},
 		{"generator", "generator", "Darkness"},
-		{"author", "author", emilia.Config.Author.Name},
+		{"author", "author", conf.Author.Name},
 		{"date", "date", page.Date},
-		{"theme-color", "theme-color", emilia.Config.Website.Color},
+		{"theme-color", "theme-color", conf.Website.Color},
 		{"description", "description", html.EscapeString(description)},
 	})...)
 }
 
 // addOpenGraph adds the opengraph preview meta tags
-func addOpenGraph(page *yunyun.Page, description string) []string {
+func addOpenGraph(conf *alpha.DarknessConfig, page *yunyun.Page, description string) []string {
 	return gana.Map(metaTag, []meta{
 		{"og:title", "og:title", html.EscapeString(flattenFormatting(page.Title))},
-		{"og:site_name", "og:site_name", html.EscapeString(emilia.Config.Title)},
-		{"og:url", "og:url", string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](page.Location))},
-		{"og:locale", "og:locale", emilia.Config.Website.Locale},
+		{"og:site_name", "og:site_name", html.EscapeString(conf.Title)},
+		{"og:url", "og:url", string(conf.Runtime.Join(yunyun.RelativePathFile(page.Location)))},
+		{"og:locale", "og:locale", conf.Website.Locale},
 		{"og:type", "og:type", "website"},
-		{"og:image", "og:image", string(emilia.JoinPath(
-			yunyun.JoinRelativePaths(page.Location, yunyun.RelativePathFile(page.Accoutrement.Preview))))},
+		{"og:image", "og:image", string(conf.Runtime.Join(yunyun.JoinRelativePaths(page.Location, yunyun.RelativePathFile(page.Accoutrement.Preview))))},
 		{"og:image:alt", "og:image:alt", "Preview"},
 		{"og:image:type", "og:image:type", "image/" + strings.TrimLeft(filepath.Ext(page.Accoutrement.Preview), ".")},
 		{"og:image:width", "og:image:width", page.Accoutrement.PreviewWidth},    // default: "1200"
@@ -93,14 +93,13 @@ func addOpenGraph(page *yunyun.Page, description string) []string {
 }
 
 // addTwitterMeta adds the twitter preview meta tags
-func addTwitterMeta(page *yunyun.Page, description string) []string {
+func addTwitterMeta(conf *alpha.DarknessConfig, page *yunyun.Page, description string) []string {
 	return gana.Map(metaTag, []meta{
 		{"twitter:card", "twitter:card", "summary_large_image"},
-		{"twitter:site", "twitter:site", html.EscapeString(emilia.Config.Title)},
-		{"twitter:creator", "twitter:creator", emilia.Config.Website.Twitter},
-		{"twitter:image:src", "twitter:image:src", string(emilia.JoinPath(
-			yunyun.JoinRelativePaths(page.Location, yunyun.RelativePathFile(page.Accoutrement.Preview))))},
-		{"twitter:url", "twitter:url", string(emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](page.Location))},
+		{"twitter:site", "twitter:site", html.EscapeString(conf.Title)},
+		{"twitter:creator", "twitter:creator", conf.Website.Twitter},
+		{"twitter:image:src", "twitter:image:src", string(conf.Runtime.Join(yunyun.JoinRelativePaths(page.Location, yunyun.RelativePathFile(page.Accoutrement.Preview))))},
+		{"twitter:url", "twitter:url", string(conf.Runtime.Join(yunyun.RelativePathFile(page.Location)))},
 		{"twitter:title", "twitter:title", html.EscapeString(flattenFormatting(page.Title))},
 		{"twitter:description", "twitter:description", html.EscapeString(description)},
 	})

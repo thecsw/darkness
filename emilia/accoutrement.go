@@ -22,7 +22,7 @@ const (
 	optionToc             = `toc`
 )
 
-var accotrementActions = map[string]func(string, *yunyun.Accoutrement){
+var accoutrementActions = map[string]func(string, *yunyun.Accoutrement){
 	optionDraft:           accoutrementDraft,
 	optionTomb:            accoutrementTomb,
 	optionAuthorImage:     accoutrementAuthorImage,
@@ -36,9 +36,9 @@ var accotrementActions = map[string]func(string, *yunyun.Accoutrement){
 
 // InitializeAccoutrement fills accoutrement according to the config
 // and default values.
-func InitializeAccoutrement(page *yunyun.Page) {
+func InitializeAccoutrement(tombs []yunyun.RelativePathDir, page *yunyun.Page) {
 	// Better to use a trie for matching multiple prefixes.
-	for _, tombPage := range Config.Website.Tombs {
+	for _, tombPage := range tombs {
 		if strings.HasPrefix(string(page.Location), string(tombPage)) {
 			page.Accoutrement.Tomb.Enable()
 			// Just one prefix is enough to deduce tombs.
@@ -48,9 +48,9 @@ func InitializeAccoutrement(page *yunyun.Page) {
 }
 
 // FillAccoutrement parses `options` and fills the `target`.
-func FillAccoutrement(options *string, page *yunyun.Page) {
+func FillAccoutrement(tombs []yunyun.RelativePathDir, options *string, page *yunyun.Page) {
 	// Let's first initialize it before filling.
-	InitializeAccoutrement(page)
+	InitializeAccoutrement(tombs, page)
 	// Exit immediately if it's an empty string.
 	if len(*options) < 1 {
 		return
@@ -58,7 +58,7 @@ func FillAccoutrement(options *string, page *yunyun.Page) {
 	for _, option := range strings.Split(*options, " ") {
 		key, value := breakOption(option)
 		// If action is found, then execute it.
-		if action, ok := accotrementActions[key]; ok {
+		if action, ok := accoutrementActions[key]; ok {
 			action(value, page.Accoutrement)
 		}
 	}

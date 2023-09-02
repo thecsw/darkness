@@ -21,18 +21,25 @@ func NewLogger(prefix string) *l.Logger {
 	})
 }
 
+// Stopwatch is a stopwatch.
 type stopwatch struct {
 	start time.Time
 	msg   any
 	msgs  []any
 }
 
-func (s stopwatch) Record() {
-	Logger.Info(s.msg, append(s.msgs, "elapsed", time.Since(s.start))...)
+// Record records the elapsed time since the stopwatch was created.
+func (s stopwatch) Record(loggers ...*l.Logger) {
+	logger := Logger
+	if len(loggers) > 0 {
+		logger = loggers[0]
+	}
+	logger.Info(s.msg, append(s.msgs, "elapsed", time.Since(s.start))...)
 }
 
+// Stopwatch is a simple stopwatch that can be used to time operations.
 func Stopwatch(msg any, msgs ...any) interface {
-	Record()
+	Record(...*l.Logger)
 } {
 	s := stopwatch{
 		start: time.Now(),

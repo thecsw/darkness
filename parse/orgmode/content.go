@@ -114,15 +114,15 @@ func isSourceCodeEnd(line string) bool {
 	return strings.ToLower(line) == optionPrefix+optionEndSource
 }
 
-// isHTMLExportBegin returns true if we are currently reading the start
+// isHtmlExportBegin returns true if we are currently reading the start
 // of an html export block, false otherwise.
-func isHTMLExportBegin(line string) bool {
+func isHtmlExportBegin(line string) bool {
 	return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionBeginExport+" html")
 }
 
-// isHTMLExportEnd returns true if we are currently reading the end of an
+// isHtmlExportEnd returns true if we are currently reading the end of an
 // html export block, false otherwise.
-func isHTMLExportEnd(line string) bool {
+func isHtmlExportEnd(line string) bool {
 	return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionEndExport)
 }
 

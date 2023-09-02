@@ -5,7 +5,7 @@ import (
 	"html"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -24,7 +24,7 @@ const (
 )
 
 // setContentFlags sets the content flags.
-func (e *ExporterHTML) setContentFlags(v *yunyun.Content) {
+func (e *state) setContentFlags(v *yunyun.Content) {
 	contentDivType := whatDivType(v)
 	// Mark situations when we have to leave writing
 	if e.inWriting && (contentDivType != divWriting) {
@@ -39,7 +39,7 @@ func (e *ExporterHTML) setContentFlags(v *yunyun.Content) {
 }
 
 // resolveDivTags applies results from `setContentFlags` by modifying the DOM.
-func (e *ExporterHTML) resolveDivTags(built string) string {
+func (e *state) resolveDivTags(built string) string {
 	if yunyun.HasFlag(&e.currentContent.Options, thisContentOpensWritingFlag) {
 		built = `<div class="writing">` + "\n" + built
 	}
@@ -52,15 +52,15 @@ func (e *ExporterHTML) resolveDivTags(built string) string {
 	return built
 }
 
-// Heading gives us a heading html representation.
-func (e *ExporterHTML) Heading(content *yunyun.Content) string {
+// heading gives us a heading html representation.
+func (e *state) heading(content *yunyun.Content) string {
 	toReturn := fmt.Sprintf(`
 <h%d id="%s" class="section-%d">%s</h%d>`,
-		content.HeadingLevelAdjusted,      // HTML open tag
-		emilia.ExtractID(content.Heading), // ID
-		content.HeadingLevel,              // section class
-		processText(content.Heading),      // Actual title
-		content.HeadingLevelAdjusted,      // HTML close tag
+		content.HeadingLevelAdjusted, // HTML open tag
+		ExtractID(content.Heading),   // ID
+		content.HeadingLevel,         // section class
+		processText(content.Heading), // Actual title
+		content.HeadingLevelAdjusted, // HTML close tag
 	)
 	e.inHeading = true
 	return toReturn
@@ -80,7 +80,7 @@ func paragraphClass(content *yunyun.Content) string {
 }
 
 // paragraph gives us a paragraph html representation
-func (e ExporterHTML) Paragraph(content *yunyun.Content) string {
+func (e *state) paragraph(content *yunyun.Content) string {
 	return fmt.Sprintf(
 		`
 <div class="paragraph%s">
@@ -104,7 +104,7 @@ func makeListItem(item yunyun.ListItem) string {
 }
 
 // list gives us a list html representation
-func (e ExporterHTML) List(content *yunyun.Content) string {
+func (e *state) list(content *yunyun.Content) string {
 	// Hijack this type for galleries
 	if content.IsGallery() {
 		return e.gallery(content)
@@ -121,13 +121,13 @@ func (e ExporterHTML) List(content *yunyun.Content) string {
 }
 
 // listNumbered gives us a numbered list html representation
-func (e ExporterHTML) ListNumbered(content *yunyun.Content) string {
+func (e *state) listNumbered(content *yunyun.Content) string {
 	// TODO
 	return ""
 }
 
 // sourceCode gives us a source code html representation
-func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
+func (e *state) sourceCode(content *yunyun.Content) string {
 	return fmt.Sprintf(`
 <div class="coding" %s>
 <div class="listingblock">
@@ -136,7 +136,7 @@ func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
 </div>
 `,
 		content.CustomHtmlTags,
-		emilia.MapSourceCodeLang(content.SourceCodeLang),
+		narumi.MapSourceCodeLang(content.SourceCodeLang),
 		content.SourceCodeLang,
 		func() string {
 			// Remove the nested parser blockers
@@ -149,27 +149,27 @@ func (e ExporterHTML) SourceCode(content *yunyun.Content) string {
 }
 
 // rawHTML gives us a raw html representation
-func (e ExporterHTML) RawHTML(content *yunyun.Content) string {
+func (e *state) rawHtml(content *yunyun.Content) string {
 	// If the unsafe flag is enabled, don't even wrap it in `mediablock`
-	if content.IsRawHTMLUnsafe() {
-		return content.RawHTML
+	if content.IsRawHtmlUnsafe() {
+		return content.RawHtml
 	}
 	// If responsive enabled, wrap the inner iframe (*probably*) in it.
-	if content.IsRawHTMLResponsive() {
-		return fmt.Sprintf(responsiveIFrameHTMLTemplate, content.CustomHtmlTags, content.RawHTML)
+	if content.IsRawHtmlResponsive() {
+		return fmt.Sprintf(responsiveIFrameHtmlTemplate, content.CustomHtmlTags, content.RawHtml)
 	}
-	return fmt.Sprintf(rawHTMLTemplate, content.CustomHtmlTags, content.RawHTML, content.Caption)
+	return fmt.Sprintf(rawHtmlTemplate, content.CustomHtmlTags, content.RawHtml, content.Caption)
 }
 
 // horizontalLine gives us a horizontal line html representation
-func (e ExporterHTML) HorizontalLine(content *yunyun.Content) string {
+func (e *state) horizontalLine(content *yunyun.Content) string {
 	return `<center>
 <hr>
 </center>`
 }
 
 // attentionBlock gives us a attention block html representation
-func (e ExporterHTML) AttentionBlock(content *yunyun.Content) string {
+func (e *state) attentionBlock(content *yunyun.Content) string {
 	return fmt.Sprintf(`
 <div class="admonitionblock note">
 <table>
@@ -186,7 +186,7 @@ func (e ExporterHTML) AttentionBlock(content *yunyun.Content) string {
 }
 
 // table gives an HTML formatted table
-func (e ExporterHTML) Table(content *yunyun.Content) string {
+func (e *state) table(content *yunyun.Content) string {
 	rows := make([]string, len(content.Table))
 	for i := range content.Table {
 		for j, v := range content.Table[i] {
@@ -198,12 +198,12 @@ func (e ExporterHTML) Table(content *yunyun.Content) string {
 		}
 		rows[i] = fmt.Sprintf("<tr>\n%s</tr>", strings.Join(content.Table[i], "\n"))
 	}
-	tableHTML := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
-	return fmt.Sprintf(tableTemplate, content.CustomHtmlTags, content.Caption, tableHTML)
+	tableHtml := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
+	return fmt.Sprintf(tableTemplate, content.CustomHtmlTags, content.Caption, tableHtml)
 }
 
 // table gives an HTML formatted table
-func (e ExporterHTML) Details(content *yunyun.Content) string {
+func (e *state) details(content *yunyun.Content) string {
 	if content.IsDetails() {
 		return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
 	}

@@ -1,29 +1,28 @@
 package parse
 
 import (
-	"io"
+	"log"
 
+	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/parse/orgmode"
 	"github.com/thecsw/darkness/yunyun"
 )
 
-type ParserBuilder interface {
-	// BuildParser returns a new `Parser` object with
-	// filename and data set.
-	BuildParser(yunyun.RelativePathFile, string) Parser
-	BuildParserReader(yunyun.RelativePathFile, io.ReadCloser) Parser
-}
-
-// Parser is an interface used to define import packages,
-// which convert source data into a yunyun `Page`.
+// Parser is the interface for all parsers.
 type Parser interface {
-	// Parse returns `*yunyunPage`.
-	Parse() *yunyun.Page
+	// Do parses the file and returns a Page.
+	Do(yunyun.RelativePathFile, string) *yunyun.Page
 }
 
-// ParserMap stores mappings of extensions to their parsers.
-var ParserMap = make(map[string]ParserBuilder)
-
-// Register is called by parsers to register themselves.
-func Register(ext string, p ParserBuilder) {
-	ParserMap[ext] = p
+// BuildParser builds a parser based on the config.
+func BuildParser(conf *alpha.DarknessConfig) Parser {
+	var parser Parser
+	switch conf.Project.Input {
+	case puck.ExtensionOrgmode: // orgmode
+		parser = orgmode.ParserOrgmode{Config: conf}
+	default: // unknown
+		log.Fatalf("unknown input format: %s", conf.Project.Input)
+	}
+	return parser
 }

@@ -5,8 +5,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/thecsw/darkness/emilia/alpha"
+
 	"github.com/charmbracelet/log"
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
 )
 
@@ -16,9 +17,6 @@ var (
 
 	// darknessToml is the location of `darkness.toml`.
 	darknessToml = "darkness.toml"
-
-	// filename is the file to build.
-	filename = "index.org"
 
 	// disableParallel sets the number of workers to 1.
 	disableParallel bool
@@ -35,11 +33,24 @@ var (
 	// useCurrentDirectory is used for development and local
 	// serving, such that you can browse the url files locally.
 	useCurrentDirectory bool
+
+	// vendorGalleryImages is a flag that dictates whether we should
+	// store a local copy of all remote gallery images and stub them
+	// in the gallery links instead of the remote links.
+	//
+	// Turning this option on would result in a VERY slow build the
+	// first time, as it would need to retrieve however many images
+	// from remote services.
+	//
+	// All images will be put in "darkness_vendor" directory, which
+	// will be skipped in discovery process AND should be put it
+	// .gitignore by user, so they don't pollute their git objects.
+	vendorGalleryImages bool
 )
 
-// getEmiliaOptions takes a cmd subcommand and parses general flags
+// getAlphaOptions takes a cmd subcommand and parses general flags
 // and returns emilia options that should be used when initializing emilia.
-func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
+func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 	cmd.StringVar(&workDir, "dir", ".", "where do I look for files")
 	cmd.StringVar(&darknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	cmd.BoolVar(&disableParallel, "disable-parallel", false, "disable parallel build (only use one worker)")
@@ -74,7 +85,7 @@ func getEmiliaOptions(cmd *flag.FlagSet) *emilia.EmiliaOptions {
 	}
 
 	// Read the config and initialize emilia settings.
-	return &emilia.EmiliaOptions{
+	return alpha.Options{
 		DarknessConfig:  darknessToml,
 		Dev:             useCurrentDirectory,
 		WorkDir:         workDir,

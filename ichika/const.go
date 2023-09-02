@@ -5,7 +5,6 @@ type DarknessCommand string
 
 const (
 	newDarknessCommand DarknessCommand = `new`
-	oneFileCommand     DarknessCommand = `file`
 	buildCommand       DarknessCommand = `build`
 	serveCommand       DarknessCommand = `serve`
 	cleanCommand       DarknessCommand = `clean`
@@ -18,8 +17,7 @@ const (
 // CommandFuncs maps supplied darkness command to the function
 // that needs to get executed.
 var CommandFuncs = map[DarknessCommand]func(){
-	newDarknessCommand: NewDarknessCommandFunc,
-	oneFileCommand:     OneFileCommandFunc,
+	newDarknessCommand: newDarknessCommandFunc,
 	buildCommand:       BuildCommandFunc,
 	serveCommand:       ServeCommandFunc,
 	cleanCommand:       CleanCommandFunc,

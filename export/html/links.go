@@ -3,7 +3,6 @@ package html
 import (
 	"fmt"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -21,12 +20,12 @@ func linkTag(val rel) string {
 }
 
 // linkTags returns a string of the form <link rel="..." href="..." /> for an entire page
-func (e ExporterHTML) linkTags() []string {
+func (e *state) linkTags() []string {
 	return gana.Map(linkTag, []rel{
-		{"canonical", emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathFile](e.page.Location), ""},
-		{"shortcut icon", emilia.JoinPath("assets/favicon.ico"), "image/x-icon"},
-		{"apple-touch-icon", emilia.JoinPath("assets/apple-touch-icon.png"), "image/png"},
-		{"image_src", emilia.JoinPath("assets/android-chrome-512x512.png"), "image/png"},
-		{"icon", emilia.JoinPath("assets/favicon.ico"), ""},
+		{"canonical", e.conf.Runtime.Join(yunyun.RelativePathFile(e.page.Location)), ""},
+		{"shortcut icon", e.conf.Runtime.Join("assets/favicon.ico"), "image/x-icon"},
+		{"apple-touch-icon", e.conf.Runtime.Join("assets/apple-touch-icon.png"), "image/png"},
+		{"image_src", e.conf.Runtime.Join("assets/android-chrome-512x512.png"), "image/png"},
+		{"icon", e.conf.Runtime.Join("assets/favicon.ico"), ""},
 	})
 }

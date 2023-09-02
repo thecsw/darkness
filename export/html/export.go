@@ -3,12 +3,12 @@ package html
 import (
 	_ "embed"
 	"fmt"
+	"io"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
@@ -25,8 +25,26 @@ var (
 	darknessBanner = "<!--\n" + darknessBannerSource + "\n-->\n"
 )
 
+func (e ExporterHtml) Do(page *yunyun.Page) io.Reader {
+	s := &state{conf: e.Config, page: page}
+	s.contentFunctions = []func(*yunyun.Content) string{
+		s.heading,
+		s.paragraph,
+		s.list,
+		s.listNumbered,
+		s.link,
+		s.sourceCode,
+		s.rawHtml,
+		s.horizontalLine,
+		s.attentionBlock,
+		s.table,
+		s.details,
+	}
+	return s.export()
+}
+
 // Export runs the process of exporting
-func (e *ExporterHTML) Export() string {
+func (e *state) export() io.Reader {
 	defer puck.Stopwatch("Exported", "page", e.page.File).Record()
 	if e.page == nil {
 		fmt.Println("Export should be called after SetPage")
@@ -34,7 +52,7 @@ func (e *ExporterHTML) Export() string {
 	}
 
 	// Initialize the html mapping after yunyun built regexes.
-	markupHTMLMapping = map[*regexp.Regexp]string{
+	markupHtmlMapping = map[*regexp.Regexp]string{
 		yunyun.ItalicText:        `$l<em>$text</em>$r`,
 		yunyun.BoldText:          `$l<strong>$text</strong>$r`,
 		yunyun.VerbatimText:      `$l<code>$text</code>$r`,
@@ -51,7 +69,7 @@ func (e *ExporterHTML) Export() string {
 	}
 	// If the page hasn't set a custom preview, default to emilia.
 	if len(e.page.Accoutrement.Preview) < 1 {
-		e.page.Accoutrement.Preview = string(emilia.Config.Website.Preview)
+		e.page.Accoutrement.Preview = string(e.conf.Website.Preview)
 	}
 
 	if e.page.Accoutrement.Toc.IsEnabled() {
@@ -66,7 +84,7 @@ func (e *ExporterHTML) Export() string {
 		content = append(content, e.buildContent(v))
 	}
 
-	return fmt.Sprintf(`%s<!DOCTYPE html>
+	output := fmt.Sprintf(`%s<!DOCTYPE html>
 <html lang="en">
 <head>
 %s
@@ -85,10 +103,11 @@ func (e *ExporterHTML) Export() string {
 		strings.Join(content, ""),
 		e.addFootnotes(),
 	)
+	return strings.NewReader(output)
 }
 
 // buildContent builds the HTML representation of a content.
-func (e *ExporterHTML) buildContent(content *yunyun.Content) string {
+func (e *state) buildContent(content *yunyun.Content) string {
 	// Build the HTML (string) representation of each content.
 	built := e.contentFunctions[e.currentContent.Type](e.currentContent)
 
@@ -101,13 +120,13 @@ func (e *ExporterHTML) buildContent(content *yunyun.Content) string {
 }
 
 // leftHeading leaves the heading.
-func (e *ExporterHTML) leftHeading() {
+func (e *state) leftHeading() {
 	e.inHeading = false
 }
 
-func (e ExporterHTML) combineAndFilterHtmlHead() string {
+func (e *state) combineAndFilterHtmlHead() string {
 	// Build the array of all head elements (except page's specific head options).
-	allHead := [][]string{e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags(), emilia.Config.Website.ExtraHead}
+	allHead := [][]string{e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags(), e.conf.Website.ExtraHead}
 	// Go through all the head elements and filter them out depending on page's specific exclusion rules.
 	finalHead := ""
 	for _, head := range allHead {
@@ -118,12 +137,12 @@ func (e ExporterHTML) combineAndFilterHtmlHead() string {
 }
 
 // styleTags is the processed style tags.
-func (e ExporterHTML) styleTags() []string {
-	content := make([]string, len(emilia.Config.Website.Styles)+len(e.page.Stylesheets))
-	for i, style := range emilia.Config.Website.Styles {
+func (e *state) styleTags() []string {
+	content := make([]string, len(e.conf.Website.Styles)+len(e.page.Stylesheets))
+	for i, style := range e.conf.Website.Styles {
 		stylePath := yunyun.FullPathFile(style)
 		if !strings.HasPrefix(string(style), "http") {
-			stylePath = emilia.JoinPath(style)
+			stylePath = e.conf.Runtime.Join(style)
 		}
 		content[i] = fmt.Sprintf(
 			`<link rel="stylesheet" type="text/css" href="%s">`+"\n", stylePath,
@@ -139,57 +158,57 @@ var defaultScripts = []string{
 }
 
 // scriptTags returns the script tags.
-func (e ExporterHTML) scriptTags() []string {
+func (e *state) scriptTags() []string {
 	return append(defaultScripts, e.page.Scripts...)
 }
 
-func rssLink() string {
-	if !emilia.Config.RSS.Enable {
+func (e *state) rssLink() string {
+	if !e.conf.RSS.Enable {
 		return ""
 	}
 	return `<span><a href="/feed.xml" class="rss-link"><img src="/assets/rss.svg" class="rss-icon"></a></span><br>` + "\n"
 }
 
-func authorName() string {
-	if !emilia.Config.Author.NameEnable {
+func (e *state) authorName() string {
+	if !e.conf.Author.NameEnable {
 		return ""
 	}
-	return `<span id="author" class="author">` + emilia.Config.Author.Name + `</span><br>` + "\n"
+	return `<span id="author" class="author">` + e.conf.Author.Name + `</span><br>` + "\n"
 }
 
-func authorEmail() string {
-	if !emilia.Config.Author.EmailEnable {
+func (e *state) authorEmail() string {
+	if !e.conf.Author.EmailEnable {
 		return ""
 	}
-	return `<span id="email" class="email">` + emilia.Config.Author.Email + `</span><br>` + "\n"
+	return `<span id="email" class="email">` + e.conf.Author.Email + `</span><br>` + "\n"
 }
 
 // authorHeader returns the author header.
-func (e ExporterHTML) authorHeader() string {
+func (e *state) authorHeader() string {
 	content := fmt.Sprintf(`
 <div class="header">
 <h1 class="section-1">%s%s</h1>
 <div class="menu">
 %s%s%s`,
-		authorImage(e.page.Accoutrement.AuthorImage), processTitle(e.page.Title),
-		rssLink(), authorName(), authorEmail(),
+		e.authorImage(), processTitle(e.page.Title),
+		e.rssLink(), e.authorName(), e.authorEmail(),
 	)
 	content += `<span id="revdate">` + "\n"
 
 	// Build the navigation links.
-	navLinks := make([]string, 0, len(emilia.Config.Navigation))
+	navLinks := make([]string, 0, len(e.conf.Navigation))
 
 	// Go through elements.
-	for i := 1; i <= len(emilia.Config.Navigation); i++ {
+	for i := 1; i <= len(e.conf.Navigation); i++ {
 		// Get the navigation element read from Darkness' toml.
-		v := emilia.Config.Navigation[strconv.FormatInt(int64(i), 10)]
+		v := e.conf.Navigation[strconv.FormatInt(int64(i), 10)]
 		// If the nav element wants to hide in this location, then skip it.
 		if e.page.Location == v.Hide {
 			continue
 		}
 		// Build each of the navlinks and concat the hrefs.
 		navLinks = append(navLinks, fmt.Sprintf(`<a href="%s">%s</a>`,
-			emilia.JoinPathGeneric[yunyun.RelativePathDir, yunyun.FullPathDir](v.Link),
+			e.conf.Runtime.Join(yunyun.RelativePathFile(v.Link)),
 			v.Title))
 	}
 
@@ -206,17 +225,16 @@ func (e ExporterHTML) authorHeader() string {
 }
 
 // authorHeader returns img element if author header image is given.
-func authorImage(authorImageFlag yunyun.AccoutrementFlip) string {
+func (e *state) authorImage() string {
 	// Return nothing if it's not provided.
-	if emilia.Config.Author.Image == "" || authorImageFlag.IsDisabled() {
+	if e.conf.Author.Image == "" || e.page.Accoutrement.AuthorImage.IsDisabled() {
 		return ""
 	}
-	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`,
-		emilia.Config.Author.ImagePreComputed)
+	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`, e.conf.Author.ImagePreComputed)
 }
 
 // addTomb adds the tomb to the last paragraph.
-func (e ExporterHTML) addTomb() {
+func (e *state) addTomb() {
 	// Empty???
 	if len(e.page.Contents) < 1 {
 		return
@@ -234,12 +252,12 @@ func (e ExporterHTML) addTomb() {
 }
 
 // toc returns the table of contents.
-func (e ExporterHTML) toc() []*yunyun.Content {
+func (e *state) toc() []*yunyun.Content {
 	return []*yunyun.Content{
 		// First, add the table of contents header.
 		{
 			Type:                 yunyun.TypeHeading,
-			Heading:              "Table of Contents",
+			Heading:              "table of Contents",
 			HeadingLevel:         3,
 			HeadingLevelAdjusted: 1,
 		},
@@ -249,7 +267,7 @@ func (e ExporterHTML) toc() []*yunyun.Content {
 			// overload the summary field to indicate
 			// that this is the table of contents.
 			Summary: "toc",
-			List:    emilia.GenerateTableOfContents(e.page),
+			List:    GenerateTableOfContents(e.page),
 		},
 		// Finally, add the horizontal line.
 		{

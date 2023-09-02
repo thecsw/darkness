@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia"
+	"github.com/thecsw/darkness/emilia/narumi"
 )
 
 // addFootnotes adds the footnotes
-func (e ExporterHTML) addFootnotes() string {
+func (e *state) addFootnotes() string {
 	if len(e.page.Footnotes) < 1 {
 		return ""
 	}
@@ -20,7 +20,7 @@ func (e ExporterHTML) addFootnotes() string {
 %s
 </div>
 `,
-			i+1, i+1, emilia.FootnoteLabeler(i+1), processText(footnote))
+			i+1, i+1, narumi.FootnoteLabeler(i+1), processText(footnote))
 	}
 	return fmt.Sprintf(`
 <div id="footnotes">

@@ -1,15 +1,18 @@
 package html
 
 import (
-	"github.com/thecsw/darkness/export"
+	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/yunyun"
 )
 
-// ExporterHTMLBuilder builds `ExporterHTML`.
-type ExporterHTMLBuilder struct{}
+// ExporterHtml is the exporter for HTML.
+type ExporterHtml struct {
+	// Config is the configuration for the exporter.
+	Config *alpha.DarknessConfig
+}
 
-// ExporterHTML will consume a `Page` and emit final HTML representation of it.
-type ExporterHTML struct {
+// state is the state of the exporter.
+type state struct {
 	// page is the source data that will be used for HTML building.
 	page *yunyun.Page
 	// currentContent is the pointer to the current `Content` object that is being processed.
@@ -24,12 +27,6 @@ type ExporterHTML struct {
 	inHeading bool
 	// inWriting is used as a state variable for internal processing.
 	inWriting bool
-}
-
-// BuildExporter builds the exporter to generate output from yunyun internals.
-func (ExporterHTMLBuilder) BuildExporter(page *yunyun.Page) export.Exporter {
-	what := &ExporterHTML{page: page}
-	// Set up the content functions.
-	what.contentFunctions = export.ContentBuilder(what)
-	return what
+	// conf is the configuration for the exporter.
+	conf *alpha.DarknessConfig
 }

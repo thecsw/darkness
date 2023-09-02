@@ -27,3 +27,4 @@ ichika/ishmael/scripts/*
 # vendor/
 
 dist/
+*#

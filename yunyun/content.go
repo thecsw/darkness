@@ -58,8 +58,8 @@ type Content struct {
 	// LinkTitle is the link title.
 	LinkTitle string
 
-	// RawHTML is the raw HTML.
-	RawHTML string
+	// RawHtml is the raw HTML.
+	RawHtml string
 
 	// CustomHtmlTags can provide custom tags for the html element.
 	CustomHtmlTags string
@@ -137,14 +137,14 @@ func (c Content) IsLink() bool { return c.Type == TypeLink }
 // IsSourceCode tells us if the content is a source code block.
 func (c Content) IsSourceCode() bool { return c.Type == TypeSourceCode }
 
-// IsRawHTML tells us if the content is a raw HTML block.
-func (c Content) IsRawHTML() bool { return c.Type == TypeRawHTML }
+// IsRawHtml tells us if the content is a raw HTML block.
+func (c Content) IsRawHtml() bool { return c.Type == TypeRawHtml }
 
-// IsRawHTMLUnsafe tells us if the html block is raw and unsafe.
-func (c Content) IsRawHTMLUnsafe() bool { return HasFlag(&c.Options, InRawHtmlFlagUnsafe) }
+// IsRawHtmlUnsafe tells us if the html block is raw and unsafe.
+func (c Content) IsRawHtmlUnsafe() bool { return HasFlag(&c.Options, InRawHtmlFlagUnsafe) }
 
-// IsRawHTMLResponsive tells us if the html block is raw and *probably* an iframe.
-func (c Content) IsRawHTMLResponsive() bool { return HasFlag(&c.Options, InRawHtmlFlagResponsive) }
+// IsRawHtmlResponsive tells us if the html block is raw and *probably* an iframe.
+func (c Content) IsRawHtmlResponsive() bool { return HasFlag(&c.Options, InRawHtmlFlagResponsive) }
 
 // IsHorizontalLine tells us if the content is a horizontal line.
 func (c Content) IsHorizontalLine() bool { return c.Type == TypeHorizontalLine }

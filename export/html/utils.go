@@ -22,7 +22,7 @@ var divTypes = []divType{
 	divWriting, // yunyun.TypeListNumbered
 	divSpecial, // yunyun.TypeLink
 	divOutside, // yunyun.TypeSourceCode
-	divOutside, // yunyun.TypeRawHTML
+	divOutside, // yunyun.TypeRawHtml
 	divOutside, // yunyun.TypeHorizontalLine
 	divWriting, // yunyun.TypeAttentionText
 	divOutside, // yunyun.TypeTable
