@@ -1,27 +1,29 @@
 package akane
 
 import (
+	"path/filepath"
+	"unicode"
+
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/emilia/reze"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/rei"
-	"path/filepath"
-	"unicode"
 )
 
-type pagePreview struct {
+// pagePreviewRequest is a request to generate a page preview.
+type pagePreviewRequest struct {
 	Location yunyun.RelativePathDir
 	Title    string
 	Time     string
 }
 
-var (
-	pagePreviewsToGenerate = make([]pagePreview, 0, 16)
-)
+// pagePreviewsToGenerate is a list of page previews to generate.
+var pagePreviewsToGenerate = make([]pagePreviewRequest, 0, 16)
 
+// RequestPagePreview requests a page preview to be generated.
 func RequestPagePreview(location yunyun.RelativePathDir, title string, time string) {
-	pagePreviewsToGenerate = append(pagePreviewsToGenerate, pagePreview{
+	pagePreviewsToGenerate = append(pagePreviewsToGenerate, pagePreviewRequest{
 		Location: location,
 		Title:    title,
 		Time:     time,
@@ -38,7 +40,9 @@ const (
 	pagePreviewFilename = "preview.jpg"
 )
 
+// doPagePreviews generates page previews.
 func doPagePreviews(conf *alpha.DarknessConfig) {
+	// Let's initialize the page preview generator.
 	generator := reze.InitPreviewGenerator(
 		pagePreviewTitleFont,
 		pagePreviewNameFont,
@@ -48,23 +52,28 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 		conf.Website.Color,
 		string(conf.Author.Image),
 	)
+	// Let's make sure we close the generator when we're done.
 	defer func(generator reze.PreviewGenerator) {
 		err := generator.Close()
 		if err != nil {
-			logger.Error("closing reze page preview generator", "err", err)
+			logger.Error("Closing reze page preview generator", "err", err)
 		}
 	}(generator)
 
 	// Let's start going through the page preview requests.
 	for _, pagePreview := range pagePreviewsToGenerate {
+		// Get the reader for the generated preview.
 		reader := rei.Must(generator.Generate(removeNonPrintables(pagePreview.Title, conf.Title, pagePreview.Time)))
+		// Find the path to save the preview to.
 		relativeTarget := yunyun.RelativePathFile(filepath.Join(string(pagePreview.Location), pagePreviewFilename))
+		// Get it with the work directory.
 		target := conf.Runtime.WorkDir.Join(relativeTarget)
+		// Save the preview as a jpg.
 		if err := reze.SaveJpg(reader, string(target)); err != nil {
-			logger.Error("saving jpg preview", "loc", target, "err", err)
+			logger.Error("Saving page preview", "loc", target, "err", err)
 			continue
 		}
-		logger.Info("generated preview", "loc", target)
+		logger.Info("Generated page preview", "loc", target)
 	}
 }
 

@@ -45,17 +45,18 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 }
 
 // GalleryImage takes a gallery item and returns its full path depending
-// on the option, so whether it's a full link or a vendored path.
-func GalleryImage(conf *alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
+// on the option, so whether it's an image that needs to be vendored (downloaded).
+func GalleryImage(conf *alpha.DarknessConfig, item GalleryItem) (yunyun.FullPathFile, bool) {
 	if item.IsExternal {
 		// If it's vendored, then retrieve a local copy (if doesn't already
 		// exist) and stub it in as the full path
 		if conf.Runtime.VendorGalleries {
-			return galleryVendorItem(conf, item)
+			// Return the path to the vendored image.
+			return galleryVendorItemFilename(conf, item), true
 		}
-		return yunyun.FullPathFile(item.Item)
+		return yunyun.FullPathFile(item.Item), false
 	}
-	return conf.Runtime.Join(yunyun.JoinRelativePaths(item.Path, item.Item))
+	return conf.Runtime.Join(yunyun.JoinRelativePaths(item.Path, item.Item)), false
 }
 
 // GalleryPreview takes an original image's path and returns

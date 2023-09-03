@@ -4,9 +4,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/thecsw/darkness/emilia/alpha"
-
 	"github.com/disintegration/imaging"
+	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/reze"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/rei"
@@ -17,57 +16,66 @@ func GalleryVendored(vendorDir yunyun.RelativePathDir, item GalleryItem) yunyun.
 	return yunyun.JoinRelativePaths(vendorDir, galleryItemHash(item))
 }
 
-// galleryVendorItem vendors given item and returns the full path of the file.
+// galleryVendorItemFilename returns the path to the vendored item.
+func galleryVendorItemFilename(conf *alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
+	vendoredImagePath := GalleryVendored(conf.Project.DarknessVendorDirectory, item)
+	expectedReturn := conf.Runtime.Join(vendoredImagePath)
+	return expectedReturn
+}
+
+// galleryVendorItemFilenameLocalPath is the actual local filesystem path where to save vendored files.
+func galleryVendorItemFilenameLocalPath(conf *alpha.DarknessConfig, item GalleryItem) string {
+	// This is the vendored path that will be put into the outputs.
+	vendoredImagePath := GalleryVendored(conf.Project.DarknessVendorDirectory, item)
+	// This is the actual physical location of the vendored image.
+	localVendoredPath := string(conf.Runtime.WorkDir.Join(vendoredImagePath))
+	return localVendoredPath
+}
+
+// GalleryVendorItem vendors given item and returns the full path of the file.
 //
 // Only call this function on remote images, it's up to the user to make the
 // .IsExternal check before calling this. SLOW function because of network calls.
 //
 // If the vendoring fails at any point, fallback to the remote image path.
-func galleryVendorItem(conf *alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
-	// Process only one vendor request at a time.
-	vendorLock.Lock()
-	// Unlock so the next vendor request can get processed.
-	defer vendorLock.Unlock()
-
-	vendoredImagePath := GalleryVendored(conf.Project.DarknessVendorDirectory, item)
-	localVendoredPath := string(conf.Runtime.WorkDir.Join(vendoredImagePath))
-
+func GalleryVendorItem(conf *alpha.DarknessConfig, item GalleryItem) (yunyun.FullPathFile, bool) {
 	// Create the two types of return.
 	fallbackReturn := yunyun.FullPathFile(item.Item)
-	expectedReturn := conf.Runtime.Join(vendoredImagePath)
+	localVendoredPath := galleryVendorItemFilenameLocalPath(conf, item)
+	expectedReturn := galleryVendorItemFilename(conf, item)
 
 	// Check if the image was already vendored, if it was, return it immediately.
 	if exists, err := rei.FileExists(localVendoredPath); exists {
-		return expectedReturn
+		return expectedReturn, false
 	} else if err != nil {
-		logger.Errorf("checking for vendored path existence %s: %v", localVendoredPath, err)
-		return fallbackReturn
+		logger.Error("checking for vendored path existence", "path", localVendoredPath, "err", err)
+		return fallbackReturn, false
 	}
 
 	img, err := reze.DownloadImage(string(item.Item), "vendor", "", string(galleryItemHash(item)))
 	if err != nil {
-		logger.Errorf("vendoring %s: %v", item.Item, err)
-		return fallbackReturn
+		logger.Error("downloading vendored image", "item", item.Item, "err", err)
+		return fallbackReturn, false
 	}
 
 	// Open the file writer and encode the image there.
 	imgFile, err := os.Create(filepath.Clean(localVendoredPath))
 	if err != nil {
-		logger.Errorf("creating vendored file %s: %v", localVendoredPath, err)
-		return fallbackReturn
+		logger.Error("creating vendored file", "path", localVendoredPath, "err", err)
+		return fallbackReturn, false
 	}
 	defer func() {
 		if err := imgFile.Close(); err != nil {
-			logger.Errorf("closing vendored file %s: %v", localVendoredPath, err)
+			logger.Error("closing vendored file", "file", localVendoredPath, "err", err)
 		}
 	}()
 
 	// Decode the image into the file.
 	if err := imaging.Encode(imgFile, img, imaging.JPEG); err != nil {
-		logger.Errorf("encoding vendored file %s: %v", vendoredImagePath, err)
-		return fallbackReturn
+		logger.Error("encoding vendored file", "file", localVendoredPath, "err", err)
+		return fallbackReturn, false
 	}
 
 	// Finally.
-	return expectedReturn
+	return expectedReturn, true
 }

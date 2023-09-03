@@ -15,6 +15,11 @@ func (conf RuntimeConfig) JoinGeneric(what ...string) string {
 	return filepath.Join(append(conf.urlSlice, what...)...)
 }
 
+// Rel returns path trimmed by the workspace or url.
+func (conf RuntimeConfig) Rel(filename yunyun.FullPathFile) yunyun.RelativePathFile {
+	return yunyun.RelativePathFile(strings.TrimPrefix(string(filename), conf.JoinGeneric()))
+}
+
 // Join joins the target path with the final root path (url or local).
 func (conf RuntimeConfig) Join(relative ...yunyun.RelativePathFile) yunyun.FullPathFile {
 	return yunyun.FullPathFile(conf.JoinGeneric(yunyun.AnyPathsToStrings(relative)...))

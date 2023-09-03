@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/ichika/akane"
 
 	"github.com/thecsw/darkness/emilia/rem"
 	"github.com/thecsw/darkness/yunyun"
@@ -72,12 +73,22 @@ func makeFlexItem(conf *alpha.DarknessConfig, item rem.GalleryItem, width uint) 
 		// Path to the gallery image's preview.
 		rem.GalleryPreview(conf, item),
 		// Path to the image (either external, local, or vendored).
-		rem.GalleryImage(conf, item),
+		processGalleryItem(conf, item),
 		// The text to show on the image hover.
 		item.Description,
 		// The alt descriptino of the image.
 		item.Text,
 	)
+}
+
+// processGalleryItem takes a gallery item and returns the full path, while also submitting an
+// akane request to download the gallery image.
+func processGalleryItem(conf *alpha.DarknessConfig, item rem.GalleryItem) yunyun.FullPathFile {
+	path, shouldBeVendored := rem.GalleryImage(conf, item)
+	if shouldBeVendored {
+		akane.RequestGalleryVendor(item)
+	}
+	return path
 }
 
 // gallery will create a flexbox gallery as defined in .gallery css class
