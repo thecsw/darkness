@@ -11,6 +11,8 @@ type Accoutrement struct {
 	// PreviewWidth and PreviewHeight are the dimensions of the preview image.
 	PreviewWidth  string
 	PreviewHeight string
+	// PreviewGenerate tells us whether reze needs to create a preview image.
+	PreviewGenerate AccoutrementFlip
 
 	// ExcludeHtmlHeadContains is a list of strings that we should match
 	// against page's scripts before injecting them into the page.

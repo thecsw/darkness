@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/yunyun"
@@ -36,7 +37,10 @@ func fancyQuotes(text string) string {
 }
 
 // markupHtmlMapping maps the regex markup to html replacements
-var markupHtmlMapping map[*regexp.Regexp]string
+var (
+	markupHtmlMapping        map[*regexp.Regexp]string
+	markupHtmlMappingSetOnce sync.Once
+)
 
 // markupHtml replaces the markup regexes defined in internal with HTML tags
 func markupHtml(text string) string {

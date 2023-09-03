@@ -1,6 +1,9 @@
 package puck
 
-import "github.com/thecsw/darkness/yunyun"
+import (
+	"github.com/thecsw/darkness/yunyun"
+	"strconv"
+)
 
 const (
 	// ExtensionOrgmode is the extension of orgmode files.
@@ -17,4 +20,12 @@ const (
 	DefaultVendorDirectory yunyun.RelativePathDir = "darkness_vendor"
 	// DefaultPreviewDirectory is the name of the dir where all gallery previews are stored.
 	DefaultPreviewDirectory yunyun.RelativePathDir = "darkness_gallery_previews"
+
+	PagePreviewWidth  = 1200
+	PagePreviewHeight = 700
+)
+
+var (
+	PagePreviewWidthString  = strconv.Itoa(PagePreviewWidth)
+	PagePreviewHeightString = strconv.Itoa(PagePreviewHeight)
 )

@@ -7,17 +7,34 @@ import (
 	l "github.com/charmbracelet/log"
 )
 
+const (
+	// DebugLevel is the debug level.
+	DebugLevelLevel l.Level = iota - 1
+	// InfoLevel is the info level.
+	InfoLevel
+	// WarnLevel is the warn level.
+	WarnLevel
+	// ErrorLevel is the error level.
+	ErrorLevel
+	// FatalLevel is the fatal level.
+	FatalLevel
+)
+
 // Logger is darkness' logger.
 var Logger = NewLogger("Darkness 🥬 ")
 
 // NewLogger returns a new logger with the given prefix.
-func NewLogger(prefix string) *l.Logger {
+func NewLogger(prefix string, levels ...l.Level) *l.Logger {
+	level := WarnLevel
+	if len(levels) > 0 {
+		level = levels[0]
+	}
 	return l.NewWithOptions(os.Stderr, l.Options{
 		Prefix:          prefix,
 		TimeFormat:      time.DateTime,
 		ReportTimestamp: true,
 		ReportCaller:    false,
-		Level:           l.WarnLevel,
+		Level:           level,
 	})
 }
 

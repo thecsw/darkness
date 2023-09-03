@@ -19,6 +19,7 @@ const (
 	optionPreview         = `preview`
 	optionPreviewWidth    = `preview-width`
 	optionPreviewHeigh    = `preview-height`
+	optionPreviewGenerate = `preview-generate`
 	optionToc             = `toc`
 )
 
@@ -31,6 +32,7 @@ var accoutrementActions = map[string]func(string, *yunyun.Accoutrement){
 	optionPreview:         accoutrementPreview,
 	optionPreviewWidth:    accoutrementPreviewWidth,
 	optionPreviewHeigh:    accoutrementPreviewHeight,
+	optionPreviewGenerate: accoutrementPreviewGenerate,
 	optionToc:             accoutrementToc,
 }
 
@@ -116,6 +118,11 @@ func accoutrementPreviewWidth(what string, target *yunyun.Accoutrement) {
 // accoutrementPreviewHeight sets the preview height option of the accoutrement.
 func accoutrementPreviewHeight(what string, target *yunyun.Accoutrement) {
 	target.PreviewHeight = what
+}
+
+// accoutrementPreviewGenerate sets the preview generation option of the accoutrement.
+func accoutrementPreviewGenerate(what string, target *yunyun.Accoutrement) {
+	accoutrementBool(what, &target.PreviewGenerate)
 }
 
 // accoutrementToc sets the toc option of the accoutrement.

@@ -2,6 +2,7 @@ package ichika
 
 import (
 	"fmt"
+	"github.com/thecsw/darkness/ichika/akane"
 	"github.com/thecsw/darkness/ichika/hizuru"
 	"runtime"
 	"time"
@@ -30,6 +31,9 @@ func BuildCommandFunc() {
 func build(conf *alpha.DarknessConfig) {
 	parser := parse.BuildParser(conf)
 	exporter := export.BuildExporter(conf)
+
+	// Let's complete the akane requests when done building.
+	defer akane.Do(conf)
 
 	// Create the pool that reads files and returns their handles.
 	filesPool := komi.NewWithSettings(komi.WorkWithErrors(makima.Woof.Read), &komi.Settings{

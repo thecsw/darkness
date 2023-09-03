@@ -3,8 +3,8 @@ package html
 import (
 	_ "embed"
 	"fmt"
+	"github.com/thecsw/darkness/ichika/akane"
 	"io"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -46,21 +46,19 @@ func (e ExporterHtml) Do(page *yunyun.Page) io.Reader {
 // Export runs the process of exporting
 func (e *state) export() io.Reader {
 	defer puck.Stopwatch("Exported", "page", e.page.File).Record()
-	if e.page == nil {
-		fmt.Println("Export should be called after SetPage")
-		os.Exit(1)
-	}
 
 	// Initialize the html mapping after yunyun built regexes.
-	markupHtmlMapping = map[*regexp.Regexp]string{
-		yunyun.ItalicText:        `$l<em>$text</em>$r`,
-		yunyun.BoldText:          `$l<strong>$text</strong>$r`,
-		yunyun.VerbatimText:      `$l<code>$text</code>$r`,
-		yunyun.StrikethroughText: `$l<s>$text</s>$r`,
-		yunyun.UnderlineText:     `$l<u>$text</u>$r`,
-		yunyun.SuperscriptText:   `$l<sup>$text</sup>$r`,
-		yunyun.SubscriptText:     `$l<sub>$text</sub>$r`,
-	}
+	markupHtmlMappingSetOnce.Do(func() {
+		markupHtmlMapping = map[*regexp.Regexp]string{
+			yunyun.ItalicText:        `$l<em>$text</em>$r`,
+			yunyun.BoldText:          `$l<strong>$text</strong>$r`,
+			yunyun.VerbatimText:      `$l<code>$text</code>$r`,
+			yunyun.StrikethroughText: `$l<s>$text</s>$r`,
+			yunyun.UnderlineText:     `$l<u>$text</u>$r`,
+			yunyun.SuperscriptText:   `$l<sup>$text</sup>$r`,
+			yunyun.SubscriptText:     `$l<sub>$text</sub>$r`,
+		}
+	})
 
 	// Add the red tomb to the last paragraph on given directories.
 	// Only trigger if the tombs were manually flipped.
@@ -74,6 +72,12 @@ func (e *state) export() io.Reader {
 
 	if e.page.Accoutrement.Toc.IsEnabled() {
 		e.page.Contents = append(e.toc(), e.page.Contents...)
+	}
+
+	if e.page.Accoutrement.PreviewGenerate.IsEnabled() {
+		e.page.Accoutrement.PreviewWidth = puck.PagePreviewWidthString
+		e.page.Accoutrement.PreviewHeight = puck.PagePreviewHeightString
+		akane.RequestPagePreview(e.page.Location, e.page.Title, e.page.Date)
 	}
 
 	// Build the HTML (string) representation of each content
@@ -103,6 +107,7 @@ func (e *state) export() io.Reader {
 		strings.Join(content, ""),
 		e.addFootnotes(),
 	)
+
 	return strings.NewReader(output)
 }
 
@@ -239,7 +244,7 @@ func (e *state) addTomb() {
 	if len(e.page.Contents) < 1 {
 		return
 	}
-	// Find the last paragrapd and attached the tomb.
+	// Find the last paragraph and attached the tomb.
 	for i := len(e.page.Contents) - 1; i >= 0; i-- {
 		// Skip if it's not a paragraph.
 		if !e.page.Contents[i].IsParagraph() {
