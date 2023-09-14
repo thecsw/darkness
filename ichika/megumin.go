@@ -2,12 +2,12 @@ package ichika
 
 import (
 	"fmt"
-	"github.com/thecsw/darkness/ichika/hizuru"
 	"os"
 	"time"
 	"unicode"
 
 	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/ichika/hizuru"
 )
 
 // if true, darkness cleans with no output

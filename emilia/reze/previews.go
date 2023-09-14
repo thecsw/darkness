@@ -3,7 +3,6 @@ package reze
 import (
 	"bytes"
 	"fmt"
-	"golang.org/x/image/webp"
 	"image/png"
 	"io"
 	"math"
@@ -14,6 +13,7 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/fogleman/gg"
 	"github.com/thecsw/rei"
+	"golang.org/x/image/webp"
 )
 
 // PreviewGenerator is a struct that generates a preview image.

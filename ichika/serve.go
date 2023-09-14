@@ -1,8 +1,6 @@
 package ichika
 
 import (
-	"github.com/thecsw/darkness/ichika/hizuru"
-	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -12,11 +10,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/ichika/hizuru"
 	"github.com/thecsw/darkness/yunyun"
 )
 

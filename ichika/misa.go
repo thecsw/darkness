@@ -2,12 +2,12 @@ package ichika
 
 import (
 	"fmt"
-	"github.com/thecsw/darkness/ichika/misa"
 	"os"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/ichika/misa"
 )
 
 // MisaCommandFunc will support many different tools that darkness can support,

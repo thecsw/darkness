@@ -2,17 +2,17 @@ package hizuru
 
 import (
 	"fmt"
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/parse"
-	"github.com/thecsw/rei"
 	"io"
 	"path/filepath"
 	"strings"
 
 	"github.com/karrick/godirwalk"
 	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 	g "github.com/thecsw/gana"
+	"github.com/thecsw/rei"
 )
 
 // FindFilesByExt finds all files with a given extension.

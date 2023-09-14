@@ -1,11 +1,12 @@
 package hizuru
 
 import (
+	"os"
+	"path/filepath"
+
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 	"github.com/thecsw/gana/prelude"
-	"os"
-	"path/filepath"
 )
 
 // openFile attemps to open the full path and return tuple, empty tuple otherwise.

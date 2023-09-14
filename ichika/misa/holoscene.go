@@ -7,11 +7,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/thecsw/darkness/ichika/hizuru"
-
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/ichika/hizuru"
 )
 
 const (

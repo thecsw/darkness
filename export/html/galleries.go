@@ -7,9 +7,8 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/ichika/akane"
-
 	"github.com/thecsw/darkness/emilia/rem"
+	"github.com/thecsw/darkness/ichika/akane"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )

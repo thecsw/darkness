@@ -3,13 +3,13 @@ package html
 import (
 	_ "embed"
 	"fmt"
-	"github.com/thecsw/darkness/ichika/akane"
 	"io"
 	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/ichika/akane"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )

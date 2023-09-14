@@ -2,7 +2,6 @@ package misa
 
 import (
 	"fmt"
-	"github.com/thecsw/darkness/ichika/hizuru"
 	"image"
 	"io"
 	"os"
@@ -12,6 +11,7 @@ import (
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/emilia/rem"
 	"github.com/thecsw/darkness/emilia/reze"
+	"github.com/thecsw/darkness/ichika/hizuru"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 	"github.com/thecsw/rei"
