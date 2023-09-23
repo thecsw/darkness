@@ -17,9 +17,14 @@ import (
 	"github.com/thecsw/rei"
 )
 
+var (
+	akaneless = false
+)
+
 // BuildCommandFunc builds the entire directory.
 func BuildCommandFunc() {
 	cmd := darknessFlagset(buildCommand)
+	cmd.BoolVar(&akaneless, "akaneless", false, "skip akane processing")
 	conf := alpha.BuildConfig(getAlphaOptions(cmd))
 	build(conf)
 	fmt.Println("farewell")
@@ -30,8 +35,10 @@ func build(conf *alpha.DarknessConfig) {
 	parser := parse.BuildParser(conf)
 	exporter := export.BuildExporter(conf)
 
-	// Let's complete the akane requests when done building.
-	defer akane.Do(conf)
+	if !akaneless {
+		// Let's complete the akane requests when done building.
+		defer akane.Do(conf)
+	}
 
 	// Create the pool that reads files and returns their handles.
 	filesPool := komi.NewWithSettings(komi.WorkWithErrors(makima.Woof.Read), &komi.Settings{

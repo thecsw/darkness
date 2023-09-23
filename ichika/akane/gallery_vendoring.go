@@ -24,6 +24,12 @@ func RequestGalleryVendor(item rem.GalleryItem) {
 
 // Go through gallery requests and download the images.
 func doGalleryVendors(conf *alpha.DarknessConfig) {
+	// Clear the request list when we're done.
+	defer func() {
+		galleryVendorsToDownload = galleryVendorsToDownload[:0]
+	}()
+
+	// Go through each gallery vendor request.
 	for _, galleryVendorRequestItem := range galleryVendorsToDownload {
 		item := galleryVendorRequestItem.Item
 		path, downloaded := rem.GalleryVendorItem(conf, item)

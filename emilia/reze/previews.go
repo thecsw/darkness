@@ -8,7 +8,6 @@ import (
 	"math"
 	"os"
 	"strings"
-	"sync"
 
 	"github.com/disintegration/imaging"
 	"github.com/fogleman/gg"
@@ -44,10 +43,6 @@ type PreviewGenerator struct {
 	avatarReadableConverted string
 }
 
-var (
-	previewAvatarGenerateOnce sync.Once
-)
-
 // InitPreviewGenerator initializes a PreviewGenerator.
 func InitPreviewGenerator(
 	TitleFont string,
@@ -69,30 +64,28 @@ func InitPreviewGenerator(
 		avatarFile:      AvatarFile,
 	}
 
-	previewAvatarGenerateOnce.Do(func() {
-		target := rei.Must(os.CreateTemp("", "reze_page_preview.png"))
-		defer func(target *os.File) {
-			err := target.Close()
-			if err != nil {
-				logger.Error("closing temporary file", "loc", target.Name(), "err", err)
-			}
-		}(target)
-		p.avatarProperlySizedFile = target.Name()
-		avatarFileReadable, shouldDelete := convertToReadable(AvatarFile)
-		if shouldDelete {
-			p.avatarReadableConverted = avatarFileReadable
+	target := rei.Must(os.CreateTemp("", "reze_page_preview.png"))
+	defer func(target *os.File) {
+		err := target.Close()
+		if err != nil {
+			logger.Error("closing temporary file", "loc", target.Name(), "err", err)
 		}
-		avatarOriginal := rei.Must(os.Open(avatarFileReadable))
-		defer func(avatarOriginal *os.File) {
-			err := avatarOriginal.Close()
-			if err != nil {
-				logger.Error("closing avatar file", "loc", AvatarFile, "err", err)
-			}
-		}(avatarOriginal)
-		originalDecoded := rei.Must(imaging.Decode(avatarOriginal, imaging.AutoOrientation(false)))
-		resized := imaging.Resize(originalDecoded, p.calculateAvatarSize(), 0, imaging.Lanczos)
-		rei.Try(imaging.Encode(target, resized, imaging.PNG))
-	})
+	}(target)
+	p.avatarProperlySizedFile = target.Name()
+	avatarFileReadable, shouldDelete := convertToReadable(AvatarFile)
+	if shouldDelete {
+		p.avatarReadableConverted = avatarFileReadable
+	}
+	avatarOriginal := rei.Must(os.Open(avatarFileReadable))
+	defer func(avatarOriginal *os.File) {
+		err := avatarOriginal.Close()
+		if err != nil {
+			logger.Error("closing avatar file", "loc", AvatarFile, "err", err)
+		}
+	}(avatarOriginal)
+	originalDecoded := rei.Must(imaging.Decode(avatarOriginal, imaging.AutoOrientation(false)))
+	resized := imaging.Resize(originalDecoded, p.calculateAvatarSize(), 0, imaging.Lanczos)
+	rei.Try(imaging.Encode(target, resized, imaging.PNG))
 
 	// Rescale the avatar if needed.
 	return p

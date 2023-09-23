@@ -42,6 +42,11 @@ const (
 
 // doPagePreviews generates page previews.
 func doPagePreviews(conf *alpha.DarknessConfig) {
+	// Clear the pagePreviewsToGenerate slice when we're done.
+	defer func() {
+		pagePreviewsToGenerate = pagePreviewsToGenerate[:0]
+	}()
+
 	// Let's initialize the page preview generator.
 	generator := reze.InitPreviewGenerator(
 		pagePreviewTitleFont,
