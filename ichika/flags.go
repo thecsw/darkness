@@ -58,6 +58,7 @@ func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 	cmd.BoolVar(&debugEnabled, "debug", false, "enable debug logs")
 	cmd.BoolVar(&useCurrentDirectory, "dev", false, "use local path for urls (development)")
 	cmd.BoolVar(&vendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")
+	cmd.BoolVar(&akaneless, "akaneless", false, "skip akane processing")
 	if err := cmd.Parse(os.Args[2:]); err != nil {
 		puck.Logger.Fatalf("parsing build arguments: %v", err)
 	}

@@ -24,7 +24,6 @@ var (
 // BuildCommandFunc builds the entire directory.
 func BuildCommandFunc() {
 	cmd := darknessFlagset(buildCommand)
-	cmd.BoolVar(&akaneless, "akaneless", false, "skip akane processing")
 	conf := alpha.BuildConfig(getAlphaOptions(cmd))
 	build(conf)
 	fmt.Println("farewell")
