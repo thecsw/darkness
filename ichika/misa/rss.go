@@ -68,16 +68,17 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 
 			// Create the RSS item.
 			items = append(items, rss.Item{
-				XMLName:     xml.Name{},
-				Title:       yunyun.RemoveFormatting(page.Title),
-				Link:        conf.Url + string(page.Location),
-				Description: getDescription(page, conf.Website.DescriptionLength*4) + " [ Continue reading... ]",
-				Author:      page.Author,
-				Category:    &rss.Category{Value: categoryName, Domain: conf.Url + string(categoryLocation)},
-				Enclosure:   &rss.Enclosure{},
-				Guid:        &rss.Guid{Value: conf.Url + string(page.Location), IsPermaLink: true},
-				PubDate:     mustDate(page).Format(rss.RSSFormat),
-				Source:      &rss.Source{Value: conf.Title, Url: conf.Url},
+				XMLName: xml.Name{},
+				Title:   yunyun.RemoveFormatting(yunyun.FancyText(page.Title)),
+				Link:    conf.Url + string(page.Location),
+				Description: yunyun.FancyText(getDescription(page, conf.Website.DescriptionLength*4)) +
+					" [ Continue reading... ]",
+				Author:    page.Author,
+				Category:  &rss.Category{Value: categoryName, Domain: conf.Url + string(categoryLocation)},
+				Enclosure: &rss.Enclosure{},
+				Guid:      &rss.Guid{Value: conf.Url + string(page.Location), IsPermaLink: true},
+				PubDate:   mustDate(page).Format(rss.RSSFormat),
+				Source:    &rss.Source{Value: conf.Title, Url: conf.Url},
 			})
 		}
 	}()
@@ -87,9 +88,9 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 		Version: rss.RSSVersion,
 		Channel: &rss.Channel{
 			XMLName:        xml.Name{},
-			Title:          conf.Title,
+			Title:          yunyun.FancyText(conf.Title),
 			Link:           conf.Url,
-			Description:    rootDescription,
+			Description:    yunyun.FancyText(rootDescription),
 			Language:       conf.RSS.Language,
 			Copyright:      conf.RSS.Copyright,
 			ManagingEditor: conf.RSS.ManagingEditor,

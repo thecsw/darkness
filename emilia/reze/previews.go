@@ -11,6 +11,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/fogleman/gg"
+	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/rei"
 	"golang.org/x/image/webp"
 )
@@ -72,7 +73,7 @@ func InitPreviewGenerator(
 		}
 	}(target)
 	p.avatarProperlySizedFile = target.Name()
-	avatarFileReadable, shouldDelete := convertToReadable(AvatarFile)
+	avatarFileReadable, shouldDelete := convertWebpToPNG(AvatarFile)
 	if shouldDelete {
 		p.avatarReadableConverted = avatarFileReadable
 	}
@@ -102,27 +103,34 @@ func (p PreviewGenerator) Generate(
 	dc.Clear()
 	dc.SetRGB(0, 0, 0)
 
+	// Let's try to dynamically size the font
+	titleLength := float64(len(Title))
+	titleFactor := float64(1)
+	if titleLength > 37 {
+		titleFactor = (37.0 / titleLength)
+	}
+
 	// Calculate the title offsets.
-	titleFontSize := p.width * 0.115
+	titleFontSize := p.width * (0.115 * titleFactor)
 	titleOffsetX := p.width * 0.125
-	titleOffsetY := p.height * 0.444
-	titleWidth := p.width * 0.748
+	titleOffsetY := p.height * 0.38
+	titleWidth := p.width * 0.75
 	titleLineSpacing := 1.4
-	titleAlign := gg.Align(2)
+	titleAlign := gg.AlignRight
 
 	// Calculate the website card offsets.
-	websiteCardOffsetX := p.width * 0.1418439
-	websiteCardOffsetY := p.height * 0.1604278
+	websiteCardOffsetX := p.width * 0.14
+	websiteCardOffsetY := p.height * 0.12
 
 	// Calculate the avatar offsets.
-	websiteCardAvatarSize := p.width * 0.1258865 // should be around 284px
+	websiteCardAvatarSize := p.width * 0.125 // should be around 284px
 	websiteCardAvatarOffsetX := websiteCardOffsetX + 0
 	websiteCardAvatarOffsetY := websiteCardOffsetY + 0
 
 	// Calculate the card title and time offsets.
-	websiteCardAvatarToTextOffsetX := p.width * 0.015957
-	websiteCardTitleOffsetDiffY := p.height * 0.08622
-	websiteCartTimeOffsetDiffY := p.height * 0.1504010
+	websiteCardAvatarToTextOffsetX := p.width * 0.016
+	websiteCardTitleOffsetDiffY := p.height * 0.086
+	websiteCartTimeOffsetDiffY := p.height * 0.15
 
 	// Calculate the title offset.
 	websiteCardTitleSize := titleFontSize * 0.37
@@ -136,11 +144,11 @@ func (p PreviewGenerator) Generate(
 
 	// Draw the title.
 	rei.Try(dc.LoadFontFace(p.titleFont, titleFontSize))
-	dc.DrawStringWrapped(Title, titleOffsetX, titleOffsetY, 0, 0, titleWidth, titleLineSpacing, titleAlign)
+	dc.DrawStringWrapped(yunyun.FancyText(Title), titleOffsetX, titleOffsetY, 0, 0, titleWidth, titleLineSpacing, titleAlign)
 
 	// Draw the website card.
 	rei.Try(dc.LoadFontFace(p.websiteNameFont, websiteCardTitleSize))
-	dc.DrawStringAnchored(Name, websiteCardTitleOffsetX, websiteCardTitleOffsetY, 0, 0)
+	dc.DrawStringAnchored(yunyun.FancyText(Name), websiteCardTitleOffsetX, websiteCardTitleOffsetY, 0, 0)
 
 	// Draw the timestamp of the page.
 	rei.Try(dc.LoadFontFace(p.websiteTimeFont, websiteCardTimeSize))
@@ -160,7 +168,7 @@ func (p PreviewGenerator) Generate(
 
 // calculateAvatarSize calculates the size of the avatar based on the width of the preview.
 func (p PreviewGenerator) calculateAvatarSize() int {
-	return int(math.Floor(p.width * 0.120))
+	return int(math.Floor(p.width * 0.11))
 }
 
 // Close removes the resized avatar file.
@@ -195,7 +203,8 @@ func SaveJpg(reader io.Reader, filename string) error {
 	return nil
 }
 
-func convertToReadable(filename string) (string, bool) {
+// convertWebpToPNG converts a webp image to a png image.
+func convertWebpToPNG(filename string) (string, bool) {
 	if strings.HasSuffix(filename, ".webp") {
 		source := rei.Must(os.Open(filename))
 		img := rei.Must(webp.Decode(source))

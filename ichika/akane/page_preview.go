@@ -78,7 +78,7 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 			logger.Error("Saving page preview", "loc", target, "err", err)
 			continue
 		}
-		logger.Info("Generated page preview", "loc", target)
+		logger.Info("Generated page preview", "loc", conf.Runtime.WorkDir.Rel(target))
 	}
 }
 
