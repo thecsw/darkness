@@ -165,9 +165,12 @@ func RemoveFormatting(what string) string {
 	for _, source := range SpecialTextMarkups {
 		what = source.ReplaceAllString(what, `$l$text$r`)
 	}
+	// only show the text and not the link
 	what = LinkRegexp.ReplaceAllString(what, `$text`)
 	what = KeyboardRegexp.ReplaceAllString(what, `$1`)
 	what = NewLineRegexp.ReplaceAllString(what, `$1`)
+	// don't even show the footnotes
+	what = FootnoteRegexp.ReplaceAllString(what, ` `)
 	return what
 }
 
