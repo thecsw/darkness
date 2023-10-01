@@ -36,7 +36,7 @@ func ServeCommandFunc() {
 	options.Url = "http://127.0.0.1:" + strconv.Itoa(*port)
 	// Override the output extension to .html
 	options.OutputExtension = puck.ExtensionHtml
-	//emilia.InitDarkness(options)
+	// emilia.InitDarkness(options)
 	conf := alpha.BuildConfig(options)
 
 	puck.Logger.SetPrefix("Server 🍩 ")

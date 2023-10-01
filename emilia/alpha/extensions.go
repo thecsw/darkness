@@ -24,5 +24,4 @@ func (conf *DarknessConfig) setupProjectExtensions(options Options) {
 		conf.Runtime.Logger.Warn("Output extension was overwritten", "ext", options.OutputExtension)
 		conf.Project.Output = options.OutputExtension
 	}
-
 }

@@ -13,7 +13,7 @@ import (
 func openFile(v yunyun.FullPathFile) prelude.Option[gana.Tuple[yunyun.FullPathFile, *os.File]] {
 	file, err := os.Open(filepath.Clean(string(v)))
 	if err != nil {
-		//log.Printf("failed to open %s: %s\n", v, err)
+		// log.Printf("failed to open %s: %s\n", v, err)
 		return prelude.None[gana.Tuple[yunyun.FullPathFile, *os.File]]()
 	}
 	return prelude.Some(gana.NewTuple(v, file))

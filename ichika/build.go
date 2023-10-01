@@ -17,9 +17,7 @@ import (
 	"github.com/thecsw/rei"
 )
 
-var (
-	akaneless = false
-)
+var akaneless = false
 
 // BuildCommandFunc builds the entire directory.
 func BuildCommandFunc() {
