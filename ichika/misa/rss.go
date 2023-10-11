@@ -83,6 +83,15 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 		}
 	}()
 
+	// Try to find the pub date, if none, then reuse the build date
+	buildDate := time.Now().Format(rss.RSSFormat)
+	pubDate := buildDate
+
+	firstPage := gana.First(pages)
+	if firstPage != nil {
+		pubDate = mustDate(firstPage).Format(rss.RSSFormat)
+	}
+
 	// Create the final feed.
 	feed := &rss.RSS{
 		Version: rss.RSSVersion,
@@ -95,8 +104,8 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 			Copyright:      conf.RSS.Copyright,
 			ManagingEditor: conf.RSS.ManagingEditor,
 			WebMaster:      conf.RSS.WebMaster,
-			PubDate:        mustDate(gana.First(pages)).Format(rss.RSSFormat),
-			LastBuildDate:  time.Now().Format(rss.RSSFormat),
+			PubDate:        pubDate,
+			LastBuildDate:  buildDate,
 			Category:       conf.RSS.Category,
 			Generator:      rssGenerator,
 			Docs:           rss.RSSDocs,
