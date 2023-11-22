@@ -204,8 +204,12 @@ func (p ParserOrgmode) Do(
 		// isOption is a sink for any options that darkness
 		// does not support, hence will be ignored
 		if isOption(line) {
-			givenLine := line[2:]
-			option := strings.Split(givenLine, " ")[0]
+			givenLine := line[optionPrefixLen:]
+			optionAndValue := strings.Split(givenLine, " ")
+			if len(optionAndValue) < 2 {
+				continue
+			}
+			option := optionAndValue[0]
 			if action, ok := optionsActions[option]; ok {
 				action(rawLine)
 			}
@@ -237,7 +241,13 @@ func (p ParserOrgmode) Do(
 			}
 			// If we were in a list, save it as a list
 			if hasFlag(yunyun.InListFlag) {
-				rawListItems := strings.Split(previousContext, listSeparatorWS)[1:]
+				splitItems := strings.Split(previousContext, listSeparatorWS)
+				// Shouldn't happen, continue as a failure
+				if len(splitItems) < 2 {
+					continue
+				}
+				// the first item is a hyphen, so we skip it
+				rawListItems := splitItems[1:]
 				matches := make([]yunyun.ListItem, len(rawListItems))
 				for i, match := range rawListItems {
 					listItemRaw := strings.Replace(match, "- ", "", 1)
@@ -261,7 +271,13 @@ func (p ParserOrgmode) Do(
 			}
 			// If we were in a table, save it as such
 			if hasFlag(yunyun.InTableFlag) {
-				rows := strings.Split(previousContext, tableSeparatorWS)[1:]
+				splitItems := strings.Split(previousContext, tableSeparatorWS)
+				// Shouldn't happen, continue as a failure
+				if len(splitItems) < 2 {
+					continue
+				}
+				// the first item is a vertical bar, so we skip it
+				rows := splitItems[1:]
 				tableData := make([][]string, len(rows))
 				for i, row := range rows {
 					row = strings.TrimSpace(row)

@@ -7,6 +7,7 @@ import (
 const (
 	commentPrefix      = "# "
 	optionPrefix       = "#+"
+	optionPrefixLen    = len(optionPrefix)
 	optionDropCap      = "drop_cap"
 	optionBeginSource  = "begin_src"
 	optionEndSource    = "end_src"
