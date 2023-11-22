@@ -206,7 +206,7 @@ func (p ParserOrgmode) Do(
 		if isOption(line) {
 			givenLine := line[optionPrefixLen:]
 			optionAndValue := strings.Split(givenLine, " ")
-			if len(optionAndValue) < 2 {
+			if len(optionAndValue) < 1 {
 				continue
 			}
 			option := optionAndValue[0]
@@ -243,7 +243,7 @@ func (p ParserOrgmode) Do(
 			if hasFlag(yunyun.InListFlag) {
 				splitItems := strings.Split(previousContext, listSeparatorWS)
 				// Shouldn't happen, continue as a failure
-				if len(splitItems) < 2 {
+				if len(splitItems) < 1 {
 					continue
 				}
 				// the first item is a hyphen, so we skip it
@@ -273,7 +273,7 @@ func (p ParserOrgmode) Do(
 			if hasFlag(yunyun.InTableFlag) {
 				splitItems := strings.Split(previousContext, tableSeparatorWS)
 				// Shouldn't happen, continue as a failure
-				if len(splitItems) < 2 {
+				if len(splitItems) < 1 {
 					continue
 				}
 				// the first item is a vertical bar, so we skip it
