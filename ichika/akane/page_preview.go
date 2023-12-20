@@ -2,12 +2,14 @@ package akane
 
 import (
 	"path/filepath"
+	"runtime"
 	"unicode"
 
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/emilia/reze"
 	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/komi"
 	"github.com/thecsw/rei"
 )
 
@@ -65,8 +67,7 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 		}
 	}(generator)
 
-	// Let's start going through the page preview requests.
-	for _, pagePreview := range pagePreviewsToGenerate {
+	processPagePreviewRequest := func(pagePreview pagePreviewRequest) {
 		// Get the reader for the generated preview.
 		reader := rei.Must(generator.Generate(removeNonPrintables(pagePreview.Title, conf.Title, pagePreview.Time)))
 		// Find the path to save the preview to.
@@ -76,10 +77,23 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 		// Save the preview as a jpg.
 		if err := reze.SaveJpg(reader, string(target)); err != nil {
 			logger.Error("Saving page preview", "loc", target, "err", err)
-			continue
+			return
 		}
 		logger.Info("Generated page preview", "loc", conf.Runtime.WorkDir.Rel(target))
 	}
+
+	pageGeneratorPool := komi.NewWithSettings(komi.WorkSimple(processPagePreviewRequest), &komi.Settings{
+		Name:     "Komi Page Preview 🫦 ",
+		Laborers: runtime.NumCPU(),
+	})
+
+	// Let's start going through the page preview requests.
+	for _, pagePreview := range pagePreviewsToGenerate {
+		pageGeneratorPool.Submit(pagePreview)
+	}
+
+	// Block until all work is complete.
+	pageGeneratorPool.Close()
 }
 
 func removeNonPrintables(title, name, time string) (string, string, string) {
