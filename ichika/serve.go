@@ -42,6 +42,8 @@ func ServeCommandFunc() {
 	puck.Logger.SetPrefix("Server 🍩 ")
 
 	build(conf)
+	// disable akane after the first build
+	akaneless = true
 	puck.Logger.Print("Serving the files", "url", options.Url)
 
 	r := chi.NewRouter()
