@@ -57,12 +57,13 @@ func BuildConfig(options Options) *DarknessConfig {
 			os.Exit(1)
 		}
 	}
-	conf.Runtime.isUrlLocal = !yunyun.UrlRegexp.MatchString(conf.Url)
 
 	// Check if custom Url has been passed
 	if len(options.Url) > 0 {
 		conf.Url = options.Url
 	}
+
+	conf.Runtime.isUrlLocal = !yunyun.UrlRegexp.MatchString(conf.Url)
 
 	// Url must end with a trailing forward slash
 	if !strings.HasSuffix(conf.Url, "/") {
