@@ -194,12 +194,46 @@ func (e *state) table(content *yunyun.Content) string {
 			if i == 0 && content.TableHeaders {
 				topTag = "th"
 			}
-			content.Table[i][j] = fmt.Sprintf("<%s>%s</%s>", topTag, processText(v), topTag)
+
+			// Check if the cell is a special cell
+			toWrite := ""
+			if insideCell, isSpecial := tableSpecialCell(v); isSpecial {
+				toWrite = insideCell
+			} else {
+				toWrite = processText(v)
+			}
+
+			content.Table[i][j] = fmt.Sprintf("<%s>%s</%s>", topTag, toWrite, topTag)
 		}
 		rows[i] = fmt.Sprintf("<tr>\n%s</tr>", strings.Join(content.Table[i], "\n"))
 	}
 	tableHtml := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
 	return fmt.Sprintf(tableTemplate, content.CustomHtmlTags, content.Caption, tableHtml)
+}
+
+const (
+	// tableSpecialImagePrefix is the prefix for special cells that contain an image.
+	tableSpecialImagePrefix = "#+image:"
+)
+
+// tableSpecialCell checks if the cell is a special cell, and if so, returns the HTML
+// representation of it, and a boolean indicating that it was indeed a special cell.
+// for example, if the cell is "#+image: [link][text "description"]
+// it will return the HTML representation of the image, and true.
+func tableSpecialCell(what string) (string, bool) {
+	if link := yunyun.ExtractLink(what); link != nil {
+		// If the link is an image, return the HTML representation of it.
+		if strings.HasPrefix(link.Text, tableSpecialImagePrefix) {
+			return fmt.Sprintf(
+				`<img class="image" src="%s" title="%s" alt="%s">`,
+				link.Link,
+				yunyun.RemoveFormatting(strings.TrimPrefix(link.Description, tableSpecialImagePrefix)),
+				yunyun.RemoveFormatting(strings.TrimPrefix(link.Text, tableSpecialImagePrefix)),
+			), true
+		}
+	}
+	return what, false
+
 }
 
 // table gives an HTML formatted table

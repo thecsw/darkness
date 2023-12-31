@@ -2,6 +2,7 @@ package yunyun
 
 import (
 	"regexp"
+	"strings"
 )
 
 // Markings is used to store the regex patterns for
@@ -171,7 +172,7 @@ func RemoveFormatting(what string) string {
 	what = NewLineRegexp.ReplaceAllString(what, `$1`)
 	// don't even show the footnotes
 	what = FootnoteRegexp.ReplaceAllString(what, ` `)
-	return what
+	return strings.TrimSpace(what)
 }
 
 const (
