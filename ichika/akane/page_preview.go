@@ -3,6 +3,7 @@ package akane
 import (
 	"path/filepath"
 	"runtime"
+	"sync"
 	"unicode"
 
 	"github.com/thecsw/darkness/emilia/alpha"
@@ -67,6 +68,9 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 		}
 	}(generator)
 
+	waiting := sync.WaitGroup{}
+	waiting.Add(len(pagePreviewsToGenerate))
+
 	processPagePreviewRequest := func(pagePreview pagePreviewRequest) {
 		// Get the reader for the generated preview.
 		reader := rei.Must(generator.Generate(removeNonPrintables(pagePreview.Title, conf.Title, pagePreview.Time)))
@@ -80,6 +84,7 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 			return
 		}
 		logger.Info("Generated page preview", "loc", conf.Runtime.WorkDir.Rel(target))
+		waiting.Done()
 	}
 
 	pageGeneratorPool := komi.NewWithSettings(komi.WorkSimple(processPagePreviewRequest), &komi.Settings{
@@ -91,6 +96,8 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 	for _, pagePreview := range pagePreviewsToGenerate {
 		pageGeneratorPool.Submit(pagePreview)
 	}
+
+	waiting.Wait()
 
 	// Block until all work is complete.
 	pageGeneratorPool.Close()
