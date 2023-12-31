@@ -27,6 +27,7 @@ const (
 	optionOptions      = "options:"
 	optionAttributes   = "attr_darkness:"
 	optionHtmlTags     = "html_tags:"
+	optionAttrHtml     = "attr_html:"
 	optionAuthor       = "author:"
 	horizontalLine     = "-----"
 

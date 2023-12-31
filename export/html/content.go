@@ -243,7 +243,7 @@ func processTableCell(what string) string {
 
 const (
 	// tableSpecialImagePrefix is the prefix for special cells that contain an image.
-	tableSpecialImagePrefix = "#+image:"
+	tableSpecialImagePrefix = "file:"
 )
 
 // tableSpecialCell checks if the cell is a special cell, and if so, returns the HTML
