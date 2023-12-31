@@ -187,28 +187,58 @@ func (e *state) attentionBlock(content *yunyun.Content) string {
 
 // table gives an HTML formatted table
 func (e *state) table(content *yunyun.Content) string {
-	rows := make([]string, len(content.Table))
-	for i := range content.Table {
-		for j, v := range content.Table[i] {
-			topTag := "td"
-			if i == 0 && content.TableHeaders {
-				topTag = "th"
-			}
+	var headers, rows []string
+	numRows := len(content.Table)
 
-			// Check if the cell is a special cell
-			toWrite := ""
-			if insideCell, isSpecial := tableSpecialCell(v); isSpecial {
-				toWrite = insideCell
-			} else {
-				toWrite = processText(v)
-			}
-
-			content.Table[i][j] = fmt.Sprintf("<%s>%s</%s>", topTag, toWrite, topTag)
+	// If there are headers, we need to make sure we don't count them as rows.
+	if content.TableHeaders {
+		headers = make([]string, len(content.Table[0]))
+		numRows--
+		for j, header := range content.Table[0] {
+			headers[j] = fmt.Sprintf("<th>%s</th>", processTableCell(header))
 		}
-		rows[i] = fmt.Sprintf("<tr>\n%s</tr>", strings.Join(content.Table[i], "\n"))
 	}
-	tableHtml := fmt.Sprintf("<table>%s</table>", strings.Join(rows, "\n"))
+
+	// If there are rows, start making them.
+	if numRows > 0 {
+		rows = make([]string, numRows)
+		// Exclude the headers from the rows by reslicing.
+		if content.TableHeaders {
+			content.Table = content.Table[1:]
+		}
+		// Make the rows.
+		for i, row := range content.Table {
+			for j, v := range row {
+				content.Table[i][j] = fmt.Sprintf("<td>%s</td>", processTableCell(v))
+			}
+			rows[i] = fmt.Sprintf("<tr>\n%s</tr>", strings.Join(content.Table[i], "\n"))
+		}
+	}
+
+	// Make the html table.
+	tableHtml := fmt.Sprintf(
+		`<table>
+<thead>
+<tr>
+%s
+</tr>
+</thead>
+<tbody>
+%s
+</tbody>
+</table>`,
+		strings.Join(headers, "\n"),
+		strings.Join(rows, "\n"),
+	)
 	return fmt.Sprintf(tableTemplate, content.CustomHtmlTags, content.Caption, tableHtml)
+}
+
+// processTableCell returns the HTML representation of a table cell given its content.
+func processTableCell(what string) string {
+	if insideCell, isSpecial := tableSpecialCell(what); isSpecial {
+		return insideCell
+	}
+	return processText(what)
 }
 
 const (
@@ -233,7 +263,6 @@ func tableSpecialCell(what string) (string, bool) {
 		}
 	}
 	return what, false
-
 }
 
 // table gives an HTML formatted table
