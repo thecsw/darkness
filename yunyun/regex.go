@@ -14,6 +14,10 @@ type Markings struct {
 	Bold string
 	// Italic defaults to orgmode's `/`.
 	Italic string
+	// */bold italic/*
+	BoldItalic string
+	// /*italic bold*/
+	ItalicBold string
 	// Verbatim defaults to orgmode's `[~=]`.
 	Verbatim string
 	// Strikethrough defaults to orgmode's `+` (need to escape).
@@ -37,6 +41,8 @@ var (
 	ActiveMarkings = Markings{
 		Bold:             `\*`,
 		Italic:           `/`,
+		BoldItalic:       `\*/`,
+		ItalicBold:       `/\*`,
 		Verbatim:         `[~=]`,
 		Strikethrough:    `\+`,
 		Underline:        `_`,
@@ -55,8 +61,8 @@ var (
 func (m Markings) BuildRegex() {
 	BoldText = SymmetricEmphasis(m.Bold)
 	ItalicText = SymmetricEmphasis(m.Italic)
-	BoldItalicTextBegin = regexp.MustCompile(`(?mU)(^|[ ()_%<>])` + m.Italic + m.Bold)
-	BoldItalicTextEnd = regexp.MustCompile(`(?mU)` + m.Bold + m.Italic + `($|[ (),.!?;&_%><])`)
+	BoldItalicText = AsymmetricEmphasis(m.BoldItalic, m.ItalicBold)
+	ItalicBoldText = AsymmetricEmphasis(m.ItalicBold, m.BoldItalic)
 	VerbatimText = SymmetricEmphasis(m.Verbatim)
 	StrikethroughText = SymmetricEmphasis(m.Strikethrough)
 	UnderlineText = SymmetricEmphasis(m.Underline)
@@ -70,8 +76,9 @@ func (m Markings) BuildRegex() {
 	linkDescIndex = LinkRegexp.SubexpIndex("desc")
 
 	SpecialTextMarkups = []*regexp.Regexp{
-		BoldText, ItalicText, VerbatimText, StrikethroughText,
-		UnderlineText, SuperscriptText, SubscriptText,
+		BoldItalicText, ItalicBoldText, BoldText, ItalicText,
+		VerbatimText, StrikethroughText, UnderlineText,
+		SuperscriptText, SubscriptText,
 	}
 }
 
@@ -127,10 +134,10 @@ var (
 	BoldText *regexp.Regexp
 	// ItalicText is the regexp for matching italic text.
 	ItalicText *regexp.Regexp
-	// BoldItalicTextBegin is the regexp for matching bold-italic text from the left.
-	BoldItalicTextBegin *regexp.Regexp
-	// BoldItalicTextEnd is the regexp for matching bold-italic text from the right.
-	BoldItalicTextEnd *regexp.Regexp
+	// matches "*/bold italic/*"
+	BoldItalicText *regexp.Regexp
+	// matches "/*italic bold*/"
+	ItalicBoldText *regexp.Regexp
 	// VerbatimText is the regexp for matching verbatim text.
 	VerbatimText *regexp.Regexp
 	// StrikethroughText is the regexp for matching strikethrough text.

@@ -50,6 +50,8 @@ func (e *state) export() io.Reader {
 	// Initialize the html mapping after yunyun built regexes.
 	markupHtmlMappingSetOnce.Do(func() {
 		markupHtmlMapping = map[*regexp.Regexp]string{
+			yunyun.BoldItalicText:    `$l<strong><em>$text</em></strong>$r`,
+			yunyun.ItalicBoldText:    `$l<em><strong>$text</strong></em>$r`,
 			yunyun.ItalicText:        `$l<em>$text</em>$r`,
 			yunyun.BoldText:          `$l<strong>$text</strong>$r`,
 			yunyun.VerbatimText:      `$l<code>$text</code>$r`,
