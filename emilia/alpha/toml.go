@@ -134,6 +134,9 @@ type NavigationConfig struct {
 
 	// Hide is the path where to hide the element
 	Hide yunyun.RelativePathDir `toml:"hide"`
+
+	// Will hide the element if this value is encountered.
+	HideIf yunyun.RelativePathDir `toml:"hide_if"`
 }
 
 // RSSConfig is for filling out rss stuff.

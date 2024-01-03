@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"io"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -209,14 +210,33 @@ func (e *state) authorHeader() string {
 	for i := 1; i <= len(e.conf.Navigation); i++ {
 		// Get the navigation element read from Darkness' toml.
 		v := e.conf.Navigation[strconv.FormatInt(int64(i), 10)]
+
+		// How about adding a "Go Up ☝️" button?
+		fullLoc := filepath.Join("/", string(e.page.Location))
+
 		// If the nav element wants to hide in this location, then skip it.
-		if e.page.Location == v.Hide {
+		if yunyun.RelativePathDir(fullLoc) == v.Hide {
 			continue
 		}
-		// Build each of the navlinks and concat the hrefs.
-		navLinks = append(navLinks, fmt.Sprintf(`<a href="%s">%s</a>`,
-			e.conf.Runtime.Join(yunyun.RelativePathFile(v.Link)),
-			v.Title))
+
+		whatToJoin := v.Link
+		// Relative path.
+		if !strings.HasPrefix(string(v.Link), "/") {
+			whatToJoin = yunyun.RelativePathDir(filepath.Join(string(e.page.Location), string(v.Link)))
+		}
+
+		// If it matched hideif, then exist.
+		if len(v.HideIf) > 0 && yunyun.RelativePathDir(filepath.Join("/", string(whatToJoin))) == v.HideIf {
+			continue
+		}
+
+		// Otherwise, join against the relative path of this page.
+		navLinks = append(navLinks,
+			fmt.Sprintf(`<a href="%s">%s</a>`,
+				e.conf.Runtime.Join(yunyun.RelativePathFile(whatToJoin)),
+				v.Title,
+			))
+
 	}
 
 	// Close the navigation links span.
