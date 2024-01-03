@@ -66,10 +66,19 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 				categoryLocation = categoryPage.Location
 			}
 
+			// Override the title if the page has a custom RSS title.
+			finalTitle := page.Title
+			if len(page.Accoutrement.RssTitle) > 0 {
+				finalTitle = page.Accoutrement.RssTitle
+			}
+
+			// Add the RSS prefix to the title.
+			finalTitle = page.Accoutrement.RssPrefix + " " + finalTitle
+
 			// Create the RSS item.
 			items = append(items, rss.Item{
 				XMLName: xml.Name{},
-				Title:   yunyun.RemoveFormatting(yunyun.FancyText(page.Title)),
+				Title:   yunyun.RemoveFormatting(yunyun.FancyText(finalTitle)),
 				Link:    conf.Url + string(page.Location),
 				Description: yunyun.FancyText(getDescription(page, conf.Website.DescriptionLength*4)) +
 					" [ Continue reading... ]",

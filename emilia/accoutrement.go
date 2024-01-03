@@ -21,6 +21,8 @@ const (
 	optionPreviewHeigh    = `preview-height`
 	optionPreviewGenerate = `preview-generate`
 	optionToc             = `toc`
+	optionRssPrefix       = `rss-prefix`
+	optionRssTitle        = `rss-title`
 )
 
 var accoutrementActions = map[string]func(string, *yunyun.Accoutrement){
@@ -34,6 +36,8 @@ var accoutrementActions = map[string]func(string, *yunyun.Accoutrement){
 	optionPreviewHeigh:    accoutrementPreviewHeight,
 	optionPreviewGenerate: accoutrementPreviewGenerate,
 	optionToc:             accoutrementToc,
+	optionRssPrefix:       accoutrementRssPrefix,
+	optionRssTitle:        accoutrementRssTitle,
 }
 
 // InitializeAccoutrement fills accoutrement according to the config
@@ -128,6 +132,16 @@ func accoutrementPreviewGenerate(what string, target *yunyun.Accoutrement) {
 // accoutrementToc sets the toc option of the accoutrement.
 func accoutrementToc(what string, target *yunyun.Accoutrement) {
 	accoutrementBool(what, &target.Toc)
+}
+
+// accoutrementRssPrefix sets the rss prefix option of the accoutrement.
+func accoutrementRssPrefix(what string, target *yunyun.Accoutrement) {
+	target.RssPrefix = what
+}
+
+// accoutrementRssTitle sets the rss title option of the accoutrement.
+func accoutrementRssTitle(what string, target *yunyun.Accoutrement) {
+	target.RssTitle = what
 }
 
 // accoutrementBool sets the bool value of the target according to the what.

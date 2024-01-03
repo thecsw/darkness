@@ -28,6 +28,10 @@ type Accoutrement struct {
 	Math AccoutrementFlip
 	// Toc enables/disables table of contents
 	Toc AccoutrementFlip
+	// RssPrefix is the prefix for the title of the page in the rss feed.
+	RssPrefix string
+	// RssTitle is the title of the page in the rss feed. Still prefixed with RssPrefix.
+	RssTitle string
 }
 
 // ExcludeHtmlHeadContains is a type to store excluded keywords for html head.
