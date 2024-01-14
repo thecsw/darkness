@@ -12,6 +12,7 @@ import (
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/ichika/hizuru"
+	"github.com/thecsw/darkness/ichika/kuroko"
 	"github.com/thecsw/darkness/yunyun"
 )
 
@@ -80,10 +81,12 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 			continue
 		}
 
-		// Skip if the same
-		if len(output) == len(newOutput) {
-			skipped.Add(1)
-			continue
+		// Skip if the same, unless forced.
+		if !kuroko.Force {
+			if len(output) == len(newOutput) {
+				skipped.Add(1)
+				continue
+			}
 		}
 
 		// Write the new output to the file.
