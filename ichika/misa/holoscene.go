@@ -6,11 +6,13 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync/atomic"
 
+	"github.com/dustin/go-humanize"
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/narumi"
-	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/ichika/hizuru"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 const (
@@ -21,7 +23,7 @@ const (
 func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 	if dryRun {
 		if err := os.Mkdir(holosceneTitlesTempDir, 0o750); err != nil {
-			puck.Logger.Fatalf("creating temporary directory %s: %v", holosceneTitlesTempDir, err)
+			logger.Fatalf("creating temporary directory %s: %v", holosceneTitlesTempDir, err)
 		}
 	}
 
@@ -40,7 +42,7 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 		v := filepath.Clean(v)
 		file, err := os.Open(v)
 		if err != nil {
-			puck.Logger.Errorf("opening file %s: %v", v, err)
+			logger.Errorf("opening file %s: %v", v, err)
 			continue
 		}
 		actuallyFound = append(actuallyFound, file)
@@ -49,16 +51,18 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 	// Add holoscene titles to all the output files.
 	fmt.Printf("Adding holoscene titles to %d output files\n", len(actuallyFound))
 
+	skipped := atomic.Int32{}
+
 	// Add holoscene titles to all the output files.
 	for _, foundOutput := range actuallyFound {
 		// Read the output file.
 		filename := foundOutput.Name()
 		output, err := io.ReadAll(foundOutput)
 		if err := foundOutput.Close(); err != nil {
-			puck.Logger.Errorf("closing file %s: %v", filename, err)
+			logger.Errorf("closing file %s: %v", filename, err)
 		}
 		if err != nil {
-			puck.Logger.Errorf("reading file %s: %v", filename, err)
+			logger.Errorf("reading file %s: %v", filename, err)
 			continue
 		}
 
@@ -72,21 +76,29 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 			file, err = os.Create(filepath.Clean(filename))
 		}
 		if err != nil {
-			puck.Logger.Errorf("overwriting %s: %v", filename, err)
+			logger.Errorf("overwriting %s: %v", filename, err)
+			continue
+		}
+
+		// Skip if the same
+		if len(output) == len(newOutput) {
+			skipped.Add(1)
 			continue
 		}
 
 		// Write the new output to the file.
 		written, err := io.Copy(file, strings.NewReader(newOutput))
 		if err := file.Close(); err != nil {
-			puck.Logger.Errorf("closing file %s: %v", file.Name(), err)
+			logger.Errorf("closing file %s: %v", file.Name(), err)
 		}
 		if err != nil {
-			puck.Logger.Errorf("writing file %s: %v", file.Name(), err)
+			logger.Errorf("writing file %s: %v", file.Name(), err)
 			continue
 		}
 
-		puck.Logger.Printf("Wrote %d bytes to %s", written, file.Name())
+		logger.Info("Added holoscene titles",
+			"bytes", humanize.Bytes(uint64(written)),
+			"file", conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(file.Name())))
 		if dryRun {
 			fmt.Printf(": %s", strings.TrimPrefix(filename, string(conf.Runtime.WorkDir)))
 		}
@@ -94,7 +106,12 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 
 	if dryRun {
 		if err := os.RemoveAll(holosceneTitlesTempDir); err != nil {
-			puck.Logger.Errorf("clearing temporary directory %s: %v", holosceneTitlesTempDir, err)
+			logger.Errorf("clearing temporary directory %s: %v", holosceneTitlesTempDir, err)
 		}
+	}
+
+	// Write a notice if we skipped any preview generations.
+	if numSkipped := skipped.Load(); numSkipped > 0 {
+		logger.Warn("Some outputs weren't affected, use -force to overwrite", "skipped", numSkipped)
 	}
 }

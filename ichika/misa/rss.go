@@ -130,7 +130,7 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 		xmlTarget = string(conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(rssFilename)))
 		xmlFile, err = os.Create(filepath.Clean(xmlTarget))
 		if err != nil {
-			puck.Logger.Error("Creating file", "path", xmlTarget, "err", err)
+			logger.Error("Creating file", "path", xmlTarget, "err", err)
 			os.Exit(1)
 		}
 	}
@@ -138,14 +138,14 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 	encoder := xml.NewEncoder(xmlFile)
 	encoder.Indent("", "  ")
 	if err := encoder.Encode(feed); err != nil {
-		puck.Logger.Error("Encoding to xml", "path", xmlTarget, "err", err)
+		logger.Error("Encoding to xml", "path", xmlTarget, "err", err)
 		os.Exit(1)
 	}
 	if err := xmlFile.Close(); err != nil {
-		puck.Logger.Error("Closing file", "path", xmlTarget, "err", err)
+		logger.Error("Closing file", "path", xmlTarget, "err", err)
 		os.Exit(1)
 	}
-	puck.Logger.Print("Created rss file", "path", xmlTarget)
+	logger.Info("Created rss file", "path", conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(xmlTarget)))
 }
 
 // getDate takes a page and returns its date if any found.
