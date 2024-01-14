@@ -69,6 +69,15 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 
 		// Add holoscene titles to the output.
 		newOutput := narumi.AddHolosceneTitles(string(output), -1)
+
+		// Skip if the same, unless forced.
+		if !kuroko.Force {
+			if len(output) == len(newOutput) {
+				skipped.Add(1)
+				continue
+			}
+		}
+
 		var file *os.File
 		if dryRun {
 			file, err = os.CreateTemp(holosceneTitlesTempDir,
@@ -79,14 +88,6 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 		if err != nil {
 			logger.Errorf("overwriting %s: %v", filename, err)
 			continue
-		}
-
-		// Skip if the same, unless forced.
-		if !kuroko.Force {
-			if len(output) == len(newOutput) {
-				skipped.Add(1)
-				continue
-			}
 		}
 
 		// Write the new output to the file.
