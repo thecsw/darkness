@@ -10,14 +10,13 @@ import (
 	"github.com/thecsw/darkness/export"
 	"github.com/thecsw/darkness/ichika/akane"
 	"github.com/thecsw/darkness/ichika/hizuru"
+	"github.com/thecsw/darkness/ichika/kuroko"
 	"github.com/thecsw/darkness/ichika/makima"
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/komi"
 	"github.com/thecsw/rei"
 )
-
-var akaneless = false
 
 // BuildCommandFunc builds the entire directory.
 func BuildCommandFunc() {
@@ -32,7 +31,7 @@ func build(conf *alpha.DarknessConfig) {
 	parser := parse.BuildParser(conf)
 	exporter := export.BuildExporter(conf)
 
-	if !akaneless {
+	if !kuroko.Akaneless {
 		// Let's complete the akane requests when done building.
 		defer akane.Do(conf)
 	}
@@ -41,7 +40,7 @@ func build(conf *alpha.DarknessConfig) {
 	filesPool := komi.NewWithSettings(komi.WorkWithErrors(makima.Woof.Read), &komi.Settings{
 		Name:     "Komi Reading 📚 ",
 		Laborers: runtime.NumCPU(),
-		Debug:    debugEnabled,
+		Debug:    kuroko.DebugEnabled,
 	})
 	filesError := rei.Must(filesPool.Errors())
 	go logErrors("reading", filesError)
@@ -49,22 +48,22 @@ func build(conf *alpha.DarknessConfig) {
 	// Create a pool that take a files handle and parses it out into yunyun pages.
 	parserPool := komi.NewWithSettings(komi.Work(makima.Woof.Parse), &komi.Settings{
 		Name:     "Komi Parsing 🧹 ",
-		Laborers: customNumWorkers,
-		Debug:    debugEnabled,
+		Laborers: kuroko.CustomNumWorkers,
+		Debug:    kuroko.DebugEnabled,
 	})
 
 	// Create a pool that that takes yunyun pages and exports them into request format.
 	exporterPool := komi.NewWithSettings(komi.Work(makima.Woof.Export), &komi.Settings{
 		Name:     "Komi Exporting 🥂 ",
-		Laborers: customNumWorkers,
-		Debug:    debugEnabled,
+		Laborers: kuroko.CustomNumWorkers,
+		Debug:    kuroko.DebugEnabled,
 	})
 
 	// Create a pool that reads the exported data and writes them to target files.
 	writerPool := komi.NewWithSettings(komi.WorkSimpleWithErrors(makima.Woof.Write), &komi.Settings{
 		Name:     "Komi Writing 🎸",
 		Laborers: runtime.NumCPU(),
-		Debug:    debugEnabled,
+		Debug:    kuroko.DebugEnabled,
 	})
 	writersErrors := rei.Must(writerPool.Errors())
 	go logErrors("writer", writersErrors)

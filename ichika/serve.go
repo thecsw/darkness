@@ -17,6 +17,7 @@ import (
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/ichika/hizuru"
+	"github.com/thecsw/darkness/ichika/kuroko"
 	"github.com/thecsw/darkness/yunyun"
 )
 
@@ -43,7 +44,7 @@ func ServeCommandFunc() {
 
 	build(conf)
 	// disable akane after the first build
-	akaneless = true
+	kuroko.Akaneless = true
 	puck.Logger.Print("Serving the files", "url", options.Url)
 
 	r := chi.NewRouter()
@@ -147,7 +148,7 @@ func launchWatcher(conf *alpha.DarknessConfig) {
 			log.Fatal(err)
 		}
 	}
-	puck.Logger.Print("Listening to file changes", "num", len(watcher.WatchList()), "dir", workDir)
+	puck.Logger.Print("Listening to file changes", "num", len(watcher.WatchList()), "dir", conf.Runtime.WorkDir)
 
 	puck.Logger.Print("Press Ctrl-C to stop the server")
 	// Block main goroutine forever.

@@ -4,11 +4,13 @@ import (
 	"path/filepath"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"unicode"
 
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/emilia/reze"
+	"github.com/thecsw/darkness/ichika/kuroko"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/komi"
 	"github.com/thecsw/rei"
@@ -70,12 +72,21 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 
 	waiting := sync.WaitGroup{}
 	waiting.Add(len(pagePreviewsToGenerate))
+	skipped := atomic.Int32{}
 
 	processPagePreviewRequest := func(pagePreview pagePreviewRequest) {
-		// Get the reader for the generated preview.
-		reader := rei.Must(generator.Generate(removeNonPrintables(pagePreview.Title, conf.Title, pagePreview.Time)))
 		// Find the path to save the preview to.
 		relativeTarget := yunyun.RelativePathFile(filepath.Join(string(pagePreview.Location), pagePreviewFilename))
+		// Skip if exists, unless forced.
+		if !kuroko.Force {
+			if exists, _ := rei.FileExists(string(relativeTarget)); exists {
+				skipped.Add(1)
+				waiting.Done()
+				return
+			}
+		}
+		// Get the reader for the generated preview.
+		reader := rei.Must(generator.Generate(removeNonPrintables(pagePreview.Title, conf.Title, pagePreview.Time)))
 		// Get it with the work directory.
 		target := conf.Runtime.WorkDir.Join(relativeTarget)
 		// Save the preview as a jpg.
@@ -101,6 +112,11 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 
 	// Block until all work is complete.
 	pageGeneratorPool.Close()
+
+	// Write a notice if we skipped any preview generations.
+	if numSkipped := skipped.Load(); numSkipped > 0 {
+		logger.Warn("Some previews already existed, use -force to overwrite", "skipped", numSkipped)
+	}
 }
 
 func removeNonPrintables(title, name, time string) (string, string, string) {
