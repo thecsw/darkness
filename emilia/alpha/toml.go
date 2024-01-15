@@ -183,6 +183,14 @@ type RSSConfig struct {
 	//
 	// Example: "<category>Newspapers</category>"
 	Category string `toml:"category"`
+
 	// If true, darkness will add the rss icon to the menu.
 	Enable bool `toml:"enable"`
+
+	// Timezone sets the default timezone for RSS timestamps.
+	Timezone string `toml:"timezone"`
+
+	// DefaultHour defines the hour value in RSS timestamp if one
+	// is not provided. Use the 24 hrs.
+	DefaultHour int `toml:"default_hour"`
 }

@@ -75,6 +75,17 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 			// Add the RSS prefix to the title.
 			finalTitle = page.Accoutrement.RssPrefix + " " + finalTitle
 
+			// Let's update the time if needed.
+			parsedDate, _ := getDate(page)
+			finalLocation, err := time.LoadLocation(conf.RSS.Timezone)
+			// Fallback to UTC
+			if err != nil {
+				finalLocation = time.UTC
+			}
+			finalDate := time.Date(
+				parsedDate.Year(), parsedDate.Month(), parsedDate.Day(),
+				conf.RSS.DefaultHour, 0, 0, 0, finalLocation)
+
 			// Create the RSS item.
 			items = append(items, rss.Item{
 				XMLName: xml.Name{},
@@ -86,7 +97,7 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 				Category:  &rss.Category{Value: categoryName, Domain: conf.Url + string(categoryLocation)},
 				Enclosure: &rss.Enclosure{},
 				Guid:      &rss.Guid{Value: conf.Url + string(page.Location), IsPermaLink: true},
-				PubDate:   mustDate(page).Format(rss.RSSFormat),
+				PubDate:   finalDate.Format(rss.RSSFormat),
 				Source:    &rss.Source{Value: conf.Title, Url: conf.Url},
 			})
 		}
