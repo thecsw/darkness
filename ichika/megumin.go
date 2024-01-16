@@ -8,6 +8,7 @@ import (
 
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/ichika/hizuru"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 // if true, darkness cleans with no output
@@ -51,11 +52,12 @@ func removeOutputFiles(conf *alpha.DarknessConfig) {
 	inputFilenames := hizuru.FindFilesByExtSimple(conf)
 	for _, inputFilename := range inputFilenames {
 		toRemove := conf.Project.InputFilenameToOutput(inputFilename)
+		toPrint := conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(toRemove))
 		if err := os.Remove(toRemove); err != nil && !os.IsNotExist(err) {
-			fmt.Println(toRemove, "failed to blow up!!")
+			fmt.Println(toPrint, "failed to blow up!!")
 		}
 		if !isQuietMegumin {
-			fmt.Println(toRemove, "went boom!")
+			fmt.Println(toPrint, "went boom!")
 			time.Sleep(50 * time.Millisecond)
 		}
 	}
