@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/emilia"
-	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -35,7 +34,6 @@ func (p ParserOrgmode) Do(
 	filename yunyun.RelativePathFile,
 	data string,
 ) *yunyun.Page {
-	defer puck.Stopwatch("Parsed", "page", filename).Record()
 
 	// Split the data into lines
 	lines := strings.Split(preprocess(data), "\n")

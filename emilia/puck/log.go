@@ -5,6 +5,7 @@ import (
 	"time"
 
 	l "github.com/charmbracelet/log"
+	"github.com/thecsw/darkness/yunyun"
 )
 
 const (
@@ -46,17 +47,36 @@ type stopwatch struct {
 }
 
 // Record records the elapsed time since the stopwatch was created.
-func (s stopwatch) Record(loggers ...*l.Logger) {
+func (s stopwatch) Record(loggers ...*l.Logger) time.Duration {
 	logger := Logger
 	if len(loggers) > 0 {
 		logger = loggers[0]
 	}
-	logger.Info(s.msg, append(s.msgs, "elapsed", time.Since(s.start))...)
+	elapsed := time.Since(s.start)
+	logger.Info(s.msg, append(s.msgs, "elapsed", elapsed)...)
+	return elapsed
+}
+
+// RecordWithFile records the elapsed time since the stopwatch was created and
+// calls the given fileTimeRecorder with the given key and elapsed time.
+func (s stopwatch) RecordWithFile(
+	fileTimeRecorder func(yunyun.FullPathFile, time.Duration),
+	key yunyun.FullPathFile,
+	loggers ...*l.Logger) time.Duration {
+	logger := Logger
+	if len(loggers) > 0 {
+		logger = loggers[0]
+	}
+	elapsed := time.Since(s.start)
+	fileTimeRecorder(key, elapsed)
+	logger.Info(s.msg, append(s.msgs, "elapsed", elapsed)...)
+	return elapsed
 }
 
 // Stopwatch is a simple stopwatch that can be used to time operations.
 func Stopwatch(msg any, msgs ...any) interface {
-	Record(...*l.Logger)
+	Record(...*l.Logger) time.Duration
+	RecordWithFile(func(yunyun.FullPathFile, time.Duration), yunyun.FullPathFile, ...*l.Logger) time.Duration
 } {
 	s := stopwatch{
 		start: time.Now(),

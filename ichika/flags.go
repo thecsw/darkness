@@ -24,6 +24,7 @@ func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 	cmd.BoolVar(&kuroko.VendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")
 	cmd.BoolVar(&kuroko.Akaneless, "akaneless", false, "skip akane processing")
 	cmd.BoolVar(&kuroko.Force, "force", false, "force post-processing (akane or misa)")
+	cmd.BoolVar(&kuroko.BuildReport, "build-report", false, "produce a build report")
 	if len(os.Args) < 2 {
 		puck.Logger.Fatalf("no command specified")
 	}

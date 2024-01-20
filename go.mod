@@ -6,6 +6,8 @@ toolchain go1.21.0
 
 require github.com/BurntSushi/toml v1.3.2
 
+// replace github.com/thecsw/komi => /Users/thecsw/gits/komi
+
 require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/felixge/fgprof v0.9.3 // indirect

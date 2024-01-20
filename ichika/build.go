@@ -12,6 +12,7 @@ import (
 	"github.com/thecsw/darkness/ichika/hizuru"
 	"github.com/thecsw/darkness/ichika/kuroko"
 	"github.com/thecsw/darkness/ichika/makima"
+	"github.com/thecsw/darkness/ichika/misaka"
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/komi"
@@ -114,7 +115,12 @@ func build(conf *alpha.DarknessConfig) {
 	// Clear the download progress bar if present by wiping out the line.
 	fmt.Print("\r\033[2K")
 
-	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsSucceeded(), finish.Sub(start).Milliseconds())
+	fmt.Printf("Processed %d files in %d ms\n", misaka.GetNumberReports(), finish.Sub(start).Milliseconds())
+
+	// Let's process the misaka report if user wants to see it.
+	if kuroko.BuildReport {
+		misaka.WriteReport(conf)
+	}
 }
 
 // logErrors is a helper function that logs errors from a pool. It is meant to be

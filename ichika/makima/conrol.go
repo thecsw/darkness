@@ -7,8 +7,10 @@ import (
 	"path/filepath"
 
 	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/emilia/puck"
 	"github.com/thecsw/darkness/export"
 	"github.com/thecsw/darkness/ichika/chiho"
+	"github.com/thecsw/darkness/ichika/misaka"
 	"github.com/thecsw/darkness/parse"
 	"github.com/thecsw/darkness/yunyun"
 )
@@ -38,6 +40,9 @@ type Control struct {
 
 // Read reads the input file and returns the Control.
 func (c *Control) Read() (Woof, error) {
+	defer puck.
+		Stopwatch("Read", "input", c.InputFilename).
+		RecordWithFile(misaka.RecordReadTime, c.InputFilename)
 	file, err := os.ReadFile(filepath.Clean(string(c.InputFilename)))
 	if err != nil {
 		return nil, fmt.Errorf("reading input file %s: %v", c.InputFilename, err)
@@ -48,12 +53,18 @@ func (c *Control) Read() (Woof, error) {
 
 // Parse parses the input file and returns the Control.
 func (c *Control) Parse() Woof {
+	defer puck.
+		Stopwatch("Parsed", "input", c.InputFilename).
+		RecordWithFile(misaka.RecordParseTime, c.InputFilename)
 	c.Page = c.Parser.Do(c.Conf.Runtime.WorkDir.Rel(c.InputFilename), c.Input)
 	return c
 }
 
 // Export exports the parsed page and returns the Control.
 func (c *Control) Export() Woof {
+	defer puck.
+		Stopwatch("Exported", "input", c.InputFilename).
+		RecordWithFile(misaka.RecordExportTime, c.InputFilename)
 	c.OutputFilename = c.Conf.Project.InputFilenameToOutput(c.InputFilename)
 	c.Output = c.Exporter.Do(chiho.EnrichPage(c.Conf, c.Page))
 	return c
@@ -61,6 +72,9 @@ func (c *Control) Export() Woof {
 
 // Write copies the exported contents onto the output file.
 func (c *Control) Write() error {
+	defer puck.
+		Stopwatch("Wrote", "output", c.OutputFilename).
+		RecordWithFile(misaka.RecordWriteTime, c.InputFilename)
 	file, err := os.Create(c.OutputFilename)
 	if err != nil {
 		return fmt.Errorf("creating output file %s: %v", c.OutputFilename, err)

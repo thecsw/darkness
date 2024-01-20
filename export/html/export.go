@@ -46,8 +46,6 @@ func (e ExporterHtml) Do(page *yunyun.Page) io.Reader {
 
 // Export runs the process of exporting
 func (e *state) export() io.Reader {
-	defer puck.Stopwatch("Exported", "page", e.page.File).Record()
-
 	// Initialize the html mapping after yunyun built regexes.
 	markupHtmlMappingSetOnce.Do(func() {
 		markupHtmlMapping = map[*regexp.Regexp]string{

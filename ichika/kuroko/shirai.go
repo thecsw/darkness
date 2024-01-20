@@ -43,4 +43,9 @@ var (
 	// will be skipped in discovery process AND should be put it
 	// .gitignore by user, so they don't pollute their git objects.
 	VendorGalleryImages bool
+
+	// BuildReport will output a timestamped file in the local
+	// project's .darkness directory with then files discovered, duration,
+	// and the output file that they reached.
+	BuildReport bool
 )
