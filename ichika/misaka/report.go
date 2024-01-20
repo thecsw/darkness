@@ -64,23 +64,23 @@ func buildCSVReport(conf *alpha.DarknessConfig) *bytes.Buffer {
 	fullReport := GetFullReport()
 	buf := &bytes.Buffer{}
 	writer := csv.NewWriter(buf)
-	writer.Write([]string{"#", "Input", "Output", "Read Tme", "Parse Time", "Export Time", "Flush Time", "Total Time"})
+	writer.Write([]string{"#", "Input", "Output", "Read Tme", "Parse Time", "Export Time", "Write Time", "Total Time"})
 	num := 1
 	for inputFile, report := range fullReport {
-		readTime := int(report[0])
-		parseTime := int(report[1])
-		exportTime := int(report[2])
-		flushTime := int(report[3])
-		totalTime := readTime + parseTime + exportTime + flushTime
+		readTime := int(report[readIndex])
+		parseTime := int(report[parseIndex])
+		exportTime := int(report[exportIndex])
+		writeTime := int(report[writeIndex])
+		totalTime := readTime + parseTime + exportTime + writeTime
 		writer.Write([]string{
 			strconv.Itoa(num),
 			string(conf.Runtime.WorkDir.Rel(inputFile)),
 			string(conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(conf.Project.InputFilenameToOutput(inputFile)))),
-			strconv.Itoa(readTime),
-			strconv.Itoa(parseTime),
-			strconv.Itoa(exportTime),
-			strconv.Itoa(flushTime),
-			strconv.Itoa(totalTime),
+			strconv.Itoa(readTime) + "μs",
+			strconv.Itoa(parseTime) + "μs",
+			strconv.Itoa(exportTime) + "μs",
+			strconv.Itoa(writeTime) + "μs",
+			strconv.Itoa(totalTime) + "μs",
 		})
 		num++
 	}

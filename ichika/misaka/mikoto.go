@@ -16,6 +16,13 @@ var (
 	writeTimes  = sync.Map{}
 )
 
+const (
+	readIndex = iota
+	parseIndex
+	exportIndex
+	writeIndex
+)
+
 // RecordReadTime records the time it took to read a file.
 func RecordReadTime(inputFile yunyun.FullPathFile, duration time.Duration) {
 	recordTime(inputFile, duration, &readTimes)
@@ -58,10 +65,10 @@ func GetFullReport() map[yunyun.FullPathFile][]int64 {
 	recordedFiles.Range(func(key, value interface{}) bool {
 		inputFile := key.(yunyun.FullPathFile)
 		fullReport[inputFile] = make([]int64, 4)
-		loadIntoFullReport(inputFile, fullReport, &readTimes, 0)
-		loadIntoFullReport(inputFile, fullReport, &parseTimes, 1)
-		loadIntoFullReport(inputFile, fullReport, &exportTimes, 2)
-		loadIntoFullReport(inputFile, fullReport, &writeTimes, 3)
+		loadIntoFullReport(inputFile, fullReport, &readTimes, readIndex)
+		loadIntoFullReport(inputFile, fullReport, &parseTimes, parseIndex)
+		loadIntoFullReport(inputFile, fullReport, &exportTimes, exportIndex)
+		loadIntoFullReport(inputFile, fullReport, &writeTimes, writeIndex)
 		// Signal to continue.
 		return true
 	})
