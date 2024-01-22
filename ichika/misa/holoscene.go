@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 	"sync/atomic"
+	"time"
 
-	"github.com/dustin/go-humanize"
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/narumi"
 	"github.com/thecsw/darkness/ichika/hizuru"
@@ -56,6 +56,8 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 
 	// Add holoscene titles to all the output files.
 	for _, foundOutput := range actuallyFound {
+		start := time.Now()
+
 		// Read the output file.
 		filename := foundOutput.Name()
 		output, err := io.ReadAll(foundOutput)
@@ -91,7 +93,7 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 		}
 
 		// Write the new output to the file.
-		written, err := io.Copy(file, strings.NewReader(newOutput))
+		_, err = io.Copy(file, strings.NewReader(newOutput))
 		if err := file.Close(); err != nil {
 			logger.Errorf("closing file %s: %v", file.Name(), err)
 		}
@@ -101,8 +103,9 @@ func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 		}
 
 		logger.Info("Added holoscene titles",
-			"bytes", humanize.Bytes(uint64(written)),
-			"file", conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(file.Name())))
+			"loc", conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(file.Name())),
+			"elapsed", time.Since(start),
+		)
 		if dryRun {
 			fmt.Printf(": %s", strings.TrimPrefix(filename, string(conf.Runtime.WorkDir)))
 		}

@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"sync"
 	"sync/atomic"
+	"time"
 	"unicode"
 
 	"github.com/thecsw/darkness/emilia/alpha"
@@ -75,6 +76,7 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 	skipped := atomic.Int32{}
 
 	processPagePreviewRequest := func(pagePreview pagePreviewRequest) {
+		start := time.Now()
 		// Find the path to save the preview to.
 		relativeTarget := yunyun.RelativePathFile(filepath.Join(string(pagePreview.Location), pagePreviewFilename))
 		// Skip if exists, unless forced.
@@ -91,10 +93,18 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 		target := conf.Runtime.WorkDir.Join(relativeTarget)
 		// Save the preview as a jpg.
 		if err := reze.SaveJpg(reader, string(target)); err != nil {
-			logger.Error("Saving page preview", "loc", target, "err", err)
+			logger.Error(
+				"Saving page preview",
+				"loc", target,
+				"err", err,
+			)
 			return
 		}
-		logger.Info("Generated page preview", "loc", conf.Runtime.WorkDir.Rel(target))
+		logger.Info(
+			"Generated page preview",
+			"loc", conf.Runtime.WorkDir.Rel(target),
+			"elapsed", time.Since(start),
+		)
 		waiting.Done()
 	}
 
