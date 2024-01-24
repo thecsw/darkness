@@ -24,16 +24,16 @@ type pagePreviewRequest struct {
 	Time     string
 }
 
-// pagePreviewsToGenerate is a list of page previews to generate.
-var pagePreviewsToGenerate = make([]pagePreviewRequest, 0, 16)
+// pagePreviewsToGenerate is a set of page previews to generate.
+var pagePreviewsToGenerate = map[yunyun.RelativePathDir]pagePreviewRequest{}
 
 // RequestPagePreview requests a page preview to be generated.
 func RequestPagePreview(location yunyun.RelativePathDir, title string, time string) {
-	pagePreviewsToGenerate = append(pagePreviewsToGenerate, pagePreviewRequest{
+	pagePreviewsToGenerate[location] = pagePreviewRequest{
 		Location: location,
 		Title:    title,
 		Time:     time,
-	})
+	}
 }
 
 const (
@@ -48,11 +48,6 @@ const (
 
 // doPagePreviews generates page previews.
 func doPagePreviews(conf *alpha.DarknessConfig) {
-	// Clear the pagePreviewsToGenerate slice when we're done.
-	defer func() {
-		pagePreviewsToGenerate = pagePreviewsToGenerate[:0]
-	}()
-
 	// Let's initialize the page preview generator.
 	generator := reze.InitPreviewGenerator(
 		pagePreviewTitleFont,
