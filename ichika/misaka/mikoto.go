@@ -2,13 +2,15 @@ package misaka
 
 import (
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/thecsw/darkness/yunyun"
 )
 
 var (
-	recordedFiles = sync.Map{}
+	recordedFiles        = sync.Map{}
+	recordedFilesCounter = atomic.Int32{}
 
 	readTimes   = sync.Map{}
 	parseTimes  = sync.Map{}
@@ -47,16 +49,12 @@ func RecordWriteTime(inputFile yunyun.FullPathFile, duration time.Duration) {
 func recordTime(inputFile yunyun.FullPathFile, duration time.Duration, times *sync.Map) {
 	times.Store(inputFile, duration.Microseconds())
 	recordedFiles.Store(inputFile, true)
+	recordedFilesCounter.Add(1)
 }
 
 // GetNumberReports returns the number of files that have been recorded.
 func GetNumberReports() int {
-	total := 0
-	recordedFiles.Range(func(key, value interface{}) bool {
-		total++
-		return true
-	})
-	return total
+	return int(recordedFilesCounter.Load())
 }
 
 // GetFullReport returns a map of all the files and their times.

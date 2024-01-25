@@ -8,9 +8,9 @@ import (
 func Do(conf *alpha.DarknessConfig) {
 	logger.Info("Starting to process requests...")
 
-	if len(pagePreviewsToGenerate) > 0 {
+	if pagePreviewsToGenerateCount.Load() > 0 {
 		// Do page previews generation.
-		logger.Info("Generating page previews...", "page_previews", len(pagePreviewsToGenerate))
+		logger.Info("Generating page previews...", "page_previews", pagePreviewsToGenerateCount.Load())
 		doPagePreviews(conf)
 	}
 

@@ -17,6 +17,8 @@ import (
 
 // FindFilesByExt finds all files with a given extension.
 func FindFilesByExt(conf *alpha.DarknessConfig, inputFiles chan<- yunyun.FullPathFile) {
+	// We don't need a concurrent map because we're only using it in a single goroutine.
+	pathDedupe := map[string]struct{}{}
 	if err := godirwalk.Walk(string(conf.Runtime.WorkDir), &godirwalk.Options{
 		ErrorCallback: func(osPathname string, err error) godirwalk.ErrorAction {
 			conf.Runtime.Logger.Errorf("traversing %s: %v", osPathname, err)
@@ -35,7 +37,12 @@ func FindFilesByExt(conf *alpha.DarknessConfig, inputFiles chan<- yunyun.FullPat
 			if err != nil {
 				return fmt.Errorf("finding relative path of %s to %s: %v", osPathname, conf.Runtime.WorkDir, err)
 			}
-			inputFiles <- conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(relPath))
+			// If we haven't seen this path before, add it to the channel.
+			if _, seen := pathDedupe[relPath]; !seen {
+				inputFiles <- conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(relPath))
+			}
+			// Mark this path as seen.
+			pathDedupe[relPath] = struct{}{}
 			return nil
 		},
 	}); err != nil {

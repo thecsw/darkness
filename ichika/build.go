@@ -115,7 +115,7 @@ func build(conf *alpha.DarknessConfig) {
 	// Clear the download progress bar if present by wiping out the line.
 	fmt.Print("\r\033[2K")
 
-	fmt.Printf("Processed %d files in %d ms\n", misaka.GetNumberReports(), finish.Sub(start).Milliseconds())
+	fmt.Printf("Processed %d files in %d ms\n", exporterPool.JobsSucceeded(), finish.Sub(start).Milliseconds())
 
 	// Let's process the misaka report if user wants to see it.
 	if kuroko.BuildReport {

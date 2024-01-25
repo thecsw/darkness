@@ -3,6 +3,7 @@ package misaka
 import (
 	"bytes"
 	"encoding/csv"
+	"github.com/thecsw/rei"
 	"io"
 	"os"
 	"path/filepath"
@@ -24,7 +25,7 @@ func WriteReport(conf *alpha.DarknessConfig) {
 	start := time.Now()
 
 	// See if the report directory exists.
-	reportDir := conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(reportDirectory))
+	reportDir := conf.Runtime.WorkDir.Join(reportDirectory)
 	if _, err := os.Stat(string(reportDir)); os.IsNotExist(err) {
 		// Create the directory.
 		err = os.Mkdir(string(reportDir), 0755)
@@ -61,7 +62,7 @@ func WriteReport(conf *alpha.DarknessConfig) {
 
 	logger.Warn(
 		"Build report produced",
-		"loc", conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(reportOutputFilename)),
+		"loc", conf.Runtime.WorkDir.Rel(reportOutputFilename),
 		"elapsed", time.Since(start),
 	)
 }
@@ -72,7 +73,7 @@ func buildCSVReport(conf *alpha.DarknessConfig) *bytes.Buffer {
 	buf := &bytes.Buffer{}
 	unit := ", μs"
 	writer := csv.NewWriter(buf)
-	writer.Write([]string{
+	rei.Try(writer.Write([]string{
 		"№",
 		"Input",
 		"Output",
@@ -81,7 +82,7 @@ func buildCSVReport(conf *alpha.DarknessConfig) *bytes.Buffer {
 		"Export Time" + unit,
 		"Write Time" + unit,
 		"Total Time" + unit,
-	})
+	}))
 	num := 1
 	for inputFile, report := range fullReport {
 		readTime := int64(report[readIndex])
@@ -90,7 +91,7 @@ func buildCSVReport(conf *alpha.DarknessConfig) *bytes.Buffer {
 		writeTime := int64(report[writeIndex])
 		totalTime := readTime + parseTime + exportTime + writeTime
 		fullpath := yunyun.FullPathFile(conf.Project.InputFilenameToOutput(inputFile))
-		writer.Write([]string{
+		rei.Try(writer.Write([]string{
 			strconv.Itoa(num),
 			string(conf.Runtime.WorkDir.Rel(inputFile)),
 			string(conf.Runtime.WorkDir.Rel(fullpath)),
@@ -99,7 +100,7 @@ func buildCSVReport(conf *alpha.DarknessConfig) *bytes.Buffer {
 			humanize.Comma(exportTime),
 			humanize.Comma(writeTime),
 			humanize.Comma(totalTime),
-		})
+		}))
 		num++
 	}
 	writer.Flush()

@@ -25,15 +25,19 @@ type pagePreviewRequest struct {
 }
 
 // pagePreviewsToGenerate is a set of page previews to generate.
-var pagePreviewsToGenerate = map[yunyun.RelativePathDir]pagePreviewRequest{}
+var (
+	pagePreviewsToGenerate      = sync.Map{}
+	pagePreviewsToGenerateCount = atomic.Uint32{}
+)
 
 // RequestPagePreview requests a page preview to be generated.
 func RequestPagePreview(location yunyun.RelativePathDir, title string, time string) {
-	pagePreviewsToGenerate[location] = pagePreviewRequest{
+	pagePreviewsToGenerate.Store(location, pagePreviewRequest{
 		Location: location,
 		Title:    title,
 		Time:     time,
-	}
+	})
+	pagePreviewsToGenerateCount.Add(1)
 }
 
 const (
@@ -67,7 +71,7 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 	}(generator)
 
 	waiting := sync.WaitGroup{}
-	waiting.Add(len(pagePreviewsToGenerate))
+	waiting.Add(int(pagePreviewsToGenerateCount.Load()))
 	skipped := atomic.Int32{}
 
 	processPagePreviewRequest := func(pagePreview pagePreviewRequest) {
@@ -108,10 +112,10 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 		Laborers: runtime.NumCPU(),
 	})
 
-	// Let's start going through the page preview requests.
-	for _, pagePreview := range pagePreviewsToGenerate {
-		pageGeneratorPool.Submit(pagePreview)
-	}
+	pagePreviewsToGenerate.Range(func(key, value any) bool {
+		rei.Try(pageGeneratorPool.Submit(value.(pagePreviewRequest)))
+		return true
+	})
 
 	waiting.Wait()
 
