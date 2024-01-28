@@ -8,7 +8,7 @@ const (
 	defaultPageFilename   = "unknown"
 	defaultPageTitle      = "no title"
 	defaulteDateHoloscene = true
-	defaultDate           = "0; 12000 H.E."
+	defaultDate           = "0; 0 H.E."
 	defaultUrl            = "unknown"
 	defaultPreviewWidth   = `1200`
 	defaultPreviewHeight  = `700`
