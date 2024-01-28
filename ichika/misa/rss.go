@@ -82,9 +82,14 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 			if err != nil {
 				finalLocation = time.UTC
 			}
+			hour, minute := parsedDate.Hour(), parsedDate.Minute()
+			if hour == 0 && minute == 0 {
+				hour = conf.RSS.DefaultHour
+				minute = 0
+			}
 			finalDate := time.Date(
 				parsedDate.Year(), parsedDate.Month(), parsedDate.Day(),
-				conf.RSS.DefaultHour, 0, 0, 0, finalLocation)
+				hour, minute, 0, 0, finalLocation)
 
 			// Create the RSS item.
 			items = append(items, rss.Item{
