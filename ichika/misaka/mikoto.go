@@ -1,6 +1,7 @@
 package misaka
 
 import (
+	"github.com/thecsw/darkness/ichika/kuroko"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -26,30 +27,43 @@ const (
 )
 
 // RecordReadTime records the time it took to read a file.
+//
+//go:inline
 func RecordReadTime(inputFile yunyun.FullPathFile, duration time.Duration) {
 	recordTime(inputFile, duration, &readTimes)
 }
 
 // RecordParseTime records the time it took to parse a file.
+//
+//go:inline
 func RecordParseTime(inputFile yunyun.FullPathFile, duration time.Duration) {
 	recordTime(inputFile, duration, &parseTimes)
 }
 
 // RecordExportTime records the time it took to export a file.
+//
+//go:inline
 func RecordExportTime(inputFile yunyun.FullPathFile, duration time.Duration) {
 	recordTime(inputFile, duration, &exportTimes)
 }
 
 // RecordWriteTime records the time it took to write a file.
+//
+//go:inline
 func RecordWriteTime(inputFile yunyun.FullPathFile, duration time.Duration) {
 	recordTime(inputFile, duration, &writeTimes)
 }
 
 // recordTime records the time it took to do something in its respective sync.Map.
+//
+//go:inline
 func recordTime(inputFile yunyun.FullPathFile, duration time.Duration, times *sync.Map) {
-	times.Store(inputFile, duration.Microseconds())
-	recordedFiles.Store(inputFile, true)
-	recordedFilesCounter.Add(1)
+	// Only record the file if we are recording build reports.
+	if kuroko.BuildReport {
+		times.Store(inputFile, duration.Microseconds())
+		recordedFiles.Store(inputFile, true)
+		recordedFilesCounter.Add(1)
+	}
 }
 
 // GetNumberReports returns the number of files that have been recorded.
