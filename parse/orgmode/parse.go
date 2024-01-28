@@ -29,7 +29,7 @@ const (
 	defaultGalleryImagesPerRow uint = 3
 )
 
-// Parse parses the input string and returns a list of elements
+// Do parses the input string and returns a list of elements
 func (p ParserOrgmode) Do(
 	filename yunyun.RelativePathFile,
 	data string,
