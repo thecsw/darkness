@@ -71,3 +71,36 @@ func Test_extractHoloscene(t *testing.T) {
 		})
 	}
 }
+
+func Test_getHoloscene(t *testing.T) {
+	type args struct {
+		dayS    string
+		yearS   string
+		hourS   string
+		minuteS string
+	}
+	tests := []struct {
+		name  string
+		args  args
+		want  time.Time
+		want1 bool
+	}{
+		{"Test 1", args{"127", "12022", "00", "00"}, time.Date(2022, time.January, 127, 0, 0, 0, 0, time.Local), true},
+		{"Test 2", args{"127", "12022", "", ""}, time.Date(2022, time.January, 127, 0, 0, 0, 0, time.Local), true},
+		{"Test 3", args{"127", "12024", "12", "34"}, time.Date(2024, time.January, 127, 12, 34, 0, 0, time.Local), true},
+		{"Test 4", args{"127", "12024", "00", "00"}, time.Date(2024, time.January, 127, 0, 0, 0, 0, time.Local), true},
+		{"Test 5", args{"", "", "", ""}, time.Time{}, false},
+		{"Test 6", args{"127", "12022", "", ""}, time.Date(2022, time.January, 127, 0, 0, 0, 0, time.Local), true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, got1 := getHoloscene(tt.args.dayS, tt.args.yearS, tt.args.hourS, tt.args.minuteS)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getHoloscene() got = %v, want %v", got, tt.want)
+			}
+			if got1 != tt.want1 {
+				t.Errorf("getHoloscene() got1 = %v, want %v", got1, tt.want1)
+			}
+		})
+	}
+}
