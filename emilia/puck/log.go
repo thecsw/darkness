@@ -10,7 +10,7 @@ import (
 
 const (
 	// DebugLevel is the debug level.
-	DebugLevelLevel l.Level = iota - 1
+	DebugLevel l.Level = iota - 1
 	// InfoLevel is the info level.
 	InfoLevel
 	// WarnLevel is the warn level.

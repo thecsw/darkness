@@ -39,7 +39,7 @@ func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 		puck.Logger.Fatalf("determining absolute path of %s: %v", kuroko.WorkDir, err)
 	}
 
-	// If parallel processing is disabled, only provision one workers
+	// If parallel processing is disabled, only provision one worker.
 	// per each processing stage.
 	if kuroko.DisableParallel {
 		kuroko.CustomNumWorkers = 1
