@@ -86,12 +86,12 @@ func build(conf *alpha.DarknessConfig) {
 	rei.Try(parserPool.Connect(exporterPool))
 	rei.Try(exporterPool.Connect(writerPool))
 
-	// Record the start time.
-	start := time.Now()
-
 	// Find all the files that need to be parsed.
 	inputFilenames := make(chan yunyun.FullPathFile, 8)
 	go hizuru.FindFilesByExt(conf, inputFilenames)
+
+	// Record the start time.
+	start := time.Now()
 
 	// Submit all the files to the pool.
 	for inputFilename := range inputFilenames {
