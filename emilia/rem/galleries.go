@@ -2,28 +2,24 @@ package rem
 
 import (
 	"fmt"
-	"image"
-	"net/http"
-	"strings"
-	"sync"
-	"time"
-
 	"github.com/thecsw/darkness/emilia/alpha"
 	"github.com/thecsw/darkness/emilia/reze"
 	"github.com/thecsw/darkness/yunyun"
 	"github.com/thecsw/rei"
+	"image"
+	"strings"
 )
 
 // NewGalleryItem creates a new helper `GalleryItem` and
 // decides whether the passed item is an external link or not.
 func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string) GalleryItem {
 	extractedLinks := yunyun.ExtractLinks(wholeLine)
-	// If image wasn't found, then the whole line should be counted as the image path.
-	image := wholeLine
+	// If line wasn't found, then the whole line should be counted as the line path.
+	line := wholeLine
 	text := ""
 	description := ""
 	if len(extractedLinks) > 0 {
-		image = extractedLinks[0].Link
+		line = extractedLinks[0].Link
 		text = extractedLinks[0].Text
 		description = extractedLinks[0].Description
 	}
@@ -32,10 +28,9 @@ func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string
 		optionalLink = extractedLinks[1].Link
 	}
 	return GalleryItem{
-		Item: yunyun.RelativePathFile(image),
-		Path: yunyun.JoinPaths(page.Location, content.GalleryPath),
-		// IsExternal:   yunyun.UrlRegexp.MatchString(image),
-		IsExternal:   strings.HasPrefix(image, "http"),
+		Item:         yunyun.RelativePathFile(line),
+		Path:         yunyun.JoinPaths(page.Location, content.GalleryPath),
+		IsExternal:   strings.HasPrefix(line, "http"),
 		Text:         text,
 		Description:  description,
 		OriginalLine: wholeLine,
@@ -63,20 +58,6 @@ func GalleryImage(conf *alpha.DarknessConfig, item GalleryItem) (yunyun.FullPath
 func GalleryPreview(conf *alpha.DarknessConfig, item GalleryItem) yunyun.FullPathFile {
 	return conf.Runtime.Join(yunyun.JoinRelativePaths(conf.Project.DarknessPreviewDirectory, galleryPreviewRelative(item)))
 }
-
-var (
-	// vendorClient is a client that is used to download images from the internet.
-	vendorClient = &http.Client{
-		Transport: &http.Transport{
-			MaxIdleConns:        1,
-			MaxIdleConnsPerHost: 1,
-			MaxConnsPerHost:     1,
-		},
-		Timeout: 10 * time.Second,
-	}
-	// vendorLock is a lock that is used to prevent multiple downloads at the same time.
-	vendorLock = &sync.Mutex{}
-)
 
 // GalleryItemToImage takes in a gallery item and returns an image object.
 func GalleryItemToImage(conf *alpha.DarknessConfig, item GalleryItem, authority, prefix string) (image.Image, error) {

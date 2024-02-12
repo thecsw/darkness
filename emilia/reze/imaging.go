@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"image"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/disintegration/imaging"
 	"github.com/thecsw/haruhi"
@@ -22,10 +24,22 @@ func OpenImage(path string) (image.Image, error) {
 	return imaging.Decode(file, imaging.AutoOrientation(true))
 }
 
+var (
+	// vendorClient is a client that is used to download images from the internet.
+	vendorClient = &http.Client{
+		Transport: &http.Transport{
+			MaxIdleConns:        1,
+			MaxIdleConnsPerHost: 1,
+			MaxConnsPerHost:     1,
+		},
+		Timeout: 10 * time.Second,
+	}
+)
+
 // DownloadImage attempts to download an image and returns it
 // with any fatal errors (if occured).
 func DownloadImage(link string, authority, prefix, name string) (image.Image, error) {
-	resp, cancel, err := haruhi.URL(link).Response()
+	resp, cancel, err := haruhi.URL(link).Client(vendorClient).Response()
 	defer cancel()
 	if err != nil {
 		return nil, fmt.Errorf("downloading image: %v", err)
@@ -34,7 +48,12 @@ func DownloadImage(link string, authority, prefix, name string) (image.Image, er
 	if resp.StatusCode < 200 || resp.StatusCode >= 400 {
 		return nil, fmt.Errorf("downloading image got bad status %d", resp.StatusCode)
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			logger.Warn("closing response body", "name", name, "err", err)
+		}
+	}(resp.Body)
 
 	buf := new(bytes.Buffer)
 	bar := ProgressBar(resp.ContentLength, authority, prefix, "Downloading", name)

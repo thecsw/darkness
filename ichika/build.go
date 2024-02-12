@@ -43,8 +43,7 @@ func build(conf *alpha.DarknessConfig) {
 		Laborers: runtime.NumCPU(),
 		Debug:    kuroko.DebugEnabled,
 	})
-	filesError := rei.Must(filesPool.Errors())
-	go logErrors("reading", filesError)
+	go logErrors("reading", rei.Must(filesPool.Errors()))
 
 	// Create a pool that take a files handle and parses it out into yunyun pages.
 	parserPool := komi.NewWithSettings(komi.Work(makima.Woof.Parse), &komi.Settings{
@@ -66,8 +65,7 @@ func build(conf *alpha.DarknessConfig) {
 		Laborers: runtime.NumCPU(),
 		Debug:    kuroko.DebugEnabled,
 	})
-	writersErrors := rei.Must(writerPool.Errors())
-	go logErrors("writer", writersErrors)
+	go logErrors("writer", rei.Must(writerPool.Errors()))
 
 	// Connect all the pools between each other, so the relationship is as follows,
 	//
