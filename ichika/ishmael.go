@@ -33,8 +33,8 @@ func newDarknessCommandFunc() {
 		os.Exit(1)
 	}
 	if err := os.MkdirAll(dirName, os.FileMode(0o777)); err != nil {
-                puck.Logger.Fatalf("creating your directory %s: %v", dirName, err)
-        }
+		puck.Logger.Fatalf("creating your directory %s: %v", dirName, err)
+	}
 
 	// Create the darkness template reader.
 	defaultDarknessTemplateReader := bytes.NewReader(defaultDarknessTemplate)
