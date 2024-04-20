@@ -205,7 +205,7 @@ func extractAuthor(line string) string {
 func extractGalleryFolder(line string) string {
 	path, err := extractCustomBlockOption(line, `path`, regexpPatternNoWhitespace)
 	if err != nil {
-		if err != errNoMatches {
+		if !errors.Is(err, errNoMatches) {
 			puck.Logger.Errorf("gallery path extraction: %v", err)
 		}
 		return ""
@@ -216,7 +216,7 @@ func extractGalleryFolder(line string) string {
 func extractGalleryImagesPerRow(line string) uint {
 	num, err := extractCustomBlockOption(line, `num`, regexpPatternOnlyDigits)
 	if err != nil {
-		if err != errNoMatches {
+		if !errors.Is(err, errNoMatches) {
 			puck.Logger.Errorf("gallery path extraction: %v", err)
 		}
 		return defaultGalleryImagesPerRow
