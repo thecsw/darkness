@@ -42,5 +42,5 @@ require (
 	github.com/thecsw/haruhi v0.4.0
 	github.com/thecsw/komi v0.1.2
 	github.com/thecsw/rei v0.0.3
-	golang.org/x/image v0.16.0
+	golang.org/x/image v0.18.0
 )
