@@ -8,8 +8,8 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/thecsw/darkness/emilia/narumi"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/narumi"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 // markupHtmlMapping maps the regex markup to html replacements

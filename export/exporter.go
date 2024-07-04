@@ -4,10 +4,10 @@ import (
 	"io"
 	"log"
 
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/export/html"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/export/html"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 // Exporter is the interface for all exporters.

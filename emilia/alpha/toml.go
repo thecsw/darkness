@@ -3,7 +3,7 @@ package alpha
 import (
 	"regexp"
 
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 // DarknessConfig is the global darkness config

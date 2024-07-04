@@ -5,7 +5,7 @@ import (
 	"time"
 
 	l "github.com/charmbracelet/log"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 const (

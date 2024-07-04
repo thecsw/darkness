@@ -1,7 +1,7 @@
 package alpha
 
 import (
-	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/v3/emilia/puck"
 )
 
 // setupProjectExtensions sets up the input/output extensions for the project.

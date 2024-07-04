@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
 )
 

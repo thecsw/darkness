@@ -1,7 +1,7 @@
 package html
 
 import (
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 type divType uint8

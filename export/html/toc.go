@@ -5,7 +5,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 // GenerateTableOfContents generates a table of contents for a page.

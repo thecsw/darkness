@@ -5,9 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/ichika/misa"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/ichika/misa"
 )
 
 // MisaCommandFunc will support many different tools that darkness can support,

@@ -6,13 +6,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/export"
-	"github.com/thecsw/darkness/ichika/chiho"
-	"github.com/thecsw/darkness/ichika/misaka"
-	"github.com/thecsw/darkness/parse"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/export"
+	"github.com/thecsw/darkness/v3/ichika/chiho"
+	"github.com/thecsw/darkness/v3/ichika/misaka"
+	"github.com/thecsw/darkness/v3/parse"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 // Control is the struct that is passed across darkness to build the site.

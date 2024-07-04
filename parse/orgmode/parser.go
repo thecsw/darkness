@@ -1,7 +1,7 @@
 package orgmode
 
 import (
-	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
 )
 
 // ParserOrgmode is the parser for orgmode files.

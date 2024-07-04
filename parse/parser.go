@@ -3,10 +3,10 @@ package parse
 import (
 	"log"
 
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/parse/orgmode"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/parse/orgmode"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 // Parser is the interface for all parsers.

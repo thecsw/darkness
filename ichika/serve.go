@@ -14,11 +14,11 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/ichika/hizuru"
-	"github.com/thecsw/darkness/ichika/kuroko"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/ichika/hizuru"
+	"github.com/thecsw/darkness/v3/ichika/kuroko"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 const (

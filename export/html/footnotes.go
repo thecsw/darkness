@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia/narumi"
+	"github.com/thecsw/darkness/v3/emilia/narumi"
 )
 
 // addFootnotes adds the footnotes

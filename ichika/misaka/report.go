@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 const (

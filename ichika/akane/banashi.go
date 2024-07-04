@@ -1,7 +1,7 @@
 package akane
 
 import (
-	"github.com/thecsw/darkness/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
 )
 
 // Do starts going through the requests and processes them.

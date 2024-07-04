@@ -6,10 +6,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/rem"
-	"github.com/thecsw/darkness/ichika/akane"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/rem"
+	"github.com/thecsw/darkness/v3/ichika/akane"
+	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
 )
 

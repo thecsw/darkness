@@ -1,6 +1,6 @@
 package rem
 
-import "github.com/thecsw/darkness/yunyun"
+import "github.com/thecsw/darkness/v3/yunyun"
 
 // GalleryItem is a struct that holds the gallery item path
 // and a flag whether it is external (Url regexp matches).

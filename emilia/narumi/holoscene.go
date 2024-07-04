@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/v3/emilia/puck"
 )
 
 const (

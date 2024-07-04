@@ -1,8 +1,8 @@
 package html
 
 import (
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 // ExporterHtml is the exporter for HTML.

@@ -11,7 +11,7 @@ import (
 
 	"github.com/disintegration/imaging"
 	"github.com/fogleman/gg"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/rei"
 	"golang.org/x/image/webp"
 )

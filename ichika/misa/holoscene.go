@@ -9,11 +9,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/narumi"
-	"github.com/thecsw/darkness/ichika/hizuru"
-	"github.com/thecsw/darkness/ichika/kuroko"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/narumi"
+	"github.com/thecsw/darkness/v3/ichika/hizuru"
+	"github.com/thecsw/darkness/v3/ichika/kuroko"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 const (

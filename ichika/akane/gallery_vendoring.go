@@ -3,8 +3,8 @@ package akane
 import (
 	"fmt"
 
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/rem"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/rem"
 )
 
 // galleryVendorRequest is a request to download a gallery vendor.

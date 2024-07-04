@@ -1,12 +1,12 @@
 package misaka
 
 import (
-	"github.com/thecsw/darkness/ichika/kuroko"
+	"github.com/thecsw/darkness/v3/ichika/kuroko"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 var (

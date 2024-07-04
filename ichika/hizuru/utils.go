@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
 	"github.com/thecsw/gana/prelude"
 )

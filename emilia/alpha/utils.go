@@ -3,7 +3,7 @@ package alpha
 import (
 	"strings"
 
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 // InputFilenameToOutput converts input filename to the filename to write.

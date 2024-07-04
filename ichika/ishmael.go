@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/thecsw/darkness/emilia/puck"
+	"github.com/thecsw/darkness/v3/emilia/puck"
 	"github.com/thecsw/rei"
 )
 

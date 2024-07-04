@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/pkg/profile"
-	"github.com/thecsw/darkness/ichika"
+	"github.com/thecsw/darkness/v3/ichika"
 )
 
 const (

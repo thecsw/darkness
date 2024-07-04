@@ -5,8 +5,8 @@ import (
 	"html"
 	"strings"
 
-	"github.com/thecsw/darkness/emilia/narumi"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/narumi"
+	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
 )
 

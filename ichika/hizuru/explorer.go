@@ -7,10 +7,10 @@ import (
 	"strings"
 
 	"github.com/karrick/godirwalk"
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/parse"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/parse"
+	"github.com/thecsw/darkness/v3/yunyun"
 	g "github.com/thecsw/gana"
 	"github.com/thecsw/rei"
 )

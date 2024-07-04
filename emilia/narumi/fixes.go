@@ -3,7 +3,7 @@ package narumi
 import (
 	"strings"
 
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 // WithEnrichedHeadings shifts heading levels to their correct layouts and

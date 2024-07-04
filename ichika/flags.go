@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/charmbracelet/log"
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/emilia/puck"
-	"github.com/thecsw/darkness/ichika/kuroko"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/ichika/kuroko"
 )
 
 // getAlphaOptions takes a cmd subcommand and parses general flags

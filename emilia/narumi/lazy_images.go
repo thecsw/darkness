@@ -3,8 +3,8 @@ package narumi
 import (
 	"fmt"
 
-	"github.com/thecsw/darkness/emilia/alpha"
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
 )
 

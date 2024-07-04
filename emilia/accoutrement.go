@@ -3,7 +3,7 @@ package emilia
 import (
 	"strings"
 
-	"github.com/thecsw/darkness/yunyun"
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 const (
