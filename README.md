@@ -68,7 +68,7 @@ Benchmark 1: darkness build
 It's simple! If you have go1.22 installed, you can install it through `go` tool with
 
 ```sh
-go install -v github.com/thecsw/darkness/v3@3.0.2
+go install -v github.com/thecsw/darkness/v3@v3.0.2
 ```
 
 Or you can also grab pre-built binaries from the 
