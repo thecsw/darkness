@@ -95,7 +95,7 @@ func BuildPagesSimple(conf *alpha.DarknessConfig, dirs []string) []*yunyun.Page 
 		}
 		page := parser.Do(conf.Runtime.WorkDir.Rel(bundle.First), string(data))
 		if page == nil {
-			logger.Warnf("Parser produced a nil page", "input", conf.Runtime.WorkDir.Rel(bundle.First))
+			logger.Warn("Parser produced a nil page", "input", conf.Runtime.WorkDir.Rel(bundle.First))
 			continue
 		}
 		pages = append(pages, page)
