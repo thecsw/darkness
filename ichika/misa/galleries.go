@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/anthonynsimon/bild/blur"
 	"github.com/anthonynsimon/bild/imgio"
@@ -29,7 +30,7 @@ const (
 	galleryJPEGQuality      = 90
 )
 
-// BuildGalleryFiles finds all the gallery entries and build a resized
+// BuildGalleryFiles finds all the gallery entries and build a resized blurred
 // preview version of it.
 func BuildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 	// Make sure the preview directory exists
@@ -127,6 +128,9 @@ func getGalleryFiles(conf *alpha.DarknessConfig) []rem.GalleryItem {
 	for _, page := range hizuru.BuildPagesSimple(conf, nil) {
 		for _, gc := range page.Contents.Galleries() {
 			for _, item := range gc.List {
+				if strings.Contains(item.Text, ":no-preview") {
+					continue
+				}
 				galleryFiles = append(galleryFiles, rem.NewGalleryItem(page, gc, item.Text))
 			}
 		}
