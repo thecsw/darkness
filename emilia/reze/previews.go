@@ -3,13 +3,15 @@ package reze
 import (
 	"bytes"
 	"fmt"
+	"image"
 	"image/png"
 	"io"
 	"math"
 	"os"
 	"strings"
 
-	"github.com/disintegration/imaging"
+	"github.com/anthonynsimon/bild/imgio"
+	"github.com/anthonynsimon/bild/transform"
 	"github.com/fogleman/gg"
 	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/rei"
@@ -84,10 +86,11 @@ func InitPreviewGenerator(
 			logger.Error("closing avatar file", "loc", AvatarFile, "err", err)
 		}
 	}(avatarOriginal)
-	originalDecoded := rei.Must(imaging.Decode(avatarOriginal, imaging.AutoOrientation(false)))
-	resized := imaging.Resize(originalDecoded, p.calculateAvatarSize(), 0, imaging.Lanczos)
-	rei.Try(imaging.Encode(target, resized, imaging.PNG))
-
+	originalDecoded, _ := rei.Must2(image.Decode(avatarOriginal))
+	newWidth := p.calculateAvatarSize()
+	newHeight := PreserveImageHeightRatio(originalDecoded, newWidth)
+	resized := transform.Resize(originalDecoded, newWidth, newHeight, transform.Linear)
+	rei.Try(imgio.PNGEncoder()(target, resized))
 	// Rescale the avatar if needed.
 	return p
 }
@@ -186,7 +189,7 @@ func (p PreviewGenerator) Close() error {
 
 // SaveJpg saves a jpg image from an io.Reader.
 func SaveJpg(reader io.Reader, filename string) error {
-	im, err := imaging.Decode(reader)
+	im, _, err := image.Decode(reader)
 	if err != nil {
 		return fmt.Errorf("decoding image reader: %v", err)
 	}
@@ -194,7 +197,7 @@ func SaveJpg(reader io.Reader, filename string) error {
 	if err != nil {
 		return fmt.Errorf("creating file %s: %v", filename, err)
 	}
-	if err := imaging.Encode(target, im, imaging.JPEG); err != nil {
+	if err := imgio.JPEGEncoder(100)(target, im); err != nil {
 		return fmt.Errorf("encoding to jpeg: %v", err)
 	}
 	if err := target.Close(); err != nil {

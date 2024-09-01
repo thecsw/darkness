@@ -4,7 +4,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/disintegration/imaging"
+	"github.com/anthonynsimon/bild/imgio"
 	"github.com/thecsw/darkness/v3/emilia/alpha"
 	"github.com/thecsw/darkness/v3/emilia/reze"
 	"github.com/thecsw/darkness/v3/yunyun"
@@ -71,7 +71,7 @@ func GalleryVendorItem(conf *alpha.DarknessConfig, item GalleryItem) (yunyun.Ful
 	}()
 
 	// Decode the image into the file.
-	if err := imaging.Encode(imgFile, img, imaging.JPEG); err != nil {
+	if err := imgio.JPEGEncoder(100)(imgFile, img); err != nil {
 		logger.Error("encoding vendored file", "file", localVendoredPath, "err", err)
 		return fallbackReturn, false
 	}

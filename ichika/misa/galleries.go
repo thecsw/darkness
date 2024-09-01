@@ -5,13 +5,17 @@ import (
 	"image"
 	"io"
 	"os"
+	"path/filepath"
 
-	"github.com/disintegration/imaging"
+	"github.com/anthonynsimon/bild/blur"
+	"github.com/anthonynsimon/bild/imgio"
+	"github.com/anthonynsimon/bild/transform"
 	"github.com/thecsw/darkness/v3/emilia/alpha"
 	"github.com/thecsw/darkness/v3/emilia/puck"
 	"github.com/thecsw/darkness/v3/emilia/rem"
 	"github.com/thecsw/darkness/v3/emilia/reze"
 	"github.com/thecsw/darkness/v3/ichika/hizuru"
+	"github.com/thecsw/darkness/v3/ichika/kuroko"
 	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
 	"github.com/thecsw/rei"
@@ -21,7 +25,8 @@ const (
 	// galleryPreviewImageSize is the size of the preview image.
 	galleryPreviewImageSize = 250
 	// galleryPreviewImageBlur is the blur radius of the preview image.
-	galleryPreviewImageBlur = 20
+	galleryPreviewImageBlur = 37
+	galleryJPEGQuality      = 90
 )
 
 // BuildGalleryFiles finds all the gallery entries and build a resized
@@ -38,7 +43,7 @@ func BuildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 
 	// Filter out all the files that already exist.
 	missingFiles := gana.Filter(func(item rem.GalleryItem) bool {
-		return !rei.FileMustExist(string(rem.GalleryPreview(conf, item)))
+		return !rei.FileMustExist(string(rem.GalleryPreview(conf, item))) || kuroko.Force
 	}, galleryFiles)
 
 	// Build all the missing files.
@@ -52,7 +57,8 @@ func BuildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 		prefix := fmt.Sprintf("[%d/%d] ", i+1, len(missingFiles))
 		sourceImage, err := rem.GalleryItemToImage(conf, galleryFile, "preview", prefix)
 		if err != nil {
-			puck.Logger.Errorf("parsing a gallery item: %v", err)
+			puck.Logger.Warnf("\nopening a gallery image (%s): %v",
+				filepath.Join(string(galleryFile.Path), string(galleryFile.Item)), err)
 			continue
 		}
 
@@ -71,7 +77,7 @@ func BuildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 			}
 
 			// Write the final preview image file.
-			if err := imaging.Encode(io.MultiWriter(file, bar), previewImage, imaging.JPEG); err != nil {
+			if err := imgio.JPEGEncoder(galleryJPEGQuality)(io.MultiWriter(file, bar), previewImage); err != nil {
 				puck.Logger.Errorf("encoding image: %v", err)
 				continue
 			}
@@ -86,12 +92,15 @@ func BuildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 }
 
 // resizeAndBlur takes an image object and modifies it to preview standards.
-func resizeAndBlur(img image.Image) *image.NRGBA {
+func resizeAndBlur(img image.Image) *image.RGBA {
 	// Resize the image to save up on storage.
-	img = imaging.Resize(img, galleryPreviewImageSize, 0, imaging.Lanczos)
+	newWidth := galleryPreviewImageSize
+	newHeight := reze.PreserveImageHeightRatio(img, newWidth)
+	resized := transform.Resize(img, newWidth, newHeight, transform.Lanczos)
 	// Blur the image to make it look better.
-	blurred := imaging.Blur(img, galleryPreviewImageBlur)
+	blurred := blur.Gaussian(resized, galleryPreviewImageBlur)
 	return blurred
+
 }
 
 func dryRemove(val string) error {
