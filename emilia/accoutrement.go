@@ -11,33 +11,37 @@ const (
 	disableOption   = `nil`
 	delimiterOption = ':'
 
-	optionDraft           = `draft`
-	optionTomb            = `tomb`
-	optionAuthorImage     = `author-image`
-	optionMath            = `math`
-	optionExcludeHtmlHead = `exclude-html-head`
-	optionPreview         = `preview`
-	optionPreviewWidth    = `preview-width`
-	optionPreviewHeigh    = `preview-height`
-	optionPreviewGenerate = `preview-generate`
-	optionToc             = `toc`
-	optionRssPrefix       = `rss-prefix`
-	optionRssTitle        = `rss-title`
+	optionDraft             = `draft`
+	optionTomb              = `tomb`
+	optionAuthorImage       = `author-image`
+	optionMath              = `math`
+	optionExcludeHtmlHead   = `exclude-html-head`
+	optionPreview           = `preview`
+	optionPreviewWidth      = `preview-width`
+	optionPreviewHeigh      = `preview-height`
+	optionPreviewGenerate   = `preview-generate`
+	optionPreviewGenerateBg = `preview-generate-bg`
+	optionPreviewGenerateFg = `preview-generate-fg`
+	optionToc               = `toc`
+	optionRssPrefix         = `rss-prefix`
+	optionRssTitle          = `rss-title`
 )
 
 var accoutrementActions = map[string]func(string, *yunyun.Accoutrement){
-	optionDraft:           accoutrementDraft,
-	optionTomb:            accoutrementTomb,
-	optionAuthorImage:     accoutrementAuthorImage,
-	optionMath:            accoutrementMath,
-	optionExcludeHtmlHead: accoutrementExcludeHtmlScript,
-	optionPreview:         accoutrementPreview,
-	optionPreviewWidth:    accoutrementPreviewWidth,
-	optionPreviewHeigh:    accoutrementPreviewHeight,
-	optionPreviewGenerate: accoutrementPreviewGenerate,
-	optionToc:             accoutrementToc,
-	optionRssPrefix:       accoutrementRssPrefix,
-	optionRssTitle:        accoutrementRssTitle,
+	optionDraft:             accoutrementDraft,
+	optionTomb:              accoutrementTomb,
+	optionAuthorImage:       accoutrementAuthorImage,
+	optionMath:              accoutrementMath,
+	optionExcludeHtmlHead:   accoutrementExcludeHtmlScript,
+	optionPreview:           accoutrementPreview,
+	optionPreviewWidth:      accoutrementPreviewWidth,
+	optionPreviewHeigh:      accoutrementPreviewHeight,
+	optionPreviewGenerate:   accoutrementPreviewGenerate,
+	optionPreviewGenerateBg: accoutrementPreviewGenerateBg,
+	optionPreviewGenerateFg: accoutrementPreviewGenerateFg,
+	optionToc:               accoutrementToc,
+	optionRssPrefix:         accoutrementRssPrefix,
+	optionRssTitle:          accoutrementRssTitle,
 }
 
 // InitializeAccoutrement fills accoutrement according to the config
@@ -127,6 +131,16 @@ func accoutrementPreviewHeight(what string, target *yunyun.Accoutrement) {
 // accoutrementPreviewGenerate sets the preview generation option of the accoutrement.
 func accoutrementPreviewGenerate(what string, target *yunyun.Accoutrement) {
 	accoutrementBool(what, &target.PreviewGenerate)
+}
+
+// accoutrementPreviewGenerateBg sets the preview generation background option of the accoutrement.
+func accoutrementPreviewGenerateBg(what string, target *yunyun.Accoutrement) {
+	target.PreviewGenerateBg = what
+}
+
+// accoutrementPreviewGenerateFg sets the preview generation foreground option of the accoutrement.
+func accoutrementPreviewGenerateFg(what string, target *yunyun.Accoutrement) {
+	target.PreviewGenerateFg = what
 }
 
 // accoutrementToc sets the toc option of the accoutrement.

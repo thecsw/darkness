@@ -22,11 +22,17 @@ const (
 	// DefaultPreviewDirectory is the name of the dir where all gallery previews are stored.
 	DefaultPreviewDirectory yunyun.RelativePathDir = "darkness_gallery_previews"
 
-	PagePreviewWidth  = 1200
+	// DefaultPreviewWidth is the default width of the gallery preview.
+	PagePreviewWidth = 1200
+
+	// DefaultPreviewHeight is the default height of the gallery preview.
 	PagePreviewHeight = 700
 )
 
 var (
-	PagePreviewWidthString  = strconv.Itoa(PagePreviewWidth)
+	// PagePreviewWidthString is the string representation of PagePreviewWidth.
+	PagePreviewWidthString = strconv.Itoa(PagePreviewWidth)
+
+	// PagePreviewHeightString is the string representation of PagePreviewHeight.
 	PagePreviewHeightString = strconv.Itoa(PagePreviewHeight)
 )

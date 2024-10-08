@@ -75,10 +75,15 @@ func (e *state) export() io.Reader {
 		e.page.Contents = append(e.toc(), e.page.Contents...)
 	}
 
+	// If the page requests a preview, generate it.
 	if e.page.Accoutrement.PreviewGenerate.IsEnabled() {
+		// Set the default preview width and height that the generator will use.
 		e.page.Accoutrement.PreviewWidth = puck.PagePreviewWidthString
 		e.page.Accoutrement.PreviewHeight = puck.PagePreviewHeightString
-		akane.RequestPagePreview(e.page.Location, e.page.Title, e.page.Date)
+
+		// Send the page to the preview generator.
+		akane.RequestPagePreview(e.page.Location, e.page.Title, e.page.Date,
+			e.page.Accoutrement.PreviewGenerateBg, e.page.Accoutrement.PreviewGenerateFg)
 	}
 
 	// Build the HTML (string) representation of each content

@@ -13,6 +13,10 @@ type Accoutrement struct {
 	PreviewHeight string
 	// PreviewGenerate tells us whether reze needs to create a preview image.
 	PreviewGenerate AccoutrementFlip
+	// PreviewGenerateBg is the background color for the preview image.
+	PreviewGenerateBg string
+	// PreviewGenerateFg is the text color for the preview image.
+	PreviewGenerateFg string
 
 	// ExcludeHtmlHeadContains is a list of strings that we should match
 	// against page's scripts before injecting them into the page.

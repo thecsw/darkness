@@ -118,17 +118,9 @@ func launchWatcher(conf *alpha.DarknessConfig) {
 				if event.Has(fsnotify.Chmod) {
 					continue
 				}
-				if event.Has(fsnotify.Write) {
+				if event.Has(fsnotify.Write) || event.Has(fsnotify.Rename) ||
+					event.Has(fsnotify.Create) || event.Has(fsnotify.Remove) {
 					puck.Logger.Warn("A file was modified", "path", filename)
-				}
-				if event.Has(fsnotify.Create) {
-					puck.Logger.Warn("A file was created", "path", filename)
-				}
-				if event.Has(fsnotify.Remove) {
-					puck.Logger.Warn("A file was removed", "path", filename)
-				}
-				if event.Has(fsnotify.Rename) {
-					puck.Logger.Warn("A file was renamed", "path", filename)
 				}
 				build(conf)
 			case err, ok := <-watcher.Errors:

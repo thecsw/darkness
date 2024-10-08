@@ -97,14 +97,24 @@ func InitPreviewGenerator(
 
 // Generate generates a preview image and returns it as an io.Reader.
 func (p PreviewGenerator) Generate(
-	Title, Name, Time string,
+	Title, Name, Time, ColorBg, ColorFg string,
 ) (io.Reader, error) {
+	bg, fg := p.backgroundColor, "#000000"
+	if len(ColorBg) > 0 {
+		bg = ColorBg
+	}
+	if len(ColorFg) > 0 {
+		fg = ColorFg
+	}
+
 	// Create the image context.
 	dc := gg.NewContext(int(p.width), int(p.height))
 	// Set the background color.
-	dc.SetHexColor(p.backgroundColor)
+	dc.SetHexColor(bg)
 	dc.Clear()
-	dc.SetRGB(0, 0, 0)
+
+	// Set the font color.
+	dc.SetHexColor(fg)
 
 	// Let's try to dynamically size the font
 	titleLength := float64(len(Title))

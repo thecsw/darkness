@@ -22,6 +22,8 @@ type pagePreviewRequest struct {
 	Location yunyun.RelativePathDir
 	Title    string
 	Time     string
+	ColorBg  string
+	ColorFg  string
 }
 
 // pagePreviewsToGenerate is a set of page previews to generate.
@@ -31,11 +33,14 @@ var (
 )
 
 // RequestPagePreview requests a page preview to be generated.
-func RequestPagePreview(location yunyun.RelativePathDir, title string, time string) {
+func RequestPagePreview(location yunyun.RelativePathDir, title string,
+	time string, colorBg string, colorFg string) {
 	pagePreviewsToGenerate.Store(location, pagePreviewRequest{
 		Location: location,
 		Title:    title,
 		Time:     time,
+		ColorBg:  colorBg,
+		ColorFg:  colorFg,
 	})
 	pagePreviewsToGenerateCount.Add(1)
 }
@@ -76,8 +81,10 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 
 	processPagePreviewRequest := func(pagePreview pagePreviewRequest) {
 		start := time.Now()
+
 		// Find the path to save the preview to.
 		relativeTarget := yunyun.RelativePathFile(filepath.Join(string(pagePreview.Location), pagePreviewFilename))
+
 		// Skip if exists, unless forced.
 		if !kuroko.Force {
 			if exists, _ := rei.FileExists(string(relativeTarget)); exists {
@@ -86,10 +93,14 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 				return
 			}
 		}
+
 		// Get the reader for the generated preview.
-		reader := rei.Must(generator.Generate(removeNonPrintables(pagePreview.Title, conf.Title, pagePreview.Time)))
+		titleP, nameP, timeP := removeNonPrintables(pagePreview.Title, conf.Title, pagePreview.Time)
+		reader := rei.Must(generator.Generate(titleP, nameP, timeP, pagePreview.ColorBg, pagePreview.ColorFg))
+
 		// Get it with the work directory.
 		target := conf.Runtime.WorkDir.Join(relativeTarget)
+
 		// Save the preview as a jpg.
 		if err := reze.SaveJpg(reader, string(target)); err != nil {
 			logger.Error(
