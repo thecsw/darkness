@@ -87,9 +87,14 @@ func BuildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 			if err := file.Close(); err != nil {
 				puck.Logger.Errorf("closing image preview file %s: %v", newFile, err)
 			}
+
+			// Clear the progressbar.
+			fmt.Print("\r\033[2K")
+			// Log the thing.
+			logger.Info("Resized item", "path", conf.Runtime.Rel(newFile), "dir", galleryFile.Path)
+			rei.Try(bar.Close())
 		}
 	}
-	fmt.Print("\r\033[2K")
 }
 
 // resizeAndBlur takes an image object and modifies it to preview standards.

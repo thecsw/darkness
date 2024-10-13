@@ -1,8 +1,6 @@
 package akane
 
 import (
-	"fmt"
-
 	"github.com/thecsw/darkness/v3/emilia/alpha"
 	"github.com/thecsw/darkness/v3/emilia/rem"
 )
@@ -34,8 +32,8 @@ func doGalleryVendors(conf *alpha.DarknessConfig) {
 		item := galleryVendorRequestItem.Item
 		path, downloaded := rem.GalleryVendorItem(conf, item)
 		if downloaded {
-			// Clear the progressbar.
-			fmt.Print("\r\033[2K")
+			// // Clear the progressbar.
+			// fmt.Print("\r\033[2K")
 			// Log the thing.
 			logger.Info("Vendored item", "path", conf.Runtime.Rel(path), "dir", item.Path)
 		}

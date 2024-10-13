@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/thecsw/haruhi"
+	"github.com/thecsw/rei"
 )
 
 // OpenImage opens local path image and returns decoded image.
@@ -72,6 +73,8 @@ func DownloadImage(link string, authority, prefix, name string) (image.Image, er
 		return nil, fmt.Errorf("decoding downloaded image: %v", err)
 	}
 
+	fmt.Print("\r\033[2K")
+	rei.Try(bar.Close())
 	return img, nil
 }
 
