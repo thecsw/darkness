@@ -25,6 +25,11 @@ func (conf RuntimeConfig) Join(relative ...yunyun.RelativePathFile) yunyun.FullP
 	return yunyun.FullPathFile(conf.JoinGeneric(yunyun.AnyPathsToStrings(relative)...))
 }
 
+// Join joins the target path with the final root path (url or local).
+func (conf RuntimeConfig) JoinDir(relative ...yunyun.RelativePathDir) yunyun.FullPathFile {
+	return yunyun.FullPathFile(conf.JoinGeneric(yunyun.AnyPathsToStrings(relative)...))
+}
+
 // JoinGeneric joins target path with the working directory.
 func (workDir WorkingDirectory) JoinGeneric(target string) string {
 	return filepath.Join(string(workDir), target)

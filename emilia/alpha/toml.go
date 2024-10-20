@@ -6,31 +6,34 @@ import (
 	"github.com/thecsw/darkness/v3/yunyun"
 )
 
-// DarknessConfig is the global darkness config
+// DarknessConfig is the global darkness config.
 type DarknessConfig struct {
-	// Navigation is the navigation section of the config
+	// Navigation is the navigation section of the config.
 	Navigation map[string]NavigationConfig `toml:"navigation"`
 
-	// Title is the title of the site
+	// Title is the title of the site.
 	Title string `toml:"title"`
 
-	// Url is the Url of the site
+	// Url is the Url of the site.
 	Url string `toml:"url"`
 
 	// RSS is the rss config.
 	RSS RSSConfig `toml:"rss"`
 
-	// Author is the author section of the config
+	// Author is the author section of the config.
 	Author AuthorConfig `toml:"author"`
 
-	// Project is the project section of the config
+	// Project is the project section of the config.
 	Project ProjectConfig `toml:"project"`
 
-	// Website is the website section of the config
+	// Website is the website section of the config.
 	Website WebsiteConfig `toml:"website"`
 
 	// Runtime holds the state we use during the runtime.
 	Runtime RuntimeConfig `toml:"-"`
+
+	// External is config for external services.
+	External ExternalConfig `toml:"external"`
 }
 
 // ProjectConfig is the project section of the config
@@ -193,4 +196,11 @@ type RSSConfig struct {
 	// DefaultHour defines the hour value in RSS timestamp if one
 	// is not provided. Use the 24 hrs.
 	DefaultHour int `toml:"default_hour"`
+}
+
+// ExternalConfig is config for external services.
+type ExternalConfig struct {
+	// SearchEngines is the list of search engines to notify of
+	// new and refreshed content.
+	SearchEngines []string `toml:"search_engines"`
 }

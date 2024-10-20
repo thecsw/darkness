@@ -95,7 +95,7 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 			items = append(items, rss.Item{
 				XMLName: xml.Name{},
 				Title:   yunyun.RemoveFormatting(yunyun.FancyText(finalTitle)),
-				Link:    conf.Url + string(page.Location),
+				Link:    string(conf.Runtime.JoinDir(page.Location)),
 				Description: yunyun.FancyText(getDescription(page, conf.Website.DescriptionLength*4)) +
 					" [ Continue reading... ]",
 				Author:    page.Author,
