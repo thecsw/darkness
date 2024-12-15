@@ -41,7 +41,7 @@ type Control struct {
 // Read reads the input file and returns the Control.
 func (c *Control) Read() (Woof, error) {
 	defer puck.
-		Stopwatch("Read", "input", c.InputFilename).
+		Stopwatch("Read", "input", c.Conf.Runtime.WorkDir.Rel(c.InputFilename)).
 		RecordWithFile(misaka.RecordReadTime, c.InputFilename)
 	file, err := os.ReadFile(filepath.Clean(string(c.InputFilename)))
 	if err != nil {
@@ -54,7 +54,7 @@ func (c *Control) Read() (Woof, error) {
 // Parse parses the input file and returns the Control.
 func (c *Control) Parse() Woof {
 	defer puck.
-		Stopwatch("Parsed", "input", c.InputFilename).
+		Stopwatch("Parsed", "input", c.Conf.Runtime.WorkDir.Rel(c.InputFilename)).
 		RecordWithFile(misaka.RecordParseTime, c.InputFilename)
 	c.Page = c.Parser.Do(c.Conf.Runtime.WorkDir.Rel(c.InputFilename), c.Input)
 	return c
@@ -63,7 +63,7 @@ func (c *Control) Parse() Woof {
 // Export exports the parsed page and returns the Control.
 func (c *Control) Export() Woof {
 	defer puck.
-		Stopwatch("Exported", "input", c.InputFilename).
+		Stopwatch("Exported", "input", c.Conf.Runtime.WorkDir.Rel(c.InputFilename)).
 		RecordWithFile(misaka.RecordExportTime, c.InputFilename)
 	c.OutputFilename = c.Conf.Project.InputFilenameToOutput(c.InputFilename)
 	c.Output = c.Exporter.Do(chiho.EnrichPage(c.Conf, c.Page))
@@ -73,7 +73,7 @@ func (c *Control) Export() Woof {
 // Write copies the exported contents onto the output file.
 func (c *Control) Write() error {
 	defer puck.
-		Stopwatch("Wrote", "output", c.OutputFilename).
+		Stopwatch("Wrote", "output", c.Conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(c.OutputFilename))).
 		RecordWithFile(misaka.RecordWriteTime, c.InputFilename)
 	file, err := os.Create(c.OutputFilename)
 	if err != nil {

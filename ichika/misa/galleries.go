@@ -91,7 +91,9 @@ func BuildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
 			// Clear the progressbar.
 			fmt.Print("\r\033[2K")
 			// Log the thing.
-			logger.Info("Resized item", "path", conf.Runtime.Rel(newFile), "dir", galleryFile.Path)
+			logger.Info("Resized item",
+				"path", conf.Runtime.WorkDir.Rel(newFile),
+				"dir", galleryFile.Path)
 			rei.Try(bar.Close())
 		}
 	}
