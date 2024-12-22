@@ -2,6 +2,7 @@ package ichika
 
 import (
 	"fmt"
+	"os"
 	"runtime"
 	"time"
 
@@ -17,6 +18,10 @@ import (
 	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/komi"
 	"github.com/thecsw/rei"
+)
+
+const (
+	lastBuildTimestampFile = "last_built.txt"
 )
 
 // BuildCommandFunc builds the entire directory.
@@ -118,6 +123,12 @@ func build(conf *alpha.DarknessConfig) {
 	// Let's process the misaka report if user wants to see it.
 	if kuroko.BuildReport {
 		misaka.WriteReport(conf)
+	}
+
+	// Let's write the report time to a special file, last_built.txt
+	nowUtc := time.Now().UTC().Format(time.RFC3339)
+	if err := os.WriteFile(lastBuildTimestampFile, []byte(nowUtc), 0o666); err != nil {
+		conf.Runtime.Logger.Warnf("couldn't write the last_built.txt: %v", err)
 	}
 }
 

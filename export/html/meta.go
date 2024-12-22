@@ -61,6 +61,7 @@ func metaTag(val meta) string {
 var metaTopTag = []string{
 	`<meta charset="UTF-8">`,
 	`<meta http-equiv="X-UA-Compatible" content="IE=edge">`,
+	`<meta name="robots" content="index, follow">`, // we are ok with indexing and crawling
 }
 
 // addBasic adds the basic meta tags

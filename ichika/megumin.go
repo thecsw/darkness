@@ -61,6 +61,8 @@ func removeOutputFiles(conf *alpha.DarknessConfig) {
 			time.Sleep(50 * time.Millisecond)
 		}
 	}
+	// don't forget to remove the build logfile if found
+	_ = os.Remove(lastBuildTimestampFile) // ignore
 }
 
 // delayedLinesPrint prints lines with a delay.
