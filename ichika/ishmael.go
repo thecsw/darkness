@@ -32,7 +32,7 @@ func newDarknessCommandFunc() {
 		}
 		os.Exit(1)
 	}
-	if err := os.MkdirAll(dirName, os.FileMode(0o777)); err != nil {
+	if err := rei.Mkdir(dirName); err != nil {
 		puck.Logger.Fatalf("creating your directory %s: %v", dirName, err)
 	}
 

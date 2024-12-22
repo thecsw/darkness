@@ -14,6 +14,7 @@ import (
 	"github.com/thecsw/darkness/v3/ichika/hizuru"
 	"github.com/thecsw/darkness/v3/ichika/kuroko"
 	"github.com/thecsw/darkness/v3/yunyun"
+	"github.com/thecsw/rei"
 )
 
 const (
@@ -23,7 +24,7 @@ const (
 // UpdateHoloceneTitles adds holoscene titles to the output files.
 func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
 	if dryRun {
-		if err := os.Mkdir(holosceneTitlesTempDir, 0o750); err != nil {
+		if err := rei.Mkdir(holosceneTitlesTempDir); err != nil {
 			logger.Fatalf("creating temporary directory %s: %v", holosceneTitlesTempDir, err)
 		}
 	}

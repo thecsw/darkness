@@ -3,12 +3,13 @@ package misaka
 import (
 	"bytes"
 	"encoding/csv"
-	"github.com/thecsw/rei"
 	"io"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/thecsw/rei"
 
 	"github.com/dustin/go-humanize"
 	"github.com/thecsw/darkness/v3/emilia/alpha"
@@ -28,8 +29,7 @@ func WriteReport(conf *alpha.DarknessConfig) {
 	reportDir := conf.Runtime.WorkDir.Join(reportDirectory)
 	if _, err := os.Stat(string(reportDir)); os.IsNotExist(err) {
 		// Create the directory.
-		err = os.Mkdir(string(reportDir), 0755)
-		if err != nil {
+		if err := rei.Mkdir(string(reportDir)); err != nil {
 			logger.Error("failed to create report directory", "err", err)
 			return
 		}
