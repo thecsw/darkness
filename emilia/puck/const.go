@@ -27,6 +27,9 @@ const (
 
 	// DefaultPreviewHeight is the default height of the gallery preview.
 	PagePreviewHeight = 700
+
+	// LastBuildTimestampFile is where we write the RFC3339 of last build.
+	LastBuildTimestampFile = "last_built.txt"
 )
 
 var (

@@ -43,6 +43,9 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 	// Get all pages that have dates defined, we only use those to be included in the rss feed.
 	pages := Pages(gana.Filter(func(page *yunyun.Page) bool {
 		_, dateFound := narumi.ConvertHoloscene(page.Date)
+		if !dateFound {
+			logger.Debug("Skipping because no date found", "page", page.Location)
+		}
 		return dateFound
 	}, allPages))
 
@@ -57,6 +60,7 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 		for _, page := range pages {
 			// Skip drafts.
 			if page.Accoutrement.Draft.IsEnabled() {
+				logger.Warn("Skipping draft", "page", page.Location)
 				continue
 			}
 			// Create the category name and location.
@@ -76,7 +80,11 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 			finalTitle = page.Accoutrement.RssPrefix + " " + finalTitle
 
 			// Let's update the time if needed.
-			parsedDate, _ := narumi.ConvertHoloscene(page.Date)
+			parsedDate, isValid := narumi.ConvertHoloscene(page.Date)
+			if !isValid {
+				logger.Warn("Skipping invalid publication date", "page", page.Location)
+				continue
+			}
 			finalLocation, err := time.LoadLocation(conf.RSS.Timezone)
 			// Fallback to UTC
 			if err != nil {

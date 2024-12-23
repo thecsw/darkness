@@ -8,8 +8,10 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/puck"
 	"github.com/thecsw/darkness/v3/ichika/hizuru"
 	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
@@ -43,21 +45,67 @@ func NotifySearchEngines(conf *alpha.DarknessConfig, indexNowKey yunyun.Relative
 	}
 
 	// Let's get all the URLs to update.
-	allPages := gana.Map(
-		func(p *yunyun.Page) string { return string(conf.Runtime.JoinDir(p.Location)) },
+	allPagesRelative := gana.Map(
+		func(p *yunyun.Page) yunyun.RelativePathDir { return p.Location },
 		hizuru.BuildPagesSimple(conf, nil))
-	logger.Infof("notifying search engines of %d URLs", len(allPages))
+	logger.Infof("notifying search engines of %d URLs", len(allPagesRelative))
+
+	// Let's filter the pages only if their most recent modified
+	// date is after the published online (if found).
+	lastBuilt, err := getLastBuilt(conf)
+	if err != nil {
+		logger.Warn("getting last built, sending all pages", "err", err)
+	}
+	logger.Info("Found the previous remote build", "last_built", lastBuilt.Local().Format(time.RFC850))
+
+	if err == nil {
+		filteredPages := make([]yunyun.RelativePathDir, 0, len(allPagesRelative))
+		indexPath := "/index" + yunyun.FullPathFile(conf.Project.Input)
+		for _, allPageRelative := range allPagesRelative {
+			fsPath := conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(allPageRelative)) + indexPath
+			fsStat, err := os.Stat(string(fsPath))
+			if err != nil {
+				logger.Warnf("couldn't get os stat for %s: %v", fsPath, err)
+				continue
+			}
+			if fsStat.ModTime().After(*lastBuilt) {
+				filteredPages = append(filteredPages, allPageRelative)
+			}
+		}
+		allPagesRelative = filteredPages
+	}
+
+	if len(allPagesRelative) == 0 {
+		logger.Warn("There are no new updates to recrawl or reindex, bailing out")
+	} else {
+		logger.Infof("Found %d pages that need a recrawl and reindex", len(allPagesRelative))
+	}
 
 	// Notify search engines.
 	if !dryRun {
 		for _, searchEngine := range conf.External.SearchEngines {
-			if err := notifySearchEngineMultiple(searchEngine, indexNowKeyContentsString, conf.Url, allPages); err != nil {
+			if err := notifySearchEngineMultiple(conf, searchEngine, indexNowKeyContentsString, conf.Url, allPagesRelative); err != nil {
 				logger.Warnf("failed to notify search engine %s: %s", searchEngine, err)
 				continue
 			}
 			logger.Infof("notified search engine %s", searchEngine)
 		}
+	} else {
+		logger.Warn("Dryrun mode active, I am not notifying search engines")
 	}
+}
+
+func getLastBuilt(conf *alpha.DarknessConfig) (*time.Time, error) {
+	remotePath := conf.Runtime.UrlPath.JoinPath(puck.LastBuildTimestampFile).String()
+	lastBuilt, err := haruhi.URL(remotePath).ResponseString()
+	if err != nil {
+		return nil, fmt.Errorf("collecting last_built.txt from %s: %v", remotePath, err)
+	}
+	lastBuiltTime, err := time.Parse(time.RFC3339, lastBuilt)
+	if err != nil {
+		return nil, fmt.Errorf("parsing last_built.txt from %s: %v", remotePath, err)
+	}
+	return &lastBuiltTime, nil
 }
 
 type indexNowRequestMultipleUrls struct {
@@ -67,12 +115,18 @@ type indexNowRequestMultipleUrls struct {
 }
 
 func notifySearchEngineMultiple(
+	conf *alpha.DarknessConfig,
 	searchEngineUrl string,
 	indexNowKey string,
 	host string,
-	urlsToUpdate []string,
+	relPathsToUpdate []yunyun.RelativePathDir,
 ) error {
 	path := fmt.Sprintf("https://%s", searchEngineUrl)
+
+	// convert them to URLs
+	urlsToUpdate := gana.Map(func(rel yunyun.RelativePathDir) string {
+		return string(conf.Runtime.JoinDir(rel))
+	}, relPathsToUpdate)
 
 	// From, https://www.indexnow.org/documentation
 	// > You can submit up to 10,000 URLs per post, mixing

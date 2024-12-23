@@ -7,6 +7,7 @@ import (
 	"unicode"
 
 	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/puck"
 	"github.com/thecsw/darkness/v3/ichika/hizuru"
 	"github.com/thecsw/darkness/v3/yunyun"
 )
@@ -62,7 +63,7 @@ func removeOutputFiles(conf *alpha.DarknessConfig) {
 		}
 	}
 	// don't forget to remove the build logfile if found
-	_ = os.Remove(lastBuildTimestampFile) // ignore
+	_ = os.Remove(puck.LastBuildTimestampFile) // ignore
 }
 
 // delayedLinesPrint prints lines with a delay.
