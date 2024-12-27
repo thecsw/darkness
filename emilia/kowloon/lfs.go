@@ -19,7 +19,9 @@ const (
 // GetLfsMediaPath returns the path to the LFS media file.
 func GetLfsMediaPath(conf *alpha.DarknessConfig, path string) string {
 	if conf.External.GitRemoteService == githubLink {
-		return fmt.Sprintf(githubLfsMediaPath, conf.External.GitRemotePath, conf.External.GitBranch, path)
+		return fmt.Sprintf(githubLfsMediaPath,
+			strings.Trim(conf.External.GitRemotePath, "/"),
+			conf.External.GitBranch, path)
 	}
 	conf.Runtime.Logger.Fatalf("unsupported service for linking LFS: %s", conf.External.GitRemoteService)
 	return "" // unreachable
