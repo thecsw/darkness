@@ -128,6 +128,32 @@ func BuildConfig(options Options) *DarknessConfig {
 	// Set up the gallery vendoring.
 	conf.setupGalleryVendoring(options)
 
+	// Last but not least, let's try to set up the git remote.
+	if isUnset(conf.External.GitRemotePath) || isUnset(conf.External.GitRemoteService) {
+		service, path, err := extractGitRemote(options.WorkDir)
+		if err != nil {
+			conf.Runtime.Logger.Warnf("could not get the git remote info: %v", err)
+		} else {
+			conf.External.GitRemoteService = service
+			conf.External.GitRemotePath = path
+		}
+	}
+
+	// Handle the git branch as well.
+	if isUnset(conf.External.GitBranch) {
+		branch, err := extractGitBranch(options.WorkDir)
+		if err != nil {
+			conf.Runtime.Logger.Warnf("could not get the current git branch: %v", err)
+		} else {
+			conf.External.GitBranch = branch
+		}
+	}
+
+	// If all git values are set, then put a quick and cheap marker to signify so.
+	if allAreSet(conf.External.GitRemoteService, conf.External.GitRemotePath, conf.External.GitBranch) {
+		conf.External.GitRemotesAreValid = true
+	}
+
 	// Set up the gallery vendoring.
 	return conf
 }
@@ -135,6 +161,21 @@ func BuildConfig(options Options) *DarknessConfig {
 // isUnset returns true if the passed value is a zero value of its type.
 func isUnset[T comparable](what T) bool {
 	return what == gana.ZeroValue[T]()
+}
+
+// isSet returns true if the passed value is not a zero value of its type.
+func isSet[T comparable](what T) bool {
+	return what != gana.ZeroValue[T]()
+}
+
+// allAreSet will return true iff all the values given are not default.
+func allAreSet[T comparable](whats ...T) bool {
+	for _, what := range whats {
+		if isUnset(what) {
+			return false
+		}
+	}
+	return true
 }
 
 // trimExt trims extension of a file (only top level, so `file.min.js`

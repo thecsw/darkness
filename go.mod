@@ -37,6 +37,7 @@ require (
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/karrick/godirwalk v1.17.0
 	github.com/pkg/profile v1.7.0
+	github.com/sanity-io/litter v1.5.5
 	github.com/schollz/progressbar/v3 v3.17.1
 	github.com/thecsw/gana v0.1.1-0.20230618200220-b2b5d02e54b7
 	github.com/thecsw/haruhi v0.4.0

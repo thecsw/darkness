@@ -203,4 +203,11 @@ type ExternalConfig struct {
 	// SearchEngines is the list of search engines to notify of
 	// new and refreshed content.
 	SearchEngines []string `toml:"search_engines"`
+
+	// GitRemoteService would be like github.com and
+	// GitRemotePath would be thecsw/whatever.
+	GitRemoteService   string `toml:"git_remote_service"`
+	GitRemotePath      string `toml:"git_remote_path"`
+	GitBranch          string `toml:"git_branch"`
+	GitRemotesAreValid bool   `toml:"-"`
 }

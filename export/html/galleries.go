@@ -93,7 +93,7 @@ func processGalleryItem(conf *alpha.DarknessConfig, item rem.GalleryItem) yunyun
 // gallery will create a flexbox gallery as defined in .gallery css class
 func (e *state) gallery(content *yunyun.Content) string {
 	makeFlexItemWithFolder := func(s yunyun.ListItem) string {
-		return makeFlexItem(e.conf, rem.NewGalleryItem(e.page, content, s.Text), content.GalleryImagesPerRow)
+		return makeFlexItem(e.conf, rem.NewGalleryItem(e.conf, e.page, content, s.Text), content.GalleryImagesPerRow)
 	}
 	return fmt.Sprintf(`
 <div class="gallery-container">

@@ -138,7 +138,7 @@ func getGalleryFiles(conf *alpha.DarknessConfig) []rem.GalleryItem {
 				if strings.Contains(item.Text, ":no-preview") {
 					continue
 				}
-				galleryFiles = append(galleryFiles, rem.NewGalleryItem(page, gc, item.Text))
+				galleryFiles = append(galleryFiles, rem.NewGalleryItem(conf, page, gc, item.Text))
 			}
 		}
 	}

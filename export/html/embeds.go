@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/kowloon"
 	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -100,7 +102,7 @@ func (e *state) link(content *yunyun.Content) string {
 	switch {
 	case yunyun.ImageExtRegexp.MatchString(cleanLink) || strings.Contains(content.Attributes, "image"):
 		// Put imageblocks.
-		return linkImage(content, e.conf.Website.ClickableImages)
+		return linkImage(e.conf, content, e.conf.Website.ClickableImages)
 	case yunyun.AudioFileExtRegexp.MatchString(cleanLink):
 		// Audiofiles
 		return fmt.Sprintf(audioEmbedTemplate,
@@ -143,13 +145,14 @@ func (e *state) link(content *yunyun.Content) string {
 	}
 }
 
-func linkImage(content *yunyun.Content, isClickable bool) string {
+func linkImage(conf *alpha.DarknessConfig, content *yunyun.Content, isClickable bool) string {
+	loadableLink := kowloon.ConvertImageToLfsMediaLink(conf, content.Link)
 	// User can elect in darkness.toml to make images clickable.
 	if isClickable {
 		return fmt.Sprintf(imageEmbedTemplateWithHref,
 			content.CustomHtmlTags,
-			content.Link,
-			content.Link,
+			loadableLink,
+			loadableLink,
 			yunyun.RemoveFormatting(content.LinkDescription),
 			yunyun.RemoveFormatting(content.LinkTitle),
 			processText(content.LinkTitle),
@@ -158,7 +161,7 @@ func linkImage(content *yunyun.Content, isClickable bool) string {
 	// Send the embed with no clickable images. IsDefault behavior.
 	return fmt.Sprintf(imageEmbedTemplateNoHref,
 		content.CustomHtmlTags,
-		content.Link,
+		loadableLink,
 		yunyun.RemoveFormatting(content.LinkDescription),
 		yunyun.RemoveFormatting(content.LinkTitle),
 		processText(content.LinkTitle),

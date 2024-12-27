@@ -2,24 +2,26 @@ package rem
 
 import (
 	"fmt"
+	"image"
+	"strings"
+
 	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/emilia/kowloon"
 	"github.com/thecsw/darkness/v3/emilia/reze"
 	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/rei"
-	"image"
-	"strings"
 )
 
 // NewGalleryItem creates a new helper `GalleryItem` and
 // decides whether the passed item is an external link or not.
-func NewGalleryItem(page *yunyun.Page, content *yunyun.Content, wholeLine string) GalleryItem {
+func NewGalleryItem(conf *alpha.DarknessConfig, page *yunyun.Page, content *yunyun.Content, wholeLine string) GalleryItem {
 	extractedLinks := yunyun.ExtractLinks(wholeLine)
 	// If line wasn't found, then the whole line should be counted as the line path.
 	line := wholeLine
 	text := ""
 	description := ""
 	if len(extractedLinks) > 0 {
-		line = extractedLinks[0].Link
+		line = kowloon.ConvertImageToLfsMediaLink(conf, extractedLinks[0].Link)
 		text = extractedLinks[0].Text
 		description = extractedLinks[0].Description
 	}
