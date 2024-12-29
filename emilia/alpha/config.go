@@ -133,7 +133,7 @@ func BuildConfig(options Options) *DarknessConfig {
 	if kuroko.LfsEnabled {
 		// Last but not least, let's try to set up the git remote.
 		if isUnset(conf.External.GitRemotePath) || isUnset(conf.External.GitRemoteService) {
-			service, path, err := extractGitRemote(options.WorkDir)
+			service, path, err := ExtractGitRemote(conf)
 			if err != nil {
 				conf.Runtime.Logger.Warnf("could not get the git remote info: %v", err)
 			} else {
@@ -144,7 +144,7 @@ func BuildConfig(options Options) *DarknessConfig {
 
 		// Handle the git branch as well.
 		if isUnset(conf.External.GitBranch) {
-			branch, err := extractGitBranch(options.WorkDir)
+			branch, err := ExtractGitBranch(conf)
 			if err != nil {
 				conf.Runtime.Logger.Warnf("could not get the current git branch: %v", err)
 			} else {

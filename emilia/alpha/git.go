@@ -7,20 +7,27 @@ import (
 	"os/exec"
 	"regexp"
 	"strings"
+	"time"
+
+	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 const (
 	sshRemotePattern = "git@([^:]+):([^:]+)"
+
+	// this is what we pass to git --date to generate RFC3339
+	rfc3339GitFormat = "format:%Y-%m-%dT%H:%M:%SZ%z"
+	rfc3339Pattern   = "2006-01-02T15:04:05Z-0700"
 )
 
 var (
 	sshRemoteRegexp = regexp.MustCompile(sshRemotePattern)
 )
 
-// extractGitRemote gets the remote and path, like github.com and thecsw/repo.
-func extractGitRemote(workDir string) (string, string, error) {
+// ExtractGitRemote gets the remote and path, like github.com and thecsw/repo.
+func ExtractGitRemote(conf *DarknessConfig) (string, string, error) {
 	cmd := exec.Command("git", "remote", "get-url", "origin")
-	cmd.Dir = string(workDir)
+	cmd.Dir = string(conf.Runtime.WorkDir)
 
 	out, err := cmd.Output()
 	if err != nil {
@@ -42,14 +49,26 @@ func extractGitRemote(workDir string) (string, string, error) {
 	return "", "", errors.New("couldn't find a valid git remote")
 }
 
-// extractGitBranch extracts the current working git branch.
-func extractGitBranch(workDir string) (string, error) {
+// ExtractGitBranch extracts the current working git branch.
+func ExtractGitBranch(conf *DarknessConfig) (string, error) {
 	cmd := exec.Command("git", "branch", "--show-current")
-	cmd.Dir = string(workDir)
+	cmd.Dir = string(conf.Runtime.WorkDir)
 
 	out, err := cmd.Output()
 	if err != nil {
 		return "", fmt.Errorf("getting current git branch: %v", err)
 	}
 	return strings.TrimSpace(string(out)), nil
+}
+
+// ExtractGitLastModified will give the git date of when the file was last modified.
+func ExtractGitLastModified(conf *DarknessConfig, path yunyun.RelativePathFile) (time.Time, error) {
+	cmd := exec.Command("git", "log", "--date", rfc3339GitFormat, "-1", "--pretty=format:%ad", "--", string(path))
+	cmd.Dir = string(conf.Runtime.WorkDir)
+
+	out, err := cmd.Output()
+	if err != nil {
+		return time.Time{}, fmt.Errorf("getting last modified for file %s: %v", path, err)
+	}
+	return time.Parse(rfc3339Pattern, string(out))
 }

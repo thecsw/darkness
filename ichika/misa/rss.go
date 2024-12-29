@@ -24,6 +24,7 @@ const (
 
 // GenerateRssFeed generates an RSS feed based on the given config and directories.
 func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirectories []string, dryRun bool) {
+	initLog()
 	// Get all all the pages we can build out.
 	allPages := hizuru.BuildPagesSimple(conf, rssDirectories)
 	// Try to retrieve the top root page to get channel description. If not found, use the

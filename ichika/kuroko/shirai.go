@@ -1,5 +1,7 @@
 package kuroko
 
+import "github.com/charmbracelet/log"
+
 var (
 	// WorkDir is the directory to look for files.
 	WorkDir = "."
@@ -52,3 +54,14 @@ var (
 	// and the output file that they reached.
 	BuildReport bool
 )
+
+// LogLevel returns the log level as defined in kuroko
+func LogLevel() log.Level {
+	if DebugEnabled {
+		return log.DebugLevel
+	}
+	if InfoEnabled {
+		return log.InfoLevel
+	}
+	return log.WarnLevel
+}

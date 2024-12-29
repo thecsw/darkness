@@ -33,6 +33,7 @@ const (
 // BuildGalleryFiles finds all the gallery entries and build a resized blurred
 // preview version of it.
 func BuildGalleryFiles(conf *alpha.DarknessConfig, dryRun bool) {
+	initLog()
 	// Make sure the preview directory exists
 	previewDirectory := string(conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(conf.Project.DarknessPreviewDirectory)))
 	if err := rei.Mkdir(previewDirectory); err != nil {

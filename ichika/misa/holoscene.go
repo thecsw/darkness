@@ -23,6 +23,7 @@ const (
 
 // UpdateHoloceneTitles adds holoscene titles to the output files.
 func UpdateHoloceneTitles(conf *alpha.DarknessConfig, dryRun bool) {
+	initLog()
 	if dryRun {
 		if err := rei.Mkdir(holosceneTitlesTempDir); err != nil {
 			logger.Fatalf("creating temporary directory %s: %v", holosceneTitlesTempDir, err)

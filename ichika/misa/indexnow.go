@@ -30,6 +30,7 @@ var (
 
 // NotifySearchEngines notifies search engines of the updated URLs through indexnow.org.
 func NotifySearchEngines(conf *alpha.DarknessConfig, indexNowKey yunyun.RelativePathFile, dryRun bool) {
+	initLog()
 	if !indexNowKeyRegex.MatchString(string(indexNowKey)) {
 		logger.Fatalf("indexnow file text should match the pattern %s", indexNowKeyPattern)
 	}
@@ -63,12 +64,15 @@ func NotifySearchEngines(conf *alpha.DarknessConfig, indexNowKey yunyun.Relative
 		indexPath := "/index" + yunyun.FullPathFile(conf.Project.Input)
 		for _, allPageRelative := range allPagesRelative {
 			fsPath := conf.Runtime.WorkDir.Join(yunyun.RelativePathFile(allPageRelative)) + indexPath
-			fsStat, err := os.Stat(string(fsPath))
+			lastModTime, err := alpha.ExtractGitLastModified(conf, yunyun.RelativePathFile(fsPath))
 			if err != nil {
-				logger.Warnf("couldn't get os stat for %s: %v", fsPath, err)
-				continue
+				logger.Warnf("couldn't get git's last modified time for %s: %v", fsPath, err)
 			}
-			if fsStat.ModTime().After(*lastBuilt) {
+			logger.Debug("Extracted git last modified",
+				"path", conf.Runtime.WorkDir.Rel(fsPath), "git_last_mod", lastModTime.Local().Format(time.RFC850))
+			if lastModTime.After(*lastBuilt) {
+				logger.Info("Found page modified since the last build",
+					"path", conf.Runtime.WorkDir.Rel(fsPath), "git_last_mod", lastModTime.Local().Format(time.RFC850))
 				filteredPages = append(filteredPages, allPageRelative)
 			}
 		}
