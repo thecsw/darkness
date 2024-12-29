@@ -319,6 +319,8 @@ func (p ParserOrgmode) Do(
 		if isList(line) {
 			if !hasFlag(yunyun.InListFlag) {
 				listItemInitialIndent = gana.CountRunesLeft[uint8](rawLine, ' ')
+				// If we started a list and still have something in the accumulator, save it.
+				addContent(formParagraph(previousContext, additionalContext, currentFlags))
 			}
 			addFlag(yunyun.InListFlag)
 			currentContext = previousContext + listSeparatorWS + rawLine
