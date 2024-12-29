@@ -10,6 +10,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/ichika/kuroko"
 	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
 )
@@ -128,24 +129,27 @@ func BuildConfig(options Options) *DarknessConfig {
 	// Set up the gallery vendoring.
 	conf.setupGalleryVendoring(options)
 
-	// Last but not least, let's try to set up the git remote.
-	if isUnset(conf.External.GitRemotePath) || isUnset(conf.External.GitRemoteService) {
-		service, path, err := extractGitRemote(options.WorkDir)
-		if err != nil {
-			conf.Runtime.Logger.Warnf("could not get the git remote info: %v", err)
-		} else {
-			conf.External.GitRemoteService = service
-			conf.External.GitRemotePath = path
+	// Only if we need LFS, do we need to enable the Git integration workflow.x
+	if kuroko.LfsEnabled {
+		// Last but not least, let's try to set up the git remote.
+		if isUnset(conf.External.GitRemotePath) || isUnset(conf.External.GitRemoteService) {
+			service, path, err := extractGitRemote(options.WorkDir)
+			if err != nil {
+				conf.Runtime.Logger.Warnf("could not get the git remote info: %v", err)
+			} else {
+				conf.External.GitRemoteService = service
+				conf.External.GitRemotePath = path
+			}
 		}
-	}
 
-	// Handle the git branch as well.
-	if isUnset(conf.External.GitBranch) {
-		branch, err := extractGitBranch(options.WorkDir)
-		if err != nil {
-			conf.Runtime.Logger.Warnf("could not get the current git branch: %v", err)
-		} else {
-			conf.External.GitBranch = branch
+		// Handle the git branch as well.
+		if isUnset(conf.External.GitBranch) {
+			branch, err := extractGitBranch(options.WorkDir)
+			if err != nil {
+				conf.Runtime.Logger.Warnf("could not get the current git branch: %v", err)
+			} else {
+				conf.External.GitBranch = branch
+			}
 		}
 	}
 

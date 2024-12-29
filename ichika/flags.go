@@ -19,6 +19,7 @@ func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 	cmd.BoolVar(&kuroko.DisableParallel, "disable-parallel", false, "disable parallel build (only use one worker)")
 	cmd.IntVar(&kuroko.CustomNumWorkers, "workers", 4, "number of workers to use")
 	cmd.BoolVar(&kuroko.InfoEnabled, "info", false, "enable info logs")
+	cmd.BoolVar(&kuroko.LfsEnabled, "lfs", false, "enable Git LFS images")
 	cmd.BoolVar(&kuroko.DebugEnabled, "debug", false, "enable debug logs")
 	cmd.BoolVar(&kuroko.UseCurrentDirectory, "dev", false, "use local path for urls (development)")
 	cmd.BoolVar(&kuroko.VendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")

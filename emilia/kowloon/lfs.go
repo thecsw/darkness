@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/thecsw/darkness/v3/emilia/alpha"
+	"github.com/thecsw/darkness/v3/ichika/kuroko"
 )
 
 const (
@@ -18,6 +19,9 @@ const (
 
 // GetLfsMediaPath returns the path to the LFS media file.
 func GetLfsMediaPath(conf *alpha.DarknessConfig, path string) string {
+	if !kuroko.LfsEnabled {
+		conf.Runtime.Logger.Fatal("LFS images need to be enabled with --lfs flag")
+	}
 	if conf.External.GitRemoteService == githubLink {
 		return fmt.Sprintf(githubLfsMediaPath,
 			strings.Trim(conf.External.GitRemotePath, "/"),

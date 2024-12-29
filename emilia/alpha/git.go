@@ -17,6 +17,7 @@ var (
 	sshRemoteRegexp = regexp.MustCompile(sshRemotePattern)
 )
 
+// extractGitRemote gets the remote and path, like github.com and thecsw/repo.
 func extractGitRemote(workDir string) (string, string, error) {
 	cmd := exec.Command("git", "remote", "get-url", "origin")
 	cmd.Dir = string(workDir)
@@ -41,6 +42,7 @@ func extractGitRemote(workDir string) (string, string, error) {
 	return "", "", errors.New("couldn't find a valid git remote")
 }
 
+// extractGitBranch extracts the current working git branch.
 func extractGitBranch(workDir string) (string, error) {
 	cmd := exec.Command("git", "branch", "--show-current")
 	cmd.Dir = string(workDir)

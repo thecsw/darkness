@@ -19,6 +19,9 @@ var (
 	// InfoEnabled tells us whether to show info logs.
 	InfoEnabled bool
 
+	// LfsEnabled turns on the "lfs:" image path expansions.
+	LfsEnabled bool
+
 	// UseCurrentDirectory is used for development and local
 	// serving, such that you can browse the url files locally.
 	UseCurrentDirectory bool
