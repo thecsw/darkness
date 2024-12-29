@@ -18,8 +18,8 @@ var (
 	// DebugEnabled tells us whether to show debug logs.
 	DebugEnabled bool
 
-	// InfoEnabled tells us whether to show info logs.
-	InfoEnabled bool
+	// WarnAndAbove tells us whether to show info logs.
+	WarnAndAbove bool
 
 	// LfsEnabled turns on the "lfs:" image path expansions.
 	LfsEnabled bool
@@ -60,8 +60,5 @@ func LogLevel() log.Level {
 	if DebugEnabled {
 		return log.DebugLevel
 	}
-	if InfoEnabled {
-		return log.InfoLevel
-	}
-	return log.WarnLevel
+	return log.InfoLevel
 }
