@@ -36,7 +36,7 @@ func processText(text string) string {
 	text = strings.ReplaceAll(text, "◼", `<b style="color:var(--color-tomb)">◼︎</b>`)
 	text = yunyun.LinkRegexp.ReplaceAllString(text,
 		fmt.Sprintf(`<a href="%s" title="%s">%s</a>`, `$link`, `$desc`, `$text`))
-	text = yunyun.MathRegexp.ReplaceAllString(text, `\($1\)`)
+	text = yunyun.MathRegexp.ReplaceAllString(text, `$l\($text\)$r`)
 	text = yunyun.FootnotePostProcessingRegexp.ReplaceAllStringFunc(text, func(what string) string {
 		num, _ := strconv.Atoi(strings.ReplaceAll(what, "!", ""))
 		// get the footnote HTML body
@@ -52,7 +52,7 @@ func processText(text string) string {
 
 // processTitle returns a properly formatted HTML of a title
 func processTitle(title string) string {
-	return yunyun.MathRegexp.ReplaceAllString(markupHtml(yunyun.FancyText(title)), `\($1\)`)
+	return yunyun.MathRegexp.ReplaceAllString(markupHtml(yunyun.FancyText(title)), `$l\($text\)$r`)
 }
 
 // flattenFormatting returns a plain-text to be fit into the description

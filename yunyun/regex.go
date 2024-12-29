@@ -152,8 +152,14 @@ var (
 	SpecialTextMarkups []*regexp.Regexp
 	// KeyboardRegexp is the regexp for matching keyboard text.
 	KeyboardRegexp = regexp.MustCompile(`kbd:\[([^][]+)\]`)
-	// MathRegexp is the regexp for matching math text.
-	MathRegexp = regexp.MustCompile(`(?mU)\$(.+)\$`)
+	// MathRegexp is the regexp for matching math text, it's handled in a bit of a
+	// special way compared to regular markups, because we are capturing group between
+	// dollar signs and modifying it. Maybe I'll merge it later with the rest of the
+	// markups, but not planning on it at the moment.
+	MathRegexp = regexp.MustCompile(`(?mU)` +
+		darknessPunctLeftWithSpace +
+		`\$(?P<text>.+)\$` +
+		darknessPunctRightWithSpace)
 	// ImageExtRegexp is the regexp for matching images (png, gif, jpg, jpeg, svg, webp).
 	ImageExtRegexp = regexp.MustCompile(`\.(png|gif|jpg|jpeg|svg|webp)$`)
 	// AudioFileExtRegexp is the regexp for matching audio (mp3, flac, midi).
@@ -189,6 +195,10 @@ const (
 	// darknessPunctRight is our alternative to [[:punct:]] re2
 	// class for matching right punctuation symbols.
 	darknessPunctRight = `(?:[()\[\],.!?:;&_%“”’—–-]|[<])`
+	// darknessPunctLeftWithSpace also includes spaces and left capturing group.
+	darknessPunctLeftWithSpace = `(?P<l>[[:space:]]|` + darknessPunctLeft + `|^)`
+	// darknessPunctRightWithSpace also includes spaces and right capturing group.
+	darknessPunctRightWithSpace = `(?P<r>[[:space:]]|` + darknessPunctRight + `|$)`
 )
 
 // SymmetricEmphasis is a useful tool to create simple text markups.
@@ -204,9 +214,9 @@ func AsymmetricEmphasis(left, right string) *regexp.Regexp {
 // emphasisPattern returns pattern given left and right delimeters.
 func emphasisPattern(left, right string) string {
 	return `(?mU)` +
-		`(?P<l>[[:space:]]|` + darknessPunctLeft + `|^)` +
+		darknessPunctLeftWithSpace +
 		`(?:` + left + `)` +
 		`(?P<text>\S|\S\S|\S.+\S)` +
 		`(?:` + right + `)` +
-		`(?P<r>[[:space:]]|` + darknessPunctRight + `|$)`
+		darknessPunctRightWithSpace
 }
