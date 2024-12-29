@@ -15,6 +15,8 @@ import (
 const (
 	sshRemotePattern = "git@([^:]+):([^:]+)"
 
+	// what we pass to --pretty
+	gitPretty = "format:%cd"
 	// this is what we pass to git --date to generate RFC3339
 	rfc3339GitFormat = "format:%Y-%m-%dT%H:%M:%SZ%z"
 	rfc3339Pattern   = "2006-01-02T15:04:05Z-0700"
@@ -63,7 +65,7 @@ func ExtractGitBranch(conf *DarknessConfig) (string, error) {
 
 // ExtractGitLastModified will give the git date of when the file was last modified.
 func ExtractGitLastModified(conf *DarknessConfig, path yunyun.RelativePathFile) (time.Time, error) {
-	cmd := exec.Command("git", "log", "--date", rfc3339GitFormat, "-1", "--pretty=format:%ad", "--", string(path))
+	cmd := exec.Command("git", "log", "--date", rfc3339GitFormat, "-1", "--pretty="+gitPretty, "--", string(path))
 	cmd.Dir = string(conf.Runtime.WorkDir)
 
 	out, err := cmd.Output()

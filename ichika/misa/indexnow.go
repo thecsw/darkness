@@ -49,7 +49,7 @@ func NotifySearchEngines(conf *alpha.DarknessConfig, indexNowKey yunyun.Relative
 	allPagesRelative := gana.Map(
 		func(p *yunyun.Page) yunyun.RelativePathDir { return p.Location },
 		hizuru.BuildPagesSimple(conf, nil))
-	logger.Infof("notifying search engines of %d URLs", len(allPagesRelative))
+	logger.Infof("starting to track recent changes for %d URLs", len(allPagesRelative))
 
 	// Let's filter the pages only if their most recent modified
 	// date is after the published online (if found).
