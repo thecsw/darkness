@@ -103,6 +103,10 @@ type WebsiteConfig struct {
 
 	// RomanFootnotes tells if we have to use roman numerals for footnotes
 	RomanFootnotes bool `toml:"roman_footnotes"`
+
+	// What to put in <meta name="robots" content="VALUE">
+	// By default, it's "nofollow, noindex"
+	RobotsMeta string `toml:"robots_meta"`
 }
 
 // AuthorConfig is the author section of the config

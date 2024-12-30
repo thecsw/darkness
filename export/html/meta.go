@@ -51,6 +51,12 @@ type meta struct {
 
 // metaTag returns a string of the form <meta name="..." content="..." />
 func metaTag(val meta) string {
+	if len(val.Property) < 1 {
+		return fmt.Sprintf(
+			`<meta name="%s" content="%s">`,
+			val.Name, html.EscapeString(val.Content),
+		)
+	}
 	return fmt.Sprintf(
 		`<meta name="%s" property="%s" content="%s">`,
 		val.Name, val.Property, html.EscapeString(val.Content),
@@ -61,19 +67,23 @@ func metaTag(val meta) string {
 var metaTopTag = []string{
 	`<meta charset="UTF-8">`,
 	`<meta http-equiv="X-UA-Compatible" content="IE=edge">`,
-	`<meta name="robots" content="index, follow">`, // we are ok with indexing and crawling
 }
 
 // addBasic adds the basic meta tags
 func addBasic(conf *alpha.DarknessConfig, page *yunyun.Page, description string) []string {
-	return append(metaTopTag, gana.Map(metaTag, []meta{
+	basicMetaTags := make([]meta, 0, 7)
+	basicMetaTags = append(basicMetaTags, []meta{
 		{"viewport", "viewport", "width=device-width, initial-scale=1.0"},
 		{"generator", "generator", "Darkness"},
 		{"author", "author", conf.Author.Name},
 		{"date", "date", page.Date},
 		{"theme-color", "theme-color", conf.Website.Color},
 		{"description", "description", html.EscapeString(description)},
-	})...)
+	}...)
+	if len(conf.Website.RobotsMeta) > 0 {
+		basicMetaTags = append(basicMetaTags, meta{"robots", "", conf.Website.RobotsMeta})
+	}
+	return append(metaTopTag, gana.Map(metaTag, basicMetaTags)...)
 }
 
 // addOpenGraph adds the opengraph preview meta tags
