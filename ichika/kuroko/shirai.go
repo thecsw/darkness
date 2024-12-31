@@ -15,11 +15,11 @@ var (
 	// CustomNumWorkers sets the custom number of workers.
 	CustomNumWorkers int
 
-	// DebugEnabled tells us whether to show debug logs.
-	DebugEnabled bool
+	// DebugLogsEnabled tells us whether to show debug logs.
+	DebugLogsEnabled bool
 
-	// Info tells us whether to show info logs.
-	Info bool
+	// InfoLogsEnabled tells us whether to show info logs.
+	InfoLogsEnabled bool
 
 	// LfsEnabled turns on the "lfs:" image path expansions.
 	LfsEnabled bool
@@ -57,8 +57,11 @@ var (
 
 // LogLevel returns the log level as defined in kuroko
 func LogLevel() log.Level {
-	if DebugEnabled {
+	if DebugLogsEnabled {
 		return log.DebugLevel
 	}
-	return log.InfoLevel
+	if InfoLogsEnabled {
+		return log.InfoLevel
+	}
+	return log.WarnLevel
 }
