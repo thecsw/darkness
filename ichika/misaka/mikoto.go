@@ -1,10 +1,11 @@
 package misaka
 
 import (
-	"github.com/thecsw/darkness/v3/ichika/kuroko"
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/thecsw/darkness/v3/ichika/kuroko"
 
 	"github.com/thecsw/darkness/v3/yunyun"
 )
@@ -74,7 +75,7 @@ func GetNumberReports() int {
 // GetFullReport returns a map of all the files and their times.
 func GetFullReport() map[yunyun.FullPathFile][]int64 {
 	fullReport := make(map[yunyun.FullPathFile][]int64)
-	recordedFiles.Range(func(key, value interface{}) bool {
+	recordedFiles.Range(func(key, value any) bool {
 		inputFile := key.(yunyun.FullPathFile)
 		fullReport[inputFile] = make([]int64, 4)
 		loadIntoFullReport(inputFile, fullReport, &readTimes, readIndex)
