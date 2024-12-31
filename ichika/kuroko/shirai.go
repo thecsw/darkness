@@ -18,8 +18,8 @@ var (
 	// DebugEnabled tells us whether to show debug logs.
 	DebugEnabled bool
 
-	// WarnAndAbove tells us whether to show info logs.
-	WarnAndAbove bool
+	// Info tells us whether to show info logs.
+	Info bool
 
 	// LfsEnabled turns on the "lfs:" image path expansions.
 	LfsEnabled bool

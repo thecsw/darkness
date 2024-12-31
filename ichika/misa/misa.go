@@ -7,7 +7,7 @@ import (
 )
 
 // Logger is the logger for Akane.
-var logger = puck.NewLogger("Misa 🍎", log.InfoLevel)
+var logger = puck.NewLogger("Misa 🍎", log.WarnLevel)
 
 func initLog() {
 	logger = puck.NewLogger("Misa 🍎", kuroko.LogLevel())

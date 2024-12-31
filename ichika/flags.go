@@ -18,9 +18,9 @@ func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 	cmd.StringVar(&kuroko.DarknessToml, "conf", "darkness.toml", "location of darkness.toml")
 	cmd.BoolVar(&kuroko.DisableParallel, "disable-parallel", false, "disable parallel build (only use one worker)")
 	cmd.IntVar(&kuroko.CustomNumWorkers, "workers", 4, "number of workers to use")
-	cmd.BoolVar(&kuroko.WarnAndAbove, "warn", false, "only enable logs above warn")
+	cmd.BoolVar(&kuroko.Info, "info", false, "enable info+ logs")
 	cmd.BoolVar(&kuroko.LfsEnabled, "lfs", false, "enable Git LFS images")
-	cmd.BoolVar(&kuroko.DebugEnabled, "debug", false, "enable debug logs")
+	cmd.BoolVar(&kuroko.DebugEnabled, "debug", false, "enable debug+ logs")
 	cmd.BoolVar(&kuroko.UseCurrentDirectory, "dev", false, "use local path for urls (development)")
 	cmd.BoolVar(&kuroko.VendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")
 	cmd.BoolVar(&kuroko.Akaneless, "akaneless", false, "skip akane processing")
@@ -46,13 +46,13 @@ func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 		kuroko.CustomNumWorkers = 1
 	}
 
-	puck.Logger.SetLevel(log.InfoLevel)
+	puck.Logger.SetLevel(log.WarnLevel)
 	// Set the proper log levels and default to info.
 	switch {
 	case kuroko.DebugEnabled:
 		puck.Logger.SetLevel(log.DebugLevel)
-	case kuroko.WarnAndAbove:
-		puck.Logger.SetLevel(log.WarnLevel)
+	case kuroko.Info:
+		puck.Logger.SetLevel(log.InfoLevel)
 	}
 
 	// Read the config and initialize emilia settings.
