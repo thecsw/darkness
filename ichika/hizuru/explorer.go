@@ -15,6 +15,11 @@ import (
 	"github.com/thecsw/rei"
 )
 
+const (
+	// Do not discover files that have this in their filename
+	skipPrefix = "skipthis"
+)
+
 // FindFilesByExt finds all files with a given extension.
 func FindFilesByExt(conf *alpha.DarknessConfig, inputFiles chan<- yunyun.FullPathFile) {
 	// We don't need a concurrent map because we're only using it in a single goroutine.
@@ -36,6 +41,9 @@ func FindFilesByExt(conf *alpha.DarknessConfig, inputFiles chan<- yunyun.FullPat
 			relPath, err := filepath.Rel(string(conf.Runtime.WorkDir), osPathname)
 			if err != nil {
 				return fmt.Errorf("finding relative path of %s to %s: %v", osPathname, conf.Runtime.WorkDir, err)
+			}
+			if strings.Contains(filepath.Base(relPath), skipPrefix) {
+				return nil
 			}
 			// If we haven't seen this path before, add it to the channel.
 			if _, seen := pathDedupe[relPath]; !seen {

@@ -82,7 +82,9 @@ func BuildConfig(options Options) *DarknessConfig {
 	conf.Runtime.urlSlice = []string{conf.Url}
 
 	// Set up the custom highlight languages if they exist.
-	conf.setupHighlightJsLanguages()
+	if err := conf.setupHighlightJsLanguages(); err != nil {
+		conf.Runtime.Logger.Error("couldn't set up language highlighter", "err", err)
+	}
 
 	// Set up the highlight theme if it's not given.
 	if isUnset(conf.Website.SyntaxHighlightingTheme) {

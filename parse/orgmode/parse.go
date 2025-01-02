@@ -8,23 +8,6 @@ import (
 	"github.com/thecsw/gana"
 )
 
-// preprocess preprocesses the input string to be parser-friendly
-func preprocess(data string) string {
-	// Add a newline before every heading just in case if
-	// there is no terminating empty line before each one
-	data = headingRegexp.ReplaceAllString(data, "\n$1")
-	// Center and quote delimeters need a new line around
-	for _, v := range surroundWithNewlines {
-		data = strings.ReplaceAll(data,
-			optionPrefix+v,
-			"\n"+optionPrefix+v)
-	}
-	// Pad a newline so that last elements can be processed
-	// properly before an EOF is encountered during parsing
-	data += "\n"
-	return data
-}
-
 const (
 	defaultGalleryImagesPerRow uint = 3
 )
@@ -36,7 +19,7 @@ func (p ParserOrgmode) Do(
 ) *yunyun.Page {
 
 	// Split the data into lines
-	lines := strings.Split(preprocess(data), "\n")
+	lines := strings.Split(p.preprocess(filename, data), "\n")
 
 	page := yunyun.NewPage(
 		yunyun.WithFilename(filename),

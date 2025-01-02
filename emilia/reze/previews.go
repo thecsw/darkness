@@ -8,6 +8,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/anthonynsimon/bild/imgio"
@@ -79,7 +80,7 @@ func InitPreviewGenerator(
 	if shouldDelete {
 		p.avatarReadableConverted = avatarFileReadable
 	}
-	avatarOriginal := rei.Must(os.Open(avatarFileReadable))
+	avatarOriginal := rei.Must(os.Open(filepath.Clean(avatarFileReadable)))
 	defer func(avatarOriginal *os.File) {
 		err := avatarOriginal.Close()
 		if err != nil {
@@ -203,7 +204,7 @@ func SaveJpg(reader io.Reader, filename string) error {
 	if err != nil {
 		return fmt.Errorf("decoding image reader: %v", err)
 	}
-	target, err := os.Create(filename)
+	target, err := os.Create(filepath.Clean(filename))
 	if err != nil {
 		return fmt.Errorf("creating file %s: %v", filename, err)
 	}
@@ -219,11 +220,11 @@ func SaveJpg(reader io.Reader, filename string) error {
 // convertWebpToPNG converts a webp image to a png image.
 func convertWebpToPNG(filename string) (string, bool) {
 	if strings.HasSuffix(filename, ".webp") {
-		source := rei.Must(os.Open(filename))
+		source := rei.Must(os.Open(filepath.Clean(filename)))
 		img := rei.Must(webp.Decode(source))
 
 		targetFilename := strings.ReplaceAll(filename, ".webp", ".png")
-		targetFile := rei.Must(os.Create(targetFilename))
+		targetFile := rei.Must(os.Create(filepath.Clean(targetFilename)))
 
 		rei.Try(png.Encode(targetFile, img))
 		rei.Try(targetFile.Close())

@@ -123,7 +123,7 @@ func build(conf *alpha.DarknessConfig) {
 
 	// Let's write the report time to a special file, last_built.txt
 	nowUtc := time.Now().UTC().Format(time.RFC3339)
-	if err := os.WriteFile(puck.LastBuildTimestampFile, []byte(nowUtc), 0o666); err != nil {
+	if err := os.WriteFile(puck.LastBuildTimestampFile, []byte(nowUtc), 0o600); err != nil {
 		conf.Runtime.Logger.Warnf("couldn't write the last_built.txt: %v", err)
 	}
 }
