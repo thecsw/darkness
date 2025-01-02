@@ -1,7 +1,6 @@
 package orgmode
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -115,10 +114,9 @@ func preprocessByEvaluatingMacros(
 	macrosLookupTable := make(map[string]string)
 	lines := strings.Split(what, "\n")
 	for _, line := range lines {
-		if !strings.HasPrefix(line, macroPrefix) {
+		if !strings.HasPrefix(strings.ToLower(line), macroPrefix) {
 			continue
 		}
-		fmt.Println("found macro")
 		macroLine := gana.SkipString(uint(len(macroPrefix)), line)
 		split := strings.SplitN(macroLine, " ", 2)
 		if len(split) != 2 {
