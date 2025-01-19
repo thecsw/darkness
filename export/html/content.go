@@ -68,13 +68,13 @@ func (e *state) heading(content *yunyun.Content) string {
 
 func paragraphClass(content *yunyun.Content) string {
 	if content.IsQuote() {
-		return "quote"
+		return " quote"
 	}
 	if content.IsCentered() {
-		return "center"
+		return " center"
 	}
 	if content.IsDropCap() {
-		return "dropcap"
+		return " dropcap"
 	}
 	return ""
 }
@@ -83,7 +83,7 @@ func paragraphClass(content *yunyun.Content) string {
 func (e *state) paragraph(content *yunyun.Content) string {
 	return fmt.Sprintf(
 		`
-<div class="paragraph %s" %s>
+<div class="paragraph%s" %s>
 <p>
 %s
 </p>

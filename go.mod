@@ -21,9 +21,9 @@ require (
 	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	golang.org/x/exp v0.0.0-20241217172543-b2144cdd0a67 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/term v0.27.0 // indirect
+	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 // indirect
+	golang.org/x/sys v0.29.0 // indirect
+	golang.org/x/term v0.28.0 // indirect
 )
 
 require (
@@ -38,7 +38,7 @@ require (
 	github.com/karrick/godirwalk v1.17.0
 	github.com/pkg/profile v1.7.0
 	github.com/sanity-io/litter v1.5.5
-	github.com/schollz/progressbar/v3 v3.17.1
+	github.com/schollz/progressbar/v3 v3.18.0
 	github.com/thecsw/gana v0.1.1-0.20230618200220-b2b5d02e54b7
 	github.com/thecsw/haruhi v0.4.0
 	github.com/thecsw/komi v0.1.2

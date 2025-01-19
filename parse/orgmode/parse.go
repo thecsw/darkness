@@ -1,6 +1,7 @@
 package orgmode
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/thecsw/darkness/v3/emilia"
@@ -20,6 +21,9 @@ func (p ParserOrgmode) Do(
 
 	// Split the data into lines
 	lines := strings.Split(p.preprocess(filename, data), "\n")
+	if strings.Contains(string(filename), "oop") {
+		fmt.Println(p.preprocess(filename, data))
+	}
 
 	page := yunyun.NewPage(
 		yunyun.WithFilename(filename),

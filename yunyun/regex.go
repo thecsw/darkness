@@ -110,7 +110,12 @@ func ExtractLinks(line string) []*ExtractedLink {
 			Text:        submatch[linkTextIndex],
 			Description: submatch[linkDescIndex],
 		}
-		if extractedLinks[i].Description == "" {
+		// Commented out because if there is no text provided, just the link,
+		// then the author might want the image to appear clean without text.
+		// if len(extractedLinks[i].Text) < 1 {
+		// 	extractedLinks[i].Text = extractedLinks[i].Link
+		// }
+		if len(extractedLinks[i].Description) < 1 {
 			extractedLinks[i].Description = extractedLinks[i].Text
 		}
 	}
