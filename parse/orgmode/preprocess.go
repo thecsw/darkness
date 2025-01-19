@@ -60,8 +60,8 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 	// Be ready for a very greedy loop.
 	lines := strings.Split(what, "\n")
 	for _, line := range lines {
-		line := strings.TrimSpace(line)
-		if strings.HasPrefix(line, commentPrefix) {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, commentPrefix) {
 			continue
 		}
 
@@ -79,8 +79,8 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 		}
 
 		// We are in the realm of options now.
-		lowercase := strings.ToLower(line)
-		if isOption(line) {
+		lowercase := strings.ToLower(trimmed)
+		if isOption(trimmed) {
 			option := gana.SkipString(uint(optionPrefixLen), lowercase)
 			parts := strings.SplitN(option, " ", 2)
 			// Don't know what this is, don't let it reach the parser.
@@ -98,7 +98,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 			}
 
 			// What if it's a setup file?
-			if setupFile, found := expandSetupFile(p.Config, filename, line); found {
+			if setupFile, found := expandSetupFile(p.Config, filename, trimmed); found {
 				sb.WriteRune('\n')
 				sb.WriteString(setupFile)
 				sb.WriteRune('\n')
@@ -111,7 +111,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 
 			// If we found any macros on a single line, then the whole line was a macro
 			// definition and gets consumed.
-			if collectMacros(p.Config, filename, macrosLookupTable, line) {
+			if collectMacros(p.Config, filename, macrosLookupTable, trimmed) {
 				continue
 			}
 		}
@@ -126,7 +126,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 		sb.WriteRune('\n') // regular linefeed
 
 		// Save it for the next iteration.
-		previousLine = line
+		previousLine = trimmed
 	}
 
 	// Pad a newline so that last elements can be processed

@@ -11,6 +11,7 @@ const (
 	disableOption   = `nil`
 	delimiterOption = ':'
 
+	optionDate              = `date`
 	optionDraft             = `draft`
 	optionTomb              = `tomb`
 	optionAuthorImage       = `author-image`
@@ -28,6 +29,7 @@ const (
 )
 
 var accoutrementActions = map[string]func(string, *yunyun.Accoutrement){
+	optionDate:              accoutrementDate,
 	optionDraft:             accoutrementDraft,
 	optionTomb:              accoutrementTomb,
 	optionAuthorImage:       accoutrementAuthorImage,
@@ -86,6 +88,11 @@ func breakOption(what string) (string, string) {
 	// By default return the whole string as the first one,
 	// and enable option to the right.
 	return what, enableOption
+}
+
+// accoutrementDraft sets the date inclusion in the exported document option.
+func accoutrementDate(what string, target *yunyun.Accoutrement) {
+	accoutrementBool(what, &target.Date)
 }
 
 // accoutrementDraft sets the draft option of the accoutrement.

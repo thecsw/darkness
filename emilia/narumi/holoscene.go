@@ -12,7 +12,8 @@ import (
 
 const (
 	// RfcEmily is the RFC3339 format for the emily time format
-	RfcEmily = "Mon, 02 Jan 2006"
+	RfcEmily         = "Mon, 02 Jan 2006"
+	RfcEmilyWithHour = "Mon, 02 Jan 2006 15:04 MST"
 )
 
 // HEParagraphRegex is a regex for matching Holoscene times in paragraphs

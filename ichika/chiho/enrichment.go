@@ -16,6 +16,7 @@ import (
 // - Lazy galleries
 func EnrichPage(conf *alpha.DarknessConfig, page *yunyun.Page) *yunyun.Page {
 	return page.Options(
+		narumi.WithDate(),
 		narumi.WithResolvedComments(),
 		narumi.WithEnrichedHeadings(),
 		narumi.WithFootnotes(),

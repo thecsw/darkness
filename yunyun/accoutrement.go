@@ -6,6 +6,8 @@ import "strings"
 type Accoutrement struct {
 	// To prevent unkeyed literars.
 	_ struct{}
+	// Toggle inclusion of a date into exported file.
+	Date AccoutrementFlip
 	// The image for preview
 	Preview string
 	// PreviewWidth and PreviewHeight are the dimensions of the preview image.
