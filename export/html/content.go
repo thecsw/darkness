@@ -88,7 +88,6 @@ func (e *state) paragraph(content *yunyun.Content) string {
 %s
 </p>
 </div>`,
-		// div class
 		paragraphClass(content), content.CustomHtmlTags, processText(content.Paragraph),
 	)
 }

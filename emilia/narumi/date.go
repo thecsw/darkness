@@ -41,9 +41,9 @@ func WithDate() yunyun.PageOption {
 			dateString = fmt.Sprintf(`%s ^{{(at least %s days ago)}}`, page.Date, humanize.Comma(daysAgo))
 		}
 		dateContents[0] = &yunyun.Content{
-			// Paragraph: fmt.Sprintf(`^{{%s}}`, dateString),
-			Paragraph: dateString,
-			Type:      yunyun.TypeParagraph,
+			CustomHtmlTags: `id="date-section"`,
+			Paragraph:      dateString,
+			Type:           yunyun.TypeParagraph,
 		}
 		page.Contents = append(dateContents, page.Contents...)
 	}
