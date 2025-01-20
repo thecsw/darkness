@@ -2,11 +2,21 @@ package narumi
 
 import (
 	"fmt"
+	"math/rand/v2"
 	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/thecsw/darkness/v3/yunyun"
+)
+
+var (
+	// Some emojis are compound, like lime, so they don't fit in a single rune.
+	randomDateEmojis = []string{
+		"🍓", "🍒", "🍋", "🍋‍🟩", "🍸", "🥧", "🍊", "☕️",
+		"🍑", "🥑", "🍐", "🥥", "🍈", "🫐", "🪵", "🍌", "🍉",
+		"🍤", "🍇", "🥞", "🥗", "🍯", "🥐", "🥭", "🍙", "🧀",
+	}
 )
 
 func WithDate() yunyun.PageOption {
@@ -38,7 +48,9 @@ func WithDate() yunyun.PageOption {
 			// looks so much cleaner. We already have misa holoscene
 			// post-processing, which will add the actual time as a tooltip.
 			daysAgo = int64(time.Since(regular).Hours() / 24)
-			dateString = fmt.Sprintf(`%s ^{{(at least %s days ago)}}`, page.Date, humanize.Comma(daysAgo))
+			dateString = fmt.Sprintf(`%s %s ^{{(at least %s days ago)}}`,
+				randomDateEmojis[rand.IntN(len(randomDateEmojis))],
+				page.Date, humanize.Comma(daysAgo))
 		}
 		dateContents[0] = &yunyun.Content{
 			CustomHtmlTags: `id="date-section"`,
