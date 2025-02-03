@@ -61,9 +61,6 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 	lines := strings.Split(what, "\n")
 	for _, line := range lines {
 		trimmed := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmed, commentPrefix) {
-			continue
-		}
 
 		// Let's see if we have any macros to expand on this line.
 		if updatedLine, expandedMacros := expandMacros(p.Config,
