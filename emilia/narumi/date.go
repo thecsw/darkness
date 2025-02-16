@@ -6,14 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dustin/go-humanize"
 	"github.com/thecsw/darkness/v3/yunyun"
 )
 
 var (
 	// Some emojis are compound, like lime, so they don't fit in a single rune.
 	randomDateEmojis = []string{
-		"🍓", "🍒", "🍋", "🍋‍🟩", "🍸", "🥧", "🍊", "☕️",
+		"🍓", "🍒", "🍋", "🍋‍🟩", "🍸", "🥧", "🍊", "☕️", "🥧",
 		"🍑", "🥑", "🍐", "🥥", "🍈", "🫐", "🪵", "🍌", "🍉",
 		"🍤", "🍇", "🥞", "🥗", "🍯", "🥐", "🥭", "🍙", "🧀",
 	}
@@ -37,26 +36,69 @@ func WithDate() yunyun.PageOption {
 
 		}
 		dateContents := make(yunyun.Contents, 1)
-		daysAgo := int64(-1)
 		regular, isHoloscene := ConvertHoloscene(page.Date)
 		dateString := strings.TrimSpace(page.Date)
 		if isHoloscene {
-			// I was thinking of having something like
-			// > 364; 12023 H.E. 1400 - Sat, 30 Dec 2023 14:00 CST
-			// but just the simple
-			// > 364; 12023 H.E. 1400
-			// looks so much cleaner. We already have misa holoscene
-			// post-processing, which will add the actual time as a tooltip.
-			daysAgo = int64(time.Since(regular).Hours() / 24)
-			dateString = fmt.Sprintf(`%s %s ^{{(at least %s days ago)}}`,
+			dateString = fmt.Sprintf(`%s Published at least %s ago`,
 				randomDateEmojis[rand.IntN(len(randomDateEmojis))],
-				page.Date, humanize.Comma(daysAgo))
+				formatSince(time.Since(regular)))
 		}
 		dateContents[0] = &yunyun.Content{
-			CustomHtmlTags: `id="date-section"`,
-			Paragraph:      dateString,
-			Type:           yunyun.TypeParagraph,
+			CustomHtmlTags: fmt.Sprintf(`id="date-section" title="%s"`,
+				strings.TrimSpace(page.Date)),
+			Paragraph: dateString,
+			Type:      yunyun.TypeParagraph,
 		}
 		page.Contents = append(dateContents, page.Contents...)
 	}
+}
+
+// formatSince formats a time.Duration into a human-readable string.
+func formatSince(since time.Duration) string {
+	months, days := sinceToMonthsAndDays(since)
+	years := months / 12
+	months = months % 12
+	if years == 0 && months == 0 && days == 0 {
+		return "today"
+	}
+	sb := strings.Builder{}
+
+	if years > 0 {
+		sb.WriteString(fmt.Sprintf("%d year", years))
+		if years > 1 {
+			sb.WriteString("s")
+		}
+	}
+	if months > 0 {
+		if years > 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(fmt.Sprintf("%d month", months))
+		if months > 1 {
+			sb.WriteString("s")
+		}
+	}
+	if days > 0 {
+		// We will use the Oxford comma if we have both years and months.
+		if years > 0 && months > 0 {
+			sb.WriteString(", and ")
+		} else if years > 0 || months > 0 {
+			// But, if we only have one of them, we will use "and".
+			sb.WriteString(" and ")
+		}
+		sb.WriteString(fmt.Sprintf("%d day", days))
+		if days > 1 {
+			sb.WriteString("s")
+		}
+	}
+	return sb.String()
+}
+
+// sinceToMonthsAndDays converts a time.Duration to months and days.
+func sinceToMonthsAndDays(since time.Duration) (months, days int64) {
+	// 30 days in a month.
+	days = int64(since.Hours() / 24)
+	months = days / 30
+	days = days % 30
+	return
 }
