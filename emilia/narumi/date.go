@@ -18,6 +18,7 @@ var (
 	}
 )
 
+// WithDate is a PageOption that adds the date to the page.
 func WithDate() yunyun.PageOption {
 	return func(page *yunyun.Page) {
 		// The user explicitly opted out.
@@ -39,7 +40,7 @@ func WithDate() yunyun.PageOption {
 		regular, isHoloscene := ConvertHoloscene(page.Date)
 		dateString := strings.TrimSpace(page.Date)
 		if isHoloscene {
-			dateString = fmt.Sprintf(`%s Published at least %s ago`,
+			dateString = fmt.Sprintf(`%s At least %s ago`,
 				randomDateEmojis[rand.IntN(len(randomDateEmojis))],
 				formatSince(time.Since(regular)))
 		}
