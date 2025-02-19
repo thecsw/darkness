@@ -1,6 +1,7 @@
 package akane
 
 import (
+	"errors"
 	"path/filepath"
 	"runtime"
 	"sync"
@@ -57,11 +58,15 @@ const (
 
 // doPagePreviews generates page previews.
 func doPagePreviews(conf *alpha.DarknessConfig) {
+	if !checkFontFiles(conf) {
+		logger.Error("Preview generation skipped, missing font files")
+		return
+	}
 	// Let's initialize the page preview generator.
 	generator := reze.InitPreviewGenerator(
-		pagePreviewTitleFont,
-		pagePreviewNameFont,
-		pagePreviewTimeFont,
+		string(conf.Website.PreviewGenTitleFont),
+		string(conf.Website.PreviewGenNameFont),
+		string(conf.Website.PrevietGenTimeFont),
 		pagePreviewWidth,
 		pagePreviewHeight,
 		conf.Website.Color,
@@ -151,4 +156,31 @@ func onlyKeepPrint(k string) string {
 		}
 	}
 	return result
+}
+
+func checkFontFiles(conf *alpha.DarknessConfig) bool {
+	if err := checkFontFile(conf.Website.PreviewGenTitleFont); err != nil {
+		logger.Error("importing font file, skipping preview generation", "err", err)
+		return false
+	}
+	if err := checkFontFile(conf.Website.PreviewGenNameFont); err != nil {
+		logger.Error("importing font file, skipping preview generation", "err", err)
+		return false
+	}
+	if err := checkFontFile(conf.Website.PrevietGenTimeFont); err != nil {
+		logger.Error("importing font file, skipping preview generation", "err", err)
+		return false
+	}
+	return true
+}
+
+func checkFontFile(path yunyun.RelativePathFile) error {
+	exists, err := rei.FileExists(string(path))
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.New("font file " + string(path) + " doesn't exist or isn't readable")
+	}
+	return nil
 }

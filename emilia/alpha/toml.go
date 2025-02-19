@@ -72,6 +72,11 @@ type WebsiteConfig struct {
 	// same directory to use as a page preview. defaults to preview.png
 	Preview yunyun.RelativePathFile `toml:"preview"`
 
+	// These are the fonts used for the preview generation.
+	PreviewGenTitleFont yunyun.RelativePathFile `toml:"preview_gen_title_font"`
+	PreviewGenNameFont  yunyun.RelativePathFile `toml:"preview_gen_name_font"`
+	PrevietGenTimeFont  yunyun.RelativePathFile `toml:"preview_gen_time_font"`
+
 	// Locale is the locale of the site
 	Locale string `toml:"locale"`
 
