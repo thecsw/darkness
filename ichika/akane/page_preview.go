@@ -47,11 +47,8 @@ func RequestPagePreview(location yunyun.RelativePathDir, title string,
 }
 
 const (
-	pagePreviewTitleFont = "styles/fonts/EB_Garamond/EBGaramond-VariableFont_wght.ttf"
-	pagePreviewNameFont  = "styles/fonts/EB_Garamond/static/EBGaramond-Medium.ttf"
-	pagePreviewTimeFont  = "styles/fonts/EB_Garamond/static/EBGaramond-Italic.ttf"
-	pagePreviewWidth     = puck.PagePreviewWidth
-	pagePreviewHeight    = puck.PagePreviewHeight
+	pagePreviewWidth  = puck.PagePreviewWidth
+	pagePreviewHeight = puck.PagePreviewHeight
 
 	pagePreviewFilename = "preview.jpg"
 )
