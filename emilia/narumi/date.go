@@ -46,7 +46,7 @@ func WithDate() yunyun.PageOption {
 		}
 		dateContents[0] = &yunyun.Content{
 			CustomHtmlTags: fmt.Sprintf(`id="date-section" title="%s"`,
-				strings.TrimSpace(page.Date)),
+				strings.TrimSpace(regular.Format(RfcEmily))),
 			Paragraph: dateString,
 			Type:      yunyun.TypeParagraph,
 		}
