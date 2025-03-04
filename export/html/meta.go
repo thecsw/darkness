@@ -23,7 +23,9 @@ func (e *state) metaTags() []string {
 		}
 		// Skip holoscene times
 		paragraph := strings.TrimSpace(content.Paragraph)
-		if paragraph == "" || puck.HEregex.MatchString(paragraph) {
+		if paragraph == "" ||
+			puck.HEregex.MatchString(paragraph) ||
+			yunyun.HasFlag(&content.Options, yunyun.NotADescriptionFlag) {
 			continue
 		}
 		description = flattenFormatting(

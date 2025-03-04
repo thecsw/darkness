@@ -61,6 +61,9 @@ const (
 	InDropCapFlag
 	// InGalleryFlag is used internally to mark gallery states.
 	InGalleryFlag
+	// Not description flag will mark to the exporter that if this paragaph
+	// is the first content on the page, it should not be used for descriptions.
+	NotADescriptionFlag
 	// YunYunStartCustomFlags is used internally to mark last flag.
 	YunYunStartCustomFlags
 )

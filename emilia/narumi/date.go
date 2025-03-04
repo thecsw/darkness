@@ -49,6 +49,7 @@ func WithDate() yunyun.PageOption {
 				strings.TrimSpace(regular.Format(RfcEmily))),
 			Paragraph: dateString,
 			Type:      yunyun.TypeParagraph,
+			Options:   yunyun.NotADescriptionFlag,
 		}
 		page.Contents = append(dateContents, page.Contents...)
 	}
