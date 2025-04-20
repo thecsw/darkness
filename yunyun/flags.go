@@ -37,6 +37,8 @@ type Bits uint32
 const (
 	// InListFlag is used internally to mark list states.
 	InListFlag Bits = 1 << iota
+	// InOrderedListFlag is used to internally mark ordered list states.
+	InOrderedListFlag
 	// InTableFlag is used internally to mark table states.
 	InTableFlag
 	// InTableHasHeadersFlag is used internally to mark table

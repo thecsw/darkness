@@ -58,7 +58,7 @@ func (p ParserOrgmode) Do(
 	// as the date
 	defer fillHolosceneDate(page)
 
-	addFlag, removeFlag, flipFlag, hasFlag := yunyun.LatchFlags(&currentFlags)
+	addFlag, removeFlag, _, hasFlag := yunyun.LatchFlags(&currentFlags)
 	// addContent is a helper function to add content to the page
 	addContent := func(content *yunyun.Content) {
 		content.Options = currentFlags
@@ -220,8 +220,10 @@ func (p ParserOrgmode) Do(
 				})
 				continue
 			}
+			inList := hasFlag(yunyun.InListFlag)
+			inOrderedList := hasFlag(yunyun.InOrderedListFlag)
 			// If we were in a list, save it as a list
-			if hasFlag(yunyun.InListFlag) {
+			if inList || inOrderedList {
 				splitItems := strings.Split(previousContext, listSeparatorWS)
 				// Shouldn't happen, continue as a failure
 				if len(splitItems) < 1 {
@@ -232,21 +234,31 @@ func (p ParserOrgmode) Do(
 				matches := make([]yunyun.ListItem, len(rawListItems))
 				for i, match := range rawListItems {
 					listItemRaw := strings.Replace(match, "- ", "", 1)
+					toWrite := strings.TrimSpace(listItemRaw)
+					if inOrderedList {
+						// We slice off the "[0-9]. "
+						toWrite = toWrite[3:]
+					}
 					matches[i] = yunyun.ListItem{
 						Level: gana.CountStringsLeft[uint8](listItemRaw, "  ") - listItemInitialIndent + 1,
-						Text:  strings.TrimSpace(listItemRaw),
+						Text:  toWrite,
 					}
 				}
 				// Shouldn't happen, continue as a failure
 				if len(rawListItems) < 1 {
 					continue
 				}
+				typeToWrite := yunyun.TypeList
+				if hasFlag(yunyun.InOrderedListFlag) {
+					typeToWrite = yunyun.TypeListNumbered
+				}
 				// Add the list
 				addContent(&yunyun.Content{
-					Type: yunyun.TypeList,
+					Type: typeToWrite,
 					List: matches,
 				})
-				flipFlag(yunyun.InListFlag)
+				removeFlag(yunyun.InListFlag)
+				removeFlag(yunyun.InOrderedListFlag)
 				listItemInitialIndent = 0
 				continue
 			}
@@ -304,6 +316,13 @@ func (p ParserOrgmode) Do(
 				listItemInitialIndent = gana.CountRunesLeft[uint8](rawLine, ' ')
 			}
 			addFlag(yunyun.InListFlag)
+			currentContext = previousContext + listSeparatorWS + rawLine
+		}
+		if isOrderedListAny(line) {
+			if !hasFlag(yunyun.InOrderedListFlag) {
+				listItemInitialIndent = gana.CountRunesLeft[uint8](rawLine, ' ')
+			}
+			addFlag(yunyun.InOrderedListFlag)
 			currentContext = previousContext + listSeparatorWS + rawLine
 		}
 		if isTable(line) {

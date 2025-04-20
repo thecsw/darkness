@@ -91,6 +91,19 @@ func isList(line string) bool {
 	return strings.HasPrefix(line, "- ")
 }
 
+// isOrderedListStart returns true if we are starting an ordered list.
+func isOrderedListStart(line string) bool {
+	return strings.HasPrefix(line, "1. ")
+}
+
+// listAnyRegex checks whether the start of the line signifies we are in an ordered list.
+var listAnyRegex = regexp.MustCompile(`^[0-9]. `)
+
+// isOrderedListAny returns true if we are anywhere within the ordered list.
+func isOrderedListAny(line string) bool {
+	return listAnyRegex.MatchString(line)
+}
+
 // isTable returns true if we are currently reading a table, false otherwise.
 func isTable(line string) bool {
 	return strings.HasPrefix(line, "| ") || strings.HasPrefix(line, "|-")

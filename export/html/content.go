@@ -121,8 +121,19 @@ func (e *state) list(content *yunyun.Content) string {
 
 // listNumbered gives us a numbered list html representation
 func (e *state) listNumbered(content *yunyun.Content) string {
-	// TODO
-	return ""
+	// Hijack this type for galleries
+	if content.IsGallery() {
+		return e.gallery(content)
+	}
+	return fmt.Sprintf(`
+<div class="ulist">
+<ol class="%s">
+%s
+</ol>
+</div>
+`,
+		content.Summary, // overloaded summary to store list class
+		strings.Join(gana.Map(makeListItem, content.List), "\n"))
 }
 
 // sourceCode gives us a source code html representation
