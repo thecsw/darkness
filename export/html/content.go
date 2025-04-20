@@ -109,12 +109,13 @@ func (e *state) list(content *yunyun.Content) string {
 		return e.gallery(content)
 	}
 	return fmt.Sprintf(`
-<div class="ulist">
+<div class="ulist" %s>
 <ul class="%s">
 %s
 </ul>
 </div>
 `,
+		content.CustomHtmlTags,
 		content.Summary, // overloaded summary to store list class
 		strings.Join(gana.Map(makeListItem, content.List), "\n"))
 }
@@ -126,12 +127,13 @@ func (e *state) listNumbered(content *yunyun.Content) string {
 		return e.gallery(content)
 	}
 	return fmt.Sprintf(`
-<div class="ulist">
+<div class="olist" %s>
 <ol class="%s">
 %s
 </ol>
 </div>
 `,
+		content.CustomHtmlTags,
 		content.Summary, // overloaded summary to store list class
 		strings.Join(gana.Map(makeListItem, content.List), "\n"))
 }
