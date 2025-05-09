@@ -311,21 +311,21 @@ func (p ParserOrgmode) Do(
 			removeFlag(yunyun.InDropCapFlag)
 			continue
 		}
+
+		// Special processing.
 		if isList(line) {
 			if !hasFlag(yunyun.InListFlag) {
 				listItemInitialIndent = gana.CountRunesLeft[uint8](rawLine, ' ')
 			}
 			addFlag(yunyun.InListFlag)
 			currentContext = previousContext + listSeparatorWS + rawLine
-		}
-		if isOrderedListAny(line) {
+		} else if isOrderedListAny(line) {
 			if !hasFlag(yunyun.InOrderedListFlag) {
 				listItemInitialIndent = gana.CountRunesLeft[uint8](rawLine, ' ')
 			}
 			addFlag(yunyun.InOrderedListFlag)
 			currentContext = previousContext + listSeparatorWS + rawLine
-		}
-		if isTable(line) {
+		} else if isTable(line) {
 			addFlag(yunyun.InTableFlag)
 			// If it's a delimeter, save it and move on
 			if isTableHeaderDelimeter(line) {
@@ -335,6 +335,7 @@ func (p ParserOrgmode) Do(
 			}
 			currentContext = previousContext + tableSeparatorWS + line
 		}
+
 		currentContext += " "
 	}
 

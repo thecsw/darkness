@@ -55,6 +55,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 
 	// We add a newline before lists start
 	previousLine := ""
+	previousLineRaw := ""
 
 	// We will read the original input line by line and build the final input same way.
 	// Be ready for a very greedy loop.
@@ -114,8 +115,12 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 		}
 
 		// We add a newline before listings, so the parser has an easier time.
+		// List items can be multi-line, and further lines usually begin with a space,
+		// so let's exclude those from the selection.
 		if isList(line) && !isList(previousLine) {
-			sb.WriteRune('\n')
+			if !strings.HasPrefix(previousLineRaw, " ") {
+				sb.WriteRune('\n')
+			}
 		}
 
 		// By default, if we reached the end of the iteration, write the line as is.
@@ -124,6 +129,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 
 		// Save it for the next iteration.
 		previousLine = trimmed
+		previousLineRaw = line
 	}
 
 	// Pad a newline so that last elements can be processed
