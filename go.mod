@@ -23,15 +23,15 @@ require (
 	github.com/muesli/termenv v0.16.0 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
-	golang.org/x/exp v0.0.0-20250408133849-7e4ce0ab07d0 // indirect
-	golang.org/x/sys v0.32.0 // indirect
-	golang.org/x/term v0.31.0 // indirect
+	golang.org/x/exp v0.0.0-20250506013437-ce4c2cf36ca6 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/term v0.32.0 // indirect
 )
 
 require (
 	github.com/anthonynsimon/bild v0.14.0
 	github.com/charmbracelet/lipgloss v1.1.0
-	github.com/charmbracelet/log v0.4.1
+	github.com/charmbracelet/log v0.4.2
 	github.com/dustin/go-humanize v1.0.1
 	github.com/fogleman/gg v1.3.0
 	github.com/fsnotify/fsnotify v1.9.0
@@ -44,5 +44,5 @@ require (
 	github.com/thecsw/haruhi v0.4.0
 	github.com/thecsw/komi v0.1.2
 	github.com/thecsw/rei v0.0.3
-	golang.org/x/image v0.26.0
+	golang.org/x/image v0.27.0
 )
