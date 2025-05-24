@@ -159,9 +159,18 @@ func isAttentionBlock(line string) *yunyun.Content {
 	}
 }
 
+// safeIntToUint safely converts an int to uint by handling negative values
+func safeIntToUint(val int) uint {
+	if val < 0 {
+		return 0
+	}
+	return uint(val)
+}
+
 // extractOptionLabel is a utility function used to extract option values.
 func extractOptionLabel(given string, option string) string {
-	return strings.TrimSpace(gana.SkipString(uint(len(optionPrefix)+len(option)), given))
+	skipLen := len(optionPrefix) + len(option)
+	return strings.TrimSpace(gana.SkipString(safeIntToUint(skipLen), given))
 }
 
 // extractSourceCodeLanguage extracts language `LANG` from `#+begin_src LANG`.

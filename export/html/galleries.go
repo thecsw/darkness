@@ -13,6 +13,14 @@ import (
 	"github.com/thecsw/gana"
 )
 
+// safeIntToUint safely converts an int to uint by handling negative values
+func safeIntToUint(val int) uint {
+	if val < 0 {
+		return 0
+	}
+	return uint(val)
+}
+
 var flexOptionRegexp = regexp.MustCompile(`:flex (\d+)`)
 
 // extractCustomFlex extract custom flex class `:flex [1,5]`
@@ -28,7 +36,7 @@ func extractCustomFlex(s string) uint {
 	if err != nil {
 		return 0
 	}
-	return uint(ret)
+	return safeIntToUint(ret)
 }
 
 // hrefGalleryTagIfLinkGiven returns an href tag if gallery link is found,
