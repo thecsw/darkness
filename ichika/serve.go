@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -80,6 +79,7 @@ func ServeCommandFunc() {
 		time.Sleep(500 * time.Millisecond)
 		// Validate URL before passing it to exec.Command
 		if isURLSafe(options.Url) {
+			// #nosec G204 - options.Url validated by isURLSafe function
 			if err := exec.Command("open", options.Url).Run(); err != nil {
 				puck.Logger.Error("Couldn't open the browser", err)
 			}

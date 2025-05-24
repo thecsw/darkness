@@ -95,7 +95,7 @@ func ExtractGitLastModified(conf *DarknessConfig, path yunyun.RelativePathFile) 
 		return time.Time{}, fmt.Errorf("invalid path provided: %s", path)
 	}
 	
-	cmd := exec.Command("git", "log", "--date", rfc3339GitFormat, "-1", "--pretty="+gitPretty, "--", pathStr)
+	cmd := exec.Command("git", "log", "--date", rfc3339GitFormat, "-1", "--pretty="+gitPretty, "--", pathStr) // #nosec G204 - pathStr validated by isPathSafe
 	cmd.Dir = string(conf.Runtime.WorkDir)
 
 	out, err := cmd.Output()

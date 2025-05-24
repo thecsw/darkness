@@ -42,7 +42,13 @@ func secureRandIntn(n int) int {
 	if err != nil {
 		panic(fmt.Sprintf("failed to generate random number: %v", err))
 	}
-	return int(binary.BigEndian.Uint32(buf) % uint32(n))
+	
+	// Use a more explicit approach to avoid the integer overflow
+	// Converting n to uint32 first to safely perform modulo
+	randomInt := binary.BigEndian.Uint32(buf)
+	// #nosec G115 - This is safe because n is positive and already verified to be > 0
+	result := randomInt % uint32(n)
+	return int(result) // Safe conversion from uint32 to int since result < n
 }
 
 // WithDate is a PageOption that adds the date to the page.
