@@ -12,8 +12,16 @@ import (
 func GenerateTableOfContents(page *yunyun.Page) []yunyun.ListItem {
 	toc := make([]yunyun.ListItem, len(page.Contents.Headings()))
 	for i, heading := range page.Contents.Headings() {
+		// Bound check to prevent integer overflow when converting uint32 to uint8
+		var level uint8
+		if heading.HeadingLevelAdjusted > 255 {
+			level = 255
+		} else {
+			level = uint8(heading.HeadingLevelAdjusted)
+		}
+		
 		toc[i] = yunyun.ListItem{
-			Level: uint8(heading.HeadingLevelAdjusted),
+			Level: level,
 			Text:  fmt.Sprintf("[[%s][%s]]", "#"+ExtractID(heading.Heading), heading.Heading),
 		}
 	}
