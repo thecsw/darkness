@@ -1,8 +1,9 @@
 package narumi
 
 import (
+	"crypto/rand"
+	"encoding/binary"
 	"fmt"
-	"math/rand/v2"
 	"strings"
 	"time"
 
@@ -17,6 +18,32 @@ var (
 		"🍤", "🍇", "🥞", "🥗", "🍯", "🥐", "🥭", "🍙", "🧀",
 	}
 )
+
+// secureRandIntn returns a cryptographically secure random integer in the range [0, n).
+// It panics if there's an error reading from the random source.
+func secureRandIntn(n int) int {
+	if n <= 0 {
+		panic("invalid argument to secureRandIntn")
+	}
+	
+	// For small values of n, we can simply use a single byte
+	if n <= 256 {
+		buf := make([]byte, 1)
+		_, err := rand.Read(buf)
+		if err != nil {
+			panic(fmt.Sprintf("failed to generate random number: %v", err))
+		}
+		return int(buf[0]) % n
+	}
+	
+	// For larger values, use 4 bytes
+	buf := make([]byte, 4)
+	_, err := rand.Read(buf)
+	if err != nil {
+		panic(fmt.Sprintf("failed to generate random number: %v", err))
+	}
+	return int(binary.BigEndian.Uint32(buf) % uint32(n))
+}
 
 // WithDate is a PageOption that adds the date to the page.
 func WithDate() yunyun.PageOption {
@@ -41,7 +68,7 @@ func WithDate() yunyun.PageOption {
 		dateString := strings.TrimSpace(page.Date)
 		if isHoloscene {
 			dateString = fmt.Sprintf(`%s At least %s ago`,
-				randomDateEmojis[rand.IntN(len(randomDateEmojis))],
+				randomDateEmojis[secureRandIntn(len(randomDateEmojis))],
 				formatSince(time.Since(regular)))
 		}
 		dateContents[0] = &yunyun.Content{
