@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -63,9 +64,38 @@ func ExtractGitBranch(conf *DarknessConfig) (string, error) {
 	return strings.TrimSpace(string(out)), nil
 }
 
+// isPathSafe checks if a path is safe to use in exec.Command
+// It validates the path doesn't contain suspicious patterns
+func isPathSafe(path string) bool {
+	// Clean the path to resolve any . or .. components
+	cleanPath := filepath.Clean(path)
+	
+	// Don't allow absolute paths
+	if filepath.IsAbs(cleanPath) {
+		return false
+	}
+	
+	// Don't allow paths that try to traverse up directories
+	if strings.Contains(cleanPath, "../") {
+		return false
+	}
+	
+	// Ensure it doesn't have any suspicious characters
+	// Only allow alphanumeric, '_', '-', '/', '.', and space
+	safePattern := regexp.MustCompile(`^[a-zA-Z0-9_\-/\. ]+$`)
+	return safePattern.MatchString(cleanPath)
+}
+
 // ExtractGitLastModified will give the git date of when the file was last modified.
 func ExtractGitLastModified(conf *DarknessConfig, path yunyun.RelativePathFile) (time.Time, error) {
-	cmd := exec.Command("git", "log", "--date", rfc3339GitFormat, "-1", "--pretty="+gitPretty, "--", string(path))
+	pathStr := string(path)
+	
+	// Validate the path before using it in exec.Command
+	if !isPathSafe(pathStr) {
+		return time.Time{}, fmt.Errorf("invalid path provided: %s", path)
+	}
+	
+	cmd := exec.Command("git", "log", "--date", rfc3339GitFormat, "-1", "--pretty="+gitPretty, "--", pathStr) // #nosec G204 - pathStr validated by isPathSafe
 	cmd.Dir = string(conf.Runtime.WorkDir)
 
 	out, err := cmd.Output()

@@ -2,6 +2,7 @@ package ichika
 
 import (
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
 	"os/signal"
@@ -76,8 +77,14 @@ func ServeCommandFunc() {
 	// Try to open the local server with `open` command.
 	if !*noBrowser {
 		time.Sleep(500 * time.Millisecond)
-		if err := exec.Command("open", options.Url).Run(); err != nil {
-			puck.Logger.Error("Couldn't open the browser", err)
+		// Validate URL before passing it to exec.Command
+		if isURLSafe(options.Url) {
+			// #nosec G204 - options.Url validated by isURLSafe function
+			if err := exec.Command("open", options.Url).Run(); err != nil {
+				puck.Logger.Error("Couldn't open the browser", err)
+			}
+		} else {
+			puck.Logger.Error("Invalid URL for browser", "url", options.Url)
 		}
 	}
 
@@ -145,6 +152,29 @@ func launchWatcher(conf *alpha.DarknessConfig) {
 	puck.Logger.Print("Press Ctrl-C to stop the server")
 	// Block main goroutine forever.
 	<-make(chan struct{})
+}
+
+// isURLSafe checks if a URL is safe to pass to exec.Command
+// It verifies the URL is properly formatted and is a localhost URL.
+func isURLSafe(urlString string) bool {
+	// Only allow http and https URLs
+	if !strings.HasPrefix(urlString, "http://") && !strings.HasPrefix(urlString, "https://") {
+		return false
+	}
+
+	// Parse the URL to validate its format
+	parsedURL, err := url.Parse(urlString)
+	if err != nil {
+		return false
+	}
+
+	// Only allow localhost URLs
+	host := parsedURL.Hostname()
+	if host != "localhost" && host != "127.0.0.1" {
+		return false
+	}
+
+	return true
 }
 
 // fileServer conveniently sets up a http.FileServer handler to serve
