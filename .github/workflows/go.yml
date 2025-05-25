@@ -91,3 +91,59 @@ jobs:
           fi
           echo "Build succeeded: binary created"
           ./darkness --version || echo "Binary exists but may not support --version flag"
+
+  integration-test:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+          check-latest: true
+          cache: true
+
+      - name: Verify Go version
+        run: go version
+
+      - name: Verify dependencies
+        run: go mod verify
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Build darkness binary
+        run: go build -v
+
+      - name: Clone thecsw.github.io repository
+        run: |
+          git clone https://github.com/thecsw/thecsw.github.io.git /tmp/thecsw.github.io
+
+      - name: Run darkness build on thecsw.github.io
+        run: |
+          cd /tmp/thecsw.github.io
+          $GITHUB_WORKSPACE/darkness build
+
+          # Check if build was successful
+          if [ $? -ne 0 ]; then
+            echo "Integration test failed: darkness build failed"
+            exit 1
+          fi
+
+          # Verify output files were created
+          if [ ! -d "public" ]; then
+            echo "Integration test failed: no 'public' directory was created"
+            exit 1
+          fi
+
+          # Check for HTML files
+          if [ $(find public -name "*.html" | wc -l) -eq 0 ]; then
+            echo "Integration test failed: no HTML files were created"
+            exit 1
+          fi
+
+          echo "Integration test passed: darkness build completed successfully"
