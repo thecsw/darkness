@@ -126,24 +126,33 @@ jobs:
       - name: Run darkness build on thecsw.github.io
         run: |
           cd /tmp/thecsw.github.io
-          $GITHUB_WORKSPACE/darkness build
-
+          # Capture the output of darkness build
+          BUILD_OUTPUT=$($GITHUB_WORKSPACE/darkness build | tee /dev/stderr)
+          
           # Check if build was successful
           if [ $? -ne 0 ]; then
             echo "Integration test failed: darkness build failed"
             exit 1
           fi
-
-          # Verify output files were created
-          if [ ! -d "public" ]; then
-            echo "Integration test failed: no 'public' directory was created"
+          
+          # Extract the number of processed files from the output
+          PROCESSED_FILES=$(echo "$BUILD_OUTPUT" | grep -oP "Processed \K[0-9]+" || echo "0")
+          
+          echo "Number of files processed: $PROCESSED_FILES"
+          
+          # Check if at least 100 files were processed
+          if [ "$PROCESSED_FILES" -lt 100 ]; then
+            echo "Integration test failed: Expected at least 100 files to be processed, but only $PROCESSED_FILES files were processed"
             exit 1
           fi
-
-          # Check for HTML files
-          if [ $(find public -name "*.html" | wc -l) -eq 0 ]; then
+          
+          # Count HTML files (created alongside orgmode files)
+          HTML_FILES=$(find . -name "*.html" | wc -l)
+          echo "Number of HTML files created: $HTML_FILES"
+          
+          if [ "$HTML_FILES" -eq 0 ]; then
             echo "Integration test failed: no HTML files were created"
             exit 1
           fi
-
-          echo "Integration test passed: darkness build completed successfully"
+          
+          echo "Integration test passed: darkness build completed successfully, processed $PROCESSED_FILES files"
