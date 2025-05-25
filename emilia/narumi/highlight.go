@@ -17,6 +17,9 @@ const (
 // WithSyntaxHighlighting adds syntax highlighting to the page.
 func WithSyntaxHighlighting(conf *alpha.DarknessConfig) yunyun.PageOption {
 	return func(page *yunyun.Page) {
+		if page == nil || page.Contents == nil || conf == nil {
+			return
+		}
 		// If Emilia disabled the syntax highlighting, don't even bother.
 		if !conf.Website.SyntaxHighlighting {
 			return
