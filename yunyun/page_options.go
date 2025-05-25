@@ -48,6 +48,9 @@ func (p *Page) Options(options ...PageOption) *Page {
 // WithFilename sets the filename.
 func WithFilename(filename RelativePathFile) PageOption {
 	return func(p *Page) {
+		if p == nil {
+			return
+		}
 		p.File = filename
 	}
 }
@@ -55,6 +58,9 @@ func WithFilename(filename RelativePathFile) PageOption {
 // WithLocation sets the Url.
 func WithLocation(url RelativePathDir) PageOption {
 	return func(p *Page) {
+		if p == nil {
+			return
+		}
 		p.Location = url
 	}
 }
@@ -62,6 +68,9 @@ func WithLocation(url RelativePathDir) PageOption {
 // WithContents sets the contents.
 func WithContents(contents Contents) PageOption {
 	return func(p *Page) {
+		if p == nil {
+			return
+		}
 		p.Contents = contents
 	}
 }

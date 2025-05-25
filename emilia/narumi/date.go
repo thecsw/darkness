@@ -54,6 +54,9 @@ func secureRandIntn(n int) int {
 // WithDate is a PageOption that adds the date to the page.
 func WithDate() yunyun.PageOption {
 	return func(page *yunyun.Page) {
+		if page == nil || page.Contents == nil || page.Accoutrement == nil {
+			return
+		}
 		// The user explicitly opted out.
 		if page.Accoutrement.Date.IsDisabled() {
 			return

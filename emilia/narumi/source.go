@@ -10,6 +10,9 @@ import (
 // WithSourceCodeTrimmedLeftWhitespace removes leading whitespace from source code blocks
 func WithSourceCodeTrimmedLeftWhitespace() yunyun.PageOption {
 	return func(page *yunyun.Page) {
+		if page == nil || page.Contents == nil {
+			return
+		}
 		for _, contentl := range page.Contents.SourceCodeBlocks() {
 			content := contentl
 			lines := strings.Split(content.SourceCode, "\n")

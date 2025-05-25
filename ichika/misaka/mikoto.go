@@ -95,6 +95,9 @@ func loadIntoFullReport(
 	times *sync.Map,
 	index int,
 ) {
+	if fullReport == nil || fullReport[inputFile] == nil {
+		return
+	}
 	whateverTime, ok := times.Load(inputFile)
 	if ok {
 		fullReport[inputFile][index] = whateverTime.(int64)
