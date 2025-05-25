@@ -40,7 +40,9 @@ func ExtractGitRemote(conf *DarknessConfig) (string, string, error) {
 
 	if sshRemoteRegexp.MatchString(outString) {
 		matches := sshRemoteRegexp.FindAllStringSubmatch(outString, 1)
-		return matches[0][1], matches[0][2], nil
+		if len(matches) > 0 && len(matches[0]) > 2 {
+			return matches[0][1], matches[0][2], nil
+		}
 	}
 
 	url, err := url.Parse(outString)

@@ -57,9 +57,11 @@ func NotifySearchEngines(conf *alpha.DarknessConfig, indexNowKey yunyun.Relative
 	if err != nil {
 		logger.Warn("getting last built, sending all pages", "err", err)
 	}
-	logger.Info("Found the previous remote build", "last_built", lastBuilt.Local().Format(time.RFC850))
+	if lastBuilt != nil {
+		logger.Info("Found the previous remote build", "last_built", lastBuilt.Local().Format(time.RFC850))
+	}
 
-	if err == nil {
+	if err == nil && lastBuilt != nil {
 		filteredPages := make([]yunyun.RelativePathDir, 0, len(allPagesRelative))
 		indexPath := "/index" + yunyun.FullPathFile(conf.Project.Input)
 		for _, allPageRelative := range allPagesRelative {

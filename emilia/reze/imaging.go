@@ -81,6 +81,9 @@ func DownloadImage(link string, authority, prefix, name string) (image.Image, er
 // PreserveImageHeightRatio calculates the new height of an image,
 // given the new width, while preserving the original height ratio.
 func PreserveImageHeightRatio(img image.Image, newWidth int) (height int) {
+	if img == nil {
+		return 0
+	}
 	// Calculate the new width and height.
 	originalWidth := img.Bounds().Dx()
 	originalHeight := img.Bounds().Dy()
