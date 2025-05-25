@@ -21,6 +21,9 @@ jobs:
           check-latest: true
           cache: true
 
+      - name: Verify Go version
+        run: go version
+
       - name: Install golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
@@ -42,6 +45,9 @@ jobs:
           go-version: '1.23'
           check-latest: true
           cache: true
+
+      - name: Verify Go version
+        run: go version
 
       - name: Verify dependencies
         run: go mod verify
@@ -69,6 +75,9 @@ jobs:
           go-version: '1.23'
           check-latest: true
           cache: true
+
+      - name: Verify Go version
+        run: go version
 
       - name: Verify dependencies
         run: go mod verify
