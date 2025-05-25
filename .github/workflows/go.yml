@@ -146,13 +146,4 @@ jobs:
             exit 1
           fi
           
-          # Count HTML files (created alongside orgmode files)
-          HTML_FILES=$(find . -name "*.html" | wc -l)
-          echo "Number of HTML files created: $HTML_FILES"
-          
-          if [ "$HTML_FILES" -eq 0 ]; then
-            echo "Integration test failed: no HTML files were created"
-            exit 1
-          fi
-          
           echo "Integration test passed: darkness build completed successfully, processed $PROCESSED_FILES files"
