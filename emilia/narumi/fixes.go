@@ -10,6 +10,9 @@ import (
 // adds some additional information to the headings for later export
 func WithEnrichedHeadings() yunyun.PageOption {
 	return func(page *yunyun.Page) {
+		if page == nil || page.Contents == nil {
+			return
+		}
 		// Normalizing headings
 		minHeadingLevel := uint32(999)
 		// Find the smallest heading
@@ -37,6 +40,9 @@ func WithEnrichedHeadings() yunyun.PageOption {
 // COMMENT headings are encountered
 func WithResolvedComments() yunyun.PageOption {
 	return func(page *yunyun.Page) {
+		if page == nil || page.Contents == nil {
+			return
+		}
 		start, headingLevel, searching := -1, uint32(0), false
 		for i, content := range page.Contents {
 			if !content.IsHeading() {

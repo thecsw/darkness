@@ -101,4 +101,9 @@ func FlipFlag(v *Bits, f Bits) { *v ^= f }
 // HasFlag returns true if the flag is found, false otherwise.
 //
 //go:inline
-func HasFlag(v *Bits, f Bits) bool { return *v&f != 0 }
+func HasFlag(v *Bits, f Bits) bool { 
+	if v == nil {
+		return false
+	}
+	return *v&f != 0 
+}

@@ -16,6 +16,9 @@ var FootnoteLabeler = rei.NumberToRoman
 // WithFootnotes resolves footnotes and cleans up the page if necessary
 func WithFootnotes() yunyun.PageOption {
 	return func(page *yunyun.Page) {
+		if page == nil || page.Contents == nil {
+			return
+		}
 		footnotes := make([]string, 0, 4)
 		for i := range page.Contents {
 			c := page.Contents[i]

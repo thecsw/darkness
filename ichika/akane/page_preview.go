@@ -110,6 +110,7 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 				"loc", target,
 				"err", err,
 			)
+			waiting.Done() // Ensure waiting.Done() is called before returning
 			return
 		}
 		logger.Info(
