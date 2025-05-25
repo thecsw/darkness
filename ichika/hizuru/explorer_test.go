@@ -288,3 +288,40 @@ func TestBuildPagesSimple(t *testing.T) {
 		t.Fatal("BuildPagesSimple returned nil")
 	}
 }
+
+// TestNoFileDuplication tests that no files are duplicated when scanning
+func TestNoFileDuplication(t *testing.T) {
+	tempDir, config := setupTestEnvironment(t)
+	defer os.RemoveAll(tempDir)
+	
+	// Create a test case where a file could potentially be discovered via multiple paths
+	// by creating hard links
+	srcPath := filepath.Join(tempDir, "unique.org")
+	if err := os.WriteFile(srcPath, []byte("test content"), 0644); err != nil {
+		t.Fatalf("Failed to create file %s: %v", srcPath, err)
+	}
+	
+	// Try to create a hard link (may not work on all systems)
+	linkPath := filepath.Join(tempDir, "link_to_unique.org")
+	if err := os.Link(srcPath, linkPath); err != nil {
+		t.Logf("Hard links not supported, skipping part of test: %v", err)
+	}
+	
+	// Run the function we're testing
+	files := FindFilesByExtSimple(config)
+	
+	// Build map of paths
+	seen := make(map[string]bool)
+	for _, file := range files {
+		rel, err := filepath.Rel(tempDir, string(file))
+		if err != nil {
+			t.Fatalf("Failed to get relative path: %v", err)
+		}
+		
+		// The same content should not be processed twice
+		if seen[rel] {
+			t.Errorf("Found duplicate file in results: %s", rel)
+		}
+		seen[rel] = true
+	}
+}
