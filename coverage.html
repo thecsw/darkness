@@ -1,0 +1,991 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>orgmode: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/thecsw/darkness/v3/parse/orgmode/content.go (84.1%)</option>
+				
+				<option value="file1">github.com/thecsw/darkness/v3/parse/orgmode/parse.go (93.8%)</option>
+				
+				<option value="file2">github.com/thecsw/darkness/v3/parse/orgmode/preprocess.go (95.7%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package orgmode
+
+import (
+        "errors"
+        "fmt"
+        "regexp"
+        "strconv"
+        "strings"
+
+        "github.com/thecsw/darkness/v3/emilia/puck"
+        "github.com/thecsw/darkness/v3/yunyun"
+        "github.com/thecsw/gana"
+)
+
+// isHeader returns a non-nil object if the line is a header
+func isHeader(line string) *yunyun.Content <span class="cov8" title="1">{
+        level := uint32(0)
+        switch </span>{
+        case strings.HasPrefix(line, sectionLevelOne):<span class="cov8" title="1">
+                level = 1</span>
+        case strings.HasPrefix(line, sectionLevelTwo):<span class="cov8" title="1">
+                level = 2</span>
+        case strings.HasPrefix(line, sectionLevelThree):<span class="cov8" title="1">
+                level = 3</span>
+        case strings.HasPrefix(line, sectionLevelFour):<span class="cov8" title="1">
+                level = 4</span>
+        case strings.HasPrefix(line, sectionLevelFive):<span class="cov8" title="1">
+                level = 5</span>
+        default:<span class="cov8" title="1">
+                level = 0</span>
+        }
+        // Not a header
+        <span class="cov8" title="1">if level &lt; 1 </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        // Is a header
+        <span class="cov8" title="1">return &amp;yunyun.Content{
+                Type:         yunyun.TypeHeading,
+                HeadingLevel: level,
+                Heading:      line[level+1:],
+        }</span>
+}
+
+// isComment returns true if the line is a comment
+func isComment(line string) bool <span class="cov8" title="1">{
+        return strings.HasPrefix(line, commentPrefix)
+}</span>
+
+// isOption returns true if the line is an option
+func isOption(line string) bool <span class="cov8" title="1">{
+        return strings.HasPrefix(line, optionPrefix)
+}</span>
+
+// getLink returns a non-nil object if the line is a link
+func getLink(line string) *yunyun.Content <span class="cov8" title="1">{
+        line = strings.TrimSpace(line)
+        extractedLink := yunyun.ExtractLink(line)
+        // Extraction didn't yield any results.
+        if extractedLink == nil </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        // Check if this is a standalone link (just by itself on a line)
+        // If it's not, then it's a simple link in a paragraph, deal with
+        // it later in `htmlize`
+        <span class="cov8" title="1">if extractedLink.MatchLength != len(line) </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        <span class="cov8" title="1">return &amp;yunyun.Content{
+                Type:            yunyun.TypeLink,
+                Link:            extractedLink.Link,
+                LinkTitle:       extractedLink.Text,
+                LinkDescription: extractedLink.Description,
+        }</span>
+}
+
+// formParagraph builds a proper paragraph-oriented `Content` object.
+func formParagraph(text, extra string, options yunyun.Bits) *yunyun.Content <span class="cov8" title="1">{
+        val := &amp;yunyun.Content{
+                Type:      yunyun.TypeParagraph,
+                Paragraph: strings.TrimSpace(text),
+                Options:   options,
+        }
+        if val.IsDetails() </span><span class="cov8" title="1">{
+                val.Summary = extra
+        }</span>
+        <span class="cov8" title="1">return val</span>
+}
+
+// isList returns true if we are currently reading a list, false otherwise.
+func isList(line string) bool <span class="cov8" title="1">{
+        return strings.HasPrefix(line, "- ")
+}</span>
+
+// isOrderedListStart returns true if we are starting an ordered list.
+func isOrderedListStart(line string) bool <span class="cov8" title="1">{
+        return strings.HasPrefix(line, "1. ")
+}</span>
+
+// listAnyRegex checks whether the start of the line signifies we are in an ordered list.
+var listAnyRegex = regexp.MustCompile(`^[0-9]. `)
+
+// isOrderedListAny returns true if we are anywhere within the ordered list.
+func isOrderedListAny(line string) bool <span class="cov8" title="1">{
+        return listAnyRegex.MatchString(line)
+}</span>
+
+// isTable returns true if we are currently reading a table, false otherwise.
+func isTable(line string) bool <span class="cov8" title="1">{
+        return strings.HasPrefix(line, "| ") || strings.HasPrefix(line, "|-")
+}</span>
+
+// isTableHeaderDelimeter returns true if we are currently reading a table
+// header delimiter, false otherwise.
+func isTableHeaderDelimeter(line string) bool <span class="cov8" title="1">{
+        return strings.HasPrefix(line, "|-")
+}</span>
+
+// isSourceCodeBegin returns true if we are currently reading the start of
+// a source code block, false otherwise.
+func isSourceCodeBegin(line string) bool <span class="cov8" title="1">{
+        return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionBeginSource)
+}</span>
+
+// isSourceCodeEnd returns true if we are currently reading the end of a
+// source code block, false otherwise.
+func isSourceCodeEnd(line string) bool <span class="cov8" title="1">{
+        return strings.ToLower(line) == optionPrefix+optionEndSource
+}</span>
+
+// isHtmlExportBegin returns true if we are currently reading the start
+// of an html export block, false otherwise.
+func isHtmlExportBegin(line string) bool <span class="cov8" title="1">{
+        return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionBeginExport+" html")
+}</span>
+
+// isHtmlExportEnd returns true if we are currently reading the end of an
+// html export block, false otherwise.
+func isHtmlExportEnd(line string) bool <span class="cov8" title="1">{
+        return strings.HasPrefix(strings.ToLower(line), optionPrefix+optionEndExport)
+}</span>
+
+// isHorizonalLine returns true if we are currently reading a horizontal line,
+// false otherwise.
+func isHorizonalLine(line string) bool <span class="cov8" title="1">{
+        return strings.TrimSpace(line) == horizontalLine
+}</span>
+
+// isAttentionBlock returns *Content object if we have fonud an attention block
+// with filled values, nil otherwise.
+func isAttentionBlock(line string) *yunyun.Content <span class="cov8" title="1">{
+        matches := attentionBlockRegexp.FindAllStringSubmatch(line, 1)
+        if len(matches) &lt; 1 </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+        <span class="cov8" title="1">return &amp;yunyun.Content{
+                Type:           yunyun.TypeAttentionText,
+                AttentionTitle: matches[0][1],
+                AttentionText:  matches[0][2],
+        }</span>
+}
+
+// safeIntToUint safely converts an int to uint by handling negative values
+func safeIntToUint(val int) uint <span class="cov8" title="1">{
+        if val &lt; 0 </span><span class="cov8" title="1">{
+                return 0
+        }</span>
+        <span class="cov8" title="1">return uint(val)</span>
+}
+
+// extractOptionLabel is a utility function used to extract option values.
+func extractOptionLabel(given string, option string) string <span class="cov8" title="1">{
+        skipLen := len(optionPrefix) + len(option)
+        return strings.TrimSpace(gana.SkipString(safeIntToUint(skipLen), given))
+}</span>
+
+// extractSourceCodeLanguage extracts language `LANG` from `#+begin_src LANG`.
+func extractSourceCodeLanguage(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionBeginSource)
+}</span>
+
+// extractDetailsSummary extracts summary `SUMMARY` from `#+begin_details SUMMARY`.
+func extractDetailsSummary(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionBeginDetails)
+}</span>
+
+// extractHtmlHead extracts the html to inject in the head, like custom CSS.
+func extractHtmlHead(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionHtmlHead)
+}</span>
+
+// extractOptions extracts the line of options.
+func extractOptions(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionOptions)
+}</span>
+
+// extractAttributes extracts the line of attributes.
+func extractAttributes(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionAttributes)
+}</span>
+
+// extractHtmlTags extracts the line of html styles.
+func extractHtmlTags(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionHtmlTags)
+}</span>
+
+// extractAttributes extracts the line of html attributes.
+func extractHtmlAttributes(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionAttrHtml)
+}</span>
+
+// extractCaptionTitle extracts caption `TITLE` from `#+caption: TITLE`.
+func extractCaptionTitle(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionCaption)
+}</span>
+
+// extractDate extracts date `DATE` from `#+date: DATE`.
+func extractDate(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionDate)
+}</span>
+
+// extractDate extracts author `AUTHOR` from `#+author: AUTHOR`.
+func extractAuthor(line string) string <span class="cov8" title="1">{
+        return extractOptionLabel(line, optionAuthor)
+}</span>
+
+// extractGalleryFolder extracts gallery `FOLDER` from `#+begin_gallery FOLDER`.
+func extractGalleryFolder(line string) string <span class="cov8" title="1">{
+        path, err := extractCustomBlockOption(line, `path`, regexpPatternNoWhitespace)
+        if err != nil </span><span class="cov0" title="0">{
+                if !errors.Is(err, errNoMatches) </span><span class="cov0" title="0">{
+                        puck.Logger.Errorf("gallery path extraction: %v", err)
+                }</span>
+                <span class="cov0" title="0">return ""</span>
+        }
+        <span class="cov8" title="1">return *path</span>
+}
+
+func extractGalleryImagesPerRow(line string) uint <span class="cov8" title="1">{
+        num, err := extractCustomBlockOption(line, `num`, regexpPatternOnlyDigits)
+        if err != nil </span><span class="cov0" title="0">{
+                if !errors.Is(err, errNoMatches) </span><span class="cov0" title="0">{
+                        puck.Logger.Errorf("gallery path extraction: %v", err)
+                }</span>
+                <span class="cov0" title="0">return defaultGalleryImagesPerRow</span>
+        }
+        <span class="cov8" title="1">ans, err := strconv.Atoi(*num)
+        if err != nil </span><span class="cov0" title="0">{
+                puck.Logger.Warnf("failed to format gallery width of %s, defaulting to %d", line, defaultGalleryImagesPerRow)
+                return defaultGalleryImagesPerRow
+        }</span>
+        <span class="cov8" title="1">if ans &lt; 1 </span><span class="cov0" title="0">{
+                puck.Logger.Warnf("gallery width should be at least 1, defaulting to %d", defaultGalleryImagesPerRow)
+                return defaultGalleryImagesPerRow
+        }</span>
+        <span class="cov8" title="1">return uint(ans)</span>
+}
+
+type regexpPattern string
+
+const (
+        regexpPatternNoWhitespace regexpPattern = `([^\s]+)`
+        regexpPatternOnlyDigits   regexpPattern = `(\d+)`
+        regexpPatternNumber       regexpPattern = `(-?\d+)`
+)
+
+var errNoMatches = errors.New(`no matches found`)
+
+func extractCustomBlockOption(target, optionName string, pattern regexpPattern) (*string, error) <span class="cov8" title="1">{
+        optP := fmt.Sprintf(`:%s %s`, optionName, pattern)
+        optR, err := regexp.Compile(optP)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, fmt.Errorf("compiling regex ('%s'): %v", optP, err)
+        }</span>
+        <span class="cov8" title="1">matches := optR.FindAllStringSubmatch(target, 1)
+        if len(matches) &lt; 1 </span><span class="cov0" title="0">{
+                return nil, errNoMatches
+        }</span>
+        <span class="cov8" title="1">if len(matches[0]) &lt; 1 </span><span class="cov0" title="0">{
+                return nil, errNoMatches
+        }</span>
+        <span class="cov8" title="1">return &amp;matches[0][1], nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package orgmode
+
+import (
+        "strings"
+
+        "github.com/thecsw/darkness/v3/emilia"
+        "github.com/thecsw/darkness/v3/yunyun"
+        "github.com/thecsw/gana"
+)
+
+const (
+        defaultGalleryImagesPerRow uint = 3
+)
+
+// Do parses the input string and returns a list of elements
+func (p ParserOrgmode) Do(
+        filename yunyun.RelativePathFile,
+        data string,
+) *yunyun.Page <span class="cov8" title="1">{
+
+        // Split the data into lines
+        lines := strings.Split(p.preprocess(filename, data), "\n")
+
+        page := yunyun.NewPage(
+                yunyun.WithFilename(filename),
+                yunyun.WithLocation(yunyun.RelativePathTrim(filename)),
+                yunyun.WithContents(make([]*yunyun.Content, 0, 32)),
+        )
+        page.Author = p.Config.RSS.DefaultAuthor
+
+        // currentFlags uses flags to set options
+        currentFlags := yunyun.Bits(0)
+        // sourceCodeLanguage is the language of the source code block
+        sourceCodeLang := ""
+        // caption is the current caption we can read
+        caption := ""
+        // attributes is the attributes for the current content.
+        attributes := ""
+        // detailsSummary is the current details' summary
+        additionalContext := ""
+        // galleryPath stores the gallery's declared path
+        galleryPath := ""
+        // galleryWidth dictates on how many items per row we will have
+        galleryWidth := defaultGalleryImagesPerRow
+        // Our context is a parody of a state machine
+        currentContext := ""
+        // User can provide custom style for an image (like resizing).
+        customHtmlTags := ""
+        // listItemInitialIndent is the initial indent of the list item
+        listItemInitialIndent := uint8(0)
+
+        // optionsStrings will get populated as the page is being scanned
+        // and then parsed out before leaving this parser.
+        optionsStrings := ""
+        defer emilia.FillAccoutrement(p.Config.Website.Tombs, &amp;optionsStrings, page)
+
+        // Optional parsing to see if H.E. has been left on the first line
+        // as the date
+        defer fillHolosceneDate(page)
+
+        addFlag, removeFlag, _, hasFlag := yunyun.LatchFlags(&amp;currentFlags)
+        // addContent is a helper function to add content to the page
+        addContent := func(content *yunyun.Content) </span><span class="cov8" title="1">{
+                content.Options = currentFlags
+                content.Summary = additionalContext
+                content.GalleryPath = yunyun.RelativePathDir(galleryPath)
+                content.GalleryImagesPerRow = galleryWidth
+                content.Caption = caption
+                content.Attributes = attributes
+                content.CustomHtmlTags = customHtmlTags
+                page.Contents = append(page.Contents, content)
+                currentContext = ""
+                galleryPath = ""
+                galleryWidth = defaultGalleryImagesPerRow
+                additionalContext = ""
+                attributes = ""
+                customHtmlTags = ""
+        }</span>
+        <span class="cov8" title="1">optionsActions := map[string]func(line string){
+                optionDropCap:     func(line string) </span><span class="cov0" title="0">{ addFlag(yunyun.InDropCapFlag) }</span>,
+                optionBeginQuote:  func(line string) <span class="cov8" title="1">{ addFlag(yunyun.InQuoteFlag) }</span>,
+                optionEndQuote:    func(line string) <span class="cov8" title="1">{ removeFlag(yunyun.InQuoteFlag) }</span>,
+                optionBeginCenter: func(line string) <span class="cov8" title="1">{ addFlag(yunyun.InCenterFlag) }</span>,
+                optionEndCenter:   func(line string) <span class="cov8" title="1">{ removeFlag(yunyun.InCenterFlag) }</span>,
+                optionBeginDetails: func(line string) <span class="cov8" title="1">{
+                        addFlag(yunyun.InDetailsFlag)
+                        additionalContext = extractDetailsSummary(line)
+                        if additionalContext == "" </span><span class="cov0" title="0">{
+                                additionalContext = "open for details"
+                        }</span>
+                        <span class="cov8" title="1">addContent(&amp;yunyun.Content{Type: yunyun.TypeDetails})</span>
+                },
+                optionEndDetails: func(line string) <span class="cov8" title="1">{
+                        removeFlag(yunyun.InDetailsFlag)
+                        addContent(&amp;yunyun.Content{Type: yunyun.TypeDetails})
+                }</span>,
+                optionBeginGallery: func(line string) <span class="cov8" title="1">{
+                        addFlag(yunyun.InGalleryFlag)
+                        galleryPath = extractGalleryFolder(line)
+                        galleryWidth = extractGalleryImagesPerRow(line)
+                }</span>,
+                optionEndGallery: func(line string) <span class="cov8" title="1">{ removeFlag(yunyun.InGalleryFlag) }</span>,
+                optionCaption:    func(line string) <span class="cov8" title="1">{ caption = extractCaptionTitle(line) }</span>,
+                optionDate:       func(line string) <span class="cov8" title="1">{ page.Date = extractDate(line) }</span>,
+                optionHtmlHead:   func(line string) <span class="cov8" title="1">{ page.HtmlHead = append(page.HtmlHead, extractHtmlHead(line)) }</span>,
+                optionOptions:    func(line string) <span class="cov0" title="0">{ optionsStrings += extractOptions(line) + " " }</span>,
+                optionAttributes: func(line string) <span class="cov0" title="0">{ attributes = extractAttributes(line) }</span>,
+                optionAuthor:     func(line string) <span class="cov8" title="1">{ page.Author = extractAuthor(line) }</span>,
+                optionHtmlTags:   func(line string) <span class="cov0" title="0">{ customHtmlTags = extractHtmlTags(line) }</span>,
+        }
+
+        // Yunyun's markings default to orgmode
+        <span class="cov8" title="1">yunyun.ActiveMarkings.BuildRegex()
+        linkRegexp = yunyun.LinkRegexp
+
+        // Loop through the lines
+        for _, rawLine := range lines </span><span class="cov8" title="1">{
+                // Trimp the line from whitespaces
+                line := strings.TrimSpace(rawLine)
+                // Save the previous state and update the current
+                // one with the newly read line
+                previousContext := currentContext
+                currentContext = currentContext + line
+
+                // If we are in a raw html envoronment
+                if hasFlag(yunyun.InRawHtmlFlag) </span><span class="cov8" title="1">{
+                        // Maybe it's time to leave it?
+                        if isHtmlExportEnd(line) </span><span class="cov8" title="1">{
+                                // Mark the leave
+                                removeFlag(yunyun.InRawHtmlFlag)
+                                // Save the raw html
+                                addContent(&amp;yunyun.Content{
+                                        Type:    yunyun.TypeRawHtml,
+                                        RawHtml: previousContext,
+                                })
+                                continue</span>
+                        }
+                        // Otherwise, continue saving the context
+                        <span class="cov8" title="1">currentContext = previousContext + rawLine + "\n"
+                        continue</span>
+                }
+                // Now, check if we can enter a raw html environment
+                <span class="cov8" title="1">if isHtmlExportBegin(line) </span><span class="cov8" title="1">{
+                        addFlag(yunyun.InRawHtmlFlag)
+                        if strings.Contains(line, "unsafe") </span><span class="cov0" title="0">{
+                                addFlag(yunyun.InRawHtmlFlagUnsafe)
+                        }</span> else<span class="cov8" title="1"> if strings.Contains(line, "responsive") || strings.Contains(line, "iframe") </span><span class="cov0" title="0">{
+                                addFlag(yunyun.InRawHtmlFlagResponsive)
+                        }</span>
+                        <span class="cov8" title="1">currentContext = previousContext
+                        continue</span>
+                }
+                // If we are in a source code block?
+                <span class="cov8" title="1">if hasFlag(yunyun.InSourceCodeFlag) </span><span class="cov8" title="1">{
+                        // Check if it's time to leave
+                        if isSourceCodeEnd(line) </span><span class="cov8" title="1">{
+                                // Mark the leave
+                                removeFlag(yunyun.InSourceCodeFlag)
+                                // Save the source code
+                                addContent(&amp;yunyun.Content{
+                                        Type:           yunyun.TypeSourceCode,
+                                        SourceCodeLang: sourceCodeLang,
+                                        SourceCode:     strings.TrimRight(previousContext, "\n\t\r\f\b"),
+                                        Caption:        caption,
+                                })
+                                continue</span>
+                        }
+                        // Save the context and continue
+                        <span class="cov8" title="1">currentContext = previousContext + rawLine + "\n"
+                        continue</span>
+                }
+                // Should we enter a source code environment?
+                <span class="cov8" title="1">if isSourceCodeBegin(line) </span><span class="cov8" title="1">{
+                        sourceCodeLang = extractSourceCodeLanguage(line)
+                        addFlag(yunyun.InSourceCodeFlag)
+                        currentContext = ""
+                        continue</span>
+                }
+                // Ignore orgmode comments and options, where source code blocks
+                // and export block options are exceptions to this rule
+                <span class="cov8" title="1">if isComment(line) </span><span class="cov8" title="1">{
+                        currentContext = previousContext
+                        continue</span>
+                }
+                // isOption is a sink for any options that darkness
+                // does not support, hence will be ignored
+                <span class="cov8" title="1">if isOption(line) </span><span class="cov8" title="1">{
+                        givenLine := line[optionPrefixLen:]
+                        optionAndValue := strings.Split(givenLine, " ")
+                        if len(optionAndValue) &lt; 1 </span><span class="cov0" title="0">{
+                                continue</span>
+                        }
+                        <span class="cov8" title="1">option := optionAndValue[0]
+                        if action, ok := optionsActions[option]; ok </span><span class="cov8" title="1">{
+                                action(rawLine)
+                        }</span>
+                        <span class="cov8" title="1">currentContext = previousContext
+                        continue</span>
+                }
+                // Now, we need to parse headings here
+                <span class="cov8" title="1">if header := isHeader(line); header != nil </span><span class="cov8" title="1">{
+                        if header.HeadingLevel == 1 </span><span class="cov8" title="1">{
+                                page.Title = header.Heading
+                                currentContext = ""
+                                continue</span>
+                        }
+                        <span class="cov8" title="1">addContent(header)
+                        continue</span>
+                }
+                // If we hit an empty line, end the whatever context we had
+                <span class="cov8" title="1">if line == "" </span><span class="cov8" title="1">{
+                        // Empty context gets us nowhere
+                        if len(previousContext) &lt; 1 </span><span class="cov8" title="1">{
+                                continue</span>
+                        }
+                        // Add a horizontal line divider
+                        <span class="cov8" title="1">if isHorizonalLine(previousContext) </span><span class="cov8" title="1">{
+                                addContent(&amp;yunyun.Content{
+                                        Type: yunyun.TypeHorizontalLine,
+                                })
+                                continue</span>
+                        }
+                        <span class="cov8" title="1">inList := hasFlag(yunyun.InListFlag)
+                        inOrderedList := hasFlag(yunyun.InOrderedListFlag)
+                        // If we were in a list, save it as a list
+                        if inList || inOrderedList </span><span class="cov8" title="1">{
+                                splitItems := strings.Split(previousContext, listSeparatorWS)
+                                // Shouldn't happen, continue as a failure
+                                if len(splitItems) &lt; 1 </span><span class="cov0" title="0">{
+                                        continue</span>
+                                }
+                                // the first item is a hyphen, so we skip it
+                                <span class="cov8" title="1">rawListItems := splitItems[1:]
+                                matches := make([]yunyun.ListItem, len(rawListItems))
+                                for i, match := range rawListItems </span><span class="cov8" title="1">{
+                                        listItemRaw := strings.Replace(match, "- ", "", 1)
+                                        toWrite := strings.TrimSpace(listItemRaw)
+                                        if inOrderedList </span><span class="cov8" title="1">{
+                                                // We slice off the "[0-9]. "
+                                                toWrite = toWrite[3:]
+                                        }</span>
+                                        <span class="cov8" title="1">matches[i] = yunyun.ListItem{
+                                                Level: gana.CountStringsLeft[uint8](listItemRaw, "  ") - listItemInitialIndent + 1,
+                                                Text:  toWrite,
+                                        }</span>
+                                }
+                                // Shouldn't happen, continue as a failure
+                                <span class="cov8" title="1">if len(rawListItems) &lt; 1 </span><span class="cov0" title="0">{
+                                        continue</span>
+                                }
+                                <span class="cov8" title="1">typeToWrite := yunyun.TypeList
+                                if hasFlag(yunyun.InOrderedListFlag) </span><span class="cov8" title="1">{
+                                        typeToWrite = yunyun.TypeListNumbered
+                                }</span>
+                                // Add the list
+                                <span class="cov8" title="1">addContent(&amp;yunyun.Content{
+                                        Type: typeToWrite,
+                                        List: matches,
+                                })
+                                removeFlag(yunyun.InListFlag)
+                                removeFlag(yunyun.InOrderedListFlag)
+                                listItemInitialIndent = 0
+                                continue</span>
+                        }
+                        // If we were in a table, save it as such
+                        <span class="cov8" title="1">if hasFlag(yunyun.InTableFlag) </span><span class="cov8" title="1">{
+                                splitItems := strings.Split(previousContext, tableSeparatorWS)
+                                // Shouldn't happen, continue as a failure
+                                if len(splitItems) &lt; 1 </span><span class="cov0" title="0">{
+                                        continue</span>
+                                }
+                                // the first item is a vertical bar, so we skip it
+                                <span class="cov8" title="1">rows := splitItems[1:]
+                                tableData := make([][]string, len(rows))
+                                for i, row := range rows </span><span class="cov8" title="1">{
+                                        row = strings.TrimSpace(row)
+                                        if len(row) &lt; 1 </span><span class="cov0" title="0">{
+                                                continue</span>
+                                        }
+                                        // Split by the item delimeter
+                                        <span class="cov8" title="1">columns := strings.Split(row, "|")
+                                        // Trim the array from the first and last element
+                                        columns = columns[1 : len(columns)-1]
+                                        // Trim each item by the left/right whitespace
+                                        for j, item := range columns </span><span class="cov8" title="1">{
+                                                columns[j] = strings.TrimSpace(item)
+                                        }</span>
+                                        <span class="cov8" title="1">tableData[i] = columns</span>
+                                }
+                                <span class="cov8" title="1">addContent(&amp;yunyun.Content{
+                                        Type:         yunyun.TypeTable,
+                                        Table:        tableData,
+                                        TableHeaders: hasFlag(yunyun.InTableHasHeadersFlag),
+                                })
+                                removeFlag(yunyun.InTableFlag | yunyun.InTableHasHeadersFlag)
+                                continue</span>
+                        }
+                        // Let's see if our context is a standalone link
+                        <span class="cov8" title="1">if link := getLink(previousContext); link != nil </span><span class="cov8" title="1">{
+                                addContent(link)
+                                continue</span>
+                        }
+                        // Also check if this is an attention block, like "NOTE:..." or "WARNING:..."
+                        <span class="cov8" title="1">if attention := isAttentionBlock(previousContext); attention != nil </span><span class="cov8" title="1">{
+                                addContent(attention)
+                                continue</span>
+                        }
+                        // By default, save whatever we have as a paragraph
+                        <span class="cov8" title="1">addContent(formParagraph(previousContext, additionalContext, currentFlags))
+                        // Reset the drop cap flag
+                        removeFlag(yunyun.InDropCapFlag)
+                        continue</span>
+                }
+
+                // Special processing.
+                <span class="cov8" title="1">if isList(line) </span><span class="cov8" title="1">{
+                        if !hasFlag(yunyun.InListFlag) </span><span class="cov8" title="1">{
+                                listItemInitialIndent = gana.CountRunesLeft[uint8](rawLine, ' ')
+                        }</span>
+                        <span class="cov8" title="1">addFlag(yunyun.InListFlag)
+                        currentContext = previousContext + listSeparatorWS + rawLine</span>
+                } else<span class="cov8" title="1"> if isOrderedListAny(line) </span><span class="cov8" title="1">{
+                        if !hasFlag(yunyun.InOrderedListFlag) </span><span class="cov8" title="1">{
+                                listItemInitialIndent = gana.CountRunesLeft[uint8](rawLine, ' ')
+                        }</span>
+                        <span class="cov8" title="1">addFlag(yunyun.InOrderedListFlag)
+                        currentContext = previousContext + listSeparatorWS + rawLine</span>
+                } else<span class="cov8" title="1"> if isTable(line) </span><span class="cov8" title="1">{
+                        addFlag(yunyun.InTableFlag)
+                        // If it's a delimeter, save it and move on
+                        if isTableHeaderDelimeter(line) </span><span class="cov8" title="1">{
+                                addFlag(yunyun.InTableHasHeadersFlag)
+                                currentContext = previousContext
+                                continue</span>
+                        }
+                        <span class="cov8" title="1">currentContext = previousContext + tableSeparatorWS + line</span>
+                }
+
+                <span class="cov8" title="1">currentContext += " "</span>
+        }
+
+        <span class="cov8" title="1">return page</span>
+}
+
+// fillHolosceneDate tries to find a date in the format of "H.E." and
+// saves it as the page's date.
+func fillHolosceneDate(page *yunyun.Page) <span class="cov8" title="1">{
+        // No contents found?
+        if len(page.Contents) &lt; 1 </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">first := gana.First(page.Contents)
+        // Needs to be a simple text
+        if !first.IsParagraph() </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">if !strings.HasSuffix(first.Paragraph, "H.E.") </span><span class="cov8" title="1">{
+                return
+        }</span>
+        <span class="cov8" title="1">page.Date = first.Paragraph
+        page.DateHoloscene = true</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package orgmode
+
+import (
+        "os"
+        "path/filepath"
+        "regexp"
+        "strconv"
+        "strings"
+        "sync"
+
+        "github.com/thecsw/darkness/v3/emilia/alpha"
+        "github.com/thecsw/darkness/v3/yunyun"
+        "github.com/thecsw/gana"
+        "github.com/thecsw/rei"
+)
+
+const (
+        // setup file should be on its own line like an #include directive.
+        specialSetupFileDirective = `^#[+](setupfile|SETUPFILE):\s*([^\s]+)$`
+
+        // this is the syntax for evaluating macros
+        specialMacroEvalDirective = `{{{([a-z0-9]+)(\([^)(]+\))?}}}`
+
+        macroDefinition = `macro:`
+        macroPrefix     = optionPrefix + macroDefinition + " "
+)
+
+var (
+        // headingRegexp is the regexp for matching headlines.
+        headingRegexp = regexp.MustCompile(`(?m)^(\*{1,6} )`)
+
+        // specialSetupFileDirectivePattern is just compiled specialSetupFileDirective
+        specialSetupFileDirectivePattern = regexp.MustCompile(specialSetupFileDirective)
+
+        // specialMacroEvalDirectivePattern dictates on how we match and eval macros
+        specialMacroEvalDirectivePattern = regexp.MustCompile(specialMacroEvalDirective)
+
+        shouldBeSurroundedWithNewLines = map[string]struct{}{
+                optionBeginQuote: {}, optionEndQuote: {},
+                optionBeginCenter: {}, optionEndCenter: {},
+                optionBeginDetails: {}, optionEndDetails: {},
+                optionBeginGallery: {}, optionEndGallery: {},
+        }
+
+        expandedFiles = sync.Map{}
+)
+
+func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string) string <span class="cov8" title="1">{
+        // We will do everything in one pass here and build the final input file using
+        // a string builder for performance.
+        sb := &amp;strings.Builder{}
+
+        // Here we will store the macro definitions.
+        macrosLookupTable := make(map[string]string)
+
+        // We add a newline before lists start
+        previousLine := ""
+        previousLineRaw := ""
+
+        // We will read the original input line by line and build the final input same way.
+        // Be ready for a very greedy loop.
+        lines := strings.Split(what, "\n")
+        for _, line := range lines </span><span class="cov8" title="1">{
+                trimmed := strings.TrimSpace(line)
+
+                // Let's see if we have any macros to expand on this line.
+                if updatedLine, expandedMacros := expandMacros(p.Config,
+                        filename, macrosLookupTable, line); expandedMacros </span><span class="cov8" title="1">{
+                        line = updatedLine
+                }</span>
+
+                <span class="cov8" title="1">if headingRegexp.MatchString(line) </span><span class="cov8" title="1">{
+                        sb.WriteRune('\n')
+                        sb.WriteString(line)
+                        sb.WriteRune('\n')
+                        continue</span>
+                }
+
+                // We are in the realm of options now.
+                <span class="cov8" title="1">lowercase := strings.ToLower(trimmed)
+                if isOption(trimmed) </span><span class="cov8" title="1">{
+                        option := gana.SkipString(uint(optionPrefixLen), lowercase)
+                        parts := strings.SplitN(option, " ", 2)
+                        // Don't know what this is, don't let it reach the parser.
+                        if len(parts) &lt; 1 </span><span class="cov0" title="0">{
+                                continue</span>
+                        }
+                        <span class="cov8" title="1">key := strings.TrimSpace(parts[0])
+
+                        // Check if it needs to be surrounded by a newline.
+                        if _, ok := shouldBeSurroundedWithNewLines[key]; ok </span><span class="cov8" title="1">{
+                                sb.WriteRune('\n')
+                                sb.WriteString(line)
+                                sb.WriteRune('\n')
+                                continue</span>
+                        }
+
+                        // What if it's a setup file?
+                        <span class="cov8" title="1">if setupFile, found := expandSetupFile(p.Config, filename, trimmed); found </span><span class="cov8" title="1">{
+                                sb.WriteRune('\n')
+                                sb.WriteString(setupFile)
+                                sb.WriteRune('\n')
+
+                                // Expanded files may and will contain macro definitions that we
+                                // will need to evaluate later in the file.
+                                collectMacros(p.Config, filename, macrosLookupTable, setupFile)
+                                continue</span>
+                        }
+
+                        // If we found any macros on a single line, then the whole line was a macro
+                        // definition and gets consumed.
+                        <span class="cov8" title="1">if collectMacros(p.Config, filename, macrosLookupTable, trimmed) </span><span class="cov8" title="1">{
+                                continue</span>
+                        }
+                }
+
+                // We add a newline before listings, so the parser has an easier time.
+                // List items can be multi-line, and further lines usually begin with a space,
+                // so let's exclude those from the selection.
+                <span class="cov8" title="1">if isList(line) &amp;&amp; !isList(previousLine) </span><span class="cov8" title="1">{
+                        if !strings.HasPrefix(previousLineRaw, " ") </span><span class="cov8" title="1">{
+                                sb.WriteRune('\n')
+                        }</span>
+                }
+
+                // By default, if we reached the end of the iteration, write the line as is.
+                <span class="cov8" title="1">sb.WriteString(line)
+                sb.WriteRune('\n') // regular linefeed
+
+                // Save it for the next iteration.
+                previousLine = trimmed
+                previousLineRaw = line</span>
+        }
+
+        // Pad a newline so that last elements can be processed
+        // properly before an EOF is encountered during parsing
+        <span class="cov8" title="1">sb.WriteRune('\n')
+        return sb.String()</span>
+}
+
+func expandSetupFile(conf *alpha.DarknessConfig, filename yunyun.RelativePathFile, line string) (string, bool) <span class="cov8" title="1">{
+        matches := specialSetupFileDirectivePattern.FindAllStringSubmatch(line, 1)
+        if len(matches) &lt; 1 </span><span class="cov8" title="1">{
+                return "", false
+        }</span>
+        <span class="cov8" title="1">setupFileTargetFilename := yunyun.RelativePathFile(strings.TrimSpace(matches[0][2]))
+
+        // If the file doesn't exist, we must fail.
+        currentDirectory := yunyun.RelativePathFile(filepath.Dir(string(filename)))
+        relativeImportFilename := yunyun.RelativePathFile(filepath.Join(string(currentDirectory), string(setupFileTargetFilename)))
+        absoluteImportFilename := conf.Runtime.WorkDir.Join(relativeImportFilename)
+
+        // Check the hot cache.
+        if expandedFile, alreadyExpanded := expandedFiles.Load(absoluteImportFilename); alreadyExpanded </span><span class="cov8" title="1">{
+                // See if the type is right, if it's not, drop in to the slow IO retrieval.
+                if stringified, isString := expandedFile.(string); isString </span><span class="cov8" title="1">{
+                        return stringified, true
+                }</span>
+        }
+
+        <span class="cov8" title="1">if !rei.FileMustExist(string(absoluteImportFilename)) </span><span class="cov0" title="0">{
+                conf.Runtime.Logger.Fatal("setupfile target not found",
+                        "orgfile", filename, "target", absoluteImportFilename)
+        }</span>
+
+        // Read the data and splash it into the input.
+        <span class="cov8" title="1">setupFileTargetContents := string(rei.Must(os.ReadFile(filepath.Clean(string(absoluteImportFilename)))))
+        expandedFiles.Store(absoluteImportFilename, setupFileTargetContents)
+        return setupFileTargetContents, true</span>
+}
+
+func collectMacros(
+        conf *alpha.DarknessConfig,
+        filename yunyun.RelativePathFile,
+        macrosLookupTable map[string]string,
+        what string) bool <span class="cov8" title="1">{
+        macroDefsFound := false
+        for _, line := range strings.Split(what, "\n") </span><span class="cov8" title="1">{
+                if !strings.HasPrefix(line, macroPrefix) </span><span class="cov8" title="1">{
+                        continue</span>
+                }
+                <span class="cov8" title="1">macroLine := gana.SkipString(uint(len(macroPrefix)), line)
+                split := strings.SplitN(macroLine, " ", 2)
+                if len(split) != 2 </span><span class="cov0" title="0">{
+                        conf.Runtime.Logger.Fatal("malformed macro definition found",
+                                "path", filename, "line", line)
+                }</span>
+                <span class="cov8" title="1">macroDefsFound = true
+                macroName := strings.TrimSpace(split[0])
+                macroBody := strings.TrimSpace(split[1])
+                macrosLookupTable[macroName] = macroBody</span>
+        }
+        <span class="cov8" title="1">return macroDefsFound</span>
+}
+
+func expandMacros(conf *alpha.DarknessConfig,
+        filename yunyun.RelativePathFile,
+        macrosLookupTable map[string]string,
+        line string,
+) (string, bool) <span class="cov8" title="1">{
+        macroEvaluationMatches := specialMacroEvalDirectivePattern.FindAllStringSubmatch(line, -1)
+        if len(macroEvaluationMatches) &lt; 1 </span><span class="cov8" title="1">{
+                return "", false
+        }</span>
+        <span class="cov8" title="1">for _, match := range macroEvaluationMatches </span><span class="cov8" title="1">{
+                fullMatch := match[0]
+                macroName := strings.TrimSpace(match[1])
+                if _, ok := macrosLookupTable[macroName]; !ok </span><span class="cov0" title="0">{
+                        conf.Runtime.Logger.Fatal("macro used but not defined",
+                                "path", filename, "macro", macroName)
+                }</span>
+                <span class="cov8" title="1">macroBody := strings.ReplaceAll(macrosLookupTable[macroName], "\\n", "\n")
+                macroParamsString := match[2]
+
+                // what if it has no params?
+                if len(macroParamsString) &lt; 1 </span><span class="cov8" title="1">{
+                        line = strings.ReplaceAll(line, fullMatch, macroBody)
+                        continue</span>
+                }
+
+                <span class="cov8" title="1">macroParamsDirty := strings.Split(strings.Trim(macroParamsString, ")("), ",")
+                macroParams := make([]string, 0, len(macroParamsDirty))
+                for _, macroParamDirty := range macroParamsDirty </span><span class="cov8" title="1">{
+                        macroParams = append(macroParams, strings.TrimSpace(macroParamDirty))
+                }</span>
+
+                // Let's get the body and hydrate the parameters.
+                <span class="cov8" title="1">for i, param := range macroParams </span><span class="cov8" title="1">{
+                        macroBody = strings.ReplaceAll(macroBody, `$`+strconv.Itoa(i+1), param)
+                }</span>
+
+                // then replace the macro eval with the hydrated body
+                <span class="cov8" title="1">line = strings.ReplaceAll(line, fullMatch, macroBody)</span>
+        }
+        <span class="cov8" title="1">return line, true</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
