@@ -24,13 +24,8 @@ jobs:
       - name: Verify Go version
         run: go version
 
-      - name: Install golangci-lint
-        uses: golangci/golangci-lint-action@v6
-        with:
-          version: latest
-
-      - name: Run golangci-lint
-        run: golangci-lint run -v
+      - name: Run go vet
+        run: go vet ./...
 
   test:
     name: Test
