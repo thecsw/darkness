@@ -6,6 +6,7 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/thecsw/darkness)](https://goreportcard.com/report/github.com/thecsw/darkness)
 [![GoDoc](https://godoc.org/github.com/thecsw/darkness?status.svg)](https://godoc.org/github.com/thecsw/darkness)
+[![Go CI/CD](https://github.com/thecsw/darkness/actions/workflows/go.yml/badge.svg)](https://github.com/thecsw/darkness/actions/workflows/go.yml)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 </div>
