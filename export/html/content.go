@@ -279,8 +279,11 @@ func tableSpecialCell(what string) (string, bool) {
 
 // table gives an HTML formatted table
 func (e *state) details(content *yunyun.Content) string {
-	if content.IsDetails() {
-		return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
+	if content.Type == yunyun.TypeDetails {
+		if content.IsDetails() {
+			return fmt.Sprintf("<details>\n<summary>%s</summary>\n<hr>", content.Summary)
+		}
+		return "</details>"
 	}
-	return "</details>"
+	return ""
 }

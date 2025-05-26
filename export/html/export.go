@@ -86,12 +86,32 @@ func (e *state) export() io.Reader {
 			e.page.Accoutrement.PreviewGenerateBg, e.page.Accoutrement.PreviewGenerateFg)
 	}
 
-	// Build the HTML (string) representation of each content
-	content := make([]string, 0, len(e.page.Contents))
+	// Build the HTML (string) representation of each content, handling nesting properly
+	var contentBuilder strings.Builder
+	isInDetails := false
+	
 	for i, v := range e.page.Contents {
 		e.currentContentIndex = i
 		e.currentContent = v
-		content = append(content, e.buildContent(v))
+		
+		// Special handling for details blocks to ensure proper nesting in HTML
+		if v.Type == yunyun.TypeDetails {
+			if v.IsDetails() {
+				// Opening a details block
+				contentBuilder.WriteString(e.buildContent(v))
+				isInDetails = true
+			} else {
+				// Closing a details block
+				isInDetails = false
+				contentBuilder.WriteString(e.buildContent(v))
+			}
+		} else if isInDetails && v.IsDetails() {
+			// This is content inside a details block - render it normally
+			contentBuilder.WriteString(e.buildContent(v))
+		} else {
+			// Normal content outside details
+			contentBuilder.WriteString(e.buildContent(v))
+		}
 	}
 
 	output := fmt.Sprintf(`%s<!DOCTYPE html>
@@ -110,7 +130,7 @@ func (e *state) export() io.Reader {
 		e.combineAndFilterHtmlHead(),
 		processTitle(flattenFormatting(e.page.Title)),
 		e.authorHeader(),
-		strings.Join(content, ""),
+		contentBuilder.String(),
 		e.addFootnotes(),
 	)
 
