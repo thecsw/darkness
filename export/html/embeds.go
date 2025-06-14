@@ -94,6 +94,14 @@ Sorry, your browser doesn't support embedded videos.
 <div class="media" %s>
 <iframe class="spotify-embed-playlist" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/%s?utm_source=generator" width="69%%" height="550" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
 </div>`
+
+	// pdfEmbedTemplate is the template for showing the PDF file on the page through an embed.
+	pdfEmbedTemplate = `
+<div class="media" %s>
+<div class="pdf-container">
+<embed src="%s" type="application/pdf" />
+</div>
+</div>`
 )
 
 // link returns an html representation of a link even if it's an embed command
@@ -117,6 +125,11 @@ func (e *state) link(content *yunyun.Content) string {
 				return yunyun.VideoFileExtRegexp.FindAllStringSubmatch(v, 1)[0][1]
 			}(cleanLink),
 			processText(content.LinkTitle),
+		)
+	case yunyun.PdfFileExtRegexp.MatchString(cleanLink):
+		return fmt.Sprintf(pdfEmbedTemplate,
+			content.CustomHtmlTags,
+			cleanLink,
 		)
 	case strings.HasPrefix(cleanLink, youtubeEmbedPrefix):
 		// Youtube videos
