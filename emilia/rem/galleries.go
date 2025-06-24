@@ -3,6 +3,7 @@ package rem
 import (
 	"fmt"
 	"image"
+	"path/filepath"
 	"strings"
 
 	"github.com/thecsw/darkness/v3/emilia/alpha"
@@ -29,9 +30,19 @@ func NewGalleryItem(conf *alpha.DarknessConfig, page *yunyun.Page, content *yuny
 	if len(extractedLinks) > 1 {
 		optionalLink = extractedLinks[1].Link
 	}
+
+	// The default behavior is that the path is relative to where the gallery is defined.
+	galleryPath := yunyun.JoinPaths(page.Location, content.GalleryPath)
+
+	// However, if the path is absolute, then it will be joined against the root runtime.
+	if filepath.IsAbs(string(content.GalleryPath)) {
+		galleryPath = content.GalleryPath
+	}
+
+	// Collect it into our logical representation.
 	return GalleryItem{
 		Item:         yunyun.RelativePathFile(line),
-		Path:         yunyun.JoinPaths(page.Location, content.GalleryPath),
+		Path:         galleryPath,
 		IsExternal:   strings.HasPrefix(line, "http"),
 		Text:         text,
 		Description:  description,
