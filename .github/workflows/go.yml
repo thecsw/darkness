@@ -121,7 +121,7 @@ jobs:
 
       - name: Clone thecsw.github.io repository
         run: |
-          git clone https://github.com/thecsw/thecsw.github.io.git /tmp/thecsw.github.io
+          git clone --depth 1 https://github.com/thecsw/thecsw.github.io.git /tmp/thecsw.github.io
 
       - name: Run darkness build on thecsw.github.io
         run: |
