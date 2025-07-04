@@ -69,6 +69,9 @@ func filterByLatestMetaName(heads []string) []string {
 			res = append(res, heads[i])
 			continue
 		}
+		if name != "theme-color" {
+			continue
+		}
 		// If seen, then skip.
 		if _, ok := seen[name]; ok {
 			continue
