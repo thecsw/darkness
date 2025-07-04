@@ -64,9 +64,9 @@ func filterByLatestMetaName(heads []string) []string {
 
 	// Going through it in reverse.
 	for i := len(heads) - 1; i >= 0; i-- {
-		name := extractMetaName(heads[i])
+		name, isApplicable := extractMetaName(heads[i])
 		// If name couldn't be extracted, stay safe.
-		if len(name) < 1 {
+		if len(name) < 1 || !isApplicable {
 			res = append(res, heads[i])
 			continue
 		}
@@ -85,14 +85,18 @@ func filterByLatestMetaName(heads []string) []string {
 	return res
 }
 
-func extractMetaName(head string) string {
+// extractMetaName returns the name and flag if this method is even applicable.
+func extractMetaName(head string) (string, bool) {
+	if !strings.HasPrefix(head, "<meta") {
+		return "", false
+	}
 	for _, split := range strings.Split(head, " ") {
 		// Poor man's pattern-matching.
 		if !strings.HasPrefix(split, `name="`) {
 			continue
 		}
 		// Get the nice value out of it.
-		return strings.Trim(split[5:], `"`)
+		return strings.Trim(split[5:], `"`), true
 	}
-	return ""
+	return "", false
 }
