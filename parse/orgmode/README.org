@@ -1,0 +1,391 @@
+#+title: Darkness Orgmode Dialect Reference
+#+author: Darkness
+#+date: 2024
+
+* Darkness Orgmode Dialect
+
+Darkness uses a subset of orgmode with custom extensions for static site generation. This document describes all supported features and syntax.
+
+* Document Metadata
+
+Document-level metadata is set using =#+= directives at the top of files.
+
+#+begin_src org
+#+title: Document Title
+#+author: Author Name  
+#+date: 2024-01-15
+#+html_head: <meta name="description" content="Custom meta tag">
+#+options: option1 option2
+#+caption: Default caption text
+#+end_src
+
+* Headings
+
+Headings use asterisk syntax. Level 1 becomes the document title.
+
+#+begin_src org
+* Document Title (Level 1 - becomes page title)
+** Section Heading (Level 2)
+*** Subsection (Level 3)
+**** Sub-subsection (Level 4)
+***** Deep subsection (Level 5)
+#+end_src
+
+* Paragraphs
+
+Regular text forms paragraphs. Separate paragraphs with blank lines.
+
+#+begin_src org
+This is a paragraph with some text content.
+
+This is a second paragraph after a blank line.
+#+end_src
+
+* Text Formatting
+
+Darkness supports inline text formatting within paragraphs and other content.
+
+** Basic Formatting
+
+#+begin_src org
+*bold text*
+/italic text/
+_underlined text_
++strikethrough text+
+~verbatim text~
+=code text=
+#+end_src
+
+** Combined Formatting
+
+#+begin_src org
+*/bold italic/*
+/*italic bold*/
+#+end_src
+
+** Subscript and Superscript
+
+#+begin_src org
+Text with ^{{superscript}} and _{{subscript}}.
+Mathematical formula: E = mc^{{2}}
+Chemical formula: H_{{2}}O
+#+end_src
+
+** Math Notation
+
+Inline math expressions using dollar signs:
+
+#+begin_src org
+The formula $E = mc^2$ demonstrates mass-energy equivalence.
+Complex equations like $\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}$
+#+end_src
+
+** Keyboard Keys
+
+#+begin_src org
+Press kbd:[Ctrl+C] to copy and kbd:[Ctrl+V] to paste.
+#+end_src
+
+** Footnotes
+
+#+begin_src org
+This text has a footnote[fn:: This is the footnote content].
+#+end_src
+
+** Line Breaks
+
+Force line breaks with backslash-space at the end of lines:
+
+#+begin_src org
+First line\ 
+Second line on a new line.
+#+end_src
+
+** Smart Typography
+
+Darkness automatically converts:
+- =--= to en-dash (–)
+- =---= to em-dash (—)  
+- ='s=, ='d=, etc. to smart quotes ('s, 'd)
+- =``= and =''= to smart quote pairs (" and ")
+
+* Lists
+
+** Unordered Lists
+
+Use =- = (dash + space) for unordered lists. Indent with spaces for nesting.
+
+#+begin_src org
+- First item
+- Second item
+  - Nested item level 2
+  - Another nested item
+    - Nested item level 3
+- Third top-level item
+#+end_src
+
+** Ordered Lists
+
+Use =1. = (number + period + space) for ordered lists.
+
+#+begin_src org
+1. First numbered item
+2. Second numbered item
+3. Third numbered item
+#+end_src
+
+* Links
+
+Links use double bracket syntax. Darkness automatically detects media types.
+
+#+begin_src org
+[[https://example.com]]
+[[https://example.com][Link Title]]
+[[local-file.org][Local File Link]]
+#+end_src
+
+** Media Links
+
+Darkness automatically handles different media types:
+
+#+begin_src org
+[[image.jpg][Alt text]]              # Images: png, gif, jpg, jpeg, svg, webp
+[[audio.mp3][Audio title]]           # Audio: mp3, flac, midi  
+[[video.mp4][Video title]]           # Video: mp4, mkv, mov, flv, webm
+[[document.pdf][PDF title]]          # PDF documents
+#+end_src
+
+** Link Descriptions
+
+Links can include descriptions for accessibility:
+
+#+begin_src org
+[[https://example.com][Link Title "Detailed description for screen readers"]]
+#+end_src
+
+* Tables
+
+Tables use pipe =|= characters. Header delimiter is =|-=.
+
+#+begin_src org
+| Header 1 | Header 2 | Header 3 |
+|-
+| Cell 1,1 | Cell 1,2 | Cell 1,3 |
+| Cell 2,1 | Cell 2,2 | Cell 2,3 |
+#+end_src
+
+Special table cells:
+- =file:image.jpg= creates image cells in tables
+
+* Source Code Blocks
+
+Source code uses =#+begin_src= and =#+end_src= blocks.
+
+#+begin_src org
+#+begin_src go
+func main() {
+    fmt.Println("Hello, World!")
+}
+#+end_src
+#+end_src
+
+Supported languages include: go, python, javascript, html, css, bash, and others.
+
+* Raw HTML Export
+
+Export raw HTML using =#+begin_export html= blocks.
+
+#+begin_src org
+#+begin_export html
+<div class="custom-html">
+  <p>Custom HTML content</p>
+</div>
+#+end_export
+#+end_src
+
+* Quote Blocks
+
+Create quoted content with =#+begin_quote= blocks.
+
+#+begin_src org
+#+begin_quote
+This text will be styled as a quotation.
+Multiple lines are supported.
+#+end_quote
+#+end_src
+
+* Centered Content
+
+Center content using =#+begin_center= blocks.
+
+#+begin_src org
+#+begin_center
+This text will be centered.
+#+end_center
+#+end_src
+
+* Horizontal Lines
+
+Create horizontal lines with five or more dashes.
+
+#+begin_src org
+-----
+#+end_src
+
+* Attention Blocks
+
+Special attention blocks for notices, warnings, and tips.
+
+#+begin_src org
+NOTE: This is an informational note.
+WARNING: This is a warning message.
+IMPORTANT: This is important information.
+CAUTION: Use caution here.
+TIP: This is a helpful tip.
+#+end_src
+
+* Darkness-Specific Extensions
+
+** Galleries
+
+Galleries are a darkness-specific extension for image collections.
+
+#+begin_src org
+#+begin_gallery :path images/gallery :num 3
+- image1.jpg
+- image2.jpg
+- image3.jpg
+#+end_gallery
+#+end_src
+
+Parameters:
+- =:path= - Directory path containing images
+- =:num= - Number of images per row (affects CSS flex layout)
+
+Gallery items support special options:
+- =:no-zoom= - Disable zoom functionality for specific images
+
+** Details/Summary Blocks
+
+Collapsible content using HTML details/summary elements.
+
+#+begin_src org
+#+begin_details Custom Summary Title
+This content is hidden by default and can be expanded.
+Multiple paragraphs and other content types are supported.
+#+end_details
+#+end_src
+
+** Drop Caps
+
+Make the first letter of a paragraph large and decorative.
+
+#+begin_src org
+#+drop_cap
+This paragraph will have a decorative drop cap on the first letter.
+#+end_src
+
+** Custom Attributes
+
+Add custom attributes for styling and export control.
+
+#+begin_src org
+#+attr_darkness: custom-class special-formatting
+#+html_tags: data-custom="value" class="extra-class"
+This paragraph will have custom attributes applied.
+#+end_src
+
+* Advanced Features
+
+** Macros
+
+Define and use text macros for reusable content.
+
+#+begin_src org
+#+macro: site-name My Website
+#+macro: year 2024
+
+Welcome to {{{site-name}}} built in {{{year}}}!
+#+end_src
+
+Macros with parameters:
+
+#+begin_src org
+#+macro: link @@html:<a href="$1">$2</a>@@
+
+Visit {{{link(https://example.com,our website)}}} for more info.
+#+end_src
+
+** Setup Files
+
+Include content from other orgmode files.
+
+#+begin_src org
+#+setupfile: ../common/header.org
+#+end_src
+
+** Comments
+
+Comments are ignored during parsing.
+
+#+begin_src org
+# This is a comment and will not appear in output
+This is regular content.
+#+end_src
+
+* Content Processing
+
+** Whitespace Handling
+
+- Leading/trailing whitespace in source code blocks can be trimmed
+- Empty lines separate content blocks
+- List items preserve internal formatting
+- Tables auto-format cell content
+
+** Link Processing
+
+- External links (http/https) are preserved
+- Local file links are resolved relative to document
+- Link titles are optional but recommended for accessibility
+
+** Gallery Processing
+
+- Images are automatically processed for web optimization
+- Preview thumbnails are generated
+- Lazy loading is enabled by default
+- Custom flex layout classes are applied based on =:num= parameter
+
+* Export Behavior
+
+Content types are exported differently based on the target format:
+
+- *HTML*: Full semantic markup with CSS classes
+- *RSS*: Text content only, images and special blocks simplified
+- *Search*: Plain text extraction for indexing
+
+Special flags control export behavior:
+- =NotADescriptionFlag= - Exclude from meta descriptions
+- Custom attributes affect HTML output styling
+- Gallery paths are resolved relative to build output
+
+* Best Practices
+
+1. *Use semantic headings* - Maintain proper heading hierarchy
+2. *Provide link titles* - Include descriptive text for all links  
+3. *Caption images* - Use =#+caption:= for accessibility
+4. *Organize galleries* - Group related images in logical directories
+5. *Comment complex macros* - Document macro definitions
+6. *Test locally* - Verify formatting before publishing
+
+* Limitations
+
+Compared to full Orgmode, Darkness does not support:
+- TODO/DONE states and agenda
+- Tables of contents (TOC) generation  
+- Advanced export options
+- Babel source code execution
+- Complex table formulas
+- Date/time calculations
+- Archive functionality
+
+For the full list of supported vs unsupported features, see the test files in =parse_test.go=.
