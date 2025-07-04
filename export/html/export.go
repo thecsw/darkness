@@ -137,14 +137,23 @@ func (e *state) leftHeading() {
 
 func (e *state) combineAndFilterHtmlHead() string {
 	// Build the array of all head elements (except page's specific head options).
-	allHead := [][]string{e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags(), e.conf.Website.ExtraHead}
+	allHead := [][]string{e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags()}
+
 	// Go through all the head elements and filter them out depending on page's specific exclusion rules.
 	finalHead := ""
 	for _, head := range allHead {
 		finalHead += strings.Join(gana.Filter(e.page.Accoutrement.ExcludeHtmlHeadContains.ShouldKeep, head), "\n")
 	}
-	// Page's specific html head elements are not filtered out.
-	return finalHead + "\n" + strings.Join(e.page.HtmlHead, "\n")
+
+	// User can provide multiple inserts with the same property key, however, in almost all browsers, only the
+	// first one is respected, rest are ignored. This could create a jarring experience if say some file is using
+	// an imported org manifest, or even nested, and trying to override some setting wouldn't work. So, let's only
+	// allow the latest named property.
+	extraHeads := strings.Join(filterByLatestMetaName(e.conf.Website.ExtraHead), "\n") + "\n" +
+		strings.Join(filterByLatestMetaName(e.page.HtmlHead), "\n")
+
+	// Then collect it all together.
+	return finalHead + extraHeads + "\n"
 }
 
 // styleTags is the processed style tags.

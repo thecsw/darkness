@@ -1,6 +1,8 @@
 package html
 
 import (
+	"strings"
+
 	"github.com/thecsw/darkness/v3/yunyun"
 )
 
@@ -50,4 +52,40 @@ func whatDivType(content *yunyun.Content) divType {
 	}
 	// default to writing div
 	return divWriting
+}
+
+func filterByLatestMetaName(heads []string) []string {
+	// The deduped list from the tail.
+	res := make([]string, 0, len(heads))
+
+	// Marking the meta names we had already seen.
+	seen := make(map[string]struct{})
+
+	// Going through it in reverse.
+	for i := len(heads) - 1; i >= 0; i-- {
+		name := extractMetaName(heads[i])
+		// If name couldn't be extracted, stay safe.
+		if len(name) < 1 {
+			res = append(res, heads[i])
+			continue
+		}
+		// If seen, then skip.
+		if _, ok := seen[name]; ok {
+			continue
+		}
+		// Mark and add.
+		seen[name] = struct{}{}
+		res = append(res, heads[i])
+	}
+	return res
+}
+
+func extractMetaName(head string) string {
+	for _, split := range strings.Split(head, " ") {
+		if !strings.HasPrefix(split, `name="`) {
+			continue
+		}
+		return strings.Trim(split[5:], `"`)
+	}
+	return ""
 }
