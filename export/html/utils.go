@@ -78,16 +78,20 @@ func filterByLatestMetaName(heads []string) []string {
 		seen[name] = struct{}{}
 		res = append(res, heads[i])
 	}
-	// Original order.
+	// Original order, since if the user say applied stylesheet.css and override.css,
+	// if we don't preserve the original order, the override.css would end up doing
+	// nothing. Found this the hard way.
 	slices.Reverse(res)
 	return res
 }
 
 func extractMetaName(head string) string {
 	for _, split := range strings.Split(head, " ") {
+		// Poor man's pattern-matching.
 		if !strings.HasPrefix(split, `name="`) {
 			continue
 		}
+		// Get the nice value out of it.
 		return strings.Trim(split[5:], `"`)
 	}
 	return ""

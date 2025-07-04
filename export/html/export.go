@@ -130,11 +130,6 @@ func (e *state) buildContent(content *yunyun.Content) string {
 	return e.resolveDivTags(built)
 }
 
-// leftHeading leaves the heading.
-func (e *state) leftHeading() {
-	e.inHeading = false
-}
-
 func (e *state) combineAndFilterHtmlHead() string {
 	// Build the array of all head elements (except page's specific head options).
 	allHead := [][]string{e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags()}
@@ -149,8 +144,11 @@ func (e *state) combineAndFilterHtmlHead() string {
 	// first one is respected, rest are ignored. This could create a jarring experience if say some file is using
 	// an imported org manifest, or even nested, and trying to override some setting wouldn't work. So, let's only
 	// allow the latest named property.
-	extraHeads := strings.Join(filterByLatestMetaName(e.conf.Website.ExtraHead), "\n") + "\n" +
-		strings.Join(filterByLatestMetaName(e.page.HtmlHead), "\n")
+	e.conf.Website.ExtraHead = filterByLatestMetaName(e.conf.Website.ExtraHead)
+	e.page.HtmlHead = filterByLatestMetaName(e.page.HtmlHead)
+
+	// Compile it all together.
+	extraHeads := strings.Join(e.conf.Website.ExtraHead, "\n") + "\n" + strings.Join(e.page.HtmlHead, "\n")
 
 	// Then collect it all together.
 	return finalHead + extraHeads + "\n"
