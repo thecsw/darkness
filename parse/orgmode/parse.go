@@ -239,8 +239,10 @@ func (p ParserOrgmode) Do(
 						// We slice off the "[0-9]. "
 						toWrite = toWrite[3:]
 					}
+					indent := gana.CountStringsLeft[uint8](listItemRaw, "  ") -
+						listItemInitialIndent + 1
 					matches[i] = yunyun.ListItem{
-						Level: gana.CountStringsLeft[uint8](listItemRaw, "  ") - listItemInitialIndent + 1,
+						Level: indent,
 						Text:  toWrite,
 					}
 				}

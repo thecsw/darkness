@@ -19,7 +19,7 @@ const (
 	specialSetupFileDirective = `^#[+](setupfile|SETUPFILE):\s*([^\s]+)$`
 
 	// this is the syntax for evaluating macros
-	specialMacroEvalDirective = `{{{([a-z0-9]+)(\([^)(]+\))?}}}`
+	specialMacroEvalDirective = `{{{([-a-z0-9]+)(\([^)(]+\))?}}}`
 
 	macroDefinition = `macro:`
 	macroPrefix     = optionPrefix + macroDefinition + " "
@@ -43,12 +43,22 @@ var (
 	}
 
 	expandedFiles = sync.Map{}
+
+	stringBuilderPool = sync.Pool{
+		New: func() any {
+			return new(strings.Builder)
+		},
+	}
 )
 
 func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string) string {
 	// We will do everything in one pass here and build the final input file using
 	// a string builder for performance.
-	sb := &strings.Builder{}
+	sb := stringBuilderPool.Get().(*strings.Builder)
+	sb.Reset()
+
+	// Put it back into the pool.
+	defer stringBuilderPool.Put(sb)
 
 	// Here we will store the macro definitions.
 	macrosLookupTable := make(map[string]string)
@@ -59,8 +69,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 
 	// We will read the original input line by line and build the final input same way.
 	// Be ready for a very greedy loop.
-	lines := strings.Split(what, "\n")
-	for _, line := range lines {
+	for line := range strings.SplitSeq(what, "\n") {
 		trimmed := strings.TrimSpace(line)
 
 		// Let's see if we have any macros to expand on this line.
@@ -175,7 +184,7 @@ func collectMacros(
 	macrosLookupTable map[string]string,
 	what string) bool {
 	macroDefsFound := false
-	for _, line := range strings.Split(what, "\n") {
+	for line := range strings.SplitSeq(what, "\n") {
 		if !strings.HasPrefix(line, macroPrefix) {
 			continue
 		}

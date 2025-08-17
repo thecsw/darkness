@@ -91,7 +91,7 @@ func (e *state) export() io.Reader {
 	for i, v := range e.page.Contents {
 		e.currentContentIndex = i
 		e.currentContent = v
-		content = append(content, e.buildContent(v))
+		content = append(content, e.buildContent())
 	}
 
 	output := fmt.Sprintf(`%s<!DOCTYPE html>
@@ -118,7 +118,7 @@ func (e *state) export() io.Reader {
 }
 
 // buildContent builds the HTML representation of a content.
-func (e *state) buildContent(content *yunyun.Content) string {
+func (e *state) buildContent() string {
 	// Build the HTML (string) representation of each content.
 	built := e.contentFunctions[e.currentContent.Type](e.currentContent)
 

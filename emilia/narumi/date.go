@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/thecsw/darkness/v3/yunyun"
@@ -25,7 +26,7 @@ func secureRandIntn(n int) int {
 	if n <= 0 {
 		panic("invalid argument to secureRandIntn")
 	}
-	
+
 	// For small values of n, we can simply use a single byte
 	if n <= 256 {
 		buf := make([]byte, 1)
@@ -35,14 +36,14 @@ func secureRandIntn(n int) int {
 		}
 		return int(buf[0]) % n
 	}
-	
+
 	// For larger values, use 4 bytes
 	buf := make([]byte, 4)
 	_, err := rand.Read(buf)
 	if err != nil {
 		panic(fmt.Sprintf("failed to generate random number: %v", err))
 	}
-	
+
 	// Use a more explicit approach to avoid the integer overflow
 	// Converting n to uint32 first to safely perform modulo
 	randomInt := binary.BigEndian.Uint32(buf)
@@ -91,6 +92,12 @@ func WithDate() yunyun.PageOption {
 	}
 }
 
+var strBuilderPool = sync.Pool{
+	New: func() any {
+		return new(strings.Builder)
+	},
+}
+
 // formatSince formats a time.Duration into a human-readable string.
 func formatSince(since time.Duration) string {
 	months, days := sinceToMonthsAndDays(since)
@@ -99,10 +106,12 @@ func formatSince(since time.Duration) string {
 	if years == 0 && months == 0 && days == 0 {
 		return "today"
 	}
-	sb := strings.Builder{}
+	sb := strBuilderPool.Get().(*strings.Builder)
+	sb.Reset()
+	defer strBuilderPool.Put(sb)
 
 	if years > 0 {
-		sb.WriteString(fmt.Sprintf("%d year", years))
+		fmt.Fprintf(sb, "%d year", years)
 		if years > 1 {
 			sb.WriteString("s")
 		}
@@ -111,7 +120,7 @@ func formatSince(since time.Duration) string {
 		if years > 0 {
 			sb.WriteString(", ")
 		}
-		sb.WriteString(fmt.Sprintf("%d month", months))
+		fmt.Fprintf(sb, "%d month", months)
 		if months > 1 {
 			sb.WriteString("s")
 		}
@@ -124,7 +133,7 @@ func formatSince(since time.Duration) string {
 			// But, if we only have one of them, we will use "and".
 			sb.WriteString(" and ")
 		}
-		sb.WriteString(fmt.Sprintf("%d day", days))
+		fmt.Fprintf(sb, "%d day", days)
 		if days > 1 {
 			sb.WriteString("s")
 		}
