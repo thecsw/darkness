@@ -19,7 +19,7 @@ func (p ParserOrgmode) Do(
 ) *yunyun.Page {
 
 	// Split the data into lines
-	lines := strings.Split(p.preprocess(filename, data), "\n")
+	lines := strings.SplitSeq(p.preprocess(filename, data), "\n")
 
 	page := yunyun.NewPage(
 		yunyun.WithFilename(filename),
@@ -114,7 +114,7 @@ func (p ParserOrgmode) Do(
 	linkRegexp = yunyun.LinkRegexp
 
 	// Loop through the lines
-	for _, rawLine := range lines {
+	for rawLine := range lines {
 		// Trimp the line from whitespaces
 		line := strings.TrimSpace(rawLine)
 		// Save the previous state and update the current

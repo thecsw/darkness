@@ -67,7 +67,7 @@ func FillAccoutrement(tombs []yunyun.RelativePathDir, options *string, page *yun
 	if len(*options) < 1 {
 		return
 	}
-	for _, option := range strings.Split(*options, " ") {
+	for option := range strings.SplitSeq(*options, " ") {
 		key, value := breakOption(option)
 		// If action is found, then execute it.
 		if action, ok := accoutrementActions[key]; ok {

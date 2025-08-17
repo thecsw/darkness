@@ -18,6 +18,7 @@ const (
 	divSpecial
 )
 
+// TODO: To whoever came up with this---me---is there a better way?
 var divTypes = []divType{
 	divWriting, // yunyun.TypeHeading
 	divWriting, // yunyun.TypeParagraph
@@ -90,7 +91,7 @@ func extractMetaName(head string) (string, bool) {
 	if !strings.HasPrefix(head, "<meta") {
 		return "", false
 	}
-	for _, split := range strings.Split(head, " ") {
+	for split := range strings.SplitSeq(head, " ") {
 		// Poor man's pattern-matching.
 		if !strings.HasPrefix(split, `name="`) {
 			continue
