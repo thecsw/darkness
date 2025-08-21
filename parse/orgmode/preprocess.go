@@ -118,7 +118,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 
 			// If we found any macros on a single line, then the whole line was a macro
 			// definition and gets consumed.
-			if collectMacros(p.Config, filename, macrosLookupTable, trimmed) {
+			if collectMacros(p.Config, filename, macrosLookupTable, line) {
 				continue
 			}
 		}
@@ -185,6 +185,8 @@ func collectMacros(
 	what string) bool {
 	macroDefsFound := false
 	for line := range strings.SplitSeq(what, "\n") {
+		// Only recognize macro definitions that start at the very beginning of the line
+		// (no leading whitespace)
 		if !strings.HasPrefix(line, macroPrefix) {
 			continue
 		}

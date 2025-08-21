@@ -135,6 +135,17 @@ func TestCollectMacros(t *testing.T) {
 			expectedFound:    false,
 			shouldPanicFatal: true, // This would call Fatal in a real scenario
 		},
+		{
+			name: "Macro definitions not at beginning of line should be ignored",
+			input: `Some text with #+macro: embedded Hello embedded
+    #+macro: indented Indented macro
+Regular text
+#+macro: valid Valid macro at beginning`,
+			expectedMacros: map[string]string{
+				"valid": "Valid macro at beginning",
+			},
+			expectedFound: true,
+		},
 	}
 
 	for _, tc := range tests {
@@ -149,7 +160,7 @@ func TestCollectMacros(t *testing.T) {
 			config.Runtime.Logger = log.NewWithOptions(os.Stderr, log.Options{
 				Level: log.FatalLevel, // Only show fatal errors
 			})
-			
+
 			macrosLookupTable := make(map[string]string)
 			found := collectMacros(config, "test.org", macrosLookupTable, tc.input)
 
@@ -161,6 +172,95 @@ func TestCollectMacros(t *testing.T) {
 				t.Errorf("Expected macros:\n%v\nGot:\n%v", tc.expectedMacros, macrosLookupTable)
 			}
 		})
+	}
+}
+
+// TestMacroDefinitionRecognition tests comprehensive behavior of macro definition recognition
+func TestMacroDefinitionRecognition(t *testing.T) {
+	config := &alpha.DarknessConfig{}
+	config.Runtime.Logger = log.NewWithOptions(os.Stderr, log.Options{
+		Level: log.FatalLevel,
+	})
+	parser := ParserOrgmode{Config: config}
+
+	// Test input with various macro definition placements
+	input := `Normal text before
+#+macro: valid1 This is a valid macro at beginning of line
+    #+macro: indented This should be ignored (indented with spaces)
+	#+macro: tabbed This should be ignored (indented with tab)
+Some text with #+macro: embedded This embedded macro should be ignored
+#+macro: valid2 Another valid macro
+  Extra spaces  #+macro: spaces More spaces - should be ignored
+#+macro: valid3 Third valid macro
+
+Testing expansions:
+- {{{valid1}}} should expand
+- {{{valid2}}} should expand
+- {{{valid3}}} should expand`
+
+	result := parser.preprocess("test.org", input)
+
+	// Check that valid macros were processed and their definitions removed
+	if strings.Contains(result, "#+macro: valid1") {
+		t.Error("Valid macro definition at beginning of line should be processed and removed")
+	}
+	if strings.Contains(result, "#+macro: valid2") {
+		t.Error("Valid macro definition at beginning of line should be processed and removed")
+	}
+	if strings.Contains(result, "#+macro: valid3") {
+		t.Error("Valid macro definition at beginning of line should be processed and removed")
+	}
+
+	// Check that invalid (indented/embedded) macro definitions were preserved
+	if !strings.Contains(result, "    #+macro: indented This should be ignored") {
+		t.Error("Indented macro definition should be preserved as regular text")
+	}
+	if !strings.Contains(result, "	#+macro: tabbed This should be ignored") {
+		t.Error("Tab-indented macro definition should be preserved as regular text")
+	}
+	if !strings.Contains(result, "Some text with #+macro: embedded This embedded macro should be ignored") {
+		t.Error("Embedded macro definition should be preserved as regular text")
+	}
+	if !strings.Contains(result, "  Extra spaces  #+macro: spaces More spaces - should be ignored") {
+		t.Error("Macro definition with leading spaces should be preserved as regular text")
+	}
+
+	// Check that valid macro expansions worked
+	if !strings.Contains(result, "This is a valid macro at beginning of line") {
+		t.Error("Valid macro should be expanded")
+	}
+	if !strings.Contains(result, "Another valid macro") {
+		t.Error("Second valid macro should be expanded")
+	}
+	if !strings.Contains(result, "Third valid macro") {
+		t.Error("Third valid macro should be expanded")
+	}
+}
+
+// TestPreprocessIndentedMacros tests that preprocess correctly ignores indented macro definitions
+func TestPreprocessIndentedMacros(t *testing.T) {
+	config := &alpha.DarknessConfig{}
+	config.Runtime.Logger = log.NewWithOptions(os.Stderr, log.Options{
+		Level: log.FatalLevel,
+	})
+	parser := ParserOrgmode{Config: config}
+
+	// This input has an indented macro definition that should be ignored
+	input := `Normal text
+    #+macro: indented This should be ignored
+#+macro: valid This should work
+More text with {{{valid}}} here`
+
+	result := parser.preprocess("test.org", input)
+
+	// The result should contain the macro expansion for 'valid' but not process 'indented'
+	if !strings.Contains(result, "This should work") {
+		t.Error("Valid macro at beginning of line should be processed")
+	}
+
+	// The indented macro line should remain in the output as regular text
+	if !strings.Contains(result, "#+macro: indented This should be ignored") {
+		t.Error("Indented macro definition should be preserved as regular text")
 	}
 }
 
@@ -223,7 +323,7 @@ func TestExpandMacros(t *testing.T) {
 			config.Runtime.Logger = log.NewWithOptions(os.Stderr, log.Options{
 				Level: log.FatalLevel, // Only show fatal errors
 			})
-			
+
 			result, found := expandMacros(config, "test.org", tc.macros, tc.input)
 
 			if found != tc.expectedResult {
