@@ -97,7 +97,7 @@ func isOrderedListStart(line string) bool {
 }
 
 // listAnyRegex checks whether the start of the line signifies we are in an ordered list.
-var listAnyRegex = regexp.MustCompile(`^[0-9]. `)
+var listAnyRegex = regexp.MustCompile(`^[0-9][.] `)
 
 // isOrderedListAny returns true if we are anywhere within the ordered list.
 func isOrderedListAny(line string) bool {
