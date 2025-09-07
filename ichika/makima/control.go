@@ -69,9 +69,13 @@ func (c *Control) Parse() Woof {
 		err := enc.Encode(c.Page)
 		if err != nil {
 			puck.Logger.Warn("Failed to convert page to json", "page", c.InputFilename, "error", err)
+			return c
 		}
 		targetFile := c.Conf.Project.InputFilenameToDebugStruct(c.InputFilename)
-		writeNewFile(targetFile, &buf)
+		if err := writeNewFile(targetFile, &buf); err != nil {
+			puck.Logger.Warn("Failed to write converted json page", "error", err)
+			return c
+		}
 		puck.Logger.Debug("Wrote parsed page as json", "parsed", c.Conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(targetFile)))
 	}
 
