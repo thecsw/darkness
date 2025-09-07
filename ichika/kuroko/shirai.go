@@ -15,8 +15,8 @@ var (
 	// CustomNumWorkers sets the custom number of workers.
 	CustomNumWorkers int
 
-	// DebugLogsEnabled tells us whether to show debug logs.
-	DebugLogsEnabled bool
+	// DebugEnabled tells us whether to show debug logs.
+	DebugEnabled bool
 
 	// InfoLogsEnabled tells us whether to show info logs.
 	InfoLogsEnabled bool
@@ -57,7 +57,7 @@ var (
 
 // LogLevel returns the log level as defined in kuroko
 func LogLevel() log.Level {
-	if DebugLogsEnabled {
+	if DebugEnabled {
 		return log.DebugLevel
 	}
 	if InfoLogsEnabled {

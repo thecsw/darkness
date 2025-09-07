@@ -20,6 +20,7 @@ func BuildConfig(options Options) *DarknessConfig {
 	conf := &DarknessConfig{}
 	conf.Runtime.Logger = puck.NewLogger("Alpha ☕")
 	conf.Runtime.WorkDir = WorkingDirectory(options.WorkDir)
+	conf.Runtime.WriteParsedPagesAsJson = options.Debug
 
 	// Record the time it takes to initialize the options.
 	defer puck.Stopwatch("Initialized options").Record(conf.Runtime.Logger)

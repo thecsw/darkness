@@ -34,4 +34,7 @@ type RuntimeConfig struct {
 
 	// Logger is the logger that we use.
 	Logger *l.Logger
+
+	// WriteParsedPagesAsJson will flush parsed pages as json in the same dir.
+	WriteParsedPagesAsJson bool
 }

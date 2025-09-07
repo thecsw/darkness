@@ -1,6 +1,8 @@
 package makima
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -57,6 +59,22 @@ func (c *Control) Parse() Woof {
 		Stopwatch("Parsed", "input", c.Conf.Runtime.WorkDir.Rel(c.InputFilename)).
 		RecordWithFile(misaka.RecordParseTime, c.InputFilename)
 	c.Page = c.Parser.Do(c.Conf.Runtime.WorkDir.Rel(c.InputFilename), c.Input)
+
+	// The user (probably Sandy) may want to see the parsed pages in json format for
+	// debugging if darkness parsing had failed somewhere. If so, flush them (ugly but ok).
+	if c.Conf.Runtime.WriteParsedPagesAsJson {
+		var buf bytes.Buffer
+		enc := json.NewEncoder(&buf)
+		enc.SetIndent("", "\t")
+		err := enc.Encode(c.Page)
+		if err != nil {
+			puck.Logger.Warn("Failed to convert page to json", "page", c.InputFilename, "error", err)
+		}
+		targetFile := c.Conf.Project.InputFilenameToDebugStruct(c.InputFilename)
+		writeNewFile(targetFile, &buf)
+		puck.Logger.Debug("Wrote parsed page as json", "parsed", c.Conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(targetFile)))
+	}
+
 	return c
 }
 
@@ -75,12 +93,17 @@ func (c *Control) Write() error {
 	defer puck.
 		Stopwatch("Wrote", "output", c.Conf.Runtime.WorkDir.Rel(yunyun.FullPathFile(c.OutputFilename))).
 		RecordWithFile(misaka.RecordWriteTime, c.InputFilename)
-	file, err := os.Create(c.OutputFilename)
+	return writeNewFile(c.OutputFilename, c.Output)
+}
+
+// writeNewFile is a makima utility to flush a reader into a new file.
+func writeNewFile(target string, from io.Reader) error {
+	file, err := os.Create(target)
 	if err != nil {
-		return fmt.Errorf("creating output file %s: %v", c.OutputFilename, err)
+		return fmt.Errorf("creating output file %s: %v", target, err)
 	}
-	if _, err := io.Copy(file, c.Output); err != nil {
-		return fmt.Errorf("writing to output file %s: %v", c.OutputFilename, err)
+	if _, err := io.Copy(file, from); err != nil {
+		return fmt.Errorf("writing to output file %s: %v", target, err)
 	}
 	return nil
 }

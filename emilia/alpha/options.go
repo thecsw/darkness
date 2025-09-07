@@ -17,6 +17,9 @@ type Options struct {
 	// Dev enables Url generation through local paths.
 	Dev bool
 
+	// Debug mode will enable all kinds of knobs to view intermediate processing.
+	Debug bool
+
 	// Test enables test environment, where darkness config is not needed.
 	Test bool
 

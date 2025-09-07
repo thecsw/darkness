@@ -20,7 +20,7 @@ func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 	cmd.IntVar(&kuroko.CustomNumWorkers, "workers", 4, "number of workers to use")
 	cmd.BoolVar(&kuroko.InfoLogsEnabled, "info", false, "enable info+ logs")
 	cmd.BoolVar(&kuroko.LfsEnabled, "lfs", false, "enable Git LFS images")
-	cmd.BoolVar(&kuroko.DebugLogsEnabled, "debug", false, "enable debug+ logs")
+	cmd.BoolVar(&kuroko.DebugEnabled, "debug", false, "enable debug mode (logs, traces, etc.)")
 	cmd.BoolVar(&kuroko.UseCurrentDirectory, "dev", false, "use local path for urls (development)")
 	cmd.BoolVar(&kuroko.VendorGalleryImages, "vendor-galleries", false, "stub in local copies of gallery links (SLOW)")
 	cmd.BoolVar(&kuroko.Akaneless, "akaneless", false, "skip akane processing")
@@ -49,7 +49,7 @@ func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 	puck.Logger.SetLevel(log.WarnLevel)
 	// Set the proper log levels and default to info.
 	switch {
-	case kuroko.DebugLogsEnabled:
+	case kuroko.DebugEnabled:
 		puck.Logger.SetLevel(log.DebugLevel)
 	case kuroko.InfoLogsEnabled:
 		puck.Logger.SetLevel(log.InfoLevel)
@@ -59,6 +59,7 @@ func getAlphaOptions(cmd *flag.FlagSet) alpha.Options {
 	return alpha.Options{
 		DarknessConfig:  kuroko.DarknessToml,
 		Dev:             kuroko.UseCurrentDirectory,
+		Debug:           kuroko.DebugEnabled,
 		WorkDir:         kuroko.WorkDir,
 		VendorGalleries: kuroko.VendorGalleryImages,
 	}

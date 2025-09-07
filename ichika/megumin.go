@@ -61,6 +61,10 @@ func removeOutputFiles(conf *alpha.DarknessConfig) {
 			fmt.Println(toPrint, "went boom!")
 			time.Sleep(50 * time.Millisecond)
 		}
+
+		// If debug mode had been enabled, then we would have had .json structs emitted.
+		_ = os.Remove(conf.Project.InputFilenameToDebugStruct(inputFilename))
+
 	}
 	// don't forget to remove the build logfile if found
 	_ = os.Remove(puck.LastBuildTimestampFile) // ignore

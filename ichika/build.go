@@ -42,7 +42,7 @@ func build(conf *alpha.DarknessConfig) {
 	filesPool := komi.NewWithSettings(komi.WorkWithErrors(makima.Woof.Read), &komi.Settings{
 		Name:     "Komi Reading 📚 ",
 		Laborers: runtime.NumCPU(),
-		Debug:    kuroko.DebugLogsEnabled,
+		Debug:    kuroko.DebugEnabled,
 	})
 	go logErrors("reading", rei.Must(filesPool.Errors()))
 
@@ -50,21 +50,21 @@ func build(conf *alpha.DarknessConfig) {
 	parserPool := komi.NewWithSettings(komi.Work(makima.Woof.Parse), &komi.Settings{
 		Name:     "Komi Parsing 🧹 ",
 		Laborers: kuroko.CustomNumWorkers,
-		Debug:    kuroko.DebugLogsEnabled,
+		Debug:    kuroko.DebugEnabled,
 	})
 
 	// Create a pool that that takes yunyun pages and exports them into request format.
 	exporterPool := komi.NewWithSettings(komi.Work(makima.Woof.Export), &komi.Settings{
 		Name:     "Komi Exporting 🥂 ",
 		Laborers: kuroko.CustomNumWorkers,
-		Debug:    kuroko.DebugLogsEnabled,
+		Debug:    kuroko.DebugEnabled,
 	})
 
 	// Create a pool that reads the exported data and writes them to target files.
 	writerPool := komi.NewWithSettings(komi.WorkSimpleWithErrors(makima.Woof.Write), &komi.Settings{
 		Name:     "Komi Writing 🎸",
 		Laborers: runtime.NumCPU(),
-		Debug:    kuroko.DebugLogsEnabled,
+		Debug:    kuroko.DebugEnabled,
 	})
 	go logErrors("writer", rei.Must(writerPool.Errors()))
 
