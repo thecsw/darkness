@@ -187,13 +187,6 @@ func (e *state) rssLink() string {
 	return `<span><a href="/feed.xml" class="rss-link"><img src="/assets/rss.svg" class="rss-icon"></a></span><br>` + "\n"
 }
 
-func (e *state) authorName() string {
-	if !e.conf.Author.NameEnable {
-		return ""
-	}
-	return `<span id="author" class="author">` + e.conf.Author.Name + `</span><br>` + "\n"
-}
-
 func (e *state) authorEmail() string {
 	if !e.conf.Author.EmailEnable {
 		return ""
@@ -207,9 +200,9 @@ func (e *state) authorHeader() string {
 <div class="header">
 <h1 class="section-1">%s%s</h1>
 <div class="menu">
-%s%s%s`,
+%s%s`,
 		e.authorImage(), processTitle(e.page.Title),
-		e.rssLink(), e.authorName(), e.authorEmail(),
+		e.rssLink(), e.authorEmail(),
 	)
 	content += `<span id="revdate">` + "\n"
 
