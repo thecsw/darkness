@@ -28,6 +28,11 @@ var (
 
 func (e ExporterHtml) Do(page *yunyun.Page) io.Reader {
 	s := &state{conf: e.Config, page: page}
+
+	// All of these indices in this array MUST match the defined types in
+	// yunyun/flags.go. Since all of the types are defined as incremental iota
+	// elements, these are set up to "just work" that way. The terminal type
+	// is an exception, as it should never be used anywhere.
 	s.contentFunctions = []func(*yunyun.Content) string{
 		s.heading,
 		s.paragraph,
@@ -40,6 +45,7 @@ func (e ExporterHtml) Do(page *yunyun.Page) io.Reader {
 		s.attentionBlock,
 		s.table,
 		s.details,
+		s.toc,
 	}
 	return s.export()
 }
@@ -71,8 +77,12 @@ func (e *state) export() io.Reader {
 		e.page.Accoutrement.Preview = string(e.conf.Website.Preview)
 	}
 
+	// If the user sets the toc option to true, then we put it as the very first
+	// element on the whole page. For finer control, it is recommended for users
+	// to use the #+toc control instead, where they can control where toc goes
+	// (even multiple times!)
 	if e.page.Accoutrement.Toc.IsEnabled() {
-		e.page.Contents = append(e.toc(), e.page.Contents...)
+		e.page.Contents = append(e.tocAsContent(), e.page.Contents...)
 	}
 
 	// If the page requests a preview, generate it.
@@ -282,7 +292,7 @@ func (e *state) addTomb() {
 }
 
 // toc returns the table of contents.
-func (e *state) toc() []*yunyun.Content {
+func (e *state) tocAsContent() []*yunyun.Content {
 	return []*yunyun.Content{
 		// First, add the table of contents header.
 		{
@@ -298,10 +308,6 @@ func (e *state) toc() []*yunyun.Content {
 			// that this is the table of contents.
 			Summary: "toc",
 			List:    GenerateTableOfContents(e.page),
-		},
-		// Finally, add the horizontal line.
-		{
-			Type: yunyun.TypeHorizontalLine,
 		},
 	}
 }

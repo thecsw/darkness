@@ -77,7 +77,10 @@ func (p ParserOrgmode) Do(
 		customHtmlTags = ""
 	}
 	optionsActions := map[string]func(line string){
-		optionDropCap:     func(line string) { addFlag(yunyun.InDropCapFlag) },
+		optionDropCap: func(line string) { addFlag(yunyun.InDropCapFlag) },
+		optionTableOfContents: func(line string) {
+			addContent(&yunyun.Content{Type: yunyun.TypeTableOfContents})
+		},
 		optionBeginQuote:  func(line string) { addFlag(yunyun.InQuoteFlag) },
 		optionEndQuote:    func(line string) { removeFlag(yunyun.InQuoteFlag) },
 		optionBeginCenter: func(line string) { addFlag(yunyun.InCenterFlag) },

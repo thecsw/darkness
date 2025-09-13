@@ -140,6 +140,9 @@ func (c Content) IsSourceCode() bool { return c.Type == TypeSourceCode }
 // IsRawHtml tells us if the content is a raw HTML block.
 func (c Content) IsRawHtml() bool { return c.Type == TypeRawHtml }
 
+// IsTableOfContents if the content is table of contents.
+func (c Content) IsTableOfContents() bool { return c.Type == TypeTableOfContents }
+
 // IsRawHtmlUnsafe tells us if the html block is raw and unsafe.
 func (c Content) IsRawHtmlUnsafe() bool { return HasFlag(&c.Options, InRawHtmlFlagUnsafe) }
 

@@ -19,6 +19,8 @@ const (
 )
 
 // TODO: To whoever came up with this---me---is there a better way?
+// TODO: That was of course me, Sandy. Hi. This is ugly as it has to
+// connect directly with yunyun/flags.go. Travesty, but whatever.
 var divTypes = []divType{
 	divWriting, // yunyun.TypeHeading
 	divWriting, // yunyun.TypeParagraph
@@ -31,6 +33,7 @@ var divTypes = []divType{
 	divWriting, // yunyun.TypeAttentionText
 	divOutside, // yunyun.TypeTable
 	divWriting, // yunyun.TypeDetails
+	divWriting, // yunyun.TypeTableOfContents (since it's just a list).
 }
 
 func whatDivType(content *yunyun.Content) divType {

@@ -284,3 +284,15 @@ func (e *state) details(content *yunyun.Content) string {
 	}
 	return "</details>"
 }
+
+// toc is a heavy element that creates new contents and writes them as a string.
+func (e *state) toc(_ *yunyun.Content) string {
+	// We could use e.tocAsContent, but using #+toc gives me more
+	// freedom to give a custom description and heading for toc.
+	return e.list(&yunyun.Content{
+		// overload the summary field to indicate
+		// that this is the table of contents.
+		Summary: "toc",
+		List:    GenerateTableOfContents(e.page),
+	})
+}

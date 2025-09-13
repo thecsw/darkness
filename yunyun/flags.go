@@ -26,6 +26,8 @@ const (
 	TypeTable
 	// TypeDetails is the type for html details
 	TypeDetails
+	// TypeTableOfContents is the type that splashes links to headings.
+	TypeTableOfContents
 	// TypeShouldBeLastDoNotTouch the last type that should not be touched --
 	// It's used to verify consistency within darkness.
 	TypeShouldBeLastDoNotTouch
@@ -101,9 +103,9 @@ func FlipFlag(v *Bits, f Bits) { *v ^= f }
 // HasFlag returns true if the flag is found, false otherwise.
 //
 //go:inline
-func HasFlag(v *Bits, f Bits) bool { 
+func HasFlag(v *Bits, f Bits) bool {
 	if v == nil {
 		return false
 	}
-	return *v&f != 0 
+	return *v&f != 0
 }
