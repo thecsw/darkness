@@ -121,6 +121,7 @@ func (p ParserOrgmode) Do(
 	for rawLine := range lines {
 		// Trimp the line from whitespaces
 		line := strings.TrimSpace(rawLine)
+
 		// Save the previous state and update the current
 		// one with the newly read line
 		previousContext := currentContext
@@ -143,6 +144,7 @@ func (p ParserOrgmode) Do(
 			currentContext = previousContext + rawLine + "\n"
 			continue
 		}
+
 		// Now, check if we can enter a raw html environment
 		if isHtmlExportBegin(line) {
 			addFlag(yunyun.InRawHtmlFlag)
@@ -154,6 +156,7 @@ func (p ParserOrgmode) Do(
 			currentContext = previousContext
 			continue
 		}
+
 		// If we are in a source code block?
 		if hasFlag(yunyun.InSourceCodeFlag) {
 			// Check if it's time to leave
@@ -173,6 +176,7 @@ func (p ParserOrgmode) Do(
 			currentContext = previousContext + rawLine + "\n"
 			continue
 		}
+
 		// Should we enter a source code environment?
 		if isSourceCodeBegin(line) {
 			sourceCodeLang = extractSourceCodeLanguage(line)
@@ -180,12 +184,14 @@ func (p ParserOrgmode) Do(
 			currentContext = ""
 			continue
 		}
+
 		// Ignore orgmode comments and options, where source code blocks
 		// and export block options are exceptions to this rule
 		if isComment(line) {
 			currentContext = previousContext
 			continue
 		}
+
 		// isOption is a sink for any options that darkness
 		// does not support, hence will be ignored
 		if isOption(line) {
@@ -201,6 +207,7 @@ func (p ParserOrgmode) Do(
 			currentContext = previousContext
 			continue
 		}
+
 		// Now, we need to parse headings here
 		if header := isHeader(line); header != nil {
 			if header.HeadingLevel == 1 {
@@ -216,12 +223,14 @@ func (p ParserOrgmode) Do(
 
 			continue
 		}
+
 		// If we hit an empty line, end the whatever context we had
 		if line == "" {
 			// Empty context gets us nowhere
 			if len(previousContext) < 1 {
 				continue
 			}
+
 			// Add a horizontal line divider
 			if isHorizonalLine(previousContext) {
 				addContent(&yunyun.Content{
@@ -231,13 +240,16 @@ func (p ParserOrgmode) Do(
 			}
 			inList := hasFlag(yunyun.InListFlag)
 			inOrderedList := hasFlag(yunyun.InOrderedListFlag)
+
 			// If we were in a list, save it as a list
 			if inList || inOrderedList {
 				splitItems := strings.Split(previousContext, listSeparatorWS)
+
 				// Shouldn't happen, continue as a failure
 				if len(splitItems) < 1 {
 					continue
 				}
+
 				// the first item is a hyphen, so we skip it
 				rawListItems := splitItems[1:]
 				matches := make([]yunyun.ListItem, len(rawListItems))
@@ -255,6 +267,7 @@ func (p ParserOrgmode) Do(
 						Text:  toWrite,
 					}
 				}
+
 				// Shouldn't happen, continue as a failure
 				if len(rawListItems) < 1 {
 					continue
@@ -263,6 +276,7 @@ func (p ParserOrgmode) Do(
 				if hasFlag(yunyun.InOrderedListFlag) {
 					typeToWrite = yunyun.TypeListNumbered
 				}
+
 				// Add the list
 				addContent(&yunyun.Content{
 					Type: typeToWrite,
@@ -273,6 +287,7 @@ func (p ParserOrgmode) Do(
 				listItemInitialIndent = 0
 				continue
 			}
+
 			// If we were in a table, save it as such
 			if hasFlag(yunyun.InTableFlag) {
 				splitItems := strings.Split(previousContext, tableSeparatorWS)

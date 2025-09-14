@@ -127,7 +127,12 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 		// List items can be multi-line, and further lines usually begin with a space,
 		// so let's exclude those from the selection.
 		if isList(line) && !isList(previousLine) {
-			if !strings.HasPrefix(previousLineRaw, " ") {
+			// Updated: On September 14th, 2025, there was a bug that if a list had a comment
+			// somewhere in between, then instead of treating it as a single list, it would
+			// treat it as two lists. Checking for whether the previous line is a comment
+			// should help us avoid this.
+			if !strings.HasPrefix(previousLineRaw, " ") &&
+				!strings.HasPrefix(previousLineRaw, commentPrefix) {
 				sb.WriteRune('\n')
 			}
 		}
