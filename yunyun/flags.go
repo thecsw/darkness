@@ -33,7 +33,7 @@ const (
 	TypeShouldBeLastDoNotTouch
 )
 
-// Bits is aliased to `uint16` to store flags.
+// Bits is aliased to `uint32` to store flags.
 type Bits uint32
 
 const (
@@ -68,6 +68,8 @@ const (
 	// Not description flag will mark to the exporter that if this paragaph
 	// is the first content on the page, it should not be used for descriptions.
 	NotADescriptionFlag
+	// HeadingNoIndexFlag prevents the marked heading from appearing in toc.
+	HeadingNoIndexFlag
 	// YunYunStartCustomFlags is used internally to mark last flag.
 	YunYunStartCustomFlags
 )

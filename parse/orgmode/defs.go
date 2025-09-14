@@ -5,32 +5,39 @@ import (
 )
 
 const (
-	commentPrefix         = "# "
-	optionPrefix          = "#+"
-	optionPrefixLen       = len(optionPrefix)
-	optionDropCap         = "drop_cap"
+	commentPrefix   = "# "
+	optionPrefix    = "#+"
+	optionPrefixLen = len(optionPrefix)
+
+	optionDropCap = "drop_cap"
+
+	// optionTableOfContents will insert table of contents in place of the option.
 	optionTableOfContents = "toc"
-	optionBeginSource     = "begin_src"
-	optionEndSource       = "end_src"
-	optionBeginExport     = "begin_export"
-	optionEndExport       = "end_export"
-	optionBeginQuote      = "begin_quote"
-	optionEndQuote        = "end_quote"
-	optionBeginCenter     = "begin_center"
-	optionEndCenter       = "end_center"
-	optionBeginDetails    = "begin_details"
-	optionEndDetails      = "end_details"
-	optionBeginGallery    = "begin_gallery"
-	optionEndGallery      = "end_gallery"
-	optionCaption         = "caption:"
-	optionDate            = "date:"
-	optionHtmlHead        = "html_head:"
-	optionOptions         = "options:"
-	optionAttributes      = "attr_darkness:"
-	optionHtmlTags        = "html_tags:"
-	optionAttrHtml        = "attr_html:"
-	optionAuthor          = "author:"
-	horizontalLine        = "-----"
+
+	// optionNoIndex will exclude the following heading from table of contents.
+	optionNoIndex = "noindex"
+
+	optionBeginSource  = "begin_src"
+	optionEndSource    = "end_src"
+	optionBeginExport  = "begin_export"
+	optionEndExport    = "end_export"
+	optionBeginQuote   = "begin_quote"
+	optionEndQuote     = "end_quote"
+	optionBeginCenter  = "begin_center"
+	optionEndCenter    = "end_center"
+	optionBeginDetails = "begin_details"
+	optionEndDetails   = "end_details"
+	optionBeginGallery = "begin_gallery"
+	optionEndGallery   = "end_gallery"
+	optionCaption      = "caption:"
+	optionDate         = "date:"
+	optionHtmlHead     = "html_head:"
+	optionOptions      = "options:"
+	optionAttributes   = "attr_darkness:"
+	optionHtmlTags     = "html_tags:"
+	optionAttrHtml     = "attr_html:"
+	optionAuthor       = "author:"
+	horizontalLine     = "-----"
 
 	sectionLevelOne   = "* "
 	sectionLevelTwo   = "** "

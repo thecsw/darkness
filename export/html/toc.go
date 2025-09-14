@@ -10,8 +10,13 @@ import (
 
 // GenerateTableOfContents generates a table of contents for a page.
 func GenerateTableOfContents(page *yunyun.Page) []yunyun.ListItem {
-	toc := make([]yunyun.ListItem, len(page.Contents.Headings()))
-	for i, heading := range page.Contents.Headings() {
+	toc := make([]yunyun.ListItem, 0, len(page.Contents.Headings()))
+	for _, heading := range page.Contents.Headings() {
+		// The user could have excluded the heading from appearing in the index.
+		if yunyun.HasFlag(&heading.Options, yunyun.HeadingNoIndexFlag) {
+			continue
+		}
+
 		// Bound check to prevent integer overflow when converting uint32 to uint8
 		var level uint8
 		if heading.HeadingLevelAdjusted > 255 {
@@ -19,11 +24,11 @@ func GenerateTableOfContents(page *yunyun.Page) []yunyun.ListItem {
 		} else {
 			level = uint8(heading.HeadingLevelAdjusted)
 		}
-		
-		toc[i] = yunyun.ListItem{
+
+		toc = append(toc, yunyun.ListItem{
 			Level: level,
 			Text:  fmt.Sprintf("[[%s][%s]]", "#"+ExtractID(heading.Heading), heading.Heading),
-		}
+		})
 	}
 	return toc
 }

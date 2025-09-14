@@ -81,6 +81,7 @@ func (p ParserOrgmode) Do(
 		optionTableOfContents: func(line string) {
 			addContent(&yunyun.Content{Type: yunyun.TypeTableOfContents})
 		},
+		optionNoIndex:     func(line string) { addFlag(yunyun.HeadingNoIndexFlag) },
 		optionBeginQuote:  func(line string) { addFlag(yunyun.InQuoteFlag) },
 		optionEndQuote:    func(line string) { removeFlag(yunyun.InQuoteFlag) },
 		optionBeginCenter: func(line string) { addFlag(yunyun.InCenterFlag) },
@@ -208,6 +209,11 @@ func (p ParserOrgmode) Do(
 				continue
 			}
 			addContent(header)
+
+			// If the user disabled indexing for this header, then
+			// we need to reset that flag as it only affects on per-basis.
+			removeFlag(yunyun.HeadingNoIndexFlag)
+
 			continue
 		}
 		// If we hit an empty line, end the whatever context we had
