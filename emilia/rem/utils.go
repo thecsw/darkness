@@ -1,6 +1,7 @@
 package rem
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -15,10 +16,15 @@ func galleryItemHash(item GalleryItem) yunyun.RelativePathFile {
 
 // galleryPreviewRelative takes gallery item and returns relative path to it.
 func galleryPreviewRelative(item GalleryItem) yunyun.RelativePathFile {
+	prefix := rei.Sha256([]byte(item.Path))[:7]
 	if item.IsExternal {
 		return galleryItemHash(item)
 	}
 	filename := filepath.Base(string(item.Item))
 	ext := filepath.Ext(filename)
-	return yunyun.RelativePathFile(strings.TrimSuffix(filename, ext) + "_small.jpg")
+
+	// Multiple directories can have filenames named the same, so we differentiate them
+	// by hashing the directory they're coming from. The preview is always going to be jpg.
+	final_base := fmt.Sprintf("%s-%s.jpg", prefix, strings.TrimSuffix(filename, ext))
+	return yunyun.RelativePathFile(final_base)
 }
