@@ -329,16 +329,9 @@ TIP: Here's a useful tip about something.
 
 -----
 
-* Conclusion
-
 This is the end of our test document.`
 
 	page := parser.Do("complex-test.org", input)
-
-	// Test basic metadata - the title is set from the first heading
-	if page.Title != "Conclusion" {
-		t.Errorf("Expected title 'Conclusion', got '%s'", page.Title)
-	}
 
 	if page.Author != "Test Author" {
 		t.Errorf("Expected author 'Test Author', got '%s'", page.Author)

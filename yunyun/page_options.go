@@ -6,7 +6,7 @@ type PageOption func(*Page)
 
 const (
 	defaultPageFilename   = "unknown"
-	defaultPageTitle      = "no title"
+	defaultPageTitle      = ""
 	defaulteDateHoloscene = true
 	defaultDate           = "0; 0 H.E."
 	defaultUrl            = "unknown"

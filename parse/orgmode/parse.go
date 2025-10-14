@@ -211,6 +211,11 @@ func (p ParserOrgmode) Do(
 		// Now, we need to parse headings here
 		if header := isHeader(line); header != nil {
 			if header.HeadingLevel == 1 {
+				// We already have a page title, only persist the first one given.
+				if len(page.Title) > 0 {
+					logger.Warn("Found duplicate title heading", "page", string(page.File))
+					continue
+				}
 				page.Title = header.Heading
 				currentContext = ""
 				continue
@@ -220,7 +225,6 @@ func (p ParserOrgmode) Do(
 			// If the user disabled indexing for this header, then
 			// we need to reset that flag as it only affects on per-basis.
 			removeFlag(yunyun.HeadingNoIndexFlag)
-
 			continue
 		}
 
