@@ -45,23 +45,23 @@ func createTestFiles(t *testing.T, root string) {
 		"file2.org",
 		"nested/file3.org",
 		"nested/deep/file4.org",
-		"skipthisfile.org",     // Should be skipped due to name
-		".hiddenfile.org",      // Should be skipped as it's hidden
-		"other.txt",           // Should be skipped due to extension
-		"nested/.hidden/hidden.org", // Hidden directory, but file might be picked up
-		"nested/skipthis/skipped.org", // Directory contains skipthis
+		"_ignoredfile.org",            // Should be skipped due to name
+		".hiddenfile.org",             // Should be skipped as it's hidden
+		"other.txt",                   // Should be skipped due to extension
+		"nested/.hidden/hidden.org",   // Hidden directory, but file might be picked up
+		"nested/_ignored/skipped.org", // Directory contains _ignored
 	}
 
 	// Create directories and files
 	for _, file := range files {
 		fullPath := filepath.Join(root, file)
 		dir := filepath.Dir(fullPath)
-		
+
 		// Create directory if it doesn't exist
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			t.Fatalf("Failed to create directory %s: %v", dir, err)
 		}
-		
+
 		// Create the file
 		if err := os.WriteFile(fullPath, []byte("test content for "+file), 0644); err != nil {
 			t.Fatalf("Failed to create file %s: %v", fullPath, err)
@@ -95,7 +95,7 @@ func TestFindFilesByExtSimple(t *testing.T) {
 		}
 		fileStrings = append(fileStrings, rel)
 	}
-	
+
 	// Sort the results for consistent comparison
 	sort.Strings(fileStrings)
 
@@ -106,14 +106,14 @@ func TestFindFilesByExtSimple(t *testing.T) {
 		"nested/.hidden/hidden.org",
 		"nested/deep/file4.org",
 		"nested/file3.org",
-		"nested/skipthis/skipped.org",
+		"nested/_ignored/skipped.org",
 		"symlink.org", // Symlinks should be included
 	}
 	sort.Strings(expected)
 
 	// Check if expected files match what we got
 	if !reflect.DeepEqual(fileStrings, expected) {
-		t.Errorf("FindFilesByExtSimple() found incorrect files.\nExpected: %v\nGot: %v", 
+		t.Errorf("FindFilesByExtSimple() found incorrect files.\nExpected: %v\nGot: %v",
 			expected, fileStrings)
 	}
 
@@ -146,7 +146,7 @@ func TestFindFilesByExtSimpleDirs(t *testing.T) {
 				"nested/.hidden/hidden.org",
 				"nested/deep/file4.org",
 				"nested/file3.org",
-				"nested/skipthis/skipped.org",
+				"nested/_ignored/skipped.org",
 				"symlink.org",
 			},
 		},
@@ -157,7 +157,7 @@ func TestFindFilesByExtSimpleDirs(t *testing.T) {
 				"nested/.hidden/hidden.org",
 				"nested/deep/file4.org",
 				"nested/file3.org",
-				"nested/skipthis/skipped.org",
+				"nested/_ignored/skipped.org",
 			},
 		},
 		{
@@ -176,7 +176,7 @@ func TestFindFilesByExtSimpleDirs(t *testing.T) {
 				"nested/.hidden/hidden.org",
 				"nested/deep/file4.org",
 				"nested/file3.org",
-				"nested/skipthis/skipped.org",
+				"nested/_ignored/skipped.org",
 				"symlink.org",
 			},
 		},
@@ -185,7 +185,7 @@ func TestFindFilesByExtSimpleDirs(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			files := findFilesByExtSimpleDirs(config, tc.dirs)
-			
+
 			// Convert to strings for easier comparison
 			fileStrings := make([]string, 0, len(files))
 			for _, file := range files {
@@ -196,13 +196,13 @@ func TestFindFilesByExtSimpleDirs(t *testing.T) {
 				}
 				fileStrings = append(fileStrings, rel)
 			}
-			
+
 			// Sort the results for consistent comparison
 			sort.Strings(fileStrings)
 			sort.Strings(tc.expected)
 
 			if !reflect.DeepEqual(fileStrings, tc.expected) {
-				t.Errorf("findFilesByExtSimpleDirs() with dirs=%v found incorrect files.\nExpected: %v\nGot: %v", 
+				t.Errorf("findFilesByExtSimpleDirs() with dirs=%v found incorrect files.\nExpected: %v\nGot: %v",
 					tc.dirs, tc.expected, fileStrings)
 			}
 		})
@@ -254,7 +254,7 @@ func TestBuildPagesSimple(t *testing.T) {
 		content string
 	}{
 		{
-			path:    "page1.org", 
+			path:    "page1.org",
 			content: "# Page 1\nThis is test content.\n",
 		},
 		{
@@ -266,12 +266,12 @@ func TestBuildPagesSimple(t *testing.T) {
 	for _, tf := range testFiles {
 		fullPath := filepath.Join(tempDir, tf.path)
 		dir := filepath.Dir(fullPath)
-		
+
 		// Create directory if it doesn't exist
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			t.Fatalf("Failed to create directory %s: %v", dir, err)
 		}
-		
+
 		// Create the file
 		if err := os.WriteFile(fullPath, []byte(tf.content), 0644); err != nil {
 			t.Fatalf("Failed to create file %s: %v", fullPath, err)
@@ -281,7 +281,7 @@ func TestBuildPagesSimple(t *testing.T) {
 	// This test is more limited because we don't have a real parser in test mode
 	// So we'll just check that the function returns without errors and returns expected number of pages
 	pages := BuildPagesSimple(config, []string{})
-	
+
 	// Since BuildPagesSimple depends on the file parsing which isn't fully mocked,
 	// we can only do basic checks here
 	if pages == nil {
@@ -293,23 +293,23 @@ func TestBuildPagesSimple(t *testing.T) {
 func TestNoFileDuplication(t *testing.T) {
 	tempDir, config := setupTestEnvironment(t)
 	defer os.RemoveAll(tempDir)
-	
+
 	// Create a test case where a file could potentially be discovered via multiple paths
 	// by creating hard links
 	srcPath := filepath.Join(tempDir, "unique.org")
 	if err := os.WriteFile(srcPath, []byte("test content"), 0644); err != nil {
 		t.Fatalf("Failed to create file %s: %v", srcPath, err)
 	}
-	
+
 	// Try to create a hard link (may not work on all systems)
 	linkPath := filepath.Join(tempDir, "link_to_unique.org")
 	if err := os.Link(srcPath, linkPath); err != nil {
 		t.Logf("Hard links not supported, skipping part of test: %v", err)
 	}
-	
+
 	// Run the function we're testing
 	files := FindFilesByExtSimple(config)
-	
+
 	// Build map of paths
 	seen := make(map[string]bool)
 	for _, file := range files {
@@ -317,7 +317,7 @@ func TestNoFileDuplication(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to get relative path: %v", err)
 		}
-		
+
 		// The same content should not be processed twice
 		if seen[rel] {
 			t.Errorf("Found duplicate file in results: %s", rel)
