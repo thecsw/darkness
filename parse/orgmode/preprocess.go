@@ -109,14 +109,10 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 			}
 
 			// What if it's a setup file?
-			if setupFile, found := expandSetupFile(p.Config, filename, trimmed); found {
+			if setupFile, found := expandUntilSaturation(p.Config, filename, macrosLookupTable, trimmed); found {
 				sb.WriteRune('\n')
 				sb.WriteString(setupFile)
 				sb.WriteRune('\n')
-
-				// Expanded files may and will contain macro definitions that we
-				// will need to evaluate later in the file.
-				collectMacros(p.Config, filename, macrosLookupTable, setupFile)
 				continue
 			}
 
@@ -168,6 +164,11 @@ func expandSetupFile(conf *alpha.DarknessConfig, filename yunyun.RelativePathFil
 	relativeImportFilename := yunyun.RelativePathFile(filepath.Join(string(currentDirectory), string(setupFileTargetFilename)))
 	absoluteImportFilename := conf.Runtime.WorkDir.Join(relativeImportFilename)
 
+	// However, if it's absolute, well, then, go from the runtime directory.
+	if filepath.IsAbs(string(setupFileTargetFilename)) {
+		absoluteImportFilename = conf.Runtime.WorkDir.Join(setupFileTargetFilename)
+	}
+
 	// Check the hot cache.
 	if expandedFile, alreadyExpanded := expandedFiles.Load(absoluteImportFilename); alreadyExpanded {
 		// See if the type is right, if it's not, drop in to the slow IO retrieval.
@@ -187,11 +188,35 @@ func expandSetupFile(conf *alpha.DarknessConfig, filename yunyun.RelativePathFil
 	return setupFileTargetContents, true
 }
 
+func expandUntilSaturation(conf *alpha.DarknessConfig, filename yunyun.RelativePathFile, macrosLookupTable map[string]string, line string) (string, bool) {
+	contents, expanded := expandSetupFile(conf, filename, line)
+	if !expanded {
+		return contents, false
+	}
+
+	acc := strings.Builder{}
+	for line := range strings.SplitSeq(contents, "\n") {
+		trimmed := strings.TrimSpace(line)
+		innerContents, innerExpanded := expandUntilSaturation(conf, filename, macrosLookupTable, trimmed)
+		// If nothing expanded, then we write the original line.
+		if !innerExpanded {
+			innerContents = line
+		}
+		acc.WriteRune('\n')
+		acc.WriteString(innerContents)
+		acc.WriteRune('\n')
+		continue
+	}
+	what := acc.String()
+	collectMacros(conf, filename, macrosLookupTable, what)
+	return what, true
+}
+
 func CollectGlobalMacros(
 	conf *alpha.DarknessConfig,
 	filename yunyun.RelativePathFile,
-	what string) {
-	collectMacros(conf, filename, globalMacrosTable, what)
+	what string) bool {
+	return collectMacros(conf, filename, globalMacrosTable, what)
 }
 
 func collectMacros(
@@ -241,7 +266,15 @@ func expandMacros(conf *alpha.DarknessConfig,
 
 		// what if it has no params?
 		if len(macroParamsString) < 1 {
-			line = strings.ReplaceAll(line, fullMatch, macroBody)
+			// Let's see if the macro we just expanded is actually a setup file.
+			inner, expanded := expandUntilSaturation(conf, filename, macrosLookupTable, macroBody)
+			if !expanded {
+				// then replace the macro eval with the hydrated body
+				line = strings.ReplaceAll(line, fullMatch, macroBody)
+				continue
+			}
+
+			line = strings.ReplaceAll(line, fullMatch, inner)
 			continue
 		}
 
@@ -256,8 +289,16 @@ func expandMacros(conf *alpha.DarknessConfig,
 			macroBody = strings.ReplaceAll(macroBody, `$`+strconv.Itoa(i+1), param)
 		}
 
-		// then replace the macro eval with the hydrated body
-		line = strings.ReplaceAll(line, fullMatch, macroBody)
+		// Let's see if the macro we just expanded is actually a setup file.
+		inner, expanded := expandUntilSaturation(conf, filename, macrosLookupTable, macroBody)
+		if !expanded {
+			// then replace the macro eval with the hydrated body
+			line = strings.ReplaceAll(line, fullMatch, macroBody)
+			continue
+		}
+
+		line = strings.ReplaceAll(line, fullMatch, inner)
+
 	}
 	return line, true
 }

@@ -156,7 +156,10 @@ func recordGlobalMacros(conf *alpha.DarknessConfig) {
 		if err != nil {
 			conf.Runtime.Logger.Warn("Failed reading global macros file", "file", globalMacrosFileFull, "err", err)
 		}
-		orgmode.CollectGlobalMacros(conf, globalMacrosFile, string(file))
+		if orgmode.CollectGlobalMacros(conf, globalMacrosFile, string(file)) {
+			conf.Runtime.Logger.Info("Loaded global macros")
+		}
+
 	} else if err != nil {
 		conf.Runtime.Logger.Warn("Failed checking global macros file", "err", err)
 	}
