@@ -1,6 +1,7 @@
 package orgmode
 
 import (
+	"maps"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -42,6 +43,8 @@ var (
 		optionBeginGallery: {}, optionEndGallery: {},
 	}
 
+	globalMacrosTable = map[string]string{}
+
 	expandedFiles = sync.Map{}
 
 	stringBuilderPool = sync.Pool{
@@ -62,6 +65,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 
 	// Here we will store the macro definitions.
 	macrosLookupTable := make(map[string]string)
+	maps.Copy(macrosLookupTable, globalMacrosTable)
 
 	// We add a newline before lists start
 	previousLine := ""
@@ -181,6 +185,13 @@ func expandSetupFile(conf *alpha.DarknessConfig, filename yunyun.RelativePathFil
 	setupFileTargetContents := string(rei.Must(os.ReadFile(filepath.Clean(string(absoluteImportFilename)))))
 	expandedFiles.Store(absoluteImportFilename, setupFileTargetContents)
 	return setupFileTargetContents, true
+}
+
+func CollectGlobalMacros(
+	conf *alpha.DarknessConfig,
+	filename yunyun.RelativePathFile,
+	what string) {
+	collectMacros(conf, filename, globalMacrosTable, what)
 }
 
 func collectMacros(

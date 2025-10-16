@@ -17,7 +17,7 @@ import (
 
 const (
 	// Do not discover files that have this in their filename
-	skipPrefix = "skipthis"
+	skipPrefix = "_"
 )
 
 // FindFilesByExt finds all files with a given extension.

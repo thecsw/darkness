@@ -12,6 +12,8 @@ const (
 	misaCommand        DarknessCommand = `misa`
 	lalatinaCommand    DarknessCommand = `lalatina`
 	aquaCommand        DarknessCommand = `aqua`
+
+	globalMacrosFileBasename = `_macros`
 )
 
 // CommandFuncs maps supplied darkness command to the function
