@@ -9,6 +9,7 @@ import (
 	"github.com/karrick/godirwalk"
 	"github.com/thecsw/darkness/v3/emilia/alpha"
 	"github.com/thecsw/darkness/v3/emilia/puck"
+	"github.com/thecsw/darkness/v3/ichika/himeno"
 	"github.com/thecsw/darkness/v3/parse"
 	"github.com/thecsw/darkness/v3/yunyun"
 	g "github.com/thecsw/gana"
@@ -87,6 +88,7 @@ func findFilesByExtSimpleDirs(conf *alpha.DarknessConfig, dirs []string) []yunyu
 
 // BuildPagesSimple will return a slice of built pages that have dirs as parents (empty dirs will return everything).
 func BuildPagesSimple(conf *alpha.DarknessConfig, dirs []string) []*yunyun.Page {
+	himeno.RegisterGlobalMacros(conf)
 	inputFilenames := findFilesByExtSimpleDirs(conf, dirs)
 	pages := make([]*yunyun.Page, 0, len(inputFilenames))
 	parser := parse.BuildParser(conf)
