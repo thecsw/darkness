@@ -33,5 +33,6 @@ func RegisterGlobalMacros(conf *alpha.DarknessConfig) {
 		}
 
 	} else if err != nil {
+		conf.Runtime.Logger.Error("Failed to see if the global macros file even exists", "err", err)
 	}
 }
