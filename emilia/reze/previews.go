@@ -96,11 +96,15 @@ func InitPreviewGenerator(
 	return p
 }
 
+const (
+	defaultFg = "#2b2b2b"
+)
+
 // Generate generates a preview image and returns it as an io.Reader.
 func (p PreviewGenerator) Generate(
 	Title, Name, Time, ColorBg, ColorFg string,
 ) (io.Reader, error) {
-	bg, fg := p.backgroundColor, "#000000"
+	bg, fg := p.backgroundColor, defaultFg
 	if len(ColorBg) > 0 {
 		bg = ColorBg
 	}
