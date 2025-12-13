@@ -184,16 +184,8 @@ func (e *state) horizontalLine(content *yunyun.Content) string {
 func (e *state) attentionBlock(content *yunyun.Content) string {
 	return fmt.Sprintf(`
 <div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">%s</div>
-</td>
-<td class="content">
-%s
-</td>
-</tr>
-</table>
+<div class="admonition-label">%s</div>
+<div class="admonition-content">%s</div>
 </div>`, content.AttentionTitle, processText(content.AttentionText))
 }
 
