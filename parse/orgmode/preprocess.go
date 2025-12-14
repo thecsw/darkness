@@ -20,7 +20,7 @@ const (
 	specialSetupFileDirective = `^#[+](setupfile|SETUPFILE):\s*([^\s]+)$`
 
 	// this is the syntax for evaluating macros
-	specialMacroEvalDirective = `{{{([-a-z0-9]+)(\([^)(]+\))?}}}`
+	specialMacroEvalDirective = `{{{([-_a-z0-9]+)(\([^)(]+\))?}}}`
 
 	macroDefinition = `macro:`
 	macroPrefix     = optionPrefix + macroDefinition + " "
