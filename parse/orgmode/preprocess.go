@@ -261,7 +261,7 @@ func expandMacros(conf *alpha.DarknessConfig,
 				"path", filename, "macro", macroName)
 		}
 		macroBody := strings.ReplaceAll(macrosLookupTable[macroName], "\\n", "\n")
-		macroParamsString := match[2]
+		macroParamsString := strings.Trim(match[2], ")(")
 
 		// what if it has no params?
 		if len(macroParamsString) < 1 {
@@ -278,15 +278,27 @@ func expandMacros(conf *alpha.DarknessConfig,
 		}
 
 		delim := string(macroParamDelim)
+
 		// If the macro contains the alternative, means the commas are used for the text itself,
 		// swap it out.
 		if strings.ContainsRune(macroParamsString, macroParamDelimAlternative) {
 			delim = string(macroParamDelimAlternative)
 		}
-		macroParamsDirty := strings.Split(strings.Trim(macroParamsString, ")("), delim)
+
+		macroParamsDirty := strings.Split(macroParamsString, delim)
 		macroParams := make([]string, 0, len(macroParamsDirty))
-		for _, macroParamDirty := range macroParamsDirty {
-			macroParams = append(macroParams, strings.TrimSpace(macroParamDirty))
+
+		// Handle an edge case, where the macro only takes one parameter but we're trying
+		// to parse too many.
+		if strings.Contains(macroBody, "$1") && !strings.Contains(macroBody, "$2") {
+			macroParams = append(macroParams, macroParamsString)
+		}
+
+		// If no edge cases were hit, continue.
+		if len(macroParams) < 1 {
+			for _, macroParamDirty := range macroParamsDirty {
+				macroParams = append(macroParams, strings.TrimSpace(macroParamDirty))
+			}
 		}
 
 		// Let's get the body and hydrate the parameters.
