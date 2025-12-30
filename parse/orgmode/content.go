@@ -47,8 +47,19 @@ func isComment(line string) bool {
 }
 
 // isOption returns true if the line is an option
-func isOption(line string) bool {
-	return strings.HasPrefix(line, optionPrefix)
+func isOption(line string) (string, bool) {
+	if !strings.HasPrefix(line, optionPrefix) {
+		return "", false
+	}
+	option := gana.SkipString(uint(optionPrefixLen), line)
+	parts := strings.SplitN(option, " ", 2)
+
+	// Don't know what this is, don't let it reach the parser.
+	if len(parts) < 1 {
+		return "", false
+	}
+	val := strings.TrimSpace(parts[0])
+	return val, len(val) > 0
 }
 
 // getLink returns a non-nil object if the line is a link

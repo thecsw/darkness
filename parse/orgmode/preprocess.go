@@ -22,8 +22,10 @@ const (
 	// this is the syntax for evaluating macros
 	specialMacroEvalDirective = `{{{([-_a-z0-9]+)(\([^)(]+\))?}}}`
 
-	macroDefinition = `macro:`
-	macroPrefix     = optionPrefix + macroDefinition + " "
+	macroDefinition            = `macro:`
+	macroPrefix                = optionPrefix + macroDefinition + " "
+	macroParamDelim            = ','
+	macroParamDelimAlternative = '|'
 )
 
 var (
@@ -77,6 +79,10 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 		trimmed := strings.TrimSpace(line)
 
 		// Let's see if we have any macros to expand on this line.
+		// TODO: A bug. If just expanded a multi-line macro, then we aren't going to catch
+		//  the shouldBeSurroundedWithNewLines processing as expected, failing the later
+		//  parsing. For example, #+begin_gallery and #+end_gallery need full new lines in
+		//  between and if they're macro'd, then we need to manually macro in a double \n.
 		if updatedLine, expandedMacros := expandMacros(p.Config,
 			filename, macrosLookupTable, line); expandedMacros {
 			line = updatedLine
@@ -91,17 +97,9 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 
 		// We are in the realm of options now.
 		lowercase := strings.ToLower(trimmed)
-		if isOption(trimmed) {
-			option := gana.SkipString(uint(optionPrefixLen), lowercase)
-			parts := strings.SplitN(option, " ", 2)
-			// Don't know what this is, don't let it reach the parser.
-			if len(parts) < 1 {
-				continue
-			}
-			key := strings.TrimSpace(parts[0])
-
+		if val, ok := isOption(lowercase); ok {
 			// Check if it needs to be surrounded by a newline.
-			if _, ok := shouldBeSurroundedWithNewLines[key]; ok {
+			if _, ok := shouldBeSurroundedWithNewLines[val]; ok {
 				sb.WriteRune('\n')
 				sb.WriteString(line)
 				sb.WriteRune('\n')
@@ -149,7 +147,8 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 	// Pad a newline so that last elements can be processed
 	// properly before an EOF is encountered during parsing
 	sb.WriteRune('\n')
-	return sb.String()
+	ret := sb.String()
+	return ret
 }
 
 func expandSetupFile(conf *alpha.DarknessConfig, filename yunyun.RelativePathFile, line string) (string, bool) {
@@ -278,7 +277,13 @@ func expandMacros(conf *alpha.DarknessConfig,
 			continue
 		}
 
-		macroParamsDirty := strings.Split(strings.Trim(macroParamsString, ")("), ",")
+		delim := string(macroParamDelim)
+		// If the macro contains the alternative, means the commas are used for the text itself,
+		// swap it out.
+		if strings.ContainsRune(macroParamsString, macroParamDelimAlternative) {
+			delim = string(macroParamDelimAlternative)
+		}
+		macroParamsDirty := strings.Split(strings.Trim(macroParamsString, ")("), delim)
 		macroParams := make([]string, 0, len(macroParamsDirty))
 		for _, macroParamDirty := range macroParamsDirty {
 			macroParams = append(macroParams, strings.TrimSpace(macroParamDirty))

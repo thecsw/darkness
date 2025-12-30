@@ -194,14 +194,8 @@ func (p ParserOrgmode) Do(
 
 		// isOption is a sink for any options that darkness
 		// does not support, hence will be ignored
-		if isOption(line) {
-			givenLine := line[optionPrefixLen:]
-			optionAndValue := strings.Split(givenLine, " ")
-			if len(optionAndValue) < 1 {
-				continue
-			}
-			option := optionAndValue[0]
-			if action, ok := optionsActions[option]; ok {
+		if val, ok := isOption(line); ok {
+			if action, ok := optionsActions[val]; ok {
 				action(rawLine)
 			}
 			currentContext = previousContext
