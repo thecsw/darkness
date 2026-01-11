@@ -62,6 +62,12 @@ func isOption(line string) (string, bool) {
 	return val, len(val) > 0
 }
 
+// isOptionLine returns true if the line is an option (wrapper for isOption)
+func isOptionLine(line string) bool {
+	_, ok := isOption(line)
+	return ok
+}
+
 // getLink returns a non-nil object if the line is a link
 func getLink(line string) *yunyun.Content {
 	line = strings.TrimSpace(line)

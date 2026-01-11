@@ -67,8 +67,8 @@ func TestDetectionFunctions(t *testing.T) {
 		{"HTML export end negative", "Not the end of export", isHtmlExportEnd, false},
 		{"Horizontal line", "-----", isHorizonalLine, true},
 		{"Horizontal line negative", "Not a horizontal line", isHorizonalLine, false},
-		{"Option", "#+title: My Page", isOption, true},
-		{"Option negative", "Not an option", isOption, false},
+		{"Option", "#+title: My Page", isOptionLine, true},
+		{"Option negative", "Not an option", isOptionLine, false},
 		{"Comment", "# This is a comment", isComment, true},
 		{"Comment negative", "Not a comment", isComment, false},
 	}
@@ -86,10 +86,10 @@ func TestDetectionFunctions(t *testing.T) {
 // TestAttentionBlockDetection tests the attention block detection specifically
 func TestAttentionBlockDetection(t *testing.T) {
 	tests := []struct {
-		input          string
-		shouldBeBlock  bool
-		expectedTitle  string
-		expectedText   string
+		input         string
+		shouldBeBlock bool
+		expectedTitle string
+		expectedText  string
 	}{
 		{"NOTE: This is a note.", true, "NOTE", "This is a note."},
 		{"WARNING: Be careful.", true, "WARNING", "Be careful."},
@@ -353,17 +353,17 @@ This is the end of our test document.`
 
 	// Check for the presence of different content types
 	var (
-		hasHeadingLevel2    = false
-		hasUnorderedList    = false
-		hasOrderedList      = false
-		hasTable            = false
-		hasSourceCode       = false
-		hasCenteredText     = false
-		hasDetailsBlock     = false
-		hasLink             = false
-		hasAttentionBlock   = false
-		hasHorizontalLine   = false
-		hasQuote            = false
+		hasHeadingLevel2  = false
+		hasUnorderedList  = false
+		hasOrderedList    = false
+		hasTable          = false
+		hasSourceCode     = false
+		hasCenteredText   = false
+		hasDetailsBlock   = false
+		hasLink           = false
+		hasAttentionBlock = false
+		hasHorizontalLine = false
+		hasQuote          = false
 	)
 
 	for _, content := range page.Contents {
@@ -531,14 +531,14 @@ func TestParsingMalformedInput(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			config := &alpha.DarknessConfig{}
 			parser := ParserOrgmode{Config: config}
-			
+
 			// The main test here is that parsing doesn't panic
 			defer func() {
 				if r := recover(); r != nil {
 					t.Errorf("Parser panicked on malformed input: %v", r)
 				}
 			}()
-			
+
 			parser.Do("test.org", test.input)
 		})
 	}
