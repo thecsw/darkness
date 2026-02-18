@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -177,12 +178,7 @@ func isSet[T comparable](what T) bool {
 
 // allAreSet will return true iff all the values given are not default.
 func allAreSet[T comparable](whats ...T) bool {
-	for _, what := range whats {
-		if isUnset(what) {
-			return false
-		}
-	}
-	return true
+	return !slices.ContainsFunc(whats, isUnset)
 }
 
 // trimExt trims extension of a file (only top level, so `file.min.js`

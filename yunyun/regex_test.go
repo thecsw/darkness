@@ -93,17 +93,17 @@ func TestBoldRegex(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			matches := BoldText.FindStringSubmatch(tc.input)
 			matched := len(matches) > 0
-			
+
 			if matched != tc.expected {
 				t.Errorf("Expected match: %v, got: %v for input: %s", tc.expected, matched, tc.input)
 			}
-			
+
 			if matched {
 				textIdx := BoldText.SubexpIndex("text")
 				if textIdx == -1 {
 					t.Fatal("No 'text' capturing group found in BoldText regex")
 				}
-				
+
 				if matches[textIdx] != tc.text {
 					t.Errorf("Expected text: %q, got: %q for input: %s", tc.text, matches[textIdx], tc.input)
 				}
@@ -165,17 +165,17 @@ func TestItalicRegex(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			matches := ItalicText.FindStringSubmatch(tc.input)
 			matched := len(matches) > 0
-			
+
 			if matched != tc.expected {
 				t.Errorf("Expected match: %v, got: %v for input: %s", tc.expected, matched, tc.input)
 			}
-			
+
 			if matched {
 				textIdx := ItalicText.SubexpIndex("text")
 				if textIdx == -1 {
 					t.Fatal("No 'text' capturing group found in ItalicText regex")
 				}
-				
+
 				if matches[textIdx] != tc.text {
 					t.Errorf("Expected text: %q, got: %q for input: %s", tc.text, matches[textIdx], tc.input)
 				}
@@ -237,20 +237,20 @@ func TestBoldItalicRegex(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			// Run the test multiple times to check for deterministic behavior
-			for i := 0; i < 10; i++ {
+			for i := range 10 {
 				matches := BoldItalicText.FindStringSubmatch(tc.input)
 				matched := len(matches) > 0
-				
+
 				if matched != tc.expected {
 					t.Errorf("Iteration %d: Expected match: %v, got: %v for input: %s", i, tc.expected, matched, tc.input)
 				}
-				
+
 				if matched {
 					textIdx := BoldItalicText.SubexpIndex("text")
 					if textIdx == -1 {
 						t.Fatal("No 'text' capturing group found in BoldItalicText regex")
 					}
-					
+
 					if matches[textIdx] != tc.text {
 						t.Errorf("Iteration %d: Expected text: %q, got: %q for input: %s", i, tc.text, matches[textIdx], tc.input)
 					}
@@ -313,20 +313,20 @@ func TestItalicBoldRegex(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			// Run the test multiple times to check for deterministic behavior
-			for i := 0; i < 10; i++ {
+			for i := range 10 {
 				matches := ItalicBoldText.FindStringSubmatch(tc.input)
 				matched := len(matches) > 0
-				
+
 				if matched != tc.expected {
 					t.Errorf("Iteration %d: Expected match: %v, got: %v for input: %s", i, tc.expected, matched, tc.input)
 				}
-				
+
 				if matched {
 					textIdx := ItalicBoldText.SubexpIndex("text")
 					if textIdx == -1 {
 						t.Fatal("No 'text' capturing group found in ItalicBoldText regex")
 					}
-					
+
 					if matches[textIdx] != tc.text {
 						t.Errorf("Iteration %d: Expected text: %q, got: %q for input: %s", i, tc.text, matches[textIdx], tc.input)
 					}
@@ -346,13 +346,13 @@ func TestAllFormatTogether(t *testing.T) {
 		text  string
 		match string
 	}{
-		BoldText:         {text: "This is *bold* text", match: "bold"},
-		ItalicText:       {text: "This is /italic/ text", match: "italic"},
-		BoldItalicText:   {text: "This is */bold-italic/* text", match: "bold-italic"},
-		ItalicBoldText:   {text: "This is /*italic-bold*/ text", match: "italic-bold"},
-		VerbatimText:     {text: "This is ~verbatim~ text", match: "verbatim"},
-		StrikethroughText:{text: "This is +strikethrough+ text", match: "strikethrough"},
-		UnderlineText:    {text: "This is _underline_ text", match: "underline"},
+		BoldText:          {text: "This is *bold* text", match: "bold"},
+		ItalicText:        {text: "This is /italic/ text", match: "italic"},
+		BoldItalicText:    {text: "This is */bold-italic/* text", match: "bold-italic"},
+		ItalicBoldText:    {text: "This is /*italic-bold*/ text", match: "italic-bold"},
+		VerbatimText:      {text: "This is ~verbatim~ text", match: "verbatim"},
+		StrikethroughText: {text: "This is +strikethrough+ text", match: "strikethrough"},
+		UnderlineText:     {text: "This is _underline_ text", match: "underline"},
 	}
 
 	for regex, data := range inputs {
@@ -361,17 +361,17 @@ func TestAllFormatTogether(t *testing.T) {
 			t.Errorf("Format not matched: %v", data.text)
 			continue
 		}
-		
+
 		textIdx := regex.SubexpIndex("text")
 		if matches[textIdx] != data.match {
 			t.Errorf("Expected match: %q, got: %q for text: %s", data.match, matches[textIdx], data.text)
 		}
 	}
-	
+
 	// Test the specific problematic case from the issue
 	problematicInput := "/*It is violently brilliant*/"
 	matches := ItalicBoldText.FindStringSubmatch(problematicInput)
-	
+
 	if len(matches) == 0 {
 		t.Error("Failed to match the problematic case")
 	} else {
@@ -412,17 +412,17 @@ func TestVerbatimText(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			matches := VerbatimText.FindStringSubmatch(tc.input)
 			matched := len(matches) > 0
-			
+
 			if matched != tc.expected {
 				t.Errorf("Expected match: %v, got: %v for input: %s", tc.expected, matched, tc.input)
 			}
-			
+
 			if matched {
 				textIdx := VerbatimText.SubexpIndex("text")
 				if textIdx == -1 {
 					t.Fatal("No 'text' capturing group found in VerbatimText regex")
 				}
-				
+
 				if matches[textIdx] != tc.text {
 					t.Errorf("Expected text: %q, got: %q for input: %s", tc.text, matches[textIdx], tc.input)
 				}
@@ -454,17 +454,17 @@ func TestStrikethroughText(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			matches := StrikethroughText.FindStringSubmatch(tc.input)
 			matched := len(matches) > 0
-			
+
 			if matched != tc.expected {
 				t.Errorf("Expected match: %v, got: %v for input: %s", tc.expected, matched, tc.input)
 			}
-			
+
 			if matched {
 				textIdx := StrikethroughText.SubexpIndex("text")
 				if textIdx == -1 {
 					t.Fatal("No 'text' capturing group found in StrikethroughText regex")
 				}
-				
+
 				if matches[textIdx] != tc.text {
 					t.Errorf("Expected text: %q, got: %q for input: %s", tc.text, matches[textIdx], tc.input)
 				}
@@ -496,17 +496,17 @@ func TestUnderlineText(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			matches := UnderlineText.FindStringSubmatch(tc.input)
 			matched := len(matches) > 0
-			
+
 			if matched != tc.expected {
 				t.Errorf("Expected match: %v, got: %v for input: %s", tc.expected, matched, tc.input)
 			}
-			
+
 			if matched {
 				textIdx := UnderlineText.SubexpIndex("text")
 				if textIdx == -1 {
 					t.Fatal("No 'text' capturing group found in UnderlineText regex")
 				}
-				
+
 				if matches[textIdx] != tc.text {
 					t.Errorf("Expected text: %q, got: %q for input: %s", tc.text, matches[textIdx], tc.input)
 				}
@@ -538,17 +538,17 @@ func TestSuperscriptText(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			matches := SuperscriptText.FindStringSubmatch(tc.input)
 			matched := len(matches) > 0
-			
+
 			if matched != tc.expected {
 				t.Errorf("Expected match: %v, got: %v for input: %s", tc.expected, matched, tc.input)
 			}
-			
+
 			if matched {
 				textIdx := SuperscriptText.SubexpIndex("text")
 				if textIdx == -1 {
 					t.Fatal("No 'text' capturing group found in SuperscriptText regex")
 				}
-				
+
 				if matches[textIdx] != tc.text {
 					t.Errorf("Expected text: %q, got: %q for input: %s", tc.text, matches[textIdx], tc.input)
 				}
@@ -580,17 +580,17 @@ func TestSubscriptText(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			matches := SubscriptText.FindStringSubmatch(tc.input)
 			matched := len(matches) > 0
-			
+
 			if matched != tc.expected {
 				t.Errorf("Expected match: %v, got: %v for input: %s", tc.expected, matched, tc.input)
 			}
-			
+
 			if matched {
 				textIdx := SubscriptText.SubexpIndex("text")
 				if textIdx == -1 {
 					t.Fatal("No 'text' capturing group found in SubscriptText regex")
 				}
-				
+
 				if matches[textIdx] != tc.text {
 					t.Errorf("Expected text: %q, got: %q for input: %s", tc.text, matches[textIdx], tc.input)
 				}
@@ -640,7 +640,7 @@ func TestDeterministicMatching(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			// Run 100 iterations to ensure deterministic behavior
-			for i := 0; i < 100; i++ {
+			for i := range 100 {
 				matches := tc.regex.FindStringSubmatch(tc.input)
 				if len(matches) == 0 {
 					t.Fatalf("Iteration %d: Failed to match: %s", i, tc.input)
@@ -650,7 +650,7 @@ func TestDeterministicMatching(t *testing.T) {
 				if textIdx == -1 {
 					t.Fatal("No 'text' capturing group found in regex")
 				}
-				
+
 				matchedText := matches[textIdx]
 				if matchedText != tc.text {
 					t.Fatalf("Iteration %d: Expected text: %q, got: %q", i, tc.text, matchedText)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -147,13 +148,13 @@ func removeNonPrintables(title, name, time string) (string, string, string) {
 }
 
 func onlyKeepPrint(k string) string {
-	result := ""
+	var result strings.Builder
 	for _, r := range k {
 		if unicode.IsLetter(r) || unicode.IsSpace(r) || unicode.IsDigit(r) || unicode.IsPunct(r) {
-			result += string(r)
+			result.WriteString(string(r))
 		}
 	}
-	return result
+	return result.String()
 }
 
 func checkFontFiles(conf *alpha.DarknessConfig) bool {

@@ -145,9 +145,9 @@ func (e *state) combineAndFilterHtmlHead() string {
 	allHead := [][]string{e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags()}
 
 	// Go through all the head elements and filter them out depending on page's specific exclusion rules.
-	finalHead := ""
+	var finalHead strings.Builder
 	for _, head := range allHead {
-		finalHead += strings.Join(gana.Filter(e.page.Accoutrement.ExcludeHtmlHeadContains.ShouldKeep, head), "\n")
+		finalHead.WriteString(strings.Join(gana.Filter(e.page.Accoutrement.ExcludeHtmlHeadContains.ShouldKeep, head), "\n"))
 	}
 
 	// User can provide multiple inserts with the same property key, however, in almost all browsers, only the
@@ -161,7 +161,7 @@ func (e *state) combineAndFilterHtmlHead() string {
 	extraHeads := strings.Join(e.conf.Website.ExtraHead, "\n") + "\n" + strings.Join(e.page.HtmlHead, "\n")
 
 	// Then collect it all together.
-	return finalHead + extraHeads + "\n"
+	return finalHead.String() + extraHeads + "\n"
 }
 
 // styleTags is the processed style tags.

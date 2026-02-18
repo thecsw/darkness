@@ -257,10 +257,10 @@ const (
 func tableSpecialCell(what string) (string, bool) {
 	if link := yunyun.ExtractLink(what); link != nil {
 		// If the link is an image, return the HTML representation of it.
-		if strings.HasPrefix(link.Link, tableSpecialImagePrefix) {
+		if after, ok := strings.CutPrefix(link.Link, tableSpecialImagePrefix); ok {
 			return fmt.Sprintf(
 				`<img class="image" src="%s" title="%s" alt="%s">`,
-				strings.TrimPrefix(link.Link, tableSpecialImagePrefix),
+				after,
 				yunyun.RemoveFormatting(link.Description),
 				yunyun.RemoveFormatting(link.Text),
 			), true

@@ -41,15 +41,15 @@ func ExtractID(heading string) string {
 		heading = extractedLink.Text // 0 is whole match, 1 is link, 2 is title
 	}
 
-	res := ""
+	var res strings.Builder
 	for _, c := range heading {
 		if unicode.IsSpace(c) || unicode.IsPunct(c) || unicode.IsSymbol(c) {
-			res += "-"
+			res.WriteString("-")
 			continue
 		}
 		if c <= unicode.MaxASCII {
-			res += string(unicode.ToLower(c))
+			res.WriteString(string(unicode.ToLower(c)))
 		}
 	}
-	return strings.TrimRight(res, "-")
+	return strings.TrimRight(res.String(), "-")
 }
