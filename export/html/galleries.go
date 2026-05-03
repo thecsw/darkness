@@ -82,9 +82,9 @@ func makeFlexItem(conf *alpha.DarknessConfig, item rem.GalleryItem, width uint) 
 		// Path to the image (either external, local, or vendored).
 		processGalleryItem(conf, item),
 		// The text to show on the image hover.
-		item.Description,
-		// The alt descriptino of the image.
-		item.Text,
+		processTitle(item.Description), // using processTitle for lighter markup
+		// The alt description of the image.
+		processTitle(item.Text), // using processTitle for lighter markup
 	)
 }
 

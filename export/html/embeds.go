@@ -150,7 +150,8 @@ func (e *state) link(content *yunyun.Content) string {
 		)
 	default:
 		yunyun.AddFlag(&content.Options, linkWasNotSpecialFlag)
-		return fmt.Sprintf(`<a href="%s" title="%s">%s</a>`,
+		return fmt.Sprintf(`<div %s><a href="%s" title="%s">%s</a></div>`,
+			content.CustomHtmlTags,
 			cleanLink,
 			yunyun.RemoveFormatting(content.LinkDescription),
 			processText(content.LinkTitle),
