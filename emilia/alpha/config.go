@@ -171,18 +171,7 @@ func isUnset[T comparable](what T) bool {
 	return what == gana.ZeroValue[T]()
 }
 
-// isSet returns true if the passed value is not a zero value of its type.
-func isSet[T comparable](what T) bool {
-	return what != gana.ZeroValue[T]()
-}
-
 // allAreSet will return true iff all the values given are not default.
 func allAreSet[T comparable](whats ...T) bool {
 	return !slices.ContainsFunc(whats, isUnset)
-}
-
-// trimExt trims extension of a file (only top level, so `file.min.js`
-// will be `file.min`)
-func trimExt(s string) string {
-	return strings.TrimSuffix(s, filepath.Ext(s))
 }

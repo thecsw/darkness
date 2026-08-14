@@ -879,8 +879,6 @@ func TestParsingLinks(t *testing.T) {
 	parser := ParserOrgmode{Config: config}
 
 	yunyun.ActiveMarkings.BuildRegex()
-	linkRegexp = yunyun.LinkRegexp
-
 	input := `[[https://example.com][Example Website]]
 
 [[https://example.org]]

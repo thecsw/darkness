@@ -21,8 +21,6 @@ type state struct {
 	contentFunctions []func(*yunyun.Content) string
 	// currentContentIndex is the index of the content that exporter is currently working on.
 	currentContentIndex int
-	// currentDiv is used as a state variable for internal processing.
-	currentDiv divType
 	// inHeading is used as a state variable for internal processing.
 	inHeading bool
 	// inWriting is used as a state variable for internal processing.

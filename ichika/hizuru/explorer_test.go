@@ -10,11 +10,7 @@ import (
 
 	"github.com/charmbracelet/log"
 	"github.com/thecsw/darkness/v3/emilia/alpha"
-	"github.com/thecsw/darkness/v3/yunyun"
 )
-
-// Explicitly use the yunyun package to satisfy the import requirements
-var testPathFile yunyun.FullPathFile = yunyun.FullPathFile("/tmp/test.md")
 
 func setupTestEnvironment(t *testing.T) (string, *alpha.DarknessConfig) {
 	// Create a temporary directory for testing

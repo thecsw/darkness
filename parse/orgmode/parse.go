@@ -115,7 +115,6 @@ func (p ParserOrgmode) Do(
 
 	// Yunyun's markings default to orgmode
 	yunyun.ActiveMarkings.BuildRegex()
-	linkRegexp = yunyun.LinkRegexp
 
 	// Loop through the lines
 	for rawLine := range lines {

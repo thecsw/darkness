@@ -8,10 +8,6 @@ import (
 )
 
 const (
-	katexLocalCSS        yunyun.RelativePathFile = `scripts/katex/katex.min.css`
-	katexLocalJS         yunyun.RelativePathFile = `scripts/katex/katex.min.js`
-	katexLocalAutoRender yunyun.RelativePathFile = `scripts/katex/auto-render.min.js`
-
 	katexJs = `
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css" integrity="sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB" crossorigin="anonymous">
 <!-- The loading of KaTeX is deferred to speed up page rendering -->

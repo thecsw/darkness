@@ -126,8 +126,6 @@ func TestAttentionBlockDetection(t *testing.T) {
 func TestLinkDetection(t *testing.T) {
 	// Setup link regexp
 	yunyun.ActiveMarkings.BuildRegex()
-	linkRegexp = yunyun.LinkRegexp
-
 	tests := []struct {
 		input        string
 		shouldBeLink bool
@@ -245,8 +243,6 @@ func TestComplexDocument(t *testing.T) {
 
 	// Setup link regexp
 	yunyun.ActiveMarkings.BuildRegex()
-	linkRegexp = yunyun.LinkRegexp
-
 	// Note that we're using title as the first heading instead of as #+title
 	input := `* Complete Test Document
 
@@ -494,8 +490,6 @@ func TestFormParagraph(t *testing.T) {
 func TestInvalidLinkDetection(t *testing.T) {
 	// Setup link regexp
 	yunyun.ActiveMarkings.BuildRegex()
-	linkRegexp = yunyun.LinkRegexp
-
 	tests := []string{
 		"[[malformed link",
 		"[[]]",

@@ -27,6 +27,20 @@ jobs:
       - name: Run go vet
         run: go vet ./...
 
+      - name: Check formatting
+        run: |
+          if [ -n "$(gofmt -l .)" ]; then
+            echo "The following files are not gofmt-compliant:"
+            gofmt -l .
+            exit 1
+          fi
+
+      - name: Install staticcheck
+        run: go install honnef.co/go/tools/cmd/staticcheck@v0.7.0
+
+      - name: Run staticcheck
+        run: staticcheck ./...
+
   test:
     name: Test
     runs-on: ubuntu-latest

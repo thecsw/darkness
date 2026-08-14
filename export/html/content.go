@@ -18,9 +18,6 @@ const (
 	thisContentOpensWritingFlag
 	// ThisContentClosesWriting shows that we have to close the `.writing` tag.
 	thisContentClosesWritingFlag
-	// ThisContentClosesDivSection shows that we have to close the previously
-	// opened `.sectionbody`
-	thisContentClosesDivSectionFlag
 )
 
 // setContentFlags sets the content flags.
