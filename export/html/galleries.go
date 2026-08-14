@@ -92,13 +92,20 @@ func makeFlexItemContent(conf *alpha.DarknessConfig, item rem.GalleryItem, verti
 	return fmt.Sprintf(`<a%s class="gallery-item"%s>
 <img class="item lazyload %s" src="%s" data-src="%s" title="%s" alt="%s"%s>
 </a>`,
+		// Optionally link the gallery image to something.
 		hrefGalleryTagIfLinkGiven(item),
+		// Override the style for flexing.
 		style,
+		// Additionally-enabled options, like no-zoom.
 		resolveCustomFlexItemClasses(item.OriginalLine),
+		// Path to the gallery image's preview.
 		rem.GalleryPreview(conf, item),
+		// Path to the image (either external, local, or vendored).
 		processGalleryItem(conf, item),
+		// The text to show on the image hover.
 		processTitle(item.Description),
-		processTitle(item.Text),
+		// The alt description of the image.
+		processTitle(item.Text), // using processTitle for lighter markup
 		imageStyle,
 	)
 }
