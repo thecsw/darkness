@@ -81,23 +81,23 @@ func resolveCustomFlexItemClasses(wholeLine string) string {
 }
 
 // makeFlexItemContent renders a gallery image without its horizontal layout
-// wrapper. Vertical gallery columns use this to make each image a row.
+// wrapper. Vertical gallery columns add semantic classes for the stylesheet.
 func makeFlexItemContent(conf *alpha.DarknessConfig, item rem.GalleryItem, vertical bool) string {
-	style := ""
-	imageStyle := ""
+	galleryItemClass := "gallery-item"
+	imageClasses := ""
 	if vertical {
-		style = ` style="display: block; height: 100%;"`
-		imageStyle = ` style="object-fit: contain;"`
+		galleryItemClass += " gallery-row-link"
+		imageClasses += " gallery-row-image"
 	}
-	return fmt.Sprintf(`<a%s class="gallery-item"%s>
-<img class="item lazyload %s" src="%s" data-src="%s" title="%s" alt="%s"%s>
+	imageClasses += resolveCustomFlexItemClasses(item.OriginalLine)
+	return fmt.Sprintf(`<a%s class="%s">
+<img class="item lazyload%s" src="%s" data-src="%s" title="%s" alt="%s">
 </a>`,
 		// Optionally link the gallery image to something.
 		hrefGalleryTagIfLinkGiven(item),
-		// Override the style for flexing.
-		style,
+		galleryItemClass,
 		// Additionally-enabled options, like no-zoom.
-		resolveCustomFlexItemClasses(item.OriginalLine),
+		imageClasses,
 		// Path to the gallery image's preview.
 		rem.GalleryPreview(conf, item),
 		// Path to the image (either external, local, or vendored).
@@ -106,7 +106,6 @@ func makeFlexItemContent(conf *alpha.DarknessConfig, item rem.GalleryItem, verti
 		processTitle(item.Description),
 		// The alt description of the image.
 		processTitle(item.Text), // using processTitle for lighter markup
-		imageStyle,
 	)
 }
 
@@ -187,14 +186,14 @@ func galleryColumnWidth(item rem.GalleryItem, defaultWidth uint) uint {
 func makeVerticalFlexColumn(conf *alpha.DarknessConfig, column galleryColumn) string {
 	rows := make([]string, 0, len(column.items))
 	for _, row := range column.items {
-		rows = append(rows, fmt.Sprintf(`<div class="v-flex ease-transition" style="flex: 0 1 %s%%; min-height: 0;">
+		rows = append(rows, fmt.Sprintf(`<div class="v-flex gallery-row ease-transition" style="--v-flex: %s%%;">
 %s
 </div>`,
 			strconv.FormatFloat(row.verticalShare, 'f', -1, 64),
 			makeFlexItemContent(conf, row.item, true),
 		))
 	}
-	return fmt.Sprintf(`<div class="flex-%d gallery-column" style="display: flex; flex-direction: column; justify-content: space-between; gap: var(--gallery-gap); align-self: stretch;">
+	return fmt.Sprintf(`<div class="flex-%d gallery-column">
 %s
 </div>`, column.width, strings.Join(rows, "\n"))
 }

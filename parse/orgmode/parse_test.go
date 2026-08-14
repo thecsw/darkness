@@ -36,7 +36,7 @@ func TestParsingTitle(t *testing.T) {
 	if page.Title != "Title" {
 		t.Errorf("Expected title to be 'Title', got '%s'", page.Title)
 	}
-	
+
 	// No content should be added to the page when we just have a title
 	if len(page.Contents) != 0 {
 		t.Errorf("Expected no content elements, got %d", len(page.Contents))
@@ -145,9 +145,9 @@ Section 2 second paragraph.`
 	}
 
 	expected := []struct {
-		isHeading  bool
-		text       string
-		level      uint32
+		isHeading bool
+		text      string
+		level     uint32
 	}{
 		{false, "This is a paragraph below the title.", 0},
 		{true, "Section 1", 2},
@@ -461,22 +461,22 @@ Paragraph after source code.`
 	page := parser.Do("test.org", input)
 
 	expected := []struct {
-		isSourceCode     bool
-		paragraph        string
-		sourceCode       string
-		sourceCodeLang   string
+		isSourceCode   bool
+		paragraph      string
+		sourceCode     string
+		sourceCodeLang string
 	}{
 		{
-			isSourceCode:     true,
-			paragraph:        "",
-			sourceCode:       "func main() {\n\tfmt.Println(\"Hello, World!\")\n}",
-			sourceCodeLang:   "go",
+			isSourceCode:   true,
+			paragraph:      "",
+			sourceCode:     "func main() {\n\tfmt.Println(\"Hello, World!\")\n}",
+			sourceCodeLang: "go",
 		},
 		{
-			isSourceCode:     false,
-			paragraph:        "Paragraph after source code.",
-			sourceCode:       "",
-			sourceCodeLang:   "",
+			isSourceCode:   false,
+			paragraph:      "Paragraph after source code.",
+			sourceCode:     "",
+			sourceCodeLang: "",
 		},
 	}
 
@@ -523,19 +523,19 @@ Paragraph after HTML.`
 	page := parser.Do("test.org", input)
 
 	expected := []struct {
-		isRawHtml  bool
-		paragraph  string
-		rawHtml    string
+		isRawHtml bool
+		paragraph string
+		rawHtml   string
 	}{
 		{
-			isRawHtml:  true,
-			paragraph:  "",
-			rawHtml:    "<div class=\"custom\">\n  <p>Custom HTML</p>\n</div>\n",
+			isRawHtml: true,
+			paragraph: "",
+			rawHtml:   "<div class=\"custom\">\n  <p>Custom HTML</p>\n</div>\n",
 		},
 		{
-			isRawHtml:  false,
-			paragraph:  "Paragraph after HTML.",
-			rawHtml:    "",
+			isRawHtml: false,
+			paragraph: "Paragraph after HTML.",
+			rawHtml:   "",
 		},
 	}
 
@@ -1302,7 +1302,7 @@ Paragraph 2.`,
 			},
 		},
 		{
-			name:  "Document with only whitespace",
+			name: "Document with only whitespace",
 			input: `   
    
   `,
@@ -1313,7 +1313,7 @@ Paragraph 2.`,
 			},
 		},
 		{
-			name:  "Document with only comments",
+			name: "Document with only comments",
 			input: `# Comment 1
 # Comment 2
 # Comment 3`,

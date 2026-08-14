@@ -71,17 +71,17 @@ func ExtractGitBranch(conf *DarknessConfig) (string, error) {
 func isPathSafe(path string) bool {
 	// Clean the path to resolve any . or .. components
 	cleanPath := filepath.Clean(path)
-	
+
 	// Don't allow absolute paths
 	if filepath.IsAbs(cleanPath) {
 		return false
 	}
-	
+
 	// Don't allow paths that try to traverse up directories
 	if strings.Contains(cleanPath, "../") {
 		return false
 	}
-	
+
 	// Ensure it doesn't have any suspicious characters
 	// Only allow alphanumeric, '_', '-', '/', '.', and space
 	safePattern := regexp.MustCompile(`^[a-zA-Z0-9_\-/\. ]+$`)
@@ -91,12 +91,12 @@ func isPathSafe(path string) bool {
 // ExtractGitLastModified will give the git date of when the file was last modified.
 func ExtractGitLastModified(conf *DarknessConfig, path yunyun.RelativePathFile) (time.Time, error) {
 	pathStr := string(path)
-	
+
 	// Validate the path before using it in exec.Command
 	if !isPathSafe(pathStr) {
 		return time.Time{}, fmt.Errorf("invalid path provided: %s", path)
 	}
-	
+
 	cmd := exec.Command("git", "log", "--date", rfc3339GitFormat, "-1", "--pretty="+gitPretty, "--", pathStr) // #nosec G204 - pathStr validated by isPathSafe
 	cmd.Dir = string(conf.Runtime.WorkDir)
 
