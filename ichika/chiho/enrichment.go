@@ -20,7 +20,7 @@ func EnrichPage(conf *alpha.DarknessConfig, page *yunyun.Page) *yunyun.Page {
 		narumi.WithResolvedComments(),
 		narumi.WithEnrichedHeadings(),
 		narumi.WithFootnotes(),
-		narumi.WithMathSupport(),
+		narumi.WithMathSupport(conf),
 		narumi.WithSourceCodeTrimmedLeftWhitespace(),
 		narumi.WithSyntaxHighlighting(conf),
 		narumi.WithLazyGalleries(conf),

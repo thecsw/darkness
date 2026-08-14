@@ -142,7 +142,7 @@ func (e *state) buildContent() string {
 
 func (e *state) combineAndFilterHtmlHead() string {
 	// Build the array of all head elements (except page's specific head options).
-	allHead := [][]string{e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags()}
+	allHead := [][]string{e.resourceHints(), e.linkTags(), e.metaTags(), e.styleTags(), e.scriptTags()}
 
 	// Go through all the head elements and filter them out depending on page's specific exclusion rules.
 	var finalHead strings.Builder
@@ -270,7 +270,7 @@ func (e *state) authorImage() string {
 	if e.conf.Author.Image == "" || e.page.Accoutrement.AuthorImage.IsDisabled() {
 		return ""
 	}
-	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar">`, e.conf.Author.ImagePreComputed)
+	return fmt.Sprintf(`<img id="myface" src="%s" alt="avatar" fetchpriority="high">`, e.conf.Author.ImagePreComputed)
 }
 
 // addTomb adds the tomb to the last paragraph.

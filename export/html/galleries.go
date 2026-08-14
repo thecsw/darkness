@@ -85,17 +85,26 @@ func resolveCustomFlexItemClasses(wholeLine string) string {
 func makeFlexItemContent(conf *alpha.DarknessConfig, item rem.GalleryItem, vertical bool) string {
 	galleryItemClass := "gallery-item"
 	imageClasses := ""
+	// The preview is also set as the anchor's background so it stays visible
+	// while lazysizes swaps the img's src (the browser blanks the img during
+	// the full image download).
+	backgroundSize := "cover"
 	if vertical {
 		galleryItemClass += " gallery-row-link"
 		imageClasses += " gallery-row-image"
+		backgroundSize = "contain"
 	}
 	imageClasses += resolveCustomFlexItemClasses(item.OriginalLine)
-	return fmt.Sprintf(`<a%s class="%s">
+	return fmt.Sprintf(`<a%s class="%s" style="background-image: url('%s'); background-size: %s;">
 <img class="item lazyload%s" src="%s" data-src="%s" title="%s" alt="%s">
 </a>`,
 		// Optionally link the gallery image to something.
 		hrefGalleryTagIfLinkGiven(item),
 		galleryItemClass,
+		// Path to the gallery image's preview (underlay during the swap).
+		rem.GalleryPreview(conf, item),
+		// cover/contain to match how the full image is displayed.
+		backgroundSize,
 		// Additionally-enabled options, like no-zoom.
 		imageClasses,
 		// Path to the gallery image's preview.

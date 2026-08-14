@@ -1,21 +1,25 @@
 package narumi
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/thecsw/darkness/v3/emilia/alpha"
 	"github.com/thecsw/darkness/v3/yunyun"
 	"github.com/thecsw/gana"
 )
 
 const (
-	katexJs = `
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.css" integrity="sha384-KiWOvVjnN8qwAZbuQyWDIbfCLFhLXNETzBQjA/92pIowpC0d2O3nppDGQVgwd2nB" crossorigin="anonymous">
-<!-- The loading of KaTeX is deferred to speed up page rendering -->
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/katex.min.js" integrity="sha384-0fdwu/T/EQMsQlrHCCHoH10pkPLlKA1jL5dFyUOvB3lfeT2540/2g6YgSi2BL14p" crossorigin="anonymous"></script>
-<!-- To automatically render math in text elements, include the auto-render extension: -->
-<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.3/dist/contrib/auto-render.min.js" integrity="sha384-+XBljXPPiv+OzfbB3cVmLHf4hdUFHlWNZN5spNQ7rmHTXpd7WvJum6fIACpNNfIR" crossorigin="anonymous"
-        onload="renderMathInElement(document.body);"></script>
-<script>
+	// katexLocalCSS is the path to the locally-hosted KaTeX stylesheet.
+	katexLocalCSS yunyun.RelativePathFile = `scripts/katex/katex.min.css`
+	// katexLocalJS is the path to the locally-hosted KaTeX main script.
+	katexLocalJS yunyun.RelativePathFile = `scripts/katex/katex.min.js`
+	// katexLocalAutoRender is the path to the locally-hosted KaTeX auto-render script.
+	katexLocalAutoRender yunyun.RelativePathFile = `scripts/katex/auto-render.min.js`
+
+	// katexRenderConfig configures KaTeX's auto-render extension with the
+	// delimiters that Darkness recognizes.
+	katexRenderConfig = `<script>
     document.addEventListener("DOMContentLoaded", function() {
         renderMathInElement(document.body, {
           // customised options
@@ -39,21 +43,25 @@ const (
           throwOnError : false
         });
     });
-</script>
-`
-
-	mathJs = katexJs
+</script>`
 )
 
-// WithMathSupport adds math support to the page using javascript injection
-func WithMathSupport() yunyun.PageOption {
+// WithMathSupport adds math support to the page using locally-hosted KaTeX
+// assets and javascript injection.
+func WithMathSupport(conf *alpha.DarknessConfig) yunyun.PageOption {
 	return func(page *yunyun.Page) {
 		if page == nil || page.Contents == nil || page.Accoutrement == nil {
 			return
 		}
 		// If we found math-related tags or forced by user
 		if hasMathEquations(page) && !page.Accoutrement.Math.IsDisabled() {
-			page.Scripts = append(page.Scripts, mathJs)
+			page.Stylesheets = append(page.Stylesheets, fmt.Sprintf(
+				`<link rel="stylesheet" href="%s">`, conf.Runtime.Join(katexLocalCSS)))
+			page.Scripts = append(page.Scripts,
+				fmt.Sprintf(`<script defer src="%s"></script>`, conf.Runtime.Join(katexLocalJS)),
+				fmt.Sprintf(`<script defer src="%s"></script>`, conf.Runtime.Join(katexLocalAutoRender)),
+				katexRenderConfig,
+			)
 		}
 	}
 }
