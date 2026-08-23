@@ -100,7 +100,7 @@ func addBasic(conf *alpha.DarknessConfig, page *yunyun.Page, description string)
 // addOpenGraph adds the opengraph preview meta tags
 func addOpenGraph(conf *alpha.DarknessConfig, page *yunyun.Page, description string) []string {
 	return gana.Map(metaTag, []meta{
-		{"og:title", "og:title", html.EscapeString(flattenFormatting(page.Title))},
+		{"og:title", "og:title", plainTitle(page.Title)},
 		{"og:site_name", "og:site_name", html.EscapeString(conf.Title)},
 		{"og:url", "og:url", string(conf.Runtime.Join(yunyun.RelativePathFile(page.Location)))},
 		{"og:locale", "og:locale", conf.Website.Locale},
@@ -124,7 +124,7 @@ func addTwitterMeta(conf *alpha.DarknessConfig, page *yunyun.Page, description s
 		{"twitter:image:src", "twitter:image:src",
 			string(conf.Runtime.Join(yunyun.JoinRelativePaths(page.Location, yunyun.RelativePathFile(page.Accoutrement.Preview))))},
 		{"twitter:url", "twitter:url", string(conf.Runtime.Join(yunyun.RelativePathFile(page.Location)))},
-		{"twitter:title", "twitter:title", html.EscapeString(flattenFormatting(page.Title))},
+		{"twitter:title", "twitter:title", plainTitle(page.Title)},
 		{"twitter:description", "twitter:description", html.EscapeString(description)},
 	})
 }

@@ -3,6 +3,7 @@ package html
 import (
 	_ "embed"
 	"fmt"
+	stdhtml "html"
 	"io"
 	"path/filepath"
 	"regexp"
@@ -118,7 +119,7 @@ func (e *state) export() io.Reader {
 </html>`,
 		darknessBanner,
 		e.combineAndFilterHtmlHead(),
-		processTitle(flattenFormatting(e.page.Title)),
+		stdhtml.EscapeString(plainTitle(e.page.Title)),
 		e.authorHeader(),
 		strings.Join(content, ""),
 		e.addFootnotes(),

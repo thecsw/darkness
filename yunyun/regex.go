@@ -131,6 +131,15 @@ func ExtractLink(line string) *ExtractedLink {
 }
 
 var (
+	// mathDelimiterRegexp finds the math delimiters that Darkness emits or
+	// accepts, allowing math to be represented as readable text in metadata,
+	// RSS, and other non-rendering contexts.
+	mathDelimiterRegexp = regexp.MustCompile(`(?s)(\$\$|\$|\\\(|\\\[)(.*?)(\$\$|\$|\\\)|\\\])`)
+	mathSqrtRegexp      = regexp.MustCompile(`\\sqrt(?:\[[^\]]*\])?\{([^{}]*)\}`)
+	mathFracRegexp      = regexp.MustCompile(`\\frac\{([^{}]*)\}\{([^{}]*)\}`)
+	mathCommandRegexp   = regexp.MustCompile(`\\(?:mathbf|mathbb|mathcal|mathfrak|mathrm|mathsf|mathtt|text|operatorname)[[:space:]]*`)
+	mathSpacingRegexp   = regexp.MustCompile(`\\(?:,|;|:|!|quad|qquad|enspace|[[:space:]])`)
+
 	// LinkRegexp is the regexp for matching links.
 	LinkRegexp *regexp.Regexp
 	// UrlRegexp is yoinked from https://ihateregex.io/expr/url/
@@ -193,6 +202,22 @@ func RemoveFormatting(what string) string {
 	// don't even show the footnotes
 	what = FootnoteRegexp.ReplaceAllString(what, ` `)
 	return strings.TrimSpace(what)
+}
+
+// PlainText returns readable text for output contexts that cannot render
+// markup or KaTeX, such as RSS, metadata, and browser titles.
+func PlainText(what string) string {
+	if LinkRegexp == nil {
+		ActiveMarkings.BuildRegex()
+	}
+	what = RemoveFormatting(FancyText(what))
+	what = mathDelimiterRegexp.ReplaceAllString(what, "$2")
+	what = mathSqrtRegexp.ReplaceAllString(what, "√$1")
+	what = mathFracRegexp.ReplaceAllString(what, "$1/$2")
+	what = mathCommandRegexp.ReplaceAllString(what, "")
+	what = mathSpacingRegexp.ReplaceAllString(what, " ")
+	what = strings.NewReplacer("{", "", "}", "", "$", "").Replace(what)
+	return strings.Join(strings.Fields(what), " ")
 }
 
 const (

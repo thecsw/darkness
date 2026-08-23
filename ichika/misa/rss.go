@@ -65,9 +65,9 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 				continue
 			}
 			// Create the category name and location.
-			categoryName, categoryLocation := page.Title, page.Location
+			categoryName, categoryLocation := yunyun.PlainText(page.Title), page.Location
 			if categoryPage := getCategory(page, allPages); categoryPage != nil {
-				categoryName = categoryPage.Title
+				categoryName = yunyun.PlainText(categoryPage.Title)
 				categoryLocation = categoryPage.Location
 			}
 
@@ -103,7 +103,7 @@ func GenerateRssFeed(conf *alpha.DarknessConfig, rssFilename string, rssDirector
 			// Create the RSS item.
 			items = append(items, rss.Item{
 				XMLName: xml.Name{},
-				Title:   yunyun.RemoveFormatting(yunyun.FancyText(finalTitle)),
+				Title:   yunyun.PlainText(finalTitle),
 				Link:    string(conf.Runtime.JoinDir(page.Location)),
 				Description: yunyun.FancyText(getDescription(page, conf.Website.DescriptionLength*4)) +
 					" [ Continue reading... ]",

@@ -55,6 +55,12 @@ func processTitle(title string) string {
 	return yunyun.MathRegexp.ReplaceAllString(markupHtml(yunyun.FancyText(title)), `$l\($text\)$r`)
 }
 
+// plainTitle returns a readable representation of a title for contexts that
+// cannot render KaTeX, such as the browser tab title and social metadata.
+func plainTitle(title string) string {
+	return yunyun.PlainText(title)
+}
+
 // flattenFormatting returns a plain-text to be fit into the description
 func flattenFormatting(what string) string {
 	return yunyun.RemoveFormatting(yunyun.FancyText(what))
