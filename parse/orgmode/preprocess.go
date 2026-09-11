@@ -45,6 +45,11 @@ var (
 		optionBeginGallery: {}, optionEndGallery: {},
 	}
 
+	builtinMacrosTable = map[string]string{
+		"spotify_embed": "[[embed:$1]]",
+		"youtube_embed": "[[embed:$1]]",
+	}
+
 	globalMacrosTable = map[string]string{}
 
 	expandedFiles = sync.Map{}
@@ -67,6 +72,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 
 	// Here we will store the macro definitions.
 	macrosLookupTable := make(map[string]string)
+	maps.Copy(macrosLookupTable, builtinMacrosTable)
 	maps.Copy(macrosLookupTable, globalMacrosTable)
 
 	// We add a newline before lists start

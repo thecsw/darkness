@@ -103,6 +103,11 @@ type WebsiteConfig struct {
 	// ClickableImages marks whether the images should href to the img link.
 	ClickableImages bool `toml:"clickable_images"`
 
+	// EmbedMode controls how supported third-party media links are rendered.
+	// The default, "iframe", preserves the remote player; "card" emits a
+	// first-party static link card without loading provider resources.
+	EmbedMode string `toml:"embed_mode"`
+
 	// FootnoteBrackets decides whether to use brackets on footnotes
 	FootnoteBrackets bool `toml:"footnote_brackets"`
 

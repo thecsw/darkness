@@ -537,3 +537,34 @@ func TestParsingMalformedInput(t *testing.T) {
 		})
 	}
 }
+
+func TestEmbedMacroProducesManifestLink(t *testing.T) {
+	parser := ParserOrgmode{Config: &alpha.DarknessConfig{}}
+	page := parser.Do("music/index.org", `* Music
+{{{spotify_embed(running.toml)}}}`)
+
+	if len(page.Contents) != 1 || !page.Contents[0].IsLink() {
+		t.Fatalf("expected one manifest link, got %#v", page.Contents)
+	}
+	if got := page.Contents[0].Link; got != "embed:running.toml" {
+		t.Errorf("embed macro link = %q, want %q", got, "embed:running.toml")
+	}
+}
+
+func TestCaptionAppliesOnlyToNextContent(t *testing.T) {
+	parser := ParserOrgmode{Config: &alpha.DarknessConfig{}}
+	page := parser.Do("test.org", `#+caption: an authored note
+[[https://example.com/one][First link]]
+
+[[https://example.com/two][Second link]]`)
+
+	if len(page.Contents) != 2 {
+		t.Fatalf("got %d content elements, want 2", len(page.Contents))
+	}
+	if got := page.Contents[0].Caption; got != "an authored note" {
+		t.Errorf("first content caption = %q, want %q", got, "an authored note")
+	}
+	if got := page.Contents[1].Caption; got != "" {
+		t.Errorf("caption leaked to following content: %q", got)
+	}
+}

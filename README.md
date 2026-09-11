@@ -31,7 +31,8 @@ She supports all org mode (and markdown!) formatting,
 [native flex galleries](https://sandyuraz.com/plastic) 
 (with automatic blurry previews generations and lazy loading!), 
 [full math support](https://sandyuraz.com/blogs/diffeq),
-social embeds ([youtube](https://sandyuraz.com/blogs/best_web),
+social embeds and self-contained link cards
+([youtube](https://sandyuraz.com/blogs/best_web),
 [spotify](https://sandyuraz.com/blogs/wrapped-2/), etc.),
 [drop caps](https://sandyuraz.com/blogs/cameraman) 
 ([they look fancy](https://support.microsoft.com/en-us/office/insert-a-drop-cap-817fd19f-40fe-4b73-95e8-f3c0f5e01278)),

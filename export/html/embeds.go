@@ -2,6 +2,8 @@ package html
 
 import (
 	"fmt"
+	stdhtml "html"
+	"net/url"
 	"strings"
 
 	"github.com/thecsw/darkness/v3/emilia/alpha"
@@ -59,6 +61,9 @@ Sorry, your browser doesn't support embedded videos.
 %s
 </div>`
 
+	// embedReferencePrefix marks a local TOML snapshot link produced by a macro.
+	embedReferencePrefix = "embed:"
+
 	// youtubeEmbedPrefix is the prefix for youtube embeds.
 	youtubeEmbedPrefix = "https://youtu.be/"
 	// youtubeEmbedTemplate is the template for youtube embeds.
@@ -102,7 +107,102 @@ Sorry, your browser doesn't support embedded videos.
 <embed src="%s" type="application/pdf" />
 </div>
 </div>`
+
+	// staticEmbedCardTemplate is a self-contained representation of an external
+	// resource. It deliberately contains no remote images, scripts, or players.
+	staticEmbedCardTemplate = `
+<div class="media embed-card embed-card--%s" %s>
+<a class="embed-card__link" href="%s" target="_blank" rel="external noopener noreferrer">
+<span class="embed-card__sigil" aria-hidden="true">%s</span>
+<span class="embed-card__copy">
+<span class="embed-card__kind">%s</span>
+<strong class="embed-card__title">%s</strong>
+%s</span>
+<span class="embed-card__action">%s <span aria-hidden="true">↗</span></span>
+</a>
+</div>`
 )
+
+type embedCardKind struct {
+	class         string
+	sigil         string
+	label         string
+	action        string
+	fallbackTitle string
+}
+
+var (
+	youtubeCard = embedCardKind{
+		class: "video", sigil: "▷", label: "moving picture · youtube",
+		action: "watch", fallbackTitle: "YouTube video",
+	}
+	spotifyTrackCard = embedCardKind{
+		class: "track", sigil: "♫", label: "record · spotify",
+		action: "listen", fallbackTitle: "Spotify track",
+	}
+	spotifyPlaylistCard = embedCardKind{
+		class: "playlist", sigil: "≋", label: "mixtape · spotify",
+		action: "listen", fallbackTitle: "Spotify playlist",
+	}
+)
+
+func hasEmbedAttribute(attributes, attribute string) bool {
+	for _, candidate := range strings.Fields(attributes) {
+		if candidate == attribute {
+			return true
+		}
+	}
+	return false
+}
+
+func staticEmbedCardsEnabled(conf *alpha.DarknessConfig) bool {
+	return conf != nil && strings.EqualFold(strings.TrimSpace(conf.Website.EmbedMode), "card")
+}
+
+func shouldRenderStaticCard(conf *alpha.DarknessConfig, content *yunyun.Content) bool {
+	if hasEmbedAttribute(content.Attributes, "embed-remote") {
+		return false
+	}
+	return staticEmbedCardsEnabled(conf) || hasEmbedAttribute(content.Attributes, "embed-card")
+}
+
+func isWebLink(link string) bool {
+	parsed, err := url.Parse(link)
+	return err == nil && (parsed.Scheme == "http" || parsed.Scheme == "https") && parsed.Hostname() != ""
+}
+
+func genericEmbedCardKind(link string) embedCardKind {
+	parsed, _ := url.Parse(link)
+	host := strings.TrimPrefix(strings.ToLower(parsed.Hostname()), "www.")
+	return embedCardKind{
+		class: "link", sigil: "↗", label: host,
+		action: "visit", fallbackTitle: host,
+	}
+}
+
+func renderStaticEmbedCard(content *yunyun.Content, cleanLink string, kind embedCardKind) string {
+	title := strings.TrimSpace(content.LinkTitle)
+	if title == "" {
+		title = kind.fallbackTitle
+	}
+
+	description := ""
+	if caption := strings.TrimSpace(content.Caption); caption != "" {
+		description = fmt.Sprintf(`<span class="embed-card__description">%s</span>`+"\n",
+			stdhtml.EscapeString(yunyun.RemoveFormatting(caption)))
+	}
+
+	return fmt.Sprintf(staticEmbedCardTemplate,
+		kind.class,
+		content.CustomHtmlTags,
+		stdhtml.EscapeString(cleanLink),
+		kind.sigil,
+		stdhtml.EscapeString(kind.label),
+		processText(title),
+		description,
+		stdhtml.EscapeString(kind.action),
+	)
+}
 
 // link returns an html representation of a link even if it's an embed command
 func (e *state) link(content *yunyun.Content) string {
@@ -131,23 +231,37 @@ func (e *state) link(content *yunyun.Content) string {
 			content.CustomHtmlTags,
 			cleanLink,
 		)
+	case strings.HasPrefix(cleanLink, embedReferencePrefix):
+		return e.renderSnapshotReference(content,
+			strings.TrimPrefix(cleanLink, embedReferencePrefix))
 	case strings.HasPrefix(cleanLink, youtubeEmbedPrefix):
+		if shouldRenderStaticCard(e.conf, content) {
+			return renderStaticEmbedCard(content, cleanLink, youtubeCard)
+		}
 		// Youtube videos
 		return fmt.Sprintf(youtubeEmbedTemplate,
 			content.CustomHtmlTags,
 			gana.SkipString(uint(len(youtubeEmbedPrefix)), cleanLink),
 		)
 	case strings.HasPrefix(cleanLink, spotifyTrackEmbedPrefix):
+		if shouldRenderStaticCard(e.conf, content) {
+			return renderStaticEmbedCard(content, cleanLink, spotifyTrackCard)
+		}
 		// Spotify songs
 		return fmt.Sprintf(spotifyTrackEmbedTemplate,
 			content.CustomHtmlTags,
 			gana.SkipString(uint(len(spotifyTrackEmbedPrefix)), cleanLink),
 		)
 	case strings.HasPrefix(cleanLink, spotifyPlaylistEmbedPrefix):
+		if shouldRenderStaticCard(e.conf, content) {
+			return renderStaticEmbedCard(content, cleanLink, spotifyPlaylistCard)
+		}
 		return fmt.Sprintf(spotifyPlaylistEmbedTemplate,
 			content.CustomHtmlTags,
 			gana.SkipString(uint(len(spotifyPlaylistEmbedPrefix)), cleanLink),
 		)
+	case hasEmbedAttribute(content.Attributes, "embed-card") && isWebLink(cleanLink):
+		return renderStaticEmbedCard(content, cleanLink, genericEmbedCardKind(cleanLink))
 	default:
 		yunyun.AddFlag(&content.Options, linkWasNotSpecialFlag)
 		return fmt.Sprintf(`<div %s><a href="%s" title="%s">%s</a></div>`,

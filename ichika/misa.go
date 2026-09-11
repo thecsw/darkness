@@ -19,6 +19,7 @@ func MisaCommandFunc() {
 	buildGalleryPreviews := misaCmd.Bool("gallery-previews", false, "build gallery previews")
 	removeGalleryPreviews := misaCmd.Bool("no-gallery-previews", false, "delete gallery previews")
 	addHolosceneTitles := misaCmd.Bool("holoscene-titles", false, "add holoscene titles")
+	vendorEmbeds := misaCmd.Bool("vendor-embeds", false, "vendor and refresh provider links beside their Org pages")
 	rss := misaCmd.String("rss", "", "generate an rss file")
 	rssDirectories := misaCmd.String("rss-dirs", "", "look up specific dirs")
 
@@ -46,6 +47,10 @@ func MisaCommandFunc() {
 	}
 	if *addHolosceneTitles {
 		misa.UpdateHoloceneTitles(conf, *dryRun)
+		os.Exit(0)
+	}
+	if *vendorEmbeds {
+		misa.VendorEmbeds(conf, *dryRun)
 		os.Exit(0)
 	}
 	if len(*rss) > 0 {

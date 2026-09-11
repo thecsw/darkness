@@ -74,6 +74,7 @@ func (p ParserOrgmode) Do(
 		galleryWidth = defaultGalleryImagesPerRow
 		additionalContext = ""
 		attributes = ""
+		caption = ""
 		customHtmlTags = ""
 	}
 	optionsActions := map[string]func(line string){

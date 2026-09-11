@@ -19,6 +19,9 @@ func (e *state) resourceHints() []string {
 		if !c.IsLink() {
 			continue
 		}
+		if shouldRenderStaticCard(e.conf, c) {
+			continue
+		}
 		link := strings.TrimSpace(c.Link)
 		usesYouTube = usesYouTube || strings.HasPrefix(link, youtubeEmbedPrefix)
 		usesSpotify = usesSpotify ||
