@@ -24,22 +24,23 @@ jobs:
       - name: Verify Go version
         run: go version
 
-      - name: Run go vet
-        run: go vet ./...
+      - name: Install golangci-lint
+        run: go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2
 
-      - name: Check formatting
-        run: |
-          if [ -n "$(gofmt -l .)" ]; then
-            echo "The following files are not gofmt-compliant:"
-            gofmt -l .
-            exit 1
-          fi
+      - name: Run golangci-lint
+        run: golangci-lint run --max-same-issues=0 ./...
 
-      - name: Install staticcheck
-        run: go install honnef.co/go/tools/cmd/staticcheck@v0.7.0
+      - name: Install nilaway
+        run: go install go.uber.org/nilaway/cmd/nilaway@latest
 
-      - name: Run staticcheck
-        run: staticcheck ./...
+      - name: Run nilaway
+        run: nilaway ./...
+
+      - name: Install govulncheck
+        run: go install golang.org/x/vuln/cmd/govulncheck@v1.8.0
+
+      - name: Run govulncheck
+        run: govulncheck ./...
 
   test:
     name: Test

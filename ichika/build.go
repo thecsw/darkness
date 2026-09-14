@@ -57,7 +57,7 @@ func build(conf *alpha.DarknessConfig) {
 		Debug:    kuroko.DebugEnabled,
 	})
 
-	// Create a pool that that takes yunyun pages and exports them into request format.
+	// Create a pool that takes yunyun pages and exports them into request format.
 	exporterPool := komi.NewWithSettings(komi.Work(makima.Woof.Export), &komi.Settings{
 		Name:     "Komi Exporting 🥂 ",
 		Laborers: kuroko.CustomNumWorkers,

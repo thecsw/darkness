@@ -17,7 +17,6 @@ func (p ParserOrgmode) Do(
 	filename yunyun.RelativePathFile,
 	data string,
 ) *yunyun.Page {
-
 	// Split the data into lines
 	lines := strings.SplitSeq(p.preprocess(filename, data), "\n")
 

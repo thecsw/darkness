@@ -107,6 +107,7 @@ func WriteFetchedPath(manifestPath string, fetched *FetchedSnapshot) error {
 	if len(fetched.Artwork) > 0 {
 		artworkName := artworkBase + fetched.ArtworkExtension
 		artworkPath := filepath.Join(filepath.Dir(manifestPath), artworkName)
+		// #nosec G301 - content directory must be world-readable for site serving
 		if err := os.MkdirAll(filepath.Dir(artworkPath), 0o755); err != nil {
 			return err
 		}
@@ -380,6 +381,7 @@ func imageExtension(contentType, sourceURL string) string {
 
 func writeAtomically(path string, data []byte) error {
 	temporary := path + ".tmp"
+	// #nosec G306 - content file must be world-readable for site serving
 	if err := os.WriteFile(temporary, data, 0o644); err != nil {
 		return err
 	}

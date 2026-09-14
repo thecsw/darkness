@@ -179,7 +179,7 @@ func (p PreviewGenerator) Generate(
 	// Push the image to a buffer and return it.
 	buf := new(bytes.Buffer)
 	if err := dc.EncodePNG(buf); err != nil {
-		return nil, fmt.Errorf("encoding png image to buffer: %v", err)
+		return nil, fmt.Errorf("encoding png image to buffer: %w", err)
 	}
 	return buf, nil
 }
@@ -193,11 +193,11 @@ func (p PreviewGenerator) calculateAvatarSize() int {
 func (p PreviewGenerator) Close() error {
 	if len(p.avatarReadableConverted) > 0 {
 		if err := os.Remove(p.avatarReadableConverted); err != nil {
-			return fmt.Errorf("removing readable avatar %s: %v", p.avatarReadableConverted, err)
+			return fmt.Errorf("removing readable avatar %s: %w", p.avatarReadableConverted, err)
 		}
 	}
 	if err := os.Remove(p.avatarProperlySizedFile); err != nil {
-		return fmt.Errorf("removing properly sized avatar %s: %v", p.avatarProperlySizedFile, err)
+		return fmt.Errorf("removing properly sized avatar %s: %w", p.avatarProperlySizedFile, err)
 	}
 	return nil
 }
@@ -206,17 +206,17 @@ func (p PreviewGenerator) Close() error {
 func SaveJpg(reader io.Reader, filename string) error {
 	im, _, err := image.Decode(reader)
 	if err != nil {
-		return fmt.Errorf("decoding image reader: %v", err)
+		return fmt.Errorf("decoding image reader: %w", err)
 	}
 	target, err := os.Create(filepath.Clean(filename))
 	if err != nil {
-		return fmt.Errorf("creating file %s: %v", filename, err)
+		return fmt.Errorf("creating file %s: %w", filename, err)
 	}
 	if err := imgio.JPEGEncoder(100)(target, im); err != nil {
-		return fmt.Errorf("encoding to jpeg: %v", err)
+		return fmt.Errorf("encoding to jpeg: %w", err)
 	}
 	if err := target.Close(); err != nil {
-		return fmt.Errorf("closing file %s: %v", filename, err)
+		return fmt.Errorf("closing file %s: %w", filename, err)
 	}
 	return nil
 }

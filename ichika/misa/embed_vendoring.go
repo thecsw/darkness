@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"unicode"
 
@@ -139,8 +140,8 @@ func rewriteEmbedLinks(source, pageLocation string, vendor vendorLinkFunc) (stri
 			}
 			continue
 		}
-		if strings.HasPrefix(lower, "#+attr_darkness:") {
-			attributes := strings.Fields(strings.TrimSpace(strings.TrimPrefix(lower, "#+attr_darkness:")))
+		if attr, ok := strings.CutPrefix(lower, "#+attr_darkness:"); ok {
+			attributes := strings.Fields(strings.TrimSpace(attr))
 			pendingSkip = pendingSkip || containsString(attributes, skipEmbedVendoringAttribute) ||
 				containsString(attributes, "embed-remote")
 			continue
@@ -291,12 +292,7 @@ func shortEmbedID(id string) string {
 }
 
 func containsString(values []string, target string) bool {
-	for _, value := range values {
-		if value == target {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(values, target)
 }
 
 func writeSourceAtomically(path string, data []byte) error {
@@ -305,6 +301,7 @@ func writeSourceAtomically(path string, data []byte) error {
 		return err
 	}
 	temporary := path + ".embed-vendor.tmp"
+	// #nosec G703 - path comes from a local content directory scan (FindFilesByExtSimple), not external input
 	if err := os.WriteFile(temporary, data, info.Mode().Perm()); err != nil {
 		return err
 	}

@@ -41,7 +41,7 @@ func FindFilesByExt(conf *alpha.DarknessConfig, inputFiles chan<- yunyun.FullPat
 			}
 			relPath, err := filepath.Rel(string(conf.Runtime.WorkDir), osPathname)
 			if err != nil {
-				return fmt.Errorf("finding relative path of %s to %s: %v", osPathname, conf.Runtime.WorkDir, err)
+				return fmt.Errorf("finding relative path of %s to %s: %w", osPathname, conf.Runtime.WorkDir, err)
 			}
 			if strings.Contains(filepath.Base(relPath), skipPrefix) {
 				return nil

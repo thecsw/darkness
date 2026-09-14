@@ -47,7 +47,7 @@ func (c *Control) Read() (Woof, error) {
 		RecordWithFile(misaka.RecordReadTime, c.InputFilename)
 	file, err := os.ReadFile(filepath.Clean(string(c.InputFilename)))
 	if err != nil {
-		return nil, fmt.Errorf("reading input file %s: %v", c.InputFilename, err)
+		return nil, fmt.Errorf("reading input file %s: %w", c.InputFilename, err)
 	}
 	c.Input = string(file)
 	return c, nil
@@ -66,7 +66,7 @@ func (c *Control) Parse() Woof {
 		var buf bytes.Buffer
 		enc := json.NewEncoder(&buf)
 		enc.SetIndent("", "\t")
-		err := enc.Encode(c.Page)
+		err := enc.Encode(c.Page) //nolint:musttag // debug output uses Go field names as-is
 		if err != nil {
 			puck.Logger.Warn("Failed to convert page to json", "page", c.InputFilename, "error", err)
 			return c
@@ -102,12 +102,13 @@ func (c *Control) Write() error {
 
 // writeNewFile is a makima utility to flush a reader into a new file.
 func writeNewFile(target string, from io.Reader) error {
+	// #nosec G304 - target is the user's own output path derived from the input filename
 	file, err := os.Create(target)
 	if err != nil {
-		return fmt.Errorf("creating output file %s: %v", target, err)
+		return fmt.Errorf("creating output file %s: %w", target, err)
 	}
 	if _, err := io.Copy(file, from); err != nil {
-		return fmt.Errorf("writing to output file %s: %v", target, err)
+		return fmt.Errorf("writing to output file %s: %w", target, err)
 	}
 	return nil
 }

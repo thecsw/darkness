@@ -1,6 +1,7 @@
 package alpha
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/url"
@@ -23,18 +24,16 @@ const (
 	rfc3339Pattern   = "2006-01-02T15:04:05Z-0700"
 )
 
-var (
-	sshRemoteRegexp = regexp.MustCompile(sshRemotePattern)
-)
+var sshRemoteRegexp = regexp.MustCompile(sshRemotePattern)
 
 // ExtractGitRemote gets the remote and path, like github.com and thecsw/repo.
 func ExtractGitRemote(conf *DarknessConfig) (string, string, error) {
-	cmd := exec.Command("git", "remote", "get-url", "origin")
+	cmd := exec.CommandContext(context.Background(), "git", "remote", "get-url", "origin")
 	cmd.Dir = string(conf.Runtime.WorkDir)
 
 	out, err := cmd.Output()
 	if err != nil {
-		return "", "", fmt.Errorf("getting git origin url: %v", err)
+		return "", "", fmt.Errorf("getting git origin url: %w", err)
 	}
 
 	outString := strings.TrimSuffix(strings.TrimSpace(string(out)), ".git")
@@ -56,12 +55,12 @@ func ExtractGitRemote(conf *DarknessConfig) (string, string, error) {
 
 // ExtractGitBranch extracts the current working git branch.
 func ExtractGitBranch(conf *DarknessConfig) (string, error) {
-	cmd := exec.Command("git", "branch", "--show-current")
+	cmd := exec.CommandContext(context.Background(), "git", "branch", "--show-current")
 	cmd.Dir = string(conf.Runtime.WorkDir)
 
 	out, err := cmd.Output()
 	if err != nil {
-		return "", fmt.Errorf("getting current git branch: %v", err)
+		return "", fmt.Errorf("getting current git branch: %w", err)
 	}
 	return strings.TrimSpace(string(out)), nil
 }
@@ -97,12 +96,12 @@ func ExtractGitLastModified(conf *DarknessConfig, path yunyun.RelativePathFile) 
 		return time.Time{}, fmt.Errorf("invalid path provided: %s", path)
 	}
 
-	cmd := exec.Command("git", "log", "--date", rfc3339GitFormat, "-1", "--pretty="+gitPretty, "--", pathStr) // #nosec G204 - pathStr validated by isPathSafe
+	cmd := exec.CommandContext(context.Background(), "git", "log", "--date", rfc3339GitFormat, "-1", "--pretty="+gitPretty, "--", pathStr) // #nosec G204 - pathStr validated by isPathSafe
 	cmd.Dir = string(conf.Runtime.WorkDir)
 
 	out, err := cmd.Output()
 	if err != nil {
-		return time.Time{}, fmt.Errorf("getting last modified for file %s: %v", path, err)
+		return time.Time{}, fmt.Errorf("getting last modified for file %s: %w", path, err)
 	}
 	return time.Parse(rfc3339Pattern, string(out))
 }

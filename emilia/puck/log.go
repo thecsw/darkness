@@ -62,7 +62,8 @@ func (s stopwatch) Record(loggers ...*l.Logger) time.Duration {
 func (s stopwatch) RecordWithFile(
 	fileTimeRecorder func(yunyun.FullPathFile, time.Duration),
 	key yunyun.FullPathFile,
-	loggers ...*l.Logger) time.Duration {
+	loggers ...*l.Logger,
+) time.Duration {
 	logger := Logger
 	if len(loggers) > 0 {
 		logger = loggers[0]
@@ -75,8 +76,8 @@ func (s stopwatch) RecordWithFile(
 
 // Stopwatch is a simple stopwatch that can be used to time operations.
 func Stopwatch(msg any, msgs ...any) interface {
-	Record(...*l.Logger) time.Duration
-	RecordWithFile(func(yunyun.FullPathFile, time.Duration), yunyun.FullPathFile, ...*l.Logger) time.Duration
+	Record(logger ...*l.Logger) time.Duration
+	RecordWithFile(record func(file yunyun.FullPathFile, elapsed time.Duration), file yunyun.FullPathFile, logger ...*l.Logger) time.Duration
 } {
 	s := stopwatch{
 		start: time.Now(),

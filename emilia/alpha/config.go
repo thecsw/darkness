@@ -57,6 +57,8 @@ func BuildConfig(options Options) *DarknessConfig {
 		conf.Url, err = os.Getwd()
 		if err != nil {
 			conf.Runtime.Logger.Error("Getting working directory, no config url found", "err", err)
+			// Record the stopwatch before exiting, since os.Exit skips defers.
+			puck.Stopwatch("Initialized options").Record(conf.Runtime.Logger)
 			os.Exit(1)
 		}
 	}

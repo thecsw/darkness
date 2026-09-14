@@ -221,6 +221,7 @@ func SaveReference(conf *alpha.DarknessConfig, pageLocation, reference string, s
 }
 
 func savePath(manifestPath string, snapshot *Snapshot) error {
+	// #nosec G301 - content directory must be world-readable for site serving
 	if err := os.MkdirAll(filepath.Dir(manifestPath), 0o755); err != nil {
 		return err
 	}
@@ -230,6 +231,7 @@ func savePath(manifestPath string, snapshot *Snapshot) error {
 		return err
 	}
 	temporary := manifestPath + ".tmp"
+	// #nosec G306 - content file must be world-readable for site serving
 	if err := os.WriteFile(temporary, data.Bytes(), 0o644); err != nil {
 		return err
 	}

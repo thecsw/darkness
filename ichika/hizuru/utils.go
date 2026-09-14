@@ -9,7 +9,7 @@ import (
 	"github.com/thecsw/gana/prelude"
 )
 
-// openFile attemps to open the full path and return tuple, empty tuple otherwise.
+// openFile attempts to open the full path and return tuple, empty tuple otherwise.
 func openFile(v yunyun.FullPathFile) prelude.Option[gana.Tuple[yunyun.FullPathFile, *os.File]] {
 	file, err := os.Open(filepath.Clean(string(v)))
 	if err != nil {

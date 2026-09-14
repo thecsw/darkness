@@ -1,6 +1,7 @@
 package ichika
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"os"
@@ -80,7 +81,7 @@ func ServeCommandFunc() {
 		// Validate URL before passing it to exec.Command
 		if isURLSafe(options.Url) {
 			// #nosec G204 - options.Url validated by isURLSafe function
-			if err := exec.Command("open", options.Url).Run(); err != nil {
+			if err := exec.CommandContext(context.Background(), "open", options.Url).Run(); err != nil {
 				puck.Logger.Error("Couldn't open the browser", err)
 			}
 		} else {

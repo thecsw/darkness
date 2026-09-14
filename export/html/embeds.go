@@ -4,6 +4,7 @@ import (
 	"fmt"
 	stdhtml "html"
 	"net/url"
+	"slices"
 	"strings"
 
 	"github.com/thecsw/darkness/v3/emilia/alpha"
@@ -147,12 +148,7 @@ var (
 )
 
 func hasEmbedAttribute(attributes, attribute string) bool {
-	for _, candidate := range strings.Fields(attributes) {
-		if candidate == attribute {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(strings.Fields(attributes), attribute)
 }
 
 func staticEmbedCardsEnabled(conf *alpha.DarknessConfig) bool {

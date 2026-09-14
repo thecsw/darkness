@@ -109,7 +109,6 @@ func resizeAndBlur(img image.Image) *image.RGBA {
 	// Blur the image to make it look better.
 	blurred := blur.Gaussian(resized, galleryPreviewImageBlur)
 	return blurred
-
 }
 
 func dryRemove(val string) error {

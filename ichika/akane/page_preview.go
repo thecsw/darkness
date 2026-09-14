@@ -36,7 +36,8 @@ var (
 
 // RequestPagePreview requests a page preview to be generated.
 func RequestPagePreview(location yunyun.RelativePathDir, title string,
-	time string, colorBg string, colorFg string) {
+	time string, colorBg string, colorFg string,
+) {
 	pagePreviewsToGenerate.Store(location, pagePreviewRequest{
 		Location: location,
 		Title:    title,
@@ -128,7 +129,11 @@ func doPagePreviews(conf *alpha.DarknessConfig) {
 	})
 
 	pagePreviewsToGenerate.Range(func(key, value any) bool {
-		rei.Try(pageGeneratorPool.Submit(value.(pagePreviewRequest)))
+		request, ok := value.(pagePreviewRequest)
+		if !ok {
+			return true
+		}
+		rei.Try(pageGeneratorPool.Submit(request))
 		return true
 	})
 
@@ -151,7 +156,7 @@ func onlyKeepPrint(k string) string {
 	var result strings.Builder
 	for _, r := range k {
 		if unicode.IsLetter(r) || unicode.IsSpace(r) || unicode.IsDigit(r) || unicode.IsPunct(r) {
-			result.WriteString(string(r))
+			result.WriteRune(r)
 		}
 	}
 	return result.String()

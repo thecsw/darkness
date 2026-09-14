@@ -85,10 +85,10 @@ func buildCSVReport(conf *alpha.DarknessConfig) *bytes.Buffer {
 	}))
 	num := 1
 	for inputFile, report := range fullReport {
-		readTime := int64(report[readIndex])
-		parseTime := int64(report[parseIndex])
-		exportTime := int64(report[exportIndex])
-		writeTime := int64(report[writeIndex])
+		readTime := report[readIndex]
+		parseTime := report[parseIndex]
+		exportTime := report[exportIndex]
+		writeTime := report[writeIndex]
 		totalTime := readTime + parseTime + exportTime + writeTime
 		fullpath := yunyun.FullPathFile(conf.Project.InputFilenameToOutput(inputFile))
 		rei.Try(writer.Write([]string{

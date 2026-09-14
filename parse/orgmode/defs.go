@@ -51,7 +51,5 @@ const (
 	tableSeparatorWS = " " + tableSeparator
 )
 
-var (
-	// attentionBlockRegexp is the regexp for matching attention blocks
-	attentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP|IMPORTANT|CAUTION):\s*(.+)`)
-)
+// attentionBlockRegexp is the regexp for matching attention blocks
+var attentionBlockRegexp = regexp.MustCompile(`^(WARNING|NOTE|TIP|IMPORTANT|CAUTION):\s*(.+)`)

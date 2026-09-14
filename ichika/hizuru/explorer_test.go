@@ -13,11 +13,9 @@ import (
 )
 
 func setupTestEnvironment(t *testing.T) (string, *alpha.DarknessConfig) {
+	t.Helper()
 	// Create a temporary directory for testing
-	tempDir, err := os.MkdirTemp("", "hizuru-test-")
-	if err != nil {
-		t.Fatalf("Failed to create temp directory: %v", err)
-	}
+	tempDir := t.TempDir()
 
 	// Create a basic configuration for testing
 	config := &alpha.DarknessConfig{}
@@ -35,6 +33,7 @@ func setupTestEnvironment(t *testing.T) (string, *alpha.DarknessConfig) {
 
 // createTestFiles creates a test directory structure
 func createTestFiles(t *testing.T, root string) {
+	t.Helper()
 	// Create some basic files with the test extension
 	files := []string{
 		"file1.org",
@@ -54,12 +53,12 @@ func createTestFiles(t *testing.T, root string) {
 		dir := filepath.Dir(fullPath)
 
 		// Create directory if it doesn't exist
-		if err := os.MkdirAll(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
 			t.Fatalf("Failed to create directory %s: %v", dir, err)
 		}
 
 		// Create the file
-		if err := os.WriteFile(fullPath, []byte("test content for "+file), 0644); err != nil {
+		if err := os.WriteFile(fullPath, []byte("test content for "+file), 0o644); err != nil {
 			t.Fatalf("Failed to create file %s: %v", fullPath, err)
 		}
 	}
@@ -264,12 +263,12 @@ func TestBuildPagesSimple(t *testing.T) {
 		dir := filepath.Dir(fullPath)
 
 		// Create directory if it doesn't exist
-		if err := os.MkdirAll(dir, 0755); err != nil {
+		if err := os.MkdirAll(dir, 0o755); err != nil {
 			t.Fatalf("Failed to create directory %s: %v", dir, err)
 		}
 
 		// Create the file
-		if err := os.WriteFile(fullPath, []byte(tf.content), 0644); err != nil {
+		if err := os.WriteFile(fullPath, []byte(tf.content), 0o644); err != nil {
 			t.Fatalf("Failed to create file %s: %v", fullPath, err)
 		}
 	}
@@ -293,7 +292,7 @@ func TestNoFileDuplication(t *testing.T) {
 	// Create a test case where a file could potentially be discovered via multiple paths
 	// by creating hard links
 	srcPath := filepath.Join(tempDir, "unique.org")
-	if err := os.WriteFile(srcPath, []byte("test content"), 0644); err != nil {
+	if err := os.WriteFile(srcPath, []byte("test content"), 0o644); err != nil {
 		t.Fatalf("Failed to create file %s: %v", srcPath, err)
 	}
 

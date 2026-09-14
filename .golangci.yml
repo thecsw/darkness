@@ -1,0 +1,82 @@
+version: "2"
+
+run:
+  timeout: 10m
+
+linters:
+  # Start from the standard set (errcheck, govet, ineffassign, staticcheck, unused)
+  # and add the curated bug/security/hygiene linters below.
+  default: standard
+  enable:
+    # Security
+    - gosec
+    # Error handling
+    - errorlint
+    - errname
+    - errchkjson
+    - nilerr
+    - nilnil
+    # HTTP and context
+    - bodyclose
+    - noctx
+    - contextcheck
+    - fatcontext
+    - containedctx
+    - canonicalheader
+    # Bug patterns
+    - forcetypeassert
+    - makezero
+    - mirror
+    - copyloopvar
+    - asasalint
+    - durationcheck
+    - dogsled
+    - embeddedstructfieldcheck
+    - exptostd
+    - exhaustive
+    - nakedret
+    - nosprintfhostport
+    - predeclared
+    - reassign
+    - recvcheck
+    - unparam
+    # Hygiene
+    - misspell
+    - dupword
+    - godox
+    - asciicheck
+    - bidichk
+    - gomoddirectives
+    - goprintffuncname
+    - tagalign
+    - nolintlint
+    # Modernization and performance
+    - modernize
+    - intrange
+    - perfsprint
+    - prealloc
+    - unconvert
+    - usestdlibvars
+    # Tests and interfaces
+    - thelper
+    - tparallel
+    - usetesting
+    - inamedparam
+    - musttag
+  settings:
+    gosec:
+      severity: medium
+      confidence: medium
+  exclusions:
+    generated: lax
+    rules:
+      # Test fixtures don't need strict file permissions, and test paths are
+      # built from local fixture data, not external input.
+      - linters:
+          - gosec
+        path: _test\.go
+        text: 'G301|G304|G306'
+
+formatters:
+  enable:
+    - gofumpt

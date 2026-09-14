@@ -29,7 +29,7 @@ func WithFootnotes() yunyun.PageOption {
 
 			// Footnotes can also appear in lists
 			if c.IsList() {
-				for i := 0; i < len(c.List); i++ {
+				for i := range len(c.List) {
 					c.List[i].Text = findFootnotes(c.List[i].Text, &footnotes)
 				}
 			}

@@ -7,6 +7,7 @@ import (
 	"io"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -167,15 +168,15 @@ func (e *state) combineAndFilterHtmlHead() string {
 
 // styleTags is the processed style tags.
 func (e *state) styleTags() []string {
-	content := make([]string, len(e.conf.Website.Styles)+len(e.page.Stylesheets))
-	for i, style := range e.conf.Website.Styles {
+	content := make([]string, 0, len(e.conf.Website.Styles)+len(e.page.Stylesheets))
+	for _, style := range e.conf.Website.Styles {
 		stylePath := yunyun.FullPathFile(style)
 		if !strings.HasPrefix(string(style), "http") {
 			stylePath = e.conf.Runtime.Join(style)
 		}
-		content[i] = fmt.Sprintf(
+		content = append(content, fmt.Sprintf(
 			`<link rel="stylesheet" type="text/css" href="%s">`+"\n", stylePath,
-		)
+		))
 	}
 	return append(content, e.page.Stylesheets...)
 }
@@ -281,13 +282,13 @@ func (e *state) addTomb() {
 		return
 	}
 	// Find the last paragraph and attached the tomb.
-	for i := len(e.page.Contents) - 1; i >= 0; i-- {
+	for _, content := range slices.Backward(e.page.Contents) {
 		// Skip if it's not a paragraph.
-		if !e.page.Contents[i].IsParagraph() {
+		if !content.IsParagraph() {
 			continue
 		}
 		// Add the tomb and break out.
-		e.page.Contents[i].Paragraph += tombEnding
+		content.Paragraph += tombEnding
 		break
 	}
 }

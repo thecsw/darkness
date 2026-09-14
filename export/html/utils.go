@@ -18,8 +18,8 @@ const (
 	divSpecial
 )
 
-// TODO: To whoever came up with this---me---is there a better way?
-// TODO: That was of course me, Sandy. Hi. This is ugly as it has to
+// To whoever came up with this---me---is there a better way?
+// That was of course me, Sandy. Hi. This is ugly as it has to
 // connect directly with yunyun/flags.go. Travesty, but whatever.
 var divTypes = []divType{
 	divWriting, // yunyun.TypeHeading
@@ -67,11 +67,11 @@ func filterByLatestMetaName(heads []string) []string {
 	seen := make(map[string]struct{})
 
 	// Going through it in reverse.
-	for i := len(heads) - 1; i >= 0; i-- {
-		name, isApplicable := extractMetaName(heads[i])
+	for _, head := range slices.Backward(heads) {
+		name, isApplicable := extractMetaName(head)
 		// If name couldn't be extracted, stay safe.
 		if len(name) < 1 || !isApplicable {
-			res = append(res, heads[i])
+			res = append(res, head)
 			continue
 		}
 		// If seen, then skip.
@@ -80,7 +80,7 @@ func filterByLatestMetaName(heads []string) []string {
 		}
 		// Mark and add.
 		seen[name] = struct{}{}
-		res = append(res, heads[i])
+		res = append(res, head)
 	}
 	// Original order, since if the user say applied stylesheet.css and override.css,
 	// if we don't preserve the original order, the override.css would end up doing

@@ -11,14 +11,12 @@ import (
 	"github.com/thecsw/darkness/v3/yunyun"
 )
 
-var (
-	// Some emojis are compound, like lime, so they don't fit in a single rune.
-	randomDateEmojis = []string{
-		"🍓", "🍒", "🍋", "🍋‍🟩", "🍸", "🥧", "🍊", "☕️", "🥧",
-		"🍑", "🥑", "🍐", "🥥", "🍈", "🫐", "🪵", "🍌", "🍉",
-		"🍤", "🍇", "🥞", "🥗", "🍯", "🥐", "🥭", "🍙", "🧀",
-	}
-)
+// Some emojis are compound, like lime, so they don't fit in a single rune.
+var randomDateEmojis = []string{
+	"🍓", "🍒", "🍋", "🍋‍🟩", "🍸", "🥧", "🍊", "☕️", "🥧",
+	"🍑", "🥑", "🍐", "🥥", "🍈", "🫐", "🪵", "🍌", "🍉",
+	"🍤", "🍇", "🥞", "🥗", "🍯", "🥐", "🥭", "🍙", "🧀",
+}
 
 // secureRandIntn returns a cryptographically secure random integer in the range [0, n).
 // It panics if there's an error reading from the random source.
@@ -71,9 +69,7 @@ func WithDate() yunyun.PageOption {
 			page.Contents[0].Type == yunyun.TypeParagraph &&
 			strings.TrimSpace(page.Contents[0].Paragraph) == strings.TrimSpace(page.Date) {
 			return
-
 		}
-		dateContents := make(yunyun.Contents, 1)
 		regular, isHoloscene := ConvertHoloscene(page.Date)
 		dateString := strings.TrimSpace(page.Date)
 		if isHoloscene {
@@ -81,13 +77,14 @@ func WithDate() yunyun.PageOption {
 				randomDateEmojis[secureRandIntn(len(randomDateEmojis))],
 				formatSince(time.Since(regular)))
 		}
-		dateContents[0] = &yunyun.Content{
+		dateContents := make(yunyun.Contents, 0, 1+len(page.Contents))
+		dateContents = append(dateContents, &yunyun.Content{
 			CustomHtmlTags: fmt.Sprintf(`id="date-section" title="%s"`,
 				strings.TrimSpace(regular.Format(RfcEmily))),
 			Paragraph: dateString,
 			Type:      yunyun.TypeParagraph,
 			Options:   yunyun.NotADescriptionFlag,
-		}
+		})
 		page.Contents = append(dateContents, page.Contents...)
 	}
 }
@@ -106,7 +103,10 @@ func formatSince(since time.Duration) string {
 	if years == 0 && months == 0 && days == 0 {
 		return "today"
 	}
-	sb := strBuilderPool.Get().(*strings.Builder)
+	sb, ok := strBuilderPool.Get().(*strings.Builder)
+	if !ok {
+		sb = new(strings.Builder)
+	}
 	sb.Reset()
 	defer strBuilderPool.Put(sb)
 

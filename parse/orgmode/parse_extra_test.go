@@ -1,6 +1,7 @@
 package orgmode
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -179,6 +180,7 @@ func TestParsingSpecialFiles(t *testing.T) {
 			filename: "404.org",
 			input:    "* Page Not Found\n\nThe requested page could not be found.",
 			validate: func(t *testing.T, page *yunyun.Page) {
+				t.Helper()
 				if page.Title != "Page Not Found" {
 					t.Errorf("Expected title 'Page Not Found', got '%s'", page.Title)
 				}
@@ -191,8 +193,9 @@ func TestParsingSpecialFiles(t *testing.T) {
 		{
 			name:     "index page",
 			filename: "index.org",
-			input:    "* Welcome\n\nWelcome to the homepage!",
+			input:    "* Welcome\n\nWelcome to the homepage!", //nolint:dupword // intentional heading + body
 			validate: func(t *testing.T, page *yunyun.Page) {
+				t.Helper()
 				if page.Title != "Welcome" {
 					t.Errorf("Expected title 'Welcome', got '%s'", page.Title)
 				}
@@ -207,6 +210,7 @@ func TestParsingSpecialFiles(t *testing.T) {
 			filename: "article.org",
 			input:    "#+slug: my-custom-slug\n\n* Article Title\n\nContent here.",
 			validate: func(t *testing.T, page *yunyun.Page) {
+				t.Helper()
 				// Instead of checking slug, just check that the title is set
 				if page.Title != "Article Title" {
 					t.Errorf("Expected title 'Article Title', got '%s'", page.Title)
@@ -448,7 +452,7 @@ func TestIndexingFunctions(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		t.Run(string(rune(test.input)), func(t *testing.T) {
+		t.Run(fmt.Sprintf("input_%d", test.input), func(t *testing.T) {
 			result := safeIntToUint(test.input)
 			if result != test.expected {
 				t.Errorf("Expected safeIntToUint(%d) to be %d, got %d", test.input, test.expected, result)

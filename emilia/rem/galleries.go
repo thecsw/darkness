@@ -85,7 +85,7 @@ func GalleryItemToImage(conf *alpha.DarknessConfig, item GalleryItem, authority,
 	if exists, err := rei.FileExists(vendorPath); exists {
 		return reze.OpenImage(vendorPath)
 	} else if err != nil {
-		return nil, fmt.Errorf("checking for vendored file existence %s: %v", vendorPath, err)
+		return nil, fmt.Errorf("checking for vendored file existence %s: %w", vendorPath, err)
 	}
 
 	// If it's a remote file, then ask Emilia to try and fetch it.

@@ -13,7 +13,7 @@ import (
 // Exporter is the interface for all exporters.
 type Exporter interface {
 	// Do is the main function of the exporter.
-	Do(*yunyun.Page) io.Reader
+	Do(page *yunyun.Page) io.Reader
 }
 
 // BuildExporter builds the exporter based on the config.

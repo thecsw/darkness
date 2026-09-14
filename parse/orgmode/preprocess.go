@@ -64,7 +64,10 @@ var (
 func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string) string {
 	// We will do everything in one pass here and build the final input file using
 	// a string builder for performance.
-	sb := stringBuilderPool.Get().(*strings.Builder)
+	sb, ok := stringBuilderPool.Get().(*strings.Builder)
+	if !ok {
+		sb = new(strings.Builder)
+	}
 	sb.Reset()
 
 	// Put it back into the pool.
@@ -85,7 +88,7 @@ func (p ParserOrgmode) preprocess(filename yunyun.RelativePathFile, what string)
 		trimmed := strings.TrimSpace(line)
 
 		// Let's see if we have any macros to expand on this line.
-		// TODO: A bug. If just expanded a multi-line macro, then we aren't going to catch
+		// Known issue: if just expanded a multi-line macro, then we aren't going to catch
 		//  the shouldBeSurroundedWithNewLines processing as expected, failing the later
 		//  parsing. For example, #+begin_gallery and #+end_gallery need full new lines in
 		//  between and if they're macro'd, then we need to manually macro in a double \n.
@@ -220,7 +223,8 @@ func expandUntilSaturation(conf *alpha.DarknessConfig, filename yunyun.RelativeP
 func CollectGlobalMacros(
 	conf *alpha.DarknessConfig,
 	filename yunyun.RelativePathFile,
-	what string) bool {
+	what string,
+) bool {
 	return collectMacros(conf, filename, globalMacrosTable, what)
 }
 
@@ -228,7 +232,8 @@ func collectMacros(
 	conf *alpha.DarknessConfig,
 	filename yunyun.RelativePathFile,
 	macrosLookupTable map[string]string,
-	what string) bool {
+	what string,
+) bool {
 	macroDefsFound := false
 	for line := range strings.SplitSeq(what, "\n") {
 		// Only recognize macro definitions that start at the very beginning of the line

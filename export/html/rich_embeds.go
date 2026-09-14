@@ -210,7 +210,7 @@ func snapshotColorStyle(colors memento.Colors) string {
 
 func snapshotClasses(snapshot *memento.Snapshot) string {
 	classes := make([]string, 0, 2)
-	for _, class := range strings.Fields(snapshot.Class) {
+	for class := range strings.FieldsSeq(snapshot.Class) {
 		if snapshotClassRegexp.MatchString(class) {
 			classes = append(classes, class)
 		}

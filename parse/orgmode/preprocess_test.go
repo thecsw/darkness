@@ -340,17 +340,12 @@ func TestExpandMacros(t *testing.T) {
 // TestExpandSetupFile tests the expandSetupFile function
 func TestExpandSetupFile(t *testing.T) {
 	// Create a temporary directory for test files
-	tmpDir, err := os.MkdirTemp("", "darkness-test")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-	defer os.RemoveAll(tmpDir) //nolint:errcheck
+	tmpDir := t.TempDir()
 
 	// Create a test setup file
 	setupFileContent := "This is content from a setup file.\n#+macro: greeting Hello from setup!"
 	setupFilePath := filepath.Join(tmpDir, "setup.org")
-	err = os.WriteFile(setupFilePath, []byte(setupFileContent), 0644)
-	if err != nil {
+	if err := os.WriteFile(setupFilePath, []byte(setupFileContent), 0o644); err != nil {
 		t.Fatalf("Failed to write setup file: %v", err)
 	}
 
@@ -430,8 +425,7 @@ func TestExpandSetupFile(t *testing.T) {
 
 		// Modify the file but the second call should use the cached version
 		modifiedContent := "Modified content"
-		err = os.WriteFile(setupFilePath, []byte(modifiedContent), 0644)
-		if err != nil {
+		if err := os.WriteFile(setupFilePath, []byte(modifiedContent), 0o644); err != nil {
 			t.Fatalf("Failed to update setup file: %v", err)
 		}
 
@@ -450,18 +444,13 @@ func TestExpandSetupFile(t *testing.T) {
 // TestPreprocessIntegration tests the integration of all preprocessing functions
 func TestPreprocessIntegration(t *testing.T) {
 	// Create a temporary directory for test files
-	tmpDir, err := os.MkdirTemp("", "darkness-test")
-	if err != nil {
-		t.Fatalf("Failed to create temp dir: %v", err)
-	}
-	defer os.RemoveAll(tmpDir) //nolint:errcheck
+	tmpDir := t.TempDir()
 
 	// Create a test setup file with macros
 	setupFileContent := `#+macro: bold *$1*
 #+macro: link [[https://example.com][$1]]`
 	setupFilePath := filepath.Join(tmpDir, "setup.org")
-	err = os.WriteFile(setupFilePath, []byte(setupFileContent), 0644)
-	if err != nil {
+	if err := os.WriteFile(setupFilePath, []byte(setupFileContent), 0o644); err != nil {
 		t.Fatalf("Failed to write setup file: %v", err)
 	}
 

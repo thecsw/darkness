@@ -286,7 +286,7 @@ func extractCustomBlockOption(target, optionName string, pattern regexpPattern) 
 	optP := fmt.Sprintf(`:%s %s`, optionName, pattern)
 	optR, err := regexp.Compile(optP)
 	if err != nil {
-		return nil, fmt.Errorf("compiling regex ('%s'): %v", optP, err)
+		return nil, fmt.Errorf("compiling regex ('%s'): %w", optP, err)
 	}
 	matches := optR.FindAllStringSubmatch(target, 1)
 	if len(matches) < 1 {

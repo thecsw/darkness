@@ -48,7 +48,7 @@ func ExtractID(heading string) string {
 			continue
 		}
 		if c <= unicode.MaxASCII {
-			res.WriteString(string(unicode.ToLower(c)))
+			res.WriteRune(unicode.ToLower(c))
 		}
 	}
 	return strings.TrimRight(res.String(), "-")

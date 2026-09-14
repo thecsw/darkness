@@ -79,10 +79,7 @@ func refreshVendoredEmbeds(conf *alpha.DarknessConfig, dryRun bool) {
 		return
 	}
 
-	workerCount := kuroko.CustomNumWorkers
-	if workerCount < 1 {
-		workerCount = 1
-	}
+	workerCount := max(kuroko.CustomNumWorkers, 1)
 	jobs := make(chan embedRefreshJob)
 	results := make(chan embedRefreshResult)
 	importer := memento.NewImporter()
@@ -90,15 +87,13 @@ func refreshVendoredEmbeds(conf *alpha.DarknessConfig, dryRun bool) {
 
 	var workers sync.WaitGroup
 	for range workerCount {
-		workers.Add(1)
-		go func() {
-			defer workers.Done()
+		workers.Go(func() {
 			for job := range jobs {
 				status, err := importer.RefreshReference(ctx, conf, job.request,
 					job.pageLocation, job.reference, kuroko.Force, dryRun)
 				results <- embedRefreshResult{job: job, status: status, err: err}
 			}
-		}()
+		})
 	}
 	go func() {
 		for _, job := range jobsList {

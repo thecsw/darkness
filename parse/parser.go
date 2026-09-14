@@ -12,7 +12,7 @@ import (
 // Parser is the interface for all parsers.
 type Parser interface {
 	// Do parses the file and returns a Page.
-	Do(yunyun.RelativePathFile, string) *yunyun.Page
+	Do(filename yunyun.RelativePathFile, input string) *yunyun.Page
 }
 
 // BuildParser builds a parser based on the config.

@@ -76,7 +76,10 @@ func GetNumberReports() int {
 func GetFullReport() map[yunyun.FullPathFile][]int64 {
 	fullReport := make(map[yunyun.FullPathFile][]int64)
 	recordedFiles.Range(func(key, value any) bool {
-		inputFile := key.(yunyun.FullPathFile)
+		inputFile, ok := key.(yunyun.FullPathFile)
+		if !ok {
+			return true
+		}
 		fullReport[inputFile] = make([]int64, 4)
 		loadIntoFullReport(inputFile, fullReport, &readTimes, readIndex)
 		loadIntoFullReport(inputFile, fullReport, &parseTimes, parseIndex)
@@ -100,6 +103,8 @@ func loadIntoFullReport(
 	}
 	whateverTime, ok := times.Load(inputFile)
 	if ok {
-		fullReport[inputFile][index] = whateverTime.(int64)
+		if t, ok := whateverTime.(int64); ok {
+			fullReport[inputFile][index] = t
+		}
 	}
 }

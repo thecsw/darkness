@@ -25,7 +25,7 @@ func (conf *DarknessConfig) setupHighlightJsLanguages() error {
 	dir := conf.Website.SyntaxHighlightingLanguages
 	languages, err := os.ReadDir(string(dir))
 	if err != nil {
-		return fmt.Errorf("opening %s: %v", dir, err)
+		return fmt.Errorf("opening %s: %w", dir, err)
 	}
 
 	// Add all the languages to the config.

@@ -24,9 +24,7 @@ const (
 	indexNowKeyPattern = "^[a-fA-F0-9]{32}[.]txt$"
 )
 
-var (
-	indexNowKeyRegex = regexp.MustCompile(indexNowKeyPattern)
-)
+var indexNowKeyRegex = regexp.MustCompile(indexNowKeyPattern)
 
 // NotifySearchEngines notifies search engines of the updated URLs through indexnow.org.
 func NotifySearchEngines(conf *alpha.DarknessConfig, indexNowKey yunyun.RelativePathFile, dryRun bool) {
@@ -105,11 +103,11 @@ func getLastBuilt(conf *alpha.DarknessConfig) (*time.Time, error) {
 	remotePath := conf.Runtime.UrlPath.JoinPath(puck.LastBuildTimestampFile).String()
 	lastBuilt, err := haruhi.URL(remotePath).ResponseString()
 	if err != nil {
-		return nil, fmt.Errorf("collecting last_built.txt from %s: %v", remotePath, err)
+		return nil, fmt.Errorf("collecting last_built.txt from %s: %w", remotePath, err)
 	}
 	lastBuiltTime, err := time.Parse(time.RFC3339, lastBuilt)
 	if err != nil {
-		return nil, fmt.Errorf("parsing last_built.txt from %s: %v", remotePath, err)
+		return nil, fmt.Errorf("parsing last_built.txt from %s: %w", remotePath, err)
 	}
 	return &lastBuiltTime, nil
 }
@@ -127,7 +125,7 @@ func notifySearchEngineMultiple(
 	host string,
 	relPathsToUpdate []yunyun.RelativePathDir,
 ) error {
-	path := fmt.Sprintf("https://%s", searchEngineUrl)
+	path := "https://" + searchEngineUrl
 
 	// convert them to URLs
 	urlsToUpdate := gana.Map(func(rel yunyun.RelativePathDir) string {
@@ -155,7 +153,7 @@ func notifySearchEngineMultiple(
 	}
 	defer resp.Body.Close() //nolint:errcheck
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		errorBody, _ := io.ReadAll(resp.Body)
 		return fmt.Errorf("failed to notify search engine %s: %s with error: %s", searchEngineUrl, resp.Status, errorBody)
 	}
