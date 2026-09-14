@@ -168,7 +168,10 @@ func shouldRenderStaticCard(conf *alpha.DarknessConfig, content *yunyun.Content)
 
 func isWebLink(link string) bool {
 	parsed, err := url.Parse(link)
-	return err == nil && (parsed.Scheme == "http" || parsed.Scheme == "https") && parsed.Hostname() != ""
+	if err != nil || parsed == nil {
+		return false
+	}
+	return (parsed.Scheme == "http" || parsed.Scheme == "https") && parsed.Hostname() != ""
 }
 
 func genericEmbedCardKind(link string) embedCardKind {

@@ -344,7 +344,7 @@ func TestExpandSetupFile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer os.RemoveAll(tmpDir) //nolint:errcheck
 
 	// Create a test setup file
 	setupFileContent := "This is content from a setup file.\n#+macro: greeting Hello from setup!"
@@ -454,7 +454,7 @@ func TestPreprocessIntegration(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to create temp dir: %v", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer os.RemoveAll(tmpDir) //nolint:errcheck
 
 	// Create a test setup file with macros
 	setupFileContent := `#+macro: bold *$1*

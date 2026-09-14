@@ -76,7 +76,7 @@ func createTestFiles(t *testing.T, root string) {
 // TestFindFilesByExtSimple tests the FindFilesByExtSimple function
 func TestFindFilesByExtSimple(t *testing.T) {
 	tempDir, config := setupTestEnvironment(t)
-	defer os.RemoveAll(tempDir)
+	defer os.RemoveAll(tempDir) //nolint:errcheck
 
 	// Run the function we're testing
 	files := FindFilesByExtSimple(config)
@@ -126,7 +126,7 @@ func TestFindFilesByExtSimple(t *testing.T) {
 // TestFindFilesByExtSimpleDirs tests the findFilesByExtSimpleDirs function
 func TestFindFilesByExtSimpleDirs(t *testing.T) {
 	tempDir, config := setupTestEnvironment(t)
-	defer os.RemoveAll(tempDir)
+	defer os.RemoveAll(tempDir) //nolint:errcheck
 
 	tests := []struct {
 		name     string
@@ -208,7 +208,7 @@ func TestFindFilesByExtSimpleDirs(t *testing.T) {
 // TestSkipPrefixExclusion tests that files with skipPrefix in the base filename are properly excluded
 func TestSkipPrefixExclusion(t *testing.T) {
 	tempDir, config := setupTestEnvironment(t)
-	defer os.RemoveAll(tempDir)
+	defer os.RemoveAll(tempDir) //nolint:errcheck
 
 	// Run the function we're testing
 	files := FindFilesByExtSimple(config)
@@ -225,7 +225,7 @@ func TestSkipPrefixExclusion(t *testing.T) {
 // TestHiddenFileExclusion tests that files with names starting with a dot are excluded
 func TestHiddenFileExclusion(t *testing.T) {
 	tempDir, config := setupTestEnvironment(t)
-	defer os.RemoveAll(tempDir)
+	defer os.RemoveAll(tempDir) //nolint:errcheck
 
 	// Run the function we're testing
 	files := FindFilesByExtSimple(config)
@@ -242,7 +242,7 @@ func TestHiddenFileExclusion(t *testing.T) {
 // TestBuildPagesSimple tests the BuildPagesSimple function
 func TestBuildPagesSimple(t *testing.T) {
 	tempDir, config := setupTestEnvironment(t)
-	defer os.RemoveAll(tempDir)
+	defer os.RemoveAll(tempDir) //nolint:errcheck
 
 	// Add some test content to the files that will be parsed
 	testFiles := []struct {
@@ -288,7 +288,7 @@ func TestBuildPagesSimple(t *testing.T) {
 // TestNoFileDuplication tests that no files are duplicated when scanning
 func TestNoFileDuplication(t *testing.T) {
 	tempDir, config := setupTestEnvironment(t)
-	defer os.RemoveAll(tempDir)
+	defer os.RemoveAll(tempDir) //nolint:errcheck
 
 	// Create a test case where a file could potentially be discovered via multiple paths
 	// by creating hard links

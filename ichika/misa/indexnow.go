@@ -149,11 +149,11 @@ func notifySearchEngineMultiple(
 		BodyJson(payload).
 		Response()
 	defer cancel()
-	defer resp.Body.Close()
 
 	if err != nil {
 		return fmt.Errorf("failed to notify search engine %s: %w", searchEngineUrl, err)
 	}
+	defer resp.Body.Close() //nolint:errcheck
 
 	if resp.StatusCode != 200 {
 		errorBody, _ := io.ReadAll(resp.Body)

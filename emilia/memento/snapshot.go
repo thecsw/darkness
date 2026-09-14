@@ -209,6 +209,9 @@ func insideDirectory(directory, target string) bool {
 
 // SaveReference writes a manually supplied snapshot beside an Org page.
 func SaveReference(conf *alpha.DarknessConfig, pageLocation, reference string, snapshot *Snapshot) error {
+	if snapshot == nil {
+		return errors.New("snapshot is nil")
+	}
 	manifestPath, err := ResolveReferencePath(conf, pageLocation, reference)
 	if err != nil {
 		return err

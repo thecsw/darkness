@@ -68,7 +68,7 @@ func TestRefreshReferenceHydratesAColocatedTOMLStub(t *testing.T) {
 		switch request.URL.Path {
 		case "/oembed":
 			writer.Header().Set("Content-Type", "application/json")
-			fmt.Fprintf(writer, `{"title":"NIGHT RUNNING","author_name":"sandy","thumbnail_url":%q}`, server.URL+"/thumbnail.jpg")
+			_, _ = fmt.Fprintf(writer, `{"title":"NIGHT RUNNING","author_name":"sandy","thumbnail_url":%q}`, server.URL+"/thumbnail.jpg")
 		case "/thumbnail.jpg":
 			writer.Header().Set("Content-Type", "image/jpeg")
 			_, _ = writer.Write([]byte("local artwork"))
@@ -162,7 +162,7 @@ func TestRefreshPrefillsAndPreservesManualSnapshots(t *testing.T) {
 		switch request.URL.Path {
 		case "/oembed":
 			writer.Header().Set("Content-Type", "application/json")
-			fmt.Fprintf(writer, `{"title":"Remote title","author_name":"Remote author","thumbnail_url":%q}`, server.URL+"/thumbnail.jpg")
+			_, _ = fmt.Fprintf(writer, `{"title":"Remote title","author_name":"Remote author","thumbnail_url":%q}`, server.URL+"/thumbnail.jpg")
 		case "/thumbnail.jpg":
 			writer.Header().Set("Content-Type", "image/jpeg")
 			_, _ = writer.Write([]byte("local artwork"))
@@ -217,7 +217,10 @@ func TestRefreshPrefillsAndPreservesManualSnapshots(t *testing.T) {
 	if err != nil || status != "refreshed" {
 		t.Fatalf("manual placeholder refresh = %q, %v", status, err)
 	}
-	snapshot, _ = LoadReference(conf, pageLocation, manifestReference)
+	snapshot, err = LoadReference(conf, pageLocation, manifestReference)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if snapshot.NeedsManual || snapshot.Title != "Remote title" {
 		t.Fatalf("manual placeholder was not hydrated: %#v", snapshot)
 	}
@@ -231,7 +234,10 @@ func TestRefreshPrefillsAndPreservesManualSnapshots(t *testing.T) {
 	if err != nil || status != "cached" {
 		t.Fatalf("ordinary refresh = %q, %v", status, err)
 	}
-	preserved, _ := LoadReference(conf, pageLocation, manifestReference)
+	preserved, err := LoadReference(conf, pageLocation, manifestReference)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if preserved.Title != "My better title" {
 		t.Errorf("ordinary refresh overwrote manual changes: %#v", preserved)
 	}
@@ -245,7 +251,10 @@ func TestRefreshPrefillsAndPreservesManualSnapshots(t *testing.T) {
 	if err != nil || status != "locked" {
 		t.Fatalf("forced locked refresh = %q, %v", status, err)
 	}
-	locked, _ := LoadReference(conf, pageLocation, manifestReference)
+	locked, err := LoadReference(conf, pageLocation, manifestReference)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if locked.Title != "My better title" {
 		t.Errorf("forced refresh overwrote locked snapshot: %#v", locked)
 	}

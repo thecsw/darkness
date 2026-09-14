@@ -105,7 +105,7 @@ func launchWatcher(conf *alpha.DarknessConfig) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer watcher.Close()
+	defer watcher.Close() //nolint:errcheck
 
 	// Start listening for events.
 	go func() {

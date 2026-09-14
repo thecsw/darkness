@@ -197,7 +197,7 @@ func (importer *Importer) fetchSpotify(ctx context.Context, request Request) (*F
 
 	artworkURL := bestSpotifyImage(entity)
 	if artworkURL == "" {
-		return nil, errors.New("Spotify embed response is missing artwork")
+		return nil, errors.New("spotify embed response is missing artwork")
 	}
 	artwork, contentType, err := importer.get(ctx, artworkURL, maxArtworkBytes)
 	if err != nil {
@@ -219,7 +219,10 @@ func (importer *Importer) get(ctx context.Context, endpoint string, limit int64)
 	if err != nil {
 		return nil, "", err
 	}
-	defer response.Body.Close()
+	if response == nil {
+		return nil, "", fmt.Errorf("GET %s: no response", endpoint)
+	}
+	defer response.Body.Close() //nolint:errcheck
 	if response.StatusCode < 200 || response.StatusCode >= 300 {
 		return nil, "", fmt.Errorf("GET %s: %s", endpoint, response.Status)
 	}
@@ -283,16 +286,16 @@ func decodeSpotifyEntity(document []byte) (*spotifyEntity, error) {
 	const marker = `<script id="__NEXT_DATA__"`
 	tagStart := bytes.Index(document, []byte(marker))
 	if tagStart < 0 {
-		return nil, errors.New("Spotify embed response has no __NEXT_DATA__ snapshot")
+		return nil, errors.New("spotify embed response has no __NEXT_DATA__ snapshot")
 	}
 	tagEnd := bytes.IndexByte(document[tagStart:], '>')
 	if tagEnd < 0 {
-		return nil, errors.New("Spotify __NEXT_DATA__ opening tag is not terminated")
+		return nil, errors.New("spotify __NEXT_DATA__ opening tag is not terminated")
 	}
 	start := tagStart + tagEnd + 1
 	end := bytes.Index(document[start:], []byte("</script>"))
 	if end < 0 {
-		return nil, errors.New("Spotify __NEXT_DATA__ snapshot is not terminated")
+		return nil, errors.New("spotify __NEXT_DATA__ snapshot is not terminated")
 	}
 	var payload struct {
 		Props struct {
@@ -310,7 +313,7 @@ func decodeSpotifyEntity(document []byte) (*spotifyEntity, error) {
 	}
 	entity := payload.Props.PageProps.State.Data.Entity
 	if entity.ID == "" || entity.Title == "" {
-		return nil, errors.New("Spotify embed snapshot is missing identity metadata")
+		return nil, errors.New("spotify embed snapshot is missing identity metadata")
 	}
 	return &entity, nil
 }
