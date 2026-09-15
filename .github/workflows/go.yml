@@ -141,11 +141,9 @@ jobs:
       - name: Run darkness build on thecsw.github.io
         run: |
           cd /tmp/thecsw.github.io
+          set -o pipefail
           # Capture the output of darkness build
-          BUILD_OUTPUT=$($GITHUB_WORKSPACE/darkness build | tee /dev/stderr)
-          
-          # Check if build was successful
-          if [ $? -ne 0 ]; then
+          if ! BUILD_OUTPUT=$("$GITHUB_WORKSPACE/darkness" build | tee /dev/stderr); then
             echo "Integration test failed: darkness build failed"
             exit 1
           fi
